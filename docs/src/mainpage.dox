@@ -26,18 +26,17 @@ This document explains how to use the libxlsxwriter library. See the
 following sections for more information:
 
 - @ref introduction
+
 - @ref getting_started
+
 - @ref tutorial01
 - @ref tutorial02
 - @ref tutorial03
+
 - @ref workbook.h  "The Workbook object"
 - @ref worksheet.h "The Worksheet object"
 - @ref format.h    "The Format object"
-- @ref working_with_colors
-- @ref working_with_dates
+
 - @ref examples
-- @ref author
-- @ref license
-- @ref changes
 
 */

@@ -12,15 +12,9 @@ For Windows see the @ref faq "FAQ".
 
 ### Install the dependencies
 
-There is only one (non-testing) dependency: `zlib`.
+[Zlib](http://www.zlib.net) version 1.2.8 is the only (non-testing) dependency.
 
-[Zlib](http://www.zlib.net) is required for its shared objects and header
-files. On a Debian Linux system you can install them using `apt-get` as
-follows:
-
-    sudo apt-get install -y zlib1g-dev
-
-On systems without a package manager the following should work:
+The easiest way to install `zlib` is from the source code:
 
     curl -O -L  http://zlib.net/zlib-1.2.8.tar.gz
     tar zxf zlib-1.2.8.tar.gz
@@ -31,8 +25,16 @@ On systems without a package manager the following should work:
 
     sudo make install
 
-### Clone the libxlsxwriter repository
+On recent Debian Linux systems you can install the `zlib` development
+libraries using `apt-get` as follows:
 
+    sudo apt-get install -y zlib1g-dev
+
+However, you need to ensure that the version is 1.2.8 or you will get zlib
+related compilation issues.
+
+
+### Clone the libxlsxwriter repository
 
 Clone the libxlsxwriter source code repository from GitHub as follows (or
 using your preferred protocol):
@@ -54,6 +56,10 @@ This will create a static and dynamic library in the local `./lib` directory:
 
     ls lib
     libxlsxwriter.a     libxlsxwriter.so
+
+To see a verbose summary of the compilation steps use `V=1`:
+
+    make V=1
 
 
 ### Try an example
