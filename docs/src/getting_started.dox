@@ -1,0 +1,146 @@
+/**
+@page getting_started Getting Started with libxlsxwriter
+
+
+Here are some instructions to get you up and running with the libxlsxwriter
+library on a Unix system.
+
+For Windows see the @ref faq "FAQ".
+
+
+## Installation
+
+### Install the dependencies
+
+There is only one (non-testing) dependency: `zlib`.
+
+[Zlib](http://www.zlib.net) is required for its shared objects and header
+files. On a Debian Linux system you can install them using `apt-get` as
+follows:
+
+    sudo apt-get install -y zlib1g-dev
+
+On systems without a package manager the following should work:
+
+    curl -O -L  http://zlib.net/zlib-1.2.8.tar.gz
+    tar zxf zlib-1.2.8.tar.gz
+    cd zlib-1.2.8
+
+    ./configure
+    make
+
+    sudo make install
+
+### Clone the libxlsxwriter repository
+
+
+Clone the libxlsxwriter source code repository from GitHub as follows (or
+using your preferred protocol):
+
+    git clone https://github.com/jmcnamara/libxlsxwriter.git
+
+If you prefer you can get a tarball of the latest code:
+
+    curl -O -L http://github.com/jmcnamara/libxlsxwriter/archive/master.tar.gz
+
+### Build the source code
+
+Build the source code as follows:
+
+    cd libxlsxwriter
+    make
+
+This will create a static and dynamic library in the local `./lib` directory:
+
+    ls lib
+    libxlsxwriter.a     libxlsxwriter.so
+
+
+### Try an example
+
+If there weren't any warnings or errors in the previous step (and there
+shouldn't have been) then you can build the programs in the `examples`
+directory and try one of them out:
+
+    make examples
+    ./examples/hello
+
+This will create a `hello_world.xlsx` file in your current directory. Open the
+file as follows, or directly from a spreadsheet application:
+
+     xdg-open hello_world.xlsx  # Linux. Usually.
+     open hello_world.xlsx      # Mac OS X if Excel is installed.
+
+The output should look like this: @image html hello01.png
+
+There is a large range of tests that you can run but they have some additional
+dependencies. If you are interested see @ref running_the_tests.
+
+
+### Install the library
+
+Libxlsxwriter supports a simplified installation scheme for a static and
+dynamic/shared library and header files. The installation has been tested on
+Linux and OS X:
+
+    sudo make install
+
+This isn't fool proof but if it fails on your system you will probably know
+exactly how to fix it or have no idea how to fix it. I'm hoping for the
+former.
+
+## TL;DR
+
+If you prefer to assemble Ikea furniture first and read the instructions later
+then the following minimal set of commands should get you up and going on a
+Debian like system:
+
+    sudo apt-get install -y zlib1g-dev
+    git clone https://github.com/jmcnamara/libxlsxwriter.git
+    cd libxlsxwriter
+    make
+    sudo make install
+
+# Using the library
+
+Using you favourite editor Emacs create a file like the following called
+`myexcel.c`:
+
+@code
+#include "xlsxwriter.h"
+
+int main() {
+
+    lxw_workbook  *workbook  = new_workbook("myexcel.xlsx");
+    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+    int row = 0;
+    int col = 0;
+
+    worksheet_write_string(worksheet, row, col, "Hello me!", NULL);
+
+    return workbook_close(workbook);
+}
+@endcode
+
+If you executed the `"make install"` command in the previous section then you
+should be able to compile the program as follows:
+
+    cc myexcel.c -o myexcel -lxlsxwriter
+
+This will create an executable that you can run to generate an Excel spreadsheet:
+
+    ./myexcel
+    xdg-open myexcel.xlsx
+
+If the installation didn't work for you then you can link against the static
+library you created in the "Build the source code" step:
+
+    cc myexcel.c -o myexcel -I /path/to/libxlsxwriter/include /path/to/libxlsxwriter/lib/libxlsxwriter.a -lz
+
+And that's it! In the next sections we will look at some more detailed
+examples.
+
+Next: @ref tutorial01
+
+
+*/

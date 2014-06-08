@@ -1,0 +1,95 @@
+/**
+@page examples Example Programs
+
+
+@example hello.c
+The simplest possible program and spreadsheet. This is a good place to
+start to see if the libxlsxwriter library is installed and working
+correctly.
+
+Next example: @ref anatomy.c
+@image html hello01.png
+
+
+@example anatomy.c
+Anatomy of a simple libxlsxwriter program.
+
+Next example: @ref demo.c
+@image html anatomy.png
+
+
+@example demo.c
+A simple example of some of the features of the libxlsxwriter library.
+
+Next example: @ref format_font.c
+@image html demo.png
+
+
+@example format_font.c
+Example of writing some data with font formatting to a simple Excel
+file using libxlsxwriter.
+
+Next example: @ref format_num_format.c
+@image html format_font.png
+
+
+@example format_num_format.c
+Example of writing some data with numeric formatting to a simple Excel
+file using libxlsxwriter.
+
+Next example: @ref tutorial1.c
+@image html format_set_num_format.png
+
+
+@example tutorial1.c
+A tutorial program which is shown, with explanations, in @ref tutorial01.
+
+Next example: @ref tutorial2.c
+@image html tutorial01.png
+
+
+@example tutorial2.c
+A tutorial program which is shown, with explanations, in @ref tutorial02.
+
+Next example: @ref tutorial3.c
+@image html tutorial02.png
+
+
+@example tutorial3.c
+A tutorial program which is shown, with explanations, in @ref tutorial03.
+
+Next example: @ref dates_and_times01.c
+@image html tutorial03.png
+
+
+@example dates_and_times01.c Example of writing a dates and time in Excel
+using a number with date formatting. This demonstrates that dates and times in
+Excel are just formatted real numbers. An easier approach using a lxw_datetime
+struct is shown in the next example.
+
+Next example: @ref dates_and_times02.c.
+@image html date_example01.png
+
+
+@example dates_and_times02.c
+Example of writing dates and times in Excel using an lxw_datetime struct and
+date formatting.
+
+Next example: @ref dates_and_times03.c
+@image html date_example02.png
+
+
+@example dates_and_times03.c
+Example of writing dates and times in Excel using different date formats.
+
+Next example: @ref utf8.c
+@image html date_example03.png
+
+
+@example utf8.c
+A simple Unicode UTF-8 example. Note, the source file is UTF-8 encoded.
+
+
+@image html utf8.png
+
+*/

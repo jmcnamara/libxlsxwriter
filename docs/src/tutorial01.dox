@@ -1,0 +1,112 @@
+/**
+@page tutorial01 Tutorial 1: Create a simple XLSX file
+
+
+Let's start by creating a simple spreadsheet using C and the
+@c libxlsxwriter library.
+
+Say that we have some data on monthly outgoings that we want to convert
+into an Excel XLSX file:
+
+Item  | Cost
+----- | ---:
+Rent  | 1000
+Gas   |  100
+Food  |  300
+Gym   |   50
+
+To do that we can start with a small program like the following:
+
+@dontinclude tutorial1.c
+@skip include
+@until };
+@until };
+@until }
+@until }
+
+
+If we run this program we should get a spreadsheet that looks like this:
+
+@image html tutorial01.png
+
+This is a simple example but the steps involved are representative of
+all programs that use @c libxlsxwriter, so let's break it down into separate
+parts.
+
+The first step is to include the header for the library:
+
+@dontinclude tutorial1.c
+@skipline include
+
+Then we need some data to add to the spreadsheet. For the sake of this example
+we create and initialise some simple data structures. In a real application
+the input data might come from a database or a file.
+
+@dontinclude tutorial1.c
+@skipline struct
+@until };
+@until };
+
+
+The next step is to create a workbook object in a @c main block or
+function using the new_workbook() function which takes the filename
+that we want to create:
+
+@dontinclude tutorial1.c
+@skipline new_workbook
+
+
+The workbook object is then used to add a new worksheet via the
+workbook_add_worksheet() function:
+
+@dontinclude tutorial1.c
+@skipline add_worksheet
+
+If a `NULL` pointer is used for the worksheet name then a default name will be
+supplied using the Excel convention of `Sheet1`, `Sheet2`, etc. However we can
+also specify a name:
+
+@code
+    worksheet = workbook_add_worksheet(workbook, NULL  );  // Defaults to Sheet1.
+    worksheet = workbook_add_worksheet(workbook, "Data");  // Data.
+    worksheet = workbook_add_worksheet(workbook, NULL  );  // Defaults to Sheet3.
+@endcode
+
+We can then use the worksheet object to write data via the
+worksheet_write_string() and worksheet_write_number() functions:
+
+@code
+    worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
+    worksheet_write_number(worksheet, 1, 0, 1234.56, NULL);
+@endcode
+
+@note
+Rows and columns are zero indexed throughout the libxlsxwriter API. Thus, the
+first cell in a worksheet, `A1`, is equivalent to `(0, 0)`.
+
+So in our example we iterate over our data and write it out as follows:
+
+@dontinclude tutorial1.c
+@skipline for
+@until }
+
+We then add a formula to calculate the total of the items in the second
+column:
+
+@dontinclude tutorial1.c
+@skipline write_formula
+
+Finally, we close the Excel file via the close method:
+
+@dontinclude tutorial1.c
+@skipline close
+
+And that's it. We now have a file that can be read by Excel and other
+spreadsheet applications.
+
+In the next sections we will see how we can use the @c libxlsxwriter module
+to add formatting and other Excel features.
+
+Next: @ref tutorial02.
+
+*/

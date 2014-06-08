@@ -1,0 +1,146 @@
+/**
+@page working_with_formats Working with Formats
+
+The main functions and properties used to add formatting to a cell are shown
+in @ref format.h "The Format object". This section provides some additional
+information about working with formats.
+
+## Creating and using a Format object
+
+Formats are created by calling the workbook_add_format() method and properties
+as set using the various functions shown below:
+
+@code
+    lxw_format *format = workbook_add_format(workbook);
+
+    format_set_bold(format);
+    format_set_font_color(format, LXW_COLOR_RED);
+@endcode
+
+
+Once a Format object has been created  and its properties have been
+set it can be passed as an argument to the `worksheet_write*()` methods as
+follows:
+
+@code
+    worksheet_write_string(worksheet, 0, 0, "Hello", format);
+    worksheet_write_number(worksheet, 1, 0, 123.456, format);
+@endcode
+
+Formats can also be passed to the worksheet `worksheet_set_row()` and
+`worksheet_set_column()` methods to define the default formatting properties
+for a row or column:
+
+@code
+    # Not implemented in version 0.0.1.
+    worksheet_set_row(worksheet, 2, format)
+    worksheet_set_column(worksheet, 0, 20, format)
+@endcode
+
+
+## Format methods and Format properties
+
+The following table shows the Excel format categories and the equivalent
+`libxlsxwriter` Format function:
+
+  | Category        | Description          |  Method Name                   |
+  | :-------------- | :------------------- |  :---------------------------  |
+  | **Font**        | Font type            |  format_set_font_name()        |
+  |                 | Font size            |  format_set_font_size()        |
+  |                 | Font color           |  format_set_font_color()       |
+  |                 | Bold                 |  format_set_bold()             |
+  |                 | Italic               |  format_set_italic()           |
+  |                 | Underline            |  format_set_underline()        |
+  |                 | Strikeout            |  format_set_font_strikeout()   |
+  |                 | Super/Subscript      |  format_set_font_script()      |
+  | **Number**      | Numeric format       |  format_set_num_format()       |
+  | **Protection**  | Unlock cells         |  format_set_unlocked()         |
+  |                 | Hide formulas        |  format_set_hidden()           |
+  | **Alignment**   | Horizontal align     |  format_set_align()            |
+  |                 | Vertical align       |  format_set_align()            |
+  |                 | Rotation             |  format_set_rotation()         |
+  |                 | Text wrap            |  format_set_text_wrap()        |
+  |                 | Indentation          |  format_set_indent()           |
+  |                 | Shrink to fit        |  format_set_shrink()           |
+  | **Pattern**     | Cell pattern         |  format_set_pattern()          |
+  |                 | Background color     |  format_set_bg_color()         |
+  |                 | Foreground color     |  format_set_fg_color()         |
+  | **Border**      | Cell border          |  format_set_border()           |
+  |                 | Bottom border        |  format_set_bottom()           |
+  |                 | Top border           |  format_set_top()              |
+  |                 | Left border          |  format_set_left()             |
+  |                 | Right border         |  format_set_right()            |
+  |                 | Border color         |  format_set_border_color()     |
+  |                 | Bottom color         |  format_set_bottom_color()     |
+  |                 | Top color            |  format_set_top_color()        |
+  |                 | Left color           |  format_set_left_color()       |
+  |                 | Right color          |  format_set_right_color()      |
+
+
+## Format Colors
+
+Format property colors are specified using a Html style RGB integer value or a
+limited number of defined colors:
+@code
+    format_set_font_color(format1, 0x3030E0);
+    format_set_font_color(format2, LXW_COLOR_RED);
+@endcode
+
+See see @ref working_with_colors for more details.
+
+
+## Format Defaults
+
+The default Excel 2007+ cell format is Calibri 11 with all other properties
+off.
+
+In general a format function call without an argument will turn a property on,
+for example:
+
+@code
+   lxw_format *format = workbook_add_format(workbook);
+
+   format_set_bold(format);
+@endcode
+
+## Modifying and Reusing Formats
+
+Once a format has been created it can be used and reused in
+`worksheet_write*()` functions across any number of worksheets:
+
+@code
+    lxw_format  *myformat1  = workbook_add_format(workbook);
+    format_set_bold(myformat1);
+
+    worksheet_write_string(worksheet1, 1, 4, "Some text", myformat1);
+    worksheet_write_string(worksheet2, 1, 4, "Some text", myformat1);
+@endcode
+
+However, each unique cell format in an `libxlsxwriter` spreadsheet must have a
+corresponding Format object. It isn't possible to use a Format with a
+`worksheet_write*()` method and then redefine it for use at a later
+stage. This is because a Format is applied to a cell not in its current state
+but in its final state. Consider the following example:
+
+@code
+   lxw_format *format = workbook_add_format(workbook);
+   format_set_bold(format);
+
+   worksheet_write_string(worksheet, 0, 0, "Hello", format);
+
+   format_set_italic(format);
+
+   worksheet_write_string(worksheet, 1, 0, "World", format);
+@endcode
+
+
+Cell `(0, 0)` is assigned a format which with the font set to bold. However, the
+italic property is subsequently and used in cell `(1, 0)`. This has the effect
+of adding italic to any previous uses of `format`. The result in this case is
+that "Hello" and "World" will both appear as bold and italic.
+
+
+Next: @ref working_with_colors
+
+
+*/

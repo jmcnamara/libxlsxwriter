@@ -1,0 +1,80 @@
+/**
+@page working_with_dates Working with Dates and Times
+
+
+Dates and times in Excel are represented by real numbers. For example a date
+that is displayed in Excel as "Jan 1 2013 12:00 PM" is stored as the number
+41275.5.
+
+The integer part of the number stores the number of days since the epoch,
+which is generally 1900, and the fractional part stores the percentage of the
+day.
+
+A date or time in Excel is just like any other number. To display the number
+as a date you must apply an Excel number format to it. Here is an example:
+
+@dontinclude dates_and_times01.c
+@skip include
+@until return
+@until }
+
+@image html date_example01.png
+
+To make working with dates and times a little easier the `libxlsxwriter`
+library provides the lxw_datetime struct and the worksheet_write_datetime()
+function.
+
+The members of the lxw_datetime struct and the range of their values are:
+
+  Member   | Value
+  -------- | -----------
+  year     | 1900 - 9999
+  month    | 1 - 12
+  day      | 1 - 31
+  hour     | 0 - 23
+  min      | 0 - 59
+  sec      | 0 - 59.999
+
+Dates in Excel do not support timezones and the maximum resolution of times is
+milliseconds.
+
+If dates or times are required without the other you should initialise the
+unrequired values to `0`:
+
+@code
+    // Date and time.
+    lxw_datetime datetime1 = {2014, 11, 25, 17, 45, 5.1};
+
+    // Date only.
+    lxw_datetime datetime2 = {2014, 11, 25, 0, 0, 0};
+
+    // Time only.
+    lxw_datetime datetime3 = {0, 0, 0, 17, 45, 5.1};
+@endcode
+
+Using lxw_datetime and worksheet_write_datetime() the previous example can
+then be re-written as follows:
+
+@dontinclude dates_and_times02.c
+@skip include
+@until return
+@until }
+
+The output from this program is the same as the previous example.
+
+@image html date_example02.png
+
+Dates can be formatted using any of the date formats supported by Excel.  Here
+is a longer example that shows the same date in a several different formats:
+
+@dontinclude dates_and_times03.c
+@skip include
+@until return
+@until }
+
+@image html date_example03.png
+
+
+Next: @ref working_with_memory
+
+*/

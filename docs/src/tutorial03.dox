@@ -1,0 +1,90 @@
+/**
+@page tutorial03 Tutorial 3: Writing different types of data to the XLSX File
+
+
+In the previous section we created a simple spreadsheet with formatting
+using C and the @c libxlsxwriter module.
+
+This time let's extend the data we want to write to include some dates:
+
+Item | Date       | Cost
+---- | ---------- | ---:
+Rent | 2013-01-13 | 1000
+Gas  | 2013-01-14 |  100
+Food | 2013-01-16 |  300
+Gym  | 2013-01-20 |   50
+
+
+The corresponding spreadsheet will look like this:
+
+@image html tutorial03.png
+
+The differences here are that we have added a Date column with
+formatting and made that column a little wider to accommodate the dates.
+
+To do this we can extend our program as follows:
+
+@dontinclude tutorial3.c
+@skip include
+@until };
+@until };
+@until }
+@until }
+
+The main difference between this and the previous program is that we have
+added a new @ref format.h "Format" object for dates and we have additional
+handling for the date information.
+
+We have also extended the data that we are going to write to include a
+lxw_datetime struct to hold the date information. We will see how that is used
+shortly.
+
+@dontinclude tutorial3.c
+@skipline struct
+@until };
+@until };
+
+
+
+Excel treats different types of input data, such as strings and numbers,
+differently although it generally does it transparently to the user.
+Libxlsxwriter tries to emulate this in the `worksheet_write*()` functions by
+mapping C data types to types that Excel supports.
+
+- worksheet_write_string()
+- worksheet_write_number()
+- worksheet_write_formula()
+- worksheet_write_datetime()
+- worksheet_write_blank()
+
+In this version of our program we have used some of these functions for
+different types of data:
+
+@dontinclude tutorial3.c
+@skipline expenses[i].item
+@until    expenses[i].cost
+
+The handling of dates is also new to our program.
+
+Dates and times in Excel are floating point numbers that have a number format
+applied to display them in the correct format. Libxlsxwriter provides the
+worksheet_write_datetime() and the lxw_datetime struct help to convert dates
+and times into Excel date and time numbers.
+
+The worksheet_write_datetime() function converts the lxw_datetime struct to a
+number that represents an Excel date but we also need to add the number format
+to ensure that Excel displays it as as date:
+
+@dontinclude tutorial3.c
+@skipline yyyy
+
+Date handling is explained in more detail in @ref working_with_dates.
+
+That completes the tutorial section.
+
+In the next sections we will look at the API in more detail starting
+with workbook.
+
+Next: @ref workbook.h "The Workbook object"
+
+*/

@@ -1,0 +1,37 @@
+/**
+
+@page introduction Introduction
+
+<b>libxlsxwriter</b> is a C library for writing files in the Excel 2007+ XLSX
+file format.
+
+It can be used to write text, numbers, and formulas to multiple
+worksheets and it supports features such as formatting.
+
+The main advantages of using `libxlsxwriter` are:
+
+-   It has a high degree of fidelity with files produced by Excel. In
+    most cases the files produced are 100% equivalent to files
+    produced by Excel.
+-   It has extensive documentation, example files and tests.
+
+However:
+
+-   It can only create **new files**. It cannot read or modify
+    existing files.
+
+Libxlsxwriter is a C port of the Perl
+[Excel::Writer::XLSX](http://search.cpan.org/~jmcnamara/Excel-Writer-XLSX/)
+module and the Python [XlsxWriter](http://xlsxwriter.readthedocs.org) module
+and is licensed under a FreeBSD @ref license.
+
+
+@note
+
+The 0.0.1 version of libxlsxwriter should be considered as a beta. In
+particular it has some known performance/memory limitations that will be fixed
+in the next releases.
+
+Next: @ref getting_started
+
+*/

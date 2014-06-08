@@ -1,0 +1,18 @@
+/**
+@page working_with_memory Working with Memory and Performance
+
+
+By default `libxlsxwriter` holds all cell data in memory. This is to allow
+future features where formatting is applied separately from the data.
+
+The effect of this is that for large files libxlsxwriter can consume a lot of
+memory.
+
+This issue will be resolved in the next 1-2 releases to allow a small constant
+memory usage like in the Perl and Python modules that libxlsxwriter was ported
+from.
+
+Next: @ref examples
+
+
+*/

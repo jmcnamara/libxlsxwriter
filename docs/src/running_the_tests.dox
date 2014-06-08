@@ -1,0 +1,113 @@
+///
+///@page running_the_tests Running the Test Suite
+///
+///
+///This section shows how to set up and run the test suite for libxlsxwriter.
+///
+///## Functional Tests
+///
+///The functional tests compare the output from libxlsxwriter against xlsx files
+///created in Excel.
+///
+///
+///The functional tests use the Python module [pytest](http://pytest.org/) as a
+///test runner.
+///
+///Install the `pytest` module using one of the following methods:
+///
+///    sudo apt-get install -y python-pytest
+///    # or
+///    sudo easy_install pytest
+///    # or
+///    sudo pip install pytest
+///
+///The functional tests can then be run:
+///
+///    $ cd libxlsxwriter
+///
+///    $ make test_functional
+///
+///    =========================== test session starts ===========================
+///    collected 14 items
+///
+///    test/functional/test_formatting.py:16: TestCompareXLSXFiles.test_format01 PASSED
+///    test/functional/test_formatting.py:19: TestCompareXLSXFiles.test_format02 PASSED
+///    test/functional/test_formatting.py:24: TestCompareXLSXFiles.test_format06 PASSED
+///    ...
+///    test/functional/test_write_data.py:25: TestCompareXLSXFiles.test_data04 PASSED
+///    test/functional/test_write_data.py:28: TestCompareXLSXFiles.test_data05 PASSED
+///    test/functional/test_write_data.py:31: TestCompareXLSXFiles.test_data06 PASSED
+///    test/functional/test_write_data.py:34: TestCompareXLSXFiles.test_data07 PASSED
+///    =========================== 14 passed in 0.41 seconds =====================
+///
+///
+///## Unit Tests
+///
+///The unit tests test the components of the library at the level of individual
+///functions or compilation units.
+///
+///The unit tests require the [googletest](https://code.google.com/p/googletest/)
+///test framework. There isn't a default installation method for `googletest` but
+///the following method from
+///[StackOverflow](http://stackoverflow.com/questions/13513905/how-to-properly-setup-googletest-on-linux)
+///works on Linux and OS X:
+///
+///    wget http://googletest.googlecode.com/files/gtest-1.7.0.zip
+///    unzip gtest-1.7.0.zip
+///    cd gtest-1.7.0
+///    ./configure
+///    make
+///
+///    sudo cp -a include/gtest /usr/include
+///    sudo cp -a lib/.libs/* /usr/lib/
+///
+///The unit tests can then be run as follows. Note, the compilation of the unit tests can take some time:
+///
+///    $ make test_unit
+///
+///    Compiling unit tests ...
+///    Running main() from gtest_main.cc
+///    [==========] Running 146 tests from 10 test cases.
+///    [----------] Global test environment set-up.
+///    [----------] 9 tests from utility
+///    [ RUN      ] utility._datetime_date_and_time
+///    [       OK ] utility._datetime_date_and_time (0 ms)
+///    [ RUN      ] utility._datetime_date_only
+///    [       OK ] utility._datetime_date_only (0 ms)
+///    ...
+///    [ RUN      ] styles.write_xf33
+///    [       OK ] styles.write_xf33 (0 ms)
+///    [ RUN      ] styles.write_xf34
+///    [       OK ] styles.write_xf34 (1 ms)
+///    [ RUN      ] styles.write_xf35
+///    [       OK ] styles.write_xf35 (0 ms)
+///    [ RUN      ] styles.write_xf36
+///    [       OK ] styles.write_xf36 (0 ms)
+///    [ RUN      ] styles.xml_declaration
+///    [       OK ] styles.xml_declaration (0 ms)
+///    [----------] 74 tests from styles (17 ms total)
+///
+///    [----------] Global test environment tear-down
+///    [==========] 146 tests from 10 test cases ran. (33 ms total)
+///    [  PASSED  ] 146 tests.
+///
+///
+///Both functional and unit test can be run together:
+///
+///    $ make test
+///
+///
+///## Valgrind Tests
+///
+///The functional tests and examples can be run under
+///[Valgrind](http://valgrind.org) to verify that there are no memory leaks.
+///
+///Install `valgrind` as follows:
+///
+///    apt-get install -y valgrind
+///
+///Then run the tests:
+///
+///    make test_valgrind
+///
+/// Next: @ref faq

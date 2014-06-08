@@ -1,0 +1,20 @@
+/*****************************************************************************
+ * Test cases for libxlsxwriter.
+ *
+ * Simple test case to test data writing.
+ *
+ * Copyright 2014, John McNamara, jmcnamara@cpan.org
+ *
+ */
+
+#include "xlsxwriter.h"
+
+int main() {
+
+    lxw_workbook  *workbook  = new_workbook("test_data07.xlsx");
+    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+
+    worksheet_write_formula_num(worksheet, 0, 0, "=1+2", NULL, 3);
+
+    return workbook_close(workbook);
+}

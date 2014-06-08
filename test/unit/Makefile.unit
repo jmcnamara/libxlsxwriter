@@ -1,0 +1,57 @@
+###############################################################################
+#
+# Makefile for libxlsxwriter library.
+#
+# Copyright 2014, John McNamara, jmcnamara@cpan.org
+#
+
+# Keep the output quiet by default.
+Q=@
+ifdef V
+Q=
+endif
+
+# Directory variables.
+INC_DIR        = ../../../include
+LIB_DIR        = ../../../src
+GTEST_DIR      = /usr/lib
+
+# Conditional includes for testing.
+TESTING = -DTESTING
+
+# Flags passed to the preprocessor.
+CPPFLAGS += $(TESTING)
+
+# Flags passed to the C++ compiler.
+CXXFLAGS += -g -Wall -Wextra
+
+# Make targets and objects.
+SRCS  = $(wildcard test*.cpp)
+TESTS = $(patsubst %.cpp,%,$(SRCS))
+OBJS  = $(patsubst %.cpp,%.o,$(SRCS))
+
+# Libs to link.
+LIBS_A = $(LIB_DIR)/libxlsxwriter.a $(GTEST_DIR)/libgtest.a $(GTEST_DIR)/libgtest_main.a
+LIBS_O = -lpthread -lz
+
+# Make all the individual tests.
+all : $(TESTS)
+
+# Clean all the things!
+clean :
+	$(Q)rm -f $(TESTS) test_all test*.o
+
+# Build the testscases.
+test_%.o: test_%.cpp
+	$(Q)$(CXX) -I$(INC_DIR) $(CPPFLAGS) $(CXXFLAGS) -c $<
+
+test_%: test_%.o $(LIBS_A)
+	$(Q)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS_O)
+
+# Link all the tests into one test executable.
+test_all : $(OBJS) $(LIBS_A)
+	$(Q)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS_O)
+
+# Run the tests.
+test : all test_all
+	$(Q)./test_all

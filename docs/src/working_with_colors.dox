@@ -1,0 +1,42 @@
+/**
+@page working_with_colors Working with Colors
+
+Throughout libxlsxwriter colors are specified using a Html style RGB
+integer value. For example with a Format object:
+
+@code
+    format_set_font_color(format, 0x3030E0);
+@endcode
+
+For convenience a limited number of color names are supported:
+
+@code
+    format_set_font_color(format, LXW_COLOR_RED);
+@endcode
+
+The color names and corresponding RRGGBB value are shown below:
+
+
+  Color    | Define                | Value
+  -------- | --------------------- | ---------
+  Black    | #LXW_COLOR_BLACK      | `0x000000`
+  Blue     | #LXW_COLOR_BLUE       | `0x0000FF`
+  Brown    | #LXW_COLOR_BROWN      | `0x800000`
+  Cyan     | #LXW_COLOR_CYAN       | `0x00FFFF`
+  Gray     | #LXW_COLOR_GRAY       | `0x808080`
+  Green    | #LXW_COLOR_GREEN      | `0x008000`
+  Lime     | #LXW_COLOR_LIME       | `0x00FF00`
+  Magenta  | #LXW_COLOR_MAGENTA    | `0xFF00FF`
+  Navy     | #LXW_COLOR_NAVY       | `0x000080`
+  Orange   | #LXW_COLOR_ORANGE     | `0xFF6600`
+  Pink     | #LXW_COLOR_PINK       | `0xFF00FF`
+  Purple   | #LXW_COLOR_PURPLE     | `0x800080`
+  Red      | #LXW_COLOR_RED        | `0xFF0000`
+  Silver   | #LXW_COLOR_SILVER     | `0xC0C0C0`
+  White    | #LXW_COLOR_WHITE      | `0xFFFFFF`
+  Yellow   | #LXW_COLOR_YELLOW     | `0xFFFF00`
+
+
+Next: @ref working_with_dates
+
+*/

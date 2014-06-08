@@ -1,0 +1,43 @@
+/**
+@mainpage Creating Excel files with C and libxlsxwriter
+
+<b>Libxlsxwriter</b> is a C library for creating Excel XLSX files.
+
+@image html demo.png
+
+@ref demo.c "(Sample code to create the above spreadsheet.)"
+
+@section mainpage_intro libxlsxwriter
+
+Libxlsxwriter is a C library that can be used to write text, numbers and
+formulas to multiple worksheets in an Excel 2007+ XLSX file. It supports
+features such as:
+
+- 100% compatible Excel XLSX files
+- Full formatting
+- Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter)
+- FreeBSD @ref license
+- ANSI C
+- Works with GCC 4.4, 4.6, 4.7, 4.8, tcc and clang
+- Works on Linux and OS X.
+- The only dependency is on `zlib`
+
+This document explains how to use the libxlsxwriter library. See the
+following sections for more information:
+
+- @ref introduction
+- @ref getting_started
+- @ref tutorial01
+- @ref tutorial02
+- @ref tutorial03
+- @ref workbook.h  "The Workbook object"
+- @ref worksheet.h "The Worksheet object"
+- @ref format.h    "The Format object"
+- @ref working_with_colors
+- @ref working_with_dates
+- @ref examples
+- @ref author
+- @ref license
+- @ref changes
+
+*/
