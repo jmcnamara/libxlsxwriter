@@ -5,8 +5,8 @@ compiler:
   - gcc
 
 install:
+  - sudo pip install pytest
   - sudo apt-get install -y zlib1g-dev
-  - sudo apt-get install -y python-pytest
   - sudo apt-get install -y valgrind
   - wget http://googletest.googlecode.com/files/gtest-1.7.0.zip
   - unzip gtest-1.7.0.zip
