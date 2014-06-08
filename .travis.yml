@@ -15,6 +15,7 @@ install:
   - make
   - sudo cp -a include/gtest /usr/include
   - sudo cp -a lib/.libs/* /usr/lib/
+  - cd ..
 
 script:
   - make test_functional
