@@ -24,8 +24,6 @@ install:
   - make
   - cd ..
 
-sudo make install
-
 script:
   - make
   - make test_functional
