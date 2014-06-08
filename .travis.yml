@@ -5,6 +5,7 @@ compiler:
   - gcc
 
 install:
+  - uname -a
   - sudo pip install pytest
   - sudo apt-get install -y zlib1g-dev
   - sudo apt-get install -y valgrind
@@ -16,8 +17,17 @@ install:
   - sudo cp -a include/gtest /usr/include
   - sudo cp -a lib/.libs/* /usr/lib/
   - cd ..
+  - curl -O -L  http://zlib.net/zlib-1.2.8.tar.gz
+  - tar zxf zlib-1.2.8.tar.gz
+  - cd zlib-1.2.8
+  - ./configure
+  - make
+  - cd ..
+
+sudo make install
 
 script:
+  - make
   - make test_functional
   - make test_unit
   - make test_valgrind
