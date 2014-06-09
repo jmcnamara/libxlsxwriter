@@ -13,9 +13,7 @@
 #include "xlsxwriter/third_party/queue.h"
 
 #ifndef TESTING
-/* Turn off until release. TODO */
-/* #define STATIC static */
-#define STATIC
+#define STATIC static
 #else
 #define STATIC
 #endif

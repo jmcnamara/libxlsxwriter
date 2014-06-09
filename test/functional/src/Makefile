@@ -33,6 +33,7 @@ $(LIBXLSXWRITER):
 
 clean :
 	$(Q)rm -f $(EXES)
+	$(Q)rm -rf *.dSYM
 
 # Executable targets.
 %: %.c $(LIBXLSXWRITER)

@@ -1,8 +1,4 @@
 
-#ifndef TESTING
-#define TESTING
-#endif
-
 /* Compare expected results with the XML data written to the output
  * test file.
  */

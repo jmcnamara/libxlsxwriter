@@ -30,6 +30,9 @@ clean :
 	$(Q)make clean -C examples
 	$(Q)make clean -C third_party/minizip
 	$(Q)rm -rf docs/html
+	$(Q)rm -rf test/functional/__pycache__
+	$(Q)rm -f  test/functional/*.pyc
+	$(Q)rm -f  lib/*
 
 # Run the unit tests.
 test : all test_functional test_unit
@@ -41,9 +44,11 @@ test_functional : all
 	$(Q)py.test test/functional -v
 
 # Run all tests.
-test_unit : all
+test_unit :
 	@echo "Compiling unit tests ..."
-	$(Q)make test -C test/unit
+	$(Q)make -C third_party/minizip
+	$(Q)make -C src test_lib
+	$(Q)make -C test/unit test
 
 # Test the functional test exes with valgrind.
 test_valgrind : all

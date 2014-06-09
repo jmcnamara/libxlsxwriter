@@ -46,7 +46,7 @@ SRCS += $(wildcard styles/test*.cpp)
 OBJS  = $(patsubst %.cpp,%.o,$(SRCS))
 
 # Libs to link.
-LIBS_A = $(LIB_DIR)/libxlsxwriter.a $(GTEST_DIR)/libgtest.a $(GTEST_DIR)/libgtest_main.a
+LIBS_A = $(LIB_DIR)/libxlsxwriter_test.a $(GTEST_DIR)/libgtest.a $(GTEST_DIR)/libgtest_main.a
 LIBS_O = -lpthread -lz
 # End of LIBS
 
