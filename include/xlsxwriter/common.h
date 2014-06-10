@@ -18,7 +18,7 @@
 #define STATIC
 #endif
 
-#define XL_SHEETNAME_MAX   32
+#define LXW_SHEETNAME_MAX  32
 #define LXW_SHEETNAME_LEN  65
 
 enum lxw_boolean {

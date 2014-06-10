@@ -4,7 +4,7 @@
  * The rules for user defined typedefs can be update as follows:
  *
    perl -i -pe 'print and last if /[l]ibxlsxwriter typedefs/' .indent.pro
-   ack -h typedef include src | perl -lne 'print "-T $1" if /\w+\s+\w+\s+(\w+)/' | sort >> .indent.pro
+   ack -h typedef include/xlsxwriter/*.h src/*.c | perl -lne 'print "-T $1" if /\w+\s+\w+\s+(\w+)/' | sort >> .indent.pro
  *
  */
 
@@ -45,6 +45,7 @@
 -T lxw_app
 -T lxw_border
 -T lxw_cell
+-T lxw_col_t
 -T lxw_color_t
 -T lxw_content_types
 -T lxw_core
@@ -61,6 +62,7 @@
 -T lxw_rel_tuple
 -T lxw_relationships
 -T lxw_row
+-T lxw_row_t
 -T lxw_sst
 -T lxw_styles
 -T lxw_theme

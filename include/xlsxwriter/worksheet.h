@@ -53,7 +53,7 @@
 #include "format.h"
 #include "utility.h"
 
-/** @brief Error codes from `worksheet_write*()` functions. */
+/** Error codes from `worksheet_write*()` functions. */
 enum lxw_write_error {
     LXW_WRITE_ERROR_NONE = 0,
     LXW_RANGE_ERROR,
@@ -61,6 +61,18 @@ enum lxw_write_error {
     LXW_STRING_LENGTH_ERROR,
     LXW_END
 };
+
+/** Data type to represent a row value.
+ *
+ * The maximum row in Excel is 1,048,576.
+ */
+typedef uint32_t lxw_row_t;
+
+/** Data type to represent a column value.
+ *
+ * The maximum column in Excel is 16,384.
+ */
+typedef uint16_t lxw_col_t;
 
 enum cell_types {
     NUMBER_CELL = 1,
@@ -85,10 +97,10 @@ typedef struct lxw_worksheet {
     FILE *file;
     struct lxw_table_rows *table;
 
-    uint32_t dim_rowmin;
-    uint32_t dim_rowmax;
-    uint16_t dim_colmin;
-    uint16_t dim_colmax;
+    lxw_row_t dim_rowmin;
+    lxw_row_t dim_rowmax;
+    lxw_col_t dim_colmin;
+    lxw_col_t dim_colmax;
 
     lxw_sst *sst;
     char *name;
@@ -116,7 +128,7 @@ typedef struct lxw_worksheet_init_data {
 
 /* Struct to represent a worksheet row. */
 typedef struct lxw_row {
-    uint32_t row_num;
+    lxw_row_t row_num;
     struct lxw_table_cells *cells;
 
     /* List pointers for queue.h. */
@@ -125,8 +137,8 @@ typedef struct lxw_row {
 
 /* Struct to represent a worksheet cell. */
 typedef struct lxw_cell {
-    uint32_t row_num;
-    uint16_t col_num;
+    lxw_row_t row_num;
+    lxw_col_t col_num;
     enum cell_types type;
     lxw_format *format;
 
@@ -191,8 +203,8 @@ extern "C" {
  *
  */
 int8_t worksheet_write_number(lxw_worksheet *worksheet,
-                              uint32_t row,
-                              uint16_t col, double number,
+                              lxw_row_t row,
+                              lxw_col_t col, double number,
                               lxw_format *format);
 /**
  * @brief Write a string to a worksheet cell.
@@ -239,8 +251,8 @@ int8_t worksheet_write_number(lxw_worksheet *worksheet,
  *
  */
 int8_t worksheet_write_string(lxw_worksheet *worksheet,
-                              uint32_t row,
-                              uint16_t col, const char *string,
+                              lxw_row_t row,
+                              lxw_col_t col, const char *string,
                               lxw_format *format);
 /**
  * @brief Write a formula to a worksheet cell.
@@ -288,8 +300,8 @@ int8_t worksheet_write_string(lxw_worksheet *worksheet,
  *
  */
 int8_t worksheet_write_formula(lxw_worksheet *worksheet,
-                               uint32_t row,
-                               uint16_t col, const char *formula,
+                               lxw_row_t row,
+                               lxw_col_t col, const char *formula,
                                lxw_format *format);
 /**
  * @brief Write a formula to a worksheet cell with a user defined result.
@@ -333,8 +345,8 @@ int8_t worksheet_write_formula(lxw_worksheet *worksheet,
  *
  */
 int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
-                                   uint32_t row,
-                                   uint16_t col,
+                                   lxw_row_t row,
+                                   lxw_col_t col,
                                    const char *formula,
                                    lxw_format *format, double result);
 
@@ -366,8 +378,8 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
  * times in libxlsxwriter.
  */
 int8_t worksheet_write_datetime(lxw_worksheet *worksheet,
-                                uint32_t row,
-                                uint16_t col, lxw_datetime *datetime,
+                                lxw_row_t row,
+                                lxw_col_t col, lxw_datetime *datetime,
                                 lxw_format *format);
 
 /**
@@ -399,7 +411,7 @@ int8_t worksheet_write_datetime(lxw_worksheet *worksheet,
  */
 
 int8_t worksheet_write_blank(lxw_worksheet *worksheet,
-                             uint32_t row, uint16_t col, lxw_format *format);
+                             lxw_row_t row, lxw_col_t col, lxw_format *format);
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);
@@ -417,7 +429,7 @@ STATIC void _worksheet_write_sheet_format_pr(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_data(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_page_margins(lxw_worksheet *worksheet);
 STATIC void _write_row(lxw_worksheet *worksheet, lxw_row *row, char *spans);
-STATIC lxw_row *_get_row(struct lxw_table_rows *table, uint32_t row_num);
+STATIC lxw_row *_get_row(struct lxw_table_rows *table, lxw_row_t row_num);
 
 #endif /* TESTING */
 

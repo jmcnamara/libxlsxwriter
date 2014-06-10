@@ -12,9 +12,9 @@
 #include "xlsxwriter/format.h"
 #include "xlsxwriter/utility.h"
 
-#define XL_ROW_MAX 1048576
-#define XL_COL_MAX 16384
-#define XL_STR_MAX 32767
+#define LXW_ROW_MAX 1048576
+#define LXW_COL_MAX 16384
+#define LXW_STR_MAX 32767
 
 /*
  * Forward declarations.
@@ -44,8 +44,8 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->file = NULL;
     worksheet->dim_rowmax = 0;
     worksheet->dim_colmax = 0;
-    worksheet->dim_rowmin = XL_ROW_MAX;
-    worksheet->dim_colmin = XL_COL_MAX;
+    worksheet->dim_rowmin = LXW_ROW_MAX;
+    worksheet->dim_colmin = LXW_COL_MAX;
 
     if (init_data) {
         worksheet->name = init_data->name;
@@ -103,7 +103,7 @@ _free_worksheet(lxw_worksheet *worksheet)
  * Create a new worksheet row object.
  */
 STATIC lxw_row *
-_new_row(int32_t row_num)
+_new_row(lxw_row_t row_num)
 {
     lxw_row *row = calloc(1, sizeof(lxw_row));
 
@@ -127,8 +127,8 @@ _new_row(int32_t row_num)
  * Create a new worksheet number cell object.
  */
 STATIC lxw_cell *
-_new_number_cell(uint32_t row_num,
-                 uint16_t col_num, double value, lxw_format *format)
+_new_number_cell(lxw_row_t row_num,
+                 lxw_col_t col_num, double value, lxw_format *format)
 {
     lxw_cell *cell = calloc(1, sizeof(lxw_cell));
     RETURN_ON_MEM_ERROR(cell, cell);
@@ -146,8 +146,8 @@ _new_number_cell(uint32_t row_num,
  * Create a new worksheet string cell object.
  */
 STATIC lxw_cell *
-_new_string_cell(uint32_t row_num,
-                 uint16_t col_num, int32_t string_id, lxw_format *format)
+_new_string_cell(lxw_row_t row_num,
+                 lxw_col_t col_num, int32_t string_id, lxw_format *format)
 {
     lxw_cell *cell = calloc(1, sizeof(lxw_cell));
     RETURN_ON_MEM_ERROR(cell, cell);
@@ -165,8 +165,8 @@ _new_string_cell(uint32_t row_num,
  * Create a new worksheet formula cell object.
  */
 STATIC lxw_cell *
-_new_formula_cell(uint32_t row_num,
-                  uint16_t col_num, char *formula, lxw_format *format)
+_new_formula_cell(lxw_row_t row_num,
+                  lxw_col_t col_num, char *formula, lxw_format *format)
 {
     lxw_cell *cell = calloc(1, sizeof(lxw_cell));
     RETURN_ON_MEM_ERROR(cell, cell);
@@ -184,7 +184,7 @@ _new_formula_cell(uint32_t row_num,
  * Create a new worksheet blank cell object.
  */
 STATIC lxw_cell *
-_new_blank_cell(uint32_t row_num, uint16_t col_num, lxw_format *format)
+_new_blank_cell(lxw_row_t row_num, lxw_col_t col_num, lxw_format *format)
 {
     lxw_cell *cell = calloc(1, sizeof(lxw_cell));
     RETURN_ON_MEM_ERROR(cell, cell);
@@ -201,7 +201,7 @@ _new_blank_cell(uint32_t row_num, uint16_t col_num, lxw_format *format)
  * Get or create the row object for a given row number.
  */
 STATIC lxw_row *
-_get_row(struct lxw_table_rows *table, uint32_t row_num)
+_get_row(struct lxw_table_rows *table, lxw_row_t row_num)
 {
     lxw_row *new_row;
     lxw_row *first_row = TAILQ_FIRST(table);
@@ -266,7 +266,7 @@ _get_row(struct lxw_table_rows *table, uint32_t row_num)
  */
 STATIC void
 _insert_cell(struct lxw_table_cells *cell_list,
-             lxw_cell *cell, uint16_t col_num)
+             lxw_cell *cell, lxw_col_t col_num)
 {
     lxw_cell *first_cell = TAILQ_FIRST(cell_list);
     lxw_cell *last_cell = TAILQ_LAST(cell_list, lxw_table_cells);
@@ -567,10 +567,10 @@ _write_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 STATIC void
 _calculate_spans(struct lxw_row *row, char *span, int32_t *block_num)
 {
-    uint16_t span_col_min = TAILQ_FIRST(row->cells)->col_num;
-    uint16_t span_col_max = TAILQ_LAST(row->cells, lxw_table_cells)->col_num;
-    uint16_t col_min;
-    uint16_t col_max;
+    lxw_col_t span_col_min = TAILQ_FIRST(row->cells)->col_num;
+    lxw_col_t span_col_max = TAILQ_LAST(row->cells, lxw_table_cells)->col_num;
+    lxw_col_t col_min;
+    lxw_col_t col_max;
     *block_num = row->row_num / 16;
 
     row = TAILQ_NEXT(row, list_pointers);
@@ -677,13 +677,13 @@ _write_rows(lxw_worksheet *self)
  */
 STATIC int8_t
 _check_dimensions(lxw_worksheet *self,
-                  uint32_t row_num,
-                  uint16_t col_num, int8_t ignore_row, int8_t ignore_col)
+                  lxw_row_t row_num,
+                  lxw_col_t col_num, int8_t ignore_row, int8_t ignore_col)
 {
-    if (row_num >= XL_ROW_MAX)
+    if (row_num >= LXW_ROW_MAX)
         return LXW_RANGE_ERROR;
 
-    if (col_num >= XL_COL_MAX)
+    if (col_num >= LXW_COL_MAX)
         return LXW_RANGE_ERROR;
 
     if (!ignore_row) {
@@ -745,8 +745,8 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
  */
 int8_t
 worksheet_write_number(lxw_worksheet *worksheet,
-                       uint32_t row_num,
-                       uint16_t col_num, double value, lxw_format *format)
+                       lxw_row_t row_num,
+                       lxw_col_t col_num, double value, lxw_format *format)
 {
     lxw_row *row;
     lxw_cell *cell;
@@ -768,8 +768,8 @@ worksheet_write_number(lxw_worksheet *worksheet,
  */
 int8_t
 worksheet_write_string(lxw_worksheet *worksheet,
-                       uint32_t row_num,
-                       uint16_t col_num, const char *string,
+                       lxw_row_t row_num,
+                       lxw_col_t col_num, const char *string,
                        lxw_format *format)
 {
     lxw_row *row;
@@ -790,7 +790,7 @@ worksheet_write_string(lxw_worksheet *worksheet,
     if (string_id < 0)
         return LXW_STRING_HASH_ERROR;
 
-    if (strlen(string) > XL_STR_MAX)
+    if (strlen(string) > LXW_STR_MAX)
         return LXW_STRING_LENGTH_ERROR;
 
     row = _get_row(worksheet->table, row_num);
@@ -806,8 +806,8 @@ worksheet_write_string(lxw_worksheet *worksheet,
  */
 int8_t
 worksheet_write_formula_num(lxw_worksheet *worksheet,
-                            uint32_t row_num,
-                            uint16_t col_num,
+                            lxw_row_t row_num,
+                            lxw_col_t col_num,
                             const char *formula,
                             lxw_format *format, double result)
 {
@@ -839,8 +839,8 @@ worksheet_write_formula_num(lxw_worksheet *worksheet,
 
  */ int8_t
 worksheet_write_formula(lxw_worksheet *worksheet,
-                        uint32_t row_num,
-                        uint16_t col_num, const char *formula,
+                        lxw_row_t row_num,
+                        lxw_col_t col_num, const char *formula,
                         lxw_format *format)
 {
     return worksheet_write_formula_num(worksheet, row_num, col_num, formula,
@@ -853,7 +853,8 @@ worksheet_write_formula(lxw_worksheet *worksheet,
  */
 int8_t
 worksheet_write_blank(lxw_worksheet *worksheet,
-                      uint32_t row_num, uint16_t col_num, lxw_format *format)
+                      lxw_row_t row_num, lxw_col_t col_num,
+                      lxw_format *format)
 {
     lxw_row *row;
     lxw_cell *cell;
@@ -881,8 +882,8 @@ worksheet_write_blank(lxw_worksheet *worksheet,
  */
 int8_t
 worksheet_write_datetime(lxw_worksheet *worksheet,
-                         uint32_t row_num,
-                         uint16_t col_num, lxw_datetime *datetime,
+                         lxw_row_t row_num,
+                         lxw_col_t col_num, lxw_datetime *datetime,
                          lxw_format *format)
 {
     lxw_row *row;
