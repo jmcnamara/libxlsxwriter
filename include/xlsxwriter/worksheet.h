@@ -1,6 +1,6 @@
 /*
  * libxlsxwriter
- * 
+ *
  * Copyright 2014, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  */
 
@@ -12,7 +12,7 @@
  * layout.
  *
  * See @ref worksheet.h for full details of the functionality.
- * 
+ *
  * @file worksheet.h
  *
  * @brief Functions related to adding data and formatting to a worksheet.
@@ -24,7 +24,7 @@
  * A Worksheet object isn’t created directly. Instead a worksheet is
  * created by calling the workbook_add_worksheet() method from a
  * Workbook object:
- * 
+ *
  * @code
  *     #include "xlsxwriter.h"
  *
@@ -52,6 +52,11 @@
 #include "common.h"
 #include "format.h"
 #include "utility.h"
+
+#define LXW_COL_META_MAX 128
+
+/** Default column width in Excel */
+#define LXW_DEF_COL_WIDTH 8.43
 
 /** Error codes from `worksheet_write*()` functions. */
 enum lxw_write_error {
@@ -85,6 +90,23 @@ enum cell_types {
 TAILQ_HEAD(lxw_table_cells, lxw_cell);
 TAILQ_HEAD(lxw_table_rows, lxw_row);
 
+/** Options struct for the worksheet_set_column() and worksheet_set_row(). */
+typedef struct lxw_row_col_options {
+    uint8_t hidden;
+    uint8_t level;
+    uint8_t collapsed;
+} lxw_row_col_options;
+
+typedef struct lxw_col_options {
+    lxw_col_t firstcol;
+    lxw_col_t lastcol;
+    double width;
+    lxw_format *format;
+    uint8_t hidden;
+    uint8_t level;
+    uint8_t collapsed;
+} lxw_col_options;
+
 /**
  * @brief Struct to represent an Excel worksheet.
  *
@@ -109,6 +131,16 @@ typedef struct lxw_worksheet {
     uint8_t active;
     uint8_t selected;
     uint8_t hidden;
+
+    lxw_col_options **col_options;
+    uint16_t col_options_max;
+
+    uint8_t *col_sizes;
+    uint16_t col_sizes_max;
+
+    lxw_format **col_formats;
+    uint16_t col_formats_max;
+    uint8_t col_size_changed;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -409,9 +441,13 @@ int8_t worksheet_write_datetime(lxw_worksheet *worksheet,
  * As such, if you write an empty cell without formatting it is ignored.
  *
  */
-
 int8_t worksheet_write_blank(lxw_worksheet *worksheet,
-                             lxw_row_t row, lxw_col_t col, lxw_format *format);
+                             lxw_row_t row, lxw_col_t col,
+                             lxw_format *format);
+
+int8_t worksheet_set_column(lxw_worksheet *self, lxw_col_t firstcol,
+                            lxw_col_t lastcol, double width,
+                            lxw_format *format, lxw_row_col_options *options);
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);
@@ -429,6 +465,8 @@ STATIC void _worksheet_write_sheet_format_pr(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_data(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_page_margins(lxw_worksheet *worksheet);
 STATIC void _write_row(lxw_worksheet *worksheet, lxw_row *row, char *spans);
+STATIC void _write_col_info(lxw_worksheet *worksheet,
+                            lxw_col_options *options);
 STATIC lxw_row *_get_row(struct lxw_table_rows *table, lxw_row_t row_num);
 
 #endif /* TESTING */

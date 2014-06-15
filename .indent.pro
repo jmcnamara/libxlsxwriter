@@ -45,6 +45,7 @@
 -T lxw_app
 -T lxw_border
 -T lxw_cell
+-T lxw_col_options
 -T lxw_col_t
 -T lxw_color_t
 -T lxw_content_types
@@ -62,6 +63,7 @@
 -T lxw_rel_tuple
 -T lxw_relationships
 -T lxw_row
+-T lxw_row_col_options
 -T lxw_row_t
 -T lxw_sst
 -T lxw_styles

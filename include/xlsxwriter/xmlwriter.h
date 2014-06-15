@@ -71,9 +71,9 @@ struct xml_attribute *_new_attribute_dbl(const char *key, double value);
     } while (0)
 
 /* Macro to add attribute double values to xml_attribute_list. */
-#define _PUSH_ATTRIBUTES_FLT(key, value)                      \
+#define _PUSH_ATTRIBUTES_DBL(key, value)                      \
     do {                                                      \
-    attribute = _new_attribute_flt((key), (value));           \
+    attribute = _new_attribute_dbl((key), (value));           \
     STAILQ_INSERT_TAIL(&attributes, attribute, list_entries); \
     } while (0)
 

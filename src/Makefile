@@ -70,6 +70,8 @@ $(LIBXLSXWRITER_SO) : $(SOBJS)
 $(LIBXLSXWRITER_TO) : $(TOBJS)
 	$(Q)$(AR) $(ARFLAGS)     $@ $(MINIZIP_DIR)/ioapi.o  $(MINIZIP_DIR)/zip.o  $^
 
+# Minimal target for quick compile without creating the libs.
+test_compile : $(OBJS)
 
 # Targets for the object files.
 %.o  : %.c $(HDRS)

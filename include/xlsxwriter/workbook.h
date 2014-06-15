@@ -61,7 +61,7 @@ enum lxw_close_error {
     LXW_CLOSE_ERROR_NONE,
     /** Error encountered when creating file zip container */
     LXW_CLOSE_ERROR_ZIP
-    /* TODO. Need to add/document more. */
+        /* TODO. Need to add/document more. */
 };
 
 /**

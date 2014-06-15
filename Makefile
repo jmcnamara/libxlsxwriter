@@ -19,7 +19,7 @@ all :
 	$(Q)make -C src
 
 # Build the example programs.
-examples:
+examples :
 	$(Q)make -C examples
 
 # Clean src and test directories.
@@ -55,9 +55,13 @@ test_valgrind : all
 	$(Q)make -C test/functional/src test_valgrind
 	$(Q)make -C examples test_valgrind
 
+# Minimal target for quick compile without creating the libs.
+test_compile :
+	$(Q)make -C src	test_compile
+
 # Indent the source files with the .indent.pro settings.
 indent:
-	$(Q)gindent src/*.c include/*.h
+	$(Q)gindent src/*.c include/*.h include/xlsxwriter/*.h
 
 tags:
 	$(Q)rm -f TAGS

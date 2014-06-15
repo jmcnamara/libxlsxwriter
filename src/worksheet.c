@@ -39,6 +39,19 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->table = calloc(1, sizeof(struct lxw_table_rows));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->table, mem_error);
 
+    worksheet->col_options =
+        calloc(LXW_COL_META_MAX, sizeof(lxw_col_options *));
+    worksheet->col_options_max = LXW_COL_META_MAX;
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->col_options, mem_error);
+
+    worksheet->col_sizes = calloc(LXW_COL_META_MAX, sizeof(double));
+    worksheet->col_sizes_max = LXW_COL_META_MAX;
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->col_sizes, mem_error);
+
+    worksheet->col_formats = calloc(LXW_COL_META_MAX, sizeof(uint16_t *));
+    worksheet->col_formats_max = LXW_COL_META_MAX;
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->col_formats, mem_error);
+
     TAILQ_INIT(worksheet->table);
 
     worksheet->file = NULL;
@@ -69,9 +82,28 @@ _free_worksheet(lxw_worksheet *worksheet)
 {
     lxw_row *row;
     lxw_cell *cell;
+    lxw_col_t col;
 
     if (!worksheet)
         return;
+
+    if (worksheet->col_options) {
+        for (col = 0; col < worksheet->col_options_max; col++) {
+            if (worksheet->col_options[col])
+                free(worksheet->col_options[col]);
+        }
+    }
+    free(worksheet->col_options);
+
+    free(worksheet->col_sizes);
+
+    if (worksheet->col_formats) {
+        for (col = 0; col < worksheet->col_formats_max; col++) {
+            if (worksheet->col_formats[col])
+                free(worksheet->col_formats[col]);
+        }
+    }
+    free(worksheet->col_formats);
 
     if (worksheet->table) {
 
@@ -97,6 +129,7 @@ _free_worksheet(lxw_worksheet *worksheet)
 
     free(worksheet->name);
     free(worksheet);
+    worksheet = NULL;
 }
 
 /*
@@ -669,6 +702,98 @@ _write_rows(lxw_worksheet *self)
 }
 
 /*
+ * Write the <col> element.
+ */
+STATIC void
+_write_col_info(lxw_worksheet *self, lxw_col_options *options)
+{
+
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    double width = options->width;
+    uint8_t has_custom_width = LXW_TRUE;
+    int32_t xf_index = 0;
+    double max_digit_width = 7.0;       /* For Calabri 11. */
+    double padding = 5.0;
+
+    /* Get the format index. */
+    if (options->format) {
+        xf_index = _get_xf_index(options->format);
+    }
+
+    /* Check if width is the Excel default. */
+    if (width == LXW_DEF_COL_WIDTH) {
+
+        /* The default col width changes to 0 for hidden columns. */
+        if (options->hidden)
+            width = 0;
+        else
+            has_custom_width = LXW_FALSE;
+
+    }
+
+    /* Convert column width from user units to character width. */
+    if (width > 0) {
+        if (width < 1) {
+            width = (uint16_t) (((uint16_t)
+                                 (width * (max_digit_width + padding) + 0.5))
+                                / max_digit_width * 256.0) / 256.0;
+        }
+        else {
+            width = (uint16_t) (((uint16_t)
+                                 (width * max_digit_width + 0.5) + padding)
+                                / max_digit_width * 256.0) / 256.0;
+        }
+    }
+
+    _INIT_ATTRIBUTES();
+    _PUSH_ATTRIBUTES_INT("min", 1 + options->firstcol);
+    _PUSH_ATTRIBUTES_INT("max", 1 + options->lastcol);
+    _PUSH_ATTRIBUTES_DBL("width", width);
+
+    if (xf_index)
+        _PUSH_ATTRIBUTES_INT("style", xf_index);
+
+    if (options->hidden)
+        _PUSH_ATTRIBUTES_STR("hidden", "1");
+
+    if (has_custom_width)
+        _PUSH_ATTRIBUTES_STR("customWidth", "1");
+
+    if (options->level)
+        _PUSH_ATTRIBUTES_INT("outlineLevel", options->level);
+
+    if (options->collapsed)
+        _PUSH_ATTRIBUTES_STR("collapsed", "1");
+
+    _xml_empty_tag(self->file, "col", &attributes);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <cols> element and <col> sub elements.
+ */
+STATIC void
+_write_cols(lxw_worksheet *self)
+{
+    lxw_col_t col;
+
+    if (!self->col_size_changed)
+        return;
+
+    _xml_start_tag(self->file, "cols", NULL);
+
+    for (col = 0; col < self->col_options_max; col++) {
+        if (self->col_options[col])
+            _write_col_info(self, self->col_options[col]);
+    }
+
+    _xml_end_tag(self->file, "cols");
+}
+
+/*
  * Check that row and col are within the allowed Excel range and store max
  * and min values for use in other methods/elements.
  *
@@ -724,6 +849,9 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
     /* Write the sheet format properties. */
     _worksheet_write_sheet_format_pr(self);
 
+    /* Write the sheet column info. */
+    _write_cols(self);
+
     /* Write the sheetData element. */
     _worksheet_write_sheet_data(self);
 
@@ -744,18 +872,20 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
  * Write a number to a cell in Excel.
  */
 int8_t
-worksheet_write_number(lxw_worksheet *worksheet,
+worksheet_write_number(lxw_worksheet *self,
                        lxw_row_t row_num,
                        lxw_col_t col_num, double value, lxw_format *format)
 {
     lxw_row *row;
     lxw_cell *cell;
-    int8_t err = _check_dimensions(worksheet, row_num, col_num, 0, 0);
+    int8_t err;
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
 
     if (err)
         return err;
 
-    row = _get_row(worksheet->table, row_num);
+    row = _get_row(self->table, row_num);
     cell = _new_number_cell(row_num, col_num, value, format);
 
     _insert_cell(row->cells, cell, col_num);
@@ -767,7 +897,7 @@ worksheet_write_number(lxw_worksheet *worksheet,
  * Write a string to an Excel file.
  */
 int8_t
-worksheet_write_string(lxw_worksheet *worksheet,
+worksheet_write_string(lxw_worksheet *self,
                        lxw_row_t row_num,
                        lxw_col_t col_num, const char *string,
                        lxw_format *format)
@@ -775,17 +905,19 @@ worksheet_write_string(lxw_worksheet *worksheet,
     lxw_row *row;
     lxw_cell *cell;
     int32_t string_id;
-    int8_t err = _check_dimensions(worksheet, row_num, col_num, 0, 0);
+    int8_t err;
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
 
     if (err)
         return err;
 
     /* Treat a NULL string with formatting as a blank cell. */
     if (!string && format)
-        return worksheet_write_blank(worksheet, row_num, col_num, format);
+        return worksheet_write_blank(self, row_num, col_num, format);
 
     /* Get the SST string ID for the string. */
-    string_id = _get_sst_index(worksheet->sst, string);
+    string_id = _get_sst_index(self->sst, string);
 
     if (string_id < 0)
         return LXW_STRING_HASH_ERROR;
@@ -793,7 +925,7 @@ worksheet_write_string(lxw_worksheet *worksheet,
     if (strlen(string) > LXW_STR_MAX)
         return LXW_STRING_LENGTH_ERROR;
 
-    row = _get_row(worksheet->table, row_num);
+    row = _get_row(self->table, row_num);
     cell = _new_string_cell(row_num, col_num, string_id, format);
 
     _insert_cell(row->cells, cell, col_num);
@@ -805,7 +937,7 @@ worksheet_write_string(lxw_worksheet *worksheet,
  * Write a formula with a numerical result to a cell in Excel.
  */
 int8_t
-worksheet_write_formula_num(lxw_worksheet *worksheet,
+worksheet_write_formula_num(lxw_worksheet *self,
                             lxw_row_t row_num,
                             lxw_col_t col_num,
                             const char *formula,
@@ -814,7 +946,9 @@ worksheet_write_formula_num(lxw_worksheet *worksheet,
     lxw_row *row;
     lxw_cell *cell;
     char *formula_copy;
-    int8_t err = _check_dimensions(worksheet, row_num, col_num, 0, 0);
+    int8_t err;
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
 
     if (err)
         return err;
@@ -825,7 +959,7 @@ worksheet_write_formula_num(lxw_worksheet *worksheet,
     else
         formula_copy = __builtin_strdup(formula);
 
-    row = _get_row(worksheet->table, row_num);
+    row = _get_row(self->table, row_num);
     cell = _new_formula_cell(row_num, col_num, formula_copy, format);
     cell->formula_result.number = result;
 
@@ -838,12 +972,12 @@ worksheet_write_formula_num(lxw_worksheet *worksheet,
  *Write a formula with a default result to a cell in Excel .
 
  */ int8_t
-worksheet_write_formula(lxw_worksheet *worksheet,
+worksheet_write_formula(lxw_worksheet *self,
                         lxw_row_t row_num,
                         lxw_col_t col_num, const char *formula,
                         lxw_format *format)
 {
-    return worksheet_write_formula_num(worksheet, row_num, col_num, formula,
+    return worksheet_write_formula_num(self, row_num, col_num, formula,
                                        format, 0);
 }
 
@@ -852,7 +986,7 @@ worksheet_write_formula(lxw_worksheet *worksheet,
 
  */
 int8_t
-worksheet_write_blank(lxw_worksheet *worksheet,
+worksheet_write_blank(lxw_worksheet *self,
                       lxw_row_t row_num, lxw_col_t col_num,
                       lxw_format *format)
 {
@@ -864,12 +998,12 @@ worksheet_write_blank(lxw_worksheet *worksheet,
     if (!format)
         return 0;
 
-    err = _check_dimensions(worksheet, row_num, col_num, 0, 0);
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
 
     if (err)
         return err;
 
-    row = _get_row(worksheet->table, row_num);
+    row = _get_row(self->table, row_num);
     cell = _new_blank_cell(row_num, col_num, format);
 
     _insert_cell(row->cells, cell, col_num);
@@ -881,7 +1015,7 @@ worksheet_write_blank(lxw_worksheet *worksheet,
  * Write a date and or time to a cell in Excel.
  */
 int8_t
-worksheet_write_datetime(lxw_worksheet *worksheet,
+worksheet_write_datetime(lxw_worksheet *self,
                          lxw_row_t row_num,
                          lxw_col_t col_num, lxw_datetime *datetime,
                          lxw_format *format)
@@ -889,17 +1023,93 @@ worksheet_write_datetime(lxw_worksheet *worksheet,
     lxw_row *row;
     lxw_cell *cell;
     double excel_date;
-    int8_t err = _check_dimensions(worksheet, row_num, col_num, 0, 0);
+    int8_t err;
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
 
     if (err)
         return err;
 
     excel_date = _datetime_to_excel_date(datetime, EPOCH_1900);
 
-    row = _get_row(worksheet->table, row_num);
+    row = _get_row(self->table, row_num);
     cell = _new_number_cell(row_num, col_num, excel_date, format);
 
     _insert_cell(row->cells, cell, col_num);
+
+    return 0;
+}
+
+/*
+ * Set the properties of a single column or a range of columns.
+ */
+int8_t
+worksheet_set_column(lxw_worksheet *self,
+                     lxw_col_t firstcol,
+                     lxw_col_t lastcol,
+                     double width,
+                     lxw_format *format, lxw_row_col_options *options)
+{
+    lxw_col_options *col_options;
+    uint8_t ignore_row = LXW_TRUE;
+    uint8_t ignore_col = LXW_TRUE;
+    lxw_col_t col;
+    int8_t err;
+
+    /* Ensure 2nd col is larger than first. */
+    if (firstcol > lastcol) {
+        lxw_col_t tmp = firstcol;
+        firstcol = lastcol;
+        lastcol = tmp;
+    }
+
+    /* Temp workaround. Only support 128 cols for now. */
+    if (lastcol > LXW_COL_META_MAX)
+        return -1;
+
+    /* Ensure that the cols are valid and store max and min values.
+     * NOTE: The check shouldn't modify the row dimensions and should only
+     *       modify the column dimensions in certain cases. */
+    if (format != NULL || width > 0)
+        ignore_col = LXW_FALSE;
+
+    err = _check_dimensions(self, 0, firstcol, ignore_row, ignore_col);
+
+    if (!err)
+        err = _check_dimensions(self, 0, lastcol, ignore_row, ignore_col);
+
+    if (err)
+        return err;
+
+    col_options = calloc(1, sizeof(lxw_col_options));
+    RETURN_ON_MEM_ERROR(col_options, -1);
+
+    /* Store the column option based on the first column. */
+    col_options->firstcol = firstcol;
+    col_options->lastcol = lastcol;
+    col_options->width = width;
+    col_options->format = format;
+
+    if (options) {
+        col_options->hidden = options->hidden;
+        col_options->level = options->level;
+        col_options->collapsed = options->collapsed;
+    }
+
+    self->col_options[firstcol] = col_options;
+
+    /* Store the col sizes for use when calculating image vertices taking
+     * hidden columns into account. Also store the column formats. */
+    if (options->hidden)
+        width = 0;
+
+    for (col = firstcol; col <= lastcol; col++) {
+        self->col_sizes[col] = width;
+        self->col_formats[col] = format;
+    }
+
+    /* Store the column change to allow optimisations. */
+    self->col_size_changed = LXW_TRUE;
 
     return 0;
 }
