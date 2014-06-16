@@ -58,6 +58,9 @@
 /** Default column width in Excel */
 #define LXW_DEF_COL_WIDTH 8.43
 
+/** Default row height in Excel */
+#define LXW_DEF_ROW_HEIGHT 15
+
 /** Error codes from `worksheet_write*()` functions. */
 enum lxw_write_error {
     LXW_WRITE_ERROR_NONE = 0,
@@ -161,6 +164,12 @@ typedef struct lxw_worksheet_init_data {
 /* Struct to represent a worksheet row. */
 typedef struct lxw_row {
     lxw_row_t row_num;
+    double height;
+    lxw_format *format;
+    uint8_t hidden;
+    uint8_t level;
+    uint8_t collapsed;
+    uint8_t changed;
     struct lxw_table_cells *cells;
 
     /* List pointers for queue.h. */
@@ -448,6 +457,11 @@ int8_t worksheet_write_blank(lxw_worksheet *worksheet,
 int8_t worksheet_set_column(lxw_worksheet *self, lxw_col_t firstcol,
                             lxw_col_t lastcol, double width,
                             lxw_format *format, lxw_row_col_options *options);
+
+int8_t worksheet_set_row(lxw_worksheet *self,
+                         lxw_row_t row_num,
+                         double height,
+                         lxw_format *format, lxw_row_col_options *options);
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);

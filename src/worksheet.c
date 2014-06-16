@@ -143,6 +143,7 @@ _new_row(lxw_row_t row_num)
     if (row) {
         row->row_num = row_num;
         row->cells = calloc(1, sizeof(struct lxw_table_cells));
+        row->height = LXW_DEF_ROW_HEIGHT;
 
         if (row->cells)
             TAILQ_INIT(row->cells);
@@ -528,12 +529,35 @@ _write_row(lxw_worksheet *self, lxw_row *row, char *spans)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
+    int32_t xf_index = 0;
+
+    if (row->format) {
+        xf_index = _get_xf_index(row->format);
+    }
 
     _INIT_ATTRIBUTES();
     _PUSH_ATTRIBUTES_INT("r", row->row_num + 1);
 
     if (spans)
         _PUSH_ATTRIBUTES_STR("spans", spans);
+
+    if (xf_index)
+        _PUSH_ATTRIBUTES_INT("s", xf_index);
+
+    if (row->format)
+        _PUSH_ATTRIBUTES_STR("customFormat", "1");
+
+    if (row->height != LXW_DEF_ROW_HEIGHT)
+        _PUSH_ATTRIBUTES_INT("ht", row->height);
+
+    if (row->hidden)
+        _PUSH_ATTRIBUTES_STR("hidden", "1");
+
+    if (row->height != LXW_DEF_ROW_HEIGHT)
+        _PUSH_ATTRIBUTES_STR("customHeight", "1");
+
+    if (row->collapsed)
+        _PUSH_ATTRIBUTES_STR("collapsed", "1");
 
     if (TAILQ_EMPTY(row->cells))
         _xml_empty_tag(self->file, "row", &attributes);
@@ -1100,7 +1124,7 @@ worksheet_set_column(lxw_worksheet *self,
 
     /* Store the col sizes for use when calculating image vertices taking
      * hidden columns into account. Also store the column formats. */
-    if (options->hidden)
+    if (options && options->hidden)
         width = 0;
 
     for (col = firstcol; col <= lastcol; col++) {
@@ -1112,4 +1136,58 @@ worksheet_set_column(lxw_worksheet *self,
     self->col_size_changed = LXW_TRUE;
 
     return 0;
+}
+
+/*
+ * Set the properties of a row.
+ */
+int8_t
+worksheet_set_row(lxw_worksheet *self,
+                  lxw_row_t row_num,
+                  double height,
+                  lxw_format *format, lxw_row_col_options *options)
+{
+
+    lxw_col_t min_col;
+    int8_t err;
+    uint8_t hidden = LXW_FALSE;
+    uint8_t level = 0;
+    uint8_t collapsed = LXW_FALSE;
+    lxw_row *row;
+
+    if (options) {
+        hidden = options->hidden;
+        level = options->level;
+        collapsed = options->collapsed;
+    }
+
+    /* Use minimum col in _check_dimensions(). */
+    if (self->dim_colmin != LXW_COL_MAX)
+        min_col = self->dim_colmin;
+    else
+        min_col = 0;
+
+    err = _check_dimensions(self, row_num, min_col, LXW_FALSE, LXW_FALSE);
+
+    if (err)
+        return err;
+
+    /* If the height is 0 the row is hidden and the height is the default. */
+    if (height == 0) {
+        hidden = LXW_TRUE;
+        height = LXW_DEF_ROW_HEIGHT;
+
+    }
+
+    row = _get_row(self->table, row_num);
+
+    row->height = height;
+    row->format = format;
+    row->hidden = hidden;
+    row->level = level;
+    row->collapsed = collapsed;
+    row->changed = LXW_TRUE;
+
+    return 0;
+
 }

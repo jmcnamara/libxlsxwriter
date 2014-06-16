@@ -17,8 +17,6 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
         self.run_exe_test('test_format01')
 
     def test_format02(self):
-        # TODO. Ignore row height for now until set_row is implemented.
-        self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<row']}
         self.run_exe_test('test_format02')
 
     def test_format06(self):
