@@ -615,7 +615,7 @@ _write_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 }
 
 /*
- *  Calculate the "spans" attribute of the <row> tag. This is an XLSX
+ * Calculate the "spans" attribute of the <row> tag. This is an XLSX
  * optimisation and isn't strictly required. However, it makes comparing
  * files easier.
  *
@@ -656,7 +656,7 @@ _calculate_spans(struct lxw_row *row, char *span, int32_t *block_num)
  * Write out a generic worksheet cell.
  */
 STATIC void
-_write_cell(lxw_worksheet *self, lxw_cell *cell)
+_write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -669,6 +669,11 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell)
 
     if (cell->format) {
         int32_t index = _get_xf_index(cell->format);
+        if (index)
+            _PUSH_ATTRIBUTES_INT("s", index);
+    }
+    else if (row_format) {
+        int32_t index = _get_xf_index(row_format);
         if (index)
             _PUSH_ATTRIBUTES_INT("s", index);
     }
@@ -711,17 +716,22 @@ _write_rows(lxw_worksheet *self)
 
     TAILQ_FOREACH(row, self->table, list_pointers) {
 
-        if ((int32_t) row->row_num / 16 > block_num)
-            _calculate_spans(row, spans, &block_num);
+        if (TAILQ_EMPTY(row->cells)) {
+            /* Row data only. No cells. */
+            _write_row(self, row, NULL);
+        }
+        else {
+            /* Row and cell data. */
+            if ((int32_t) row->row_num / 16 > block_num)
+                _calculate_spans(row, spans, &block_num);
 
-        if (!TAILQ_EMPTY(row->cells)) {
             _write_row(self, row, spans);
 
             TAILQ_FOREACH(cell, row->cells, list_pointers) {
-                _write_cell(self, cell);
+                _write_cell(self, cell, row->format);
             }
+            _xml_end_tag(self->file, "row");
         }
-        _xml_end_tag(self->file, "row");
     }
 }
 
