@@ -71,6 +71,19 @@ _free_workbook(lxw_workbook *workbook)
 }
 
 /*
+ * Set the default index for each format. This is only used for testing.
+ */
+void
+_set_default_xf_indices(lxw_workbook *self)
+{
+    lxw_format *format;
+
+    STAILQ_FOREACH(format, self->formats, list_pointers) {
+        _get_xf_index(format);
+    }
+}
+
+/*
  * Iterate through the XF Format objects and give them an index to non-default
  * font elements.
  */

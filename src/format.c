@@ -113,6 +113,7 @@ _free_format(lxw_format *format)
         return;
 
     free(format);
+    format = NULL;
 }
 
 /*

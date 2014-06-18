@@ -216,7 +216,8 @@ lxw_format *workbook_add_format(lxw_workbook *workbook);
 uint8_t workbook_close(lxw_workbook *workbook);
 
 void _free_workbook(lxw_workbook *workbook);
-void _workbook_assemble_xml_file(lxw_workbook *self);
+void _workbook_assemble_xml_file(lxw_workbook *workbook);
+void _set_default_xf_indices(lxw_workbook *workbook);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

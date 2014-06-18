@@ -93,16 +93,9 @@ _free_worksheet(lxw_worksheet *worksheet)
                 free(worksheet->col_options[col]);
         }
     }
+
     free(worksheet->col_options);
-
     free(worksheet->col_sizes);
-
-    if (worksheet->col_formats) {
-        for (col = 0; col < worksheet->col_formats_max; col++) {
-            if (worksheet->col_formats[col])
-                free(worksheet->col_formats[col]);
-        }
-    }
     free(worksheet->col_formats);
 
     if (worksheet->table) {
@@ -405,15 +398,24 @@ _worksheet_write_dimension(lxw_worksheet *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
+    char ref[MAX_CELL_RANGE_LENGTH];
+    lxw_row_t dim_rowmin = self->dim_rowmin;
+    lxw_row_t dim_rowmax = self->dim_rowmax;
+    lxw_col_t dim_colmin = self->dim_colmin;
+    lxw_col_t dim_colmax = self->dim_colmax;
 
-    /* Default range ref for empty worksheet. */
-    char ref[MAX_CELL_RANGE_LENGTH] = "A1";
-
-    /* For non-empty worksheet fill in the cell range. */
-    if (!TAILQ_EMPTY(self->table)) {
-        xl_range(ref,
-                 self->dim_rowmin, self->dim_colmin,
-                 self->dim_rowmax, self->dim_colmax);
+    if (dim_rowmin == LXW_ROW_MAX && dim_colmin == LXW_COL_MAX) {
+        /* If the rows and cols are still the defaults then no dimensions have
+         * been set and we use the default range "A1". */
+        xl_range(ref, 0, 0, 0, 0);
+    }
+    else if (dim_rowmin == LXW_ROW_MAX && dim_colmin != LXW_COL_MAX) {
+        /* If the rows aren't set but the columns are then the dimensions have
+         * been changed via set_column(). */
+        xl_range(ref, 0, dim_colmin, 0, dim_colmax);
+    }
+    else {
+        xl_range(ref, dim_rowmin, dim_colmin, dim_rowmax, dim_colmax);
     }
 
     _INIT_ATTRIBUTES();
@@ -661,22 +663,27 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
     char range[MAX_CELL_NAME_LENGTH] = { 0 };
+    lxw_row_t row_num = cell->row_num;
+    lxw_col_t col_num = cell->col_num;
+    int32_t index = 0;
 
-    xl_rowcol_to_cell_abs(range, cell->row_num, cell->col_num, 0, 0);
+    xl_rowcol_to_cell_abs(range, row_num, col_num, 0, 0);
 
     _INIT_ATTRIBUTES();
     _PUSH_ATTRIBUTES_STR("r", range);
 
     if (cell->format) {
-        int32_t index = _get_xf_index(cell->format);
-        if (index)
-            _PUSH_ATTRIBUTES_INT("s", index);
+        index = _get_xf_index(cell->format);
     }
     else if (row_format) {
-        int32_t index = _get_xf_index(row_format);
-        if (index)
-            _PUSH_ATTRIBUTES_INT("s", index);
+        index = _get_xf_index(row_format);
     }
+    else if (col_num < self->col_sizes_max && self->col_formats[col_num]) {
+        index = _get_xf_index(self->col_formats[col_num]);
+    }
+
+    if (index)
+        _PUSH_ATTRIBUTES_INT("s", index);
 
     if (cell->type == STRING_CELL)
         _PUSH_ATTRIBUTES_STR("t", "s");
@@ -1104,7 +1111,7 @@ worksheet_set_column(lxw_worksheet *self,
     /* Ensure that the cols are valid and store max and min values.
      * NOTE: The check shouldn't modify the row dimensions and should only
      *       modify the column dimensions in certain cases. */
-    if (format != NULL || width > 0)
+    if (format != NULL || (width > 0 && options && options->hidden))
         ignore_col = LXW_FALSE;
 
     err = _check_dimensions(self, 0, firstcol, ignore_row, ignore_col);
