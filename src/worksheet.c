@@ -44,11 +44,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->col_options_max = LXW_COL_META_MAX;
     GOTO_LABEL_ON_MEM_ERROR(worksheet->col_options, mem_error);
 
-    worksheet->col_sizes = calloc(LXW_COL_META_MAX, sizeof(double));
-    worksheet->col_sizes_max = LXW_COL_META_MAX;
-    GOTO_LABEL_ON_MEM_ERROR(worksheet->col_sizes, mem_error);
-
-    worksheet->col_formats = calloc(LXW_COL_META_MAX, sizeof(uint16_t *));
+    worksheet->col_formats = calloc(LXW_COL_META_MAX, sizeof(lxw_format *));
     worksheet->col_formats_max = LXW_COL_META_MAX;
     GOTO_LABEL_ON_MEM_ERROR(worksheet->col_formats, mem_error);
 
@@ -353,6 +349,25 @@ _insert_cell(struct lxw_table_cells *cell_list,
     }
 
     return;
+}
+
+/*
+ * Next power of two for column reallocs. Taken from bithacks in the public
+ * domain.
+ */
+STATIC lxw_col_t
+_next_power_of_two(uint16_t col)
+{
+
+    col--;
+    col |= col >> 1;
+    col |= col >> 2;
+    col |= col >> 4;
+    col |= col >> 8;
+    col |= col >> 16;
+    col++;
+
+    return col;
 }
 
 /*****************************************************************************
@@ -678,7 +693,7 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
     else if (row_format) {
         index = _get_xf_index(row_format);
     }
-    else if (col_num < self->col_sizes_max && self->col_formats[col_num]) {
+    else if (col_num < self->col_formats_max && self->col_formats[col_num]) {
         index = _get_xf_index(self->col_formats[col_num]);
     }
 
@@ -1089,13 +1104,22 @@ worksheet_set_column(lxw_worksheet *self,
                      lxw_col_t firstcol,
                      lxw_col_t lastcol,
                      double width,
-                     lxw_format *format, lxw_row_col_options *options)
+                     lxw_format *format, lxw_row_col_options *user_options)
 {
-    lxw_col_options *col_options;
+    lxw_col_options *copied_options;
     uint8_t ignore_row = LXW_TRUE;
     uint8_t ignore_col = LXW_TRUE;
+    uint8_t hidden = LXW_FALSE;
+    uint8_t level = 0;
+    uint8_t collapsed = LXW_FALSE;
     lxw_col_t col;
     int8_t err;
+
+    if (user_options) {
+        hidden = user_options->hidden;
+        level = user_options->level;
+        collapsed = user_options->collapsed;
+    }
 
     /* Ensure 2nd col is larger than first. */
     if (firstcol > lastcol) {
@@ -1104,14 +1128,10 @@ worksheet_set_column(lxw_worksheet *self,
         lastcol = tmp;
     }
 
-    /* Temp workaround. Only support 128 cols for now. */
-    if (lastcol > LXW_COL_META_MAX)
-        return -1;
-
     /* Ensure that the cols are valid and store max and min values.
      * NOTE: The check shouldn't modify the row dimensions and should only
      *       modify the column dimensions in certain cases. */
-    if (format != NULL || (width > 0 && options && options->hidden))
+    if (format != NULL || (width != LXW_DEF_COL_WIDTH && hidden))
         ignore_col = LXW_FALSE;
 
     err = _check_dimensions(self, 0, firstcol, ignore_row, ignore_col);
@@ -1122,30 +1142,62 @@ worksheet_set_column(lxw_worksheet *self,
     if (err)
         return err;
 
-    col_options = calloc(1, sizeof(lxw_col_options));
-    RETURN_ON_MEM_ERROR(col_options, -1);
+    /* Resize the col_options array if required. */
+    if (firstcol >= self->col_options_max) {
+        lxw_col_t col;
+        lxw_col_t old_size = self->col_options_max;
+        lxw_col_t new_size = _next_power_of_two(firstcol + 1);
+        lxw_col_options **new_ptr = realloc(self->col_options,
+                                            new_size *
+                                            sizeof(lxw_col_options *));
 
-    /* Store the column option based on the first column. */
-    col_options->firstcol = firstcol;
-    col_options->lastcol = lastcol;
-    col_options->width = width;
-    col_options->format = format;
+        if (new_ptr) {
+            for (col = old_size; col < new_size; col++)
+                new_ptr[col] = NULL;
 
-    if (options) {
-        col_options->hidden = options->hidden;
-        col_options->level = options->level;
-        col_options->collapsed = options->collapsed;
+            self->col_options = new_ptr;
+            self->col_options_max = new_size;
+        }
+        else {
+            return -1;
+        }
     }
 
-    self->col_options[firstcol] = col_options;
+    /* Resize the col_formats array if required. */
+    if (lastcol >= self->col_formats_max) {
+        lxw_col_t col;
+        lxw_col_t old_size = self->col_formats_max;
+        lxw_col_t new_size = _next_power_of_two(lastcol + 1);
+        lxw_format **new_ptr = realloc(self->col_formats,
+                                       new_size * sizeof(lxw_format *));
 
-    /* Store the col sizes for use when calculating image vertices taking
-     * hidden columns into account. Also store the column formats. */
-    if (options && options->hidden)
-        width = 0;
+        if (new_ptr) {
+            for (col = old_size; col < new_size; col++)
+                new_ptr[col] = NULL;
 
+            self->col_formats = new_ptr;
+            self->col_formats_max = new_size;
+        }
+        else {
+            return -1;
+        }
+    }
+
+    copied_options = calloc(1, sizeof(lxw_col_options));
+    RETURN_ON_MEM_ERROR(copied_options, -1);
+
+    /* Store the column option based on the first column. */
+    copied_options->firstcol = firstcol;
+    copied_options->lastcol = lastcol;
+    copied_options->width = width;
+    copied_options->format = format;
+    copied_options->hidden = hidden;
+    copied_options->level = level;
+    copied_options->collapsed = collapsed;
+    self->col_options[firstcol] = copied_options;
+
+    /* Store the column formats for use when writing cell data. */
     for (col = firstcol; col <= lastcol; col++) {
-        self->col_sizes[col] = width;
         self->col_formats[col] = format;
     }
 
@@ -1162,20 +1214,20 @@ int8_t
 worksheet_set_row(lxw_worksheet *self,
                   lxw_row_t row_num,
                   double height,
-                  lxw_format *format, lxw_row_col_options *options)
+                  lxw_format *format, lxw_row_col_options *user_options)
 {
 
     lxw_col_t min_col;
-    int8_t err;
     uint8_t hidden = LXW_FALSE;
     uint8_t level = 0;
     uint8_t collapsed = LXW_FALSE;
     lxw_row *row;
+    int8_t err;
 
-    if (options) {
-        hidden = options->hidden;
-        level = options->level;
-        collapsed = options->collapsed;
+    if (user_options) {
+        hidden = user_options->hidden;
+        level = user_options->level;
+        collapsed = user_options->collapsed;
     }
 
     /* Use minimum col in _check_dimensions(). */

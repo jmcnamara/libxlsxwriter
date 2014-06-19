@@ -138,11 +138,12 @@ typedef struct lxw_worksheet {
     lxw_col_options **col_options;
     uint16_t col_options_max;
 
-    uint8_t *col_sizes;
+    double *col_sizes;
     uint16_t col_sizes_max;
 
     lxw_format **col_formats;
     uint16_t col_formats_max;
+
     uint8_t col_size_changed;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
