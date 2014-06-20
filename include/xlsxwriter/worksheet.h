@@ -216,8 +216,8 @@ extern "C" {
  *
  * @return A #lxw_write_error code.
  *
- * The `worksheet_write_number()` method writes numeric types to the cell specified by
- * `row` and `column`:
+ * The `worksheet_write_number()` method writes numeric types to the cell
+ * specified by `row` and `column`:
  *
  * @code
  *     worksheet_write_number(worksheet, 0, 0, 123456, NULL);
@@ -259,8 +259,8 @@ int8_t worksheet_write_number(lxw_worksheet *worksheet,
  *
  * @return A #lxw_write_error code.
  *
- * The `%worksheet_write_string()` method writes a string to the cell specified by `row`
- * and `column`:
+ * The `%worksheet_write_string()` method writes a string to the cell
+ * specified by `row` and `column`:
  *
  * @code
  *     worksheet_write_string(worksheet, 0, 0, "This phrase is English!", NULL);
@@ -311,12 +311,12 @@ int8_t worksheet_write_string(lxw_worksheet *worksheet,
  * specified by `row` and `column`:
  *
  * @code
- *     worksheet_write_formula(worksheet, 0, 0, "=B3 + 6",                    NULL);
- *     worksheet_write_formula(worksheet, 1, 0, "=SIN(PI()/4)",               NULL);
- *     worksheet_write_formula(worksheet, 2, 0, "=SUM(A1:A2)",                NULL);
- *     worksheet_write_formula(worksheet, 3, 0, "=IF(A3>1,\"Yes\", \"No\")",  NULL);
- *     worksheet_write_formula(worksheet, 4, 0, "=AVERAGE(1, 2, 3, 4)",       NULL);
- *     worksheet_write_formula(worksheet, 5, 0, "=DATEVALUE(\"1-Jan-2013\")", NULL);
+ *  worksheet_write_formula(worksheet, 0, 0, "=B3 + 6",                    NULL);
+ *  worksheet_write_formula(worksheet, 1, 0, "=SIN(PI()/4)",               NULL);
+ *  worksheet_write_formula(worksheet, 2, 0, "=SUM(A1:A2)",                NULL);
+ *  worksheet_write_formula(worksheet, 3, 0, "=IF(A3>1,\"Yes\", \"No\")",  NULL);
+ *  worksheet_write_formula(worksheet, 4, 0, "=AVERAGE(1, 2, 3, 4)",       NULL);
+ *  worksheet_write_formula(worksheet, 5, 0, "=DATEVALUE(\"1-Jan-2013\")", NULL);
  * @endcode
  *
  * @image html write_formula01.png
@@ -357,8 +357,8 @@ int8_t worksheet_write_formula(lxw_worksheet *worksheet,
  *
  * @return A #lxw_write_error code.
  *
- * The `%worksheet_write_formula_num()` method writes a formula or function to the cell
- * specified by `row` and `column` with a user defined result:
+ * The `%worksheet_write_formula_num()` method writes a formula or function to
+ * the cell specified by `row` and `column` with a user defined result:
  *
  * @code
  *     // Required as a workaround only.
@@ -403,8 +403,8 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
  *
  * @return A #lxw_write_error code.
  *
- * The `worksheet_write_datetime()` method can be used to write a date or time to the cell
- * specified by `row` and `column`:
+ * The `worksheet_write_datetime()` method can be used to write a date or time
+ * to the cell specified by `row` and `column`:
  *
  * @dontinclude dates_and_times02.c
  * @skip include
@@ -440,8 +440,8 @@ int8_t worksheet_write_datetime(lxw_worksheet *worksheet,
  *     worksheet_write_blank(worksheet, 1, 1, border_format);
  * @endcode
  *
- * This method is used to add formatting to a cell which doesn't contain a string
- * or number value.
+ * This method is used to add formatting to a cell which doesn't contain a
+ * string or number value.
  *
  * Excel differentiates between an "Empty" cell and a "Blank" cell. An Empty
  * cell is a cell which doesn't contain data or formatting whilst a Blank cell
@@ -455,14 +455,15 @@ int8_t worksheet_write_blank(lxw_worksheet *worksheet,
                              lxw_row_t row, lxw_col_t col,
                              lxw_format *format);
 
-int8_t worksheet_set_column(lxw_worksheet *self, lxw_col_t firstcol,
-                            lxw_col_t lastcol, double width,
-                            lxw_format *format, lxw_row_col_options *options);
-
 int8_t worksheet_set_row(lxw_worksheet *self,
                          lxw_row_t row_num,
                          double height,
                          lxw_format *format, lxw_row_col_options *options);
+
+int8_t worksheet_set_column(lxw_worksheet *self, lxw_col_t firstcol,
+                            lxw_col_t lastcol, double width,
+                            lxw_format *format, lxw_row_col_options *options);
+
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);

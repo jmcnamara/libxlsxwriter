@@ -43,10 +43,12 @@ int main() {
     lxw_format *money = workbook_add_format(workbook);
     format_set_num_format(money, "$#,##0");
 
-    /*  Add an Excel date format. */
+    /* Add an Excel date format. */
     lxw_format *date_format = workbook_add_format(workbook);
     format_set_num_format(date_format, "mmmm d yyyy");
 
+    /* Adjust the column width. */
+    worksheet_set_column(worksheet, 0, 0, 15, NULL, NULL);
 
     /* Write some data header. */
     worksheet_write_string(worksheet, row, col,     "Item", bold);

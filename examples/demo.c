@@ -19,6 +19,9 @@ int main() {
     /* Set the bold property for the format */
     format_set_bold(format);
 
+    /* Widen the first column to make the text clearer. */
+    worksheet_set_column(worksheet, 0, 0, 20, NULL, NULL);
+
     /* Write some simple text. */
     worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
 
