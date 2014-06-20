@@ -32,9 +32,8 @@ Formats can also be passed to the worksheet `worksheet_set_row()` and
 for a row or column:
 
 @code
-    # Not implemented in version 0.0.1.
-    worksheet_set_row(worksheet, 2, format)
-    worksheet_set_column(worksheet, 0, 20, format)
+    worksheet_set_row   (worksheet, 2,     format, NULL);
+    worksheet_set_column(worksheet, 0, 20, format, NULL);
 @endcode
 
 
