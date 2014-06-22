@@ -654,7 +654,6 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
                             lxw_col_t last_col, double width,
                             lxw_format *format, lxw_row_col_options *options);
 
-
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);
 void _worksheet_assemble_xml_file(lxw_worksheet *worksheet);

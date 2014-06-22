@@ -1,6 +1,6 @@
 /*
  * libxlsxwriter
- * 
+ *
  * Copyright 2014, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  */
 
@@ -24,6 +24,56 @@
 #define MAX_CELL_RANGE_LENGTH (MAX_CELL_NAME_LENGTH * 2 + 1)
 #define EPOCH_1900            0
 #define EPOCH_1904            1
+
+/**
+ * @brief Convert an Excel `A1` cell string into a `(row, col)` pair.
+ *
+ * Convert an Excel `A1` cell string into a `(row, col)` pair.
+ *
+ * This is a little syntactic shortcut to help with worksheet layout:
+ *
+ * @code
+ *      worksheet_write_string(worksheet, CELL("A1"), "Foo", NULL);
+ *
+ *      //Same as:
+ *      worksheet_write_string(worksheet, 0, 0,       "Foo", NULL);
+ * @endcode
+ *
+ * @note
+ *
+ * This macro shouldn't be used in performance critical situations since it
+ * expands to two function calls.
+ */
+#define CELL(cell) \
+    xl_get_row(cell), xl_get_col(cell)
+
+/**
+ * @brief Convert an Excel `A:B` column range into a `(col1, col2)` pair.
+ *
+ * Convert an Excel `A:B` column range into a `(col1, col2)` pair.
+ *
+ * This is a little syntactic shortcut to help with worksheet layout:
+ *
+ * @code
+ *      worksheet_set_column(worksheet, COLS("B:D"), 20, NULL, NULL);
+ *
+ *      //Same as:
+ *      worksheet_set_column(worksheet, 1, 3,        20, NULL, NULL);
+ * @endcode
+ *
+ */
+#define COLS(cols) \
+    xl_get_col(cols), xl_get_col_2(cols)
+
+/**
+ * @brief Convert an Excel `A1:B2` range into a `(row1, col1, row1, col2)` sequence.
+ *
+ * Convert an Excel `A1:B2` range into a `(row1, col1, row1, col2)` sequence.
+ *
+ * This is a little syntactic shortcut to help with worksheet layout.
+ */
+#define RANGE(range) \
+    xl_get_row(range), xl_get_col(range), xl_get_row_2(range), xl_get_col_2(range)
 
 /** @brief Struct to represent a date and time in Excel.
  *
@@ -67,6 +117,12 @@ void xl_range(char *range,
 
 void xl_range_abs(char *range,
                   int first_row, int first_col, int last_row, int last_col);
+
+uint32_t xl_get_row(const char *row_str);
+
+uint16_t xl_get_col(const char *col_str);
+
+uint16_t xl_get_col_2(const char *col_str);
 
 double _datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904);
 

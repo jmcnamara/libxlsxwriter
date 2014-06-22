@@ -7,9 +7,11 @@
  *
  */
 
+#include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include "xlsxwriter/utility.h"
 
 /*
@@ -149,6 +151,80 @@ xl_range_abs(char *range,
 
     /* Add the first cell to the range. */
     xl_rowcol_to_cell_abs(&range[pos], last_row, last_col, 1, 1);
+}
+
+/*
+ * Convert an Excel style A1 cell reference to a zero indexed row number.
+ */
+uint32_t
+xl_get_row(const char *row_str)
+{
+    int row_num = 0;
+    const char *p = row_str;
+
+    /* Skip the column letters of the A1 cell. */
+    while (p && isalpha(*p))
+        p++;
+
+    /* Convert the row part of the A1 cell to a number. */
+    if (p)
+        row_num = atoi(p);
+
+    return row_num - 1;
+}
+
+/*
+ * Convert an Excel style A1 cell reference to a zero indexed column number.
+ */
+uint16_t
+xl_get_col(const char *col_str)
+{
+    int col_num = 0;
+    const char *p = col_str;
+
+    /* Convert the leading column letters of the A1 cell. */
+    while (p && isupper(*p)) {
+        col_num = (col_num * 26) + (*p - 'A' + 1);
+        p++;
+    }
+
+    return col_num - 1;
+}
+
+/*
+ * Convert the second row of an Excel range ref to a zero indexed number.
+ */
+uint16_t
+xl_get_row_2(const char *row_str)
+{
+    const char *p = row_str;
+
+    /* Find the : separator in the range. */
+    while (p && *p != ':')
+        p++;
+
+    if (p)
+        return xl_get_row(++p);
+    else
+        return -1;
+}
+
+/*
+ * Convert the second column of an Excel range ref to a zero indexed number.
+ */
+uint16_t
+xl_get_col_2(const char *col_str)
+{
+    const char *p = col_str;
+
+    /* Find the : separator in the range. */
+    while (p && *p != ':')
+        p++;
+
+    if (p)
+        return xl_get_col(++p);
+    else
+        return -1;
 }
 
 /*
