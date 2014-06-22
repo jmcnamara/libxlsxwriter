@@ -553,7 +553,101 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  * @param format    A pointer to a Format instance or NULL.
  * @param options   Optional row parameters: hidden, level, collapsed.
  *
- * TODO.
+ * The `%worksheet_set_column()` method can be used to change the default
+ * properties of a single column or a range of columns:
+ *
+ * @code
+ *     // Width of columns B:D set to 30.
+ *     worksheet_set_column(worksheet, 1, 3, 30, NULL, NULL);
+ *
+ * @endcode
+ *
+ * If `%worksheet_set_column()` is applied to a single column the value of
+ * `first_col` and `last_col` should be the same:
+ *
+ * @code
+ *     // Width of column B set to 30.
+ *     worksheet_set_column(worksheet, 1, 1, 30, NULL, NULL);
+ *
+ * @endcode
+ *
+ * It is also possible, and generally clearer, to specify a column range using the
+ * form of `COLS()` macro:
+ *
+ * @code
+ *     worksheet_set_column(worksheet, 4, 4, 20, NULL, NULL);
+ *     worksheet_set_column(worksheet, 5, 8, 30, NULL, NULL);
+ *
+ *     // Same as the examples above but clearer.
+ *     worksheet_set_column(worksheet, COLS("E:E"), 20, NULL, NULL);
+ *     worksheet_set_column(worksheet, COLS("F:H"), 30, NULL, NULL);
+ *
+ * @endcode
+ *
+ * The width corresponds to the column width value that is specified in
+ * Excel. It is approximately equal to the length of a string in the default
+ * font of Calibri 11. Unfortunately, there is no way to specify "AutoFit" for
+ * a column in the Excel file format. This feature is only available at
+ * runtime from within Excel. It is possible to simulate "AutoFit" by tracking
+ * the width of the data in the column as your write it.
+ *
+ * As usual the @ref format.h `format` parameter is optional. If you wish to
+ * set the format without changing the width you can pass default col width of
+ * #LXW_DEF_COL_WIDTH = 8.43:
+ *
+ * @code
+ *     lxw_format *bold = workbook_add_format(workbook);
+ *     format_set_bold(bold);
+ *
+ *     // Set the first column to bold.
+ *     worksheet_set_column(worksheet, 0, 0, LXW_DEF_COL_HEIGHT, bold, NULL);
+ * @endcode
+ *
+ * The `format` parameter will be applied to any cells in the column that
+ * don't have a format. For example:
+ *
+ * @code
+ *     // Column 1 has format1.
+ *     worksheet_set_column(worksheet, COLS("A:A"), 8.43, format1, NULL);
+ *
+ *     // Cell A1 in column 1 defaults to format1.
+ *     worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
+ *
+ *     // Cell A2 in column 1 keeps format2.
+ *     worksheet_write_string(worksheet, 1, 0, "Hello", format2);
+ * @endcode
+ *
+ * As in Excel a row format takes precedence over a default column format:
+ *
+ * @code
+ *     // Row 1 has format1.
+ *     worksheet_set_row(worksheet, 0, 15, format1, NULL);
+ *
+ *     // Col 1 has format2.
+ *     worksheet_set_column(worksheet, COLS("A:A"), 8.43, format2, NULL);
+ *
+ *     // Cell A1 defaults to format1, the row format.
+ *     worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
+ *
+ *    // Cell A2 keeps format2, the column format.
+ *     worksheet_write_string(worksheet, 1, 0, "Hello", NULL);
+ * @endcode
+ *
+ * The `options` parameter is a #lxw_row_col_options struct. It has the
+ * following members but currently only the `hidden` property is supported:
+ *
+ * * `hidden`
+ * * `level`
+ * * `collapsed`
+ *
+ * The `"hidden"` option is used to hide a column. This can be used, for example,
+ * to hide intermediary steps in a complicated calculation:
+ *
+ * @code
+ *     lxw_row_col_options options = {.hidden = 1, .level = 0, .collapsed = 0};
+ *
+ *     worksheet_set_column(worksheet, COLS("A:A"), 8.43, NULL, &options);
+ * @endcode
  *
  */
 int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
