@@ -52,30 +52,30 @@ LIBS_O = -lpthread -lz
 
 # House-keeping build targets.
 all :
-	$(Q)make -C utility
-	$(Q)make -C xmlwriter
-	$(Q)make -C worksheet
-	$(Q)make -C sst
-	$(Q)make -C workbook
-	$(Q)make -C app
-	$(Q)make -C content_types
-	$(Q)make -C core
-	$(Q)make -C relationships
-	$(Q)make -C styles
+	$(Q)$(MAKE) -C utility
+	$(Q)$(MAKE) -C xmlwriter
+	$(Q)$(MAKE) -C worksheet
+	$(Q)$(MAKE) -C sst
+	$(Q)$(MAKE) -C workbook
+	$(Q)$(MAKE) -C app
+	$(Q)$(MAKE) -C content_types
+	$(Q)$(MAKE) -C core
+	$(Q)$(MAKE) -C relationships
+	$(Q)$(MAKE) -C styles
 # END make all
 
 clean :
 	$(Q)rm -f $(TESTS) test_all
-	$(Q)make clean -C utility
-	$(Q)make clean -C xmlwriter
-	$(Q)make clean -C worksheet
-	$(Q)make clean -C sst
-	$(Q)make clean -C workbook
-	$(Q)make clean -C app
-	$(Q)make clean -C content_types
-	$(Q)make clean -C core
-	$(Q)make clean -C relationships
-	$(Q)make clean -C styles
+	$(Q)$(MAKE) clean -C utility
+	$(Q)$(MAKE) clean -C xmlwriter
+	$(Q)$(MAKE) clean -C worksheet
+	$(Q)$(MAKE) clean -C sst
+	$(Q)$(MAKE) clean -C workbook
+	$(Q)$(MAKE) clean -C app
+	$(Q)$(MAKE) clean -C content_types
+	$(Q)$(MAKE) clean -C core
+	$(Q)$(MAKE) clean -C relationships
+	$(Q)$(MAKE) clean -C styles
 # END make clean
 
 

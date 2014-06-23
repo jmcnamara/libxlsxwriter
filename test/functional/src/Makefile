@@ -28,8 +28,8 @@ LIBS = $(LIBXLSXWRITER) -lz
 all : $(LIBXLSXWRITER) $(EXES)
 
 $(LIBXLSXWRITER):
-	$(Q)make -C ../../../third_party/minizip
-	$(Q)make -C ../../../src
+	$(Q)$(MAKE) -C ../../../third_party/minizip
+	$(Q)$(MAKE) -C ../../../src
 
 clean :
 	$(Q)rm -f $(EXES)

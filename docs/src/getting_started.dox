@@ -5,6 +5,8 @@
 Here are some instructions to get you up and running with the libxlsxwriter
 library on a Unix system.
 
+For FreeBSD use `gmake` instead of `make`.
+
 For Windows see the @ref faq "FAQ".
 
 

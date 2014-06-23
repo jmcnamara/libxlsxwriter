@@ -15,20 +15,20 @@ endif
 
 # Build the libs.
 all :
-	$(Q)make -C third_party/minizip
-	$(Q)make -C src
+	$(Q)$(MAKE) -C third_party/minizip
+	$(Q)$(MAKE) -C src
 
 # Build the example programs.
 examples :
-	$(Q)make -C examples
+	$(Q)$(MAKE) -C examples
 
 # Clean src and test directories.
 clean :
-	$(Q)make clean -C src
-	$(Q)make clean -C test/unit
-	$(Q)make clean -C test/functional/src
-	$(Q)make clean -C examples
-	$(Q)make clean -C third_party/minizip
+	$(Q)$(MAKE) clean -C src
+	$(Q)$(MAKE) clean -C test/unit
+	$(Q)$(MAKE) clean -C test/functional/src
+	$(Q)$(MAKE) clean -C examples
+	$(Q)$(MAKE) clean -C third_party/minizip
 	$(Q)rm -rf docs/html
 	$(Q)rm -rf test/functional/__pycache__
 	$(Q)rm -f  test/functional/*.pyc
@@ -36,28 +36,28 @@ clean :
 
 # Run the unit tests.
 test : all test_functional test_unit
-	$(Q)make test -C test/unit
+	$(Q)$(MAKE) test -C test/unit
 
 # Run the functional tests.
 test_functional : all
-	$(Q)make -C test/functional/src
+	$(Q)$(MAKE) -C test/functional/src
 	$(Q)py.test test/functional -v
 
 # Run all tests.
 test_unit :
 	@echo "Compiling unit tests ..."
-	$(Q)make -C third_party/minizip
-	$(Q)make -C src test_lib
-	$(Q)make -C test/unit test
+	$(Q)$(MAKE) -C third_party/minizip
+	$(Q)$(MAKE) -C src test_lib
+	$(Q)$(MAKE) -C test/unit test
 
 # Test the functional test exes with valgrind.
 test_valgrind : all
-	$(Q)make -C test/functional/src test_valgrind
-	$(Q)make -C examples test_valgrind
+	$(Q)$(MAKE) -C test/functional/src test_valgrind
+	$(Q)$(MAKE) -C examples test_valgrind
 
 # Minimal target for quick compile without creating the libs.
 test_compile :
-	$(Q)make -C src	test_compile
+	$(Q)$(MAKE) -C src	test_compile
 
 # Indent the source files with the .indent.pro settings.
 indent:
@@ -69,7 +69,7 @@ tags:
 
 # Build the doxygen docs.
 docs:
-	$(Q)make -C docs
+	$(Q)$(MAKE) -C docs
 
 # Simple minded install.
 install:
