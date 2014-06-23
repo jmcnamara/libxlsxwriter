@@ -11,7 +11,7 @@
 #include "xlsxwriter/utility.h"
 
 // Test _xl_col_to_name().
-TEST(utility, _xl_col_to_name) {
+TEST(utility, lxw_col_to_name) {
 
     char got[MAX_COL_NAME_LENGTH];
 

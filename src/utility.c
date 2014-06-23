@@ -18,7 +18,7 @@
  * Convert Excel A-XFD style column name to zero based number.
  */
 void
-_xl_col_to_name(char col_name[], int col_num, uint8_t absolute)
+lxw_col_to_name(char col_name[], int col_num, uint8_t absolute)
 {
     uint8_t pos = 0;
     uint8_t len;
@@ -62,12 +62,12 @@ _xl_col_to_name(char col_name[], int col_num, uint8_t absolute)
  * Convert zero indexed row and column to an Excel style A1 cell reference.
  */
 void
-xl_rowcol_to_cell(char *cell_name, int row, int col)
+lxw_rowcol_to_cell(char *cell_name, int row, int col)
 {
     uint8_t pos;
 
     /* Add the column to the cell. */
-    _xl_col_to_name(cell_name, col, 0);
+    lxw_col_to_name(cell_name, col, 0);
 
     /* Get the end of the cell. */
     pos = strlen(cell_name);
@@ -81,13 +81,13 @@ xl_rowcol_to_cell(char *cell_name, int row, int col)
  * an absolute reference.
  */
 void
-xl_rowcol_to_cell_abs(char *cell_name,
-                      int row, int col, uint8_t abs_row, uint8_t abs_col)
+lxw_rowcol_to_cell_abs(char *cell_name,
+                       int row, int col, uint8_t abs_row, uint8_t abs_col)
 {
     uint8_t pos;
 
     /* Add the column to the cell. */
-    _xl_col_to_name(cell_name, col, abs_col);
+    lxw_col_to_name(cell_name, col, abs_col);
 
     /* Get the end of the cell. */
     pos = strlen(cell_name);
@@ -104,13 +104,13 @@ xl_rowcol_to_cell_abs(char *cell_name,
  * range reference.
  */
 void
-xl_range(char *range,
-         int first_row, int first_col, int last_row, int last_col)
+lxw_range(char *range,
+          int first_row, int first_col, int last_row, int last_col)
 {
     uint8_t pos;
 
     /* Add the first cell to the range. */
-    xl_rowcol_to_cell(range, first_row, first_col);
+    lxw_rowcol_to_cell(range, first_row, first_col);
 
     /* If the start and end cells are the same just return a single cell. */
     if (first_row == last_row && first_col == last_col)
@@ -123,7 +123,7 @@ xl_range(char *range,
     range[pos++] = ':';
 
     /* Add the first cell to the range. */
-    xl_rowcol_to_cell(&range[pos], last_row, last_col);
+    lxw_rowcol_to_cell(&range[pos], last_row, last_col);
 }
 
 /*
@@ -131,13 +131,13 @@ xl_range(char *range,
  * range reference with abosolute values.
  */
 void
-xl_range_abs(char *range,
-             int first_row, int first_col, int last_row, int last_col)
+lxw_range_abs(char *range,
+              int first_row, int first_col, int last_row, int last_col)
 {
     uint8_t pos;
 
     /* Add the first cell to the range. */
-    xl_rowcol_to_cell_abs(range, first_row, first_col, 1, 1);
+    lxw_rowcol_to_cell_abs(range, first_row, first_col, 1, 1);
 
     /* If the start and end cells are the same just return a single cell. */
     if (first_row == last_row && first_col == last_col)
@@ -150,14 +150,14 @@ xl_range_abs(char *range,
     range[pos++] = ':';
 
     /* Add the first cell to the range. */
-    xl_rowcol_to_cell_abs(&range[pos], last_row, last_col, 1, 1);
+    lxw_rowcol_to_cell_abs(&range[pos], last_row, last_col, 1, 1);
 }
 
 /*
  * Convert an Excel style A1 cell reference to a zero indexed row number.
  */
 uint32_t
-xl_get_row(const char *row_str)
+lxw_get_row(const char *row_str)
 {
     int row_num = 0;
     const char *p = row_str;
@@ -177,7 +177,7 @@ xl_get_row(const char *row_str)
  * Convert an Excel style A1 cell reference to a zero indexed column number.
  */
 uint16_t
-xl_get_col(const char *col_str)
+lxw_get_col(const char *col_str)
 {
     int col_num = 0;
     const char *p = col_str;
@@ -195,7 +195,7 @@ xl_get_col(const char *col_str)
  * Convert the second row of an Excel range ref to a zero indexed number.
  */
 uint16_t
-xl_get_row_2(const char *row_str)
+lxw_get_row_2(const char *row_str)
 {
     const char *p = row_str;
 
@@ -204,7 +204,7 @@ xl_get_row_2(const char *row_str)
         p++;
 
     if (p)
-        return xl_get_row(++p);
+        return lxw_get_row(++p);
     else
         return -1;
 }
@@ -213,7 +213,7 @@ xl_get_row_2(const char *row_str)
  * Convert the second column of an Excel range ref to a zero indexed number.
  */
 uint16_t
-xl_get_col_2(const char *col_str)
+lxw_get_col_2(const char *col_str)
 {
     const char *p = col_str;
 
@@ -222,7 +222,7 @@ xl_get_col_2(const char *col_str)
         p++;
 
     if (p)
-        return xl_get_col(++p);
+        return lxw_get_col(++p);
     else
         return -1;
 }

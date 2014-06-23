@@ -11,7 +11,7 @@
 #include "xlsxwriter/utility.h"
 
 // Test xl_rowcol_to_cell().
-TEST(utility, xl_rowcol_to_cell) {
+TEST(utility, lxw_rowcol_to_cell) {
 
     char got[MAX_CELL_NAME_LENGTH];
 
@@ -33,7 +33,7 @@ TEST(utility, xl_rowcol_to_cell) {
 }
 
 // Test xl_rowcol_to_cell_abs().
-TEST(utility, xl_rowcol_to_cell_abs) {
+TEST(utility, lxw_rowcol_to_cell_abs) {
 
     char got[MAX_CELL_NAME_LENGTH];
 

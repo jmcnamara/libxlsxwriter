@@ -45,7 +45,7 @@
  * expands to two function calls.
  */
 #define CELL(cell) \
-    xl_get_row(cell), xl_get_col(cell)
+    lxw_get_row(cell), lxw_get_col(cell)
 
 /**
  * @brief Convert an Excel `A:B` column range into a `(col1, col2)` pair.
@@ -63,7 +63,7 @@
  *
  */
 #define COLS(cols) \
-    xl_get_col(cols), xl_get_col_2(cols)
+    lxw_get_col(cols), lxw_get_col_2(cols)
 
 /**
  * @brief Convert an Excel `A1:B2` range into a `(row1, col1, row1, col2)` sequence.
@@ -73,7 +73,7 @@
  * This is a little syntactic shortcut to help with worksheet layout.
  */
 #define RANGE(range) \
-    xl_get_row(range), xl_get_col(range), xl_get_row_2(range), xl_get_col_2(range)
+    lxw_get_row(range), lxw_get_col(range), lxw_get_row_2(range), lxw_get_col_2(range)
 
 /** @brief Struct to represent a date and time in Excel.
  *
@@ -104,25 +104,25 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-void _xl_col_to_name(char *col_name, int col_num, uint8_t absolute);
+void lxw_col_to_name(char *col_name, int col_num, uint8_t absolute);
 
-void xl_rowcol_to_cell(char *cell_name, int row, int col);
+void lxw_rowcol_to_cell(char *cell_name, int row, int col);
 
-void xl_rowcol_to_cell_abs(char *cell_name,
-                           int row,
-                           int col, uint8_t abs_row, uint8_t abs_col);
+void lxw_rowcol_to_cell_abs(char *cell_name,
+                            int row,
+                            int col, uint8_t abs_row, uint8_t abs_col);
 
-void xl_range(char *range,
-              int first_row, int first_col, int last_row, int last_col);
+void lxw_range(char *range,
+               int first_row, int first_col, int last_row, int last_col);
 
-void xl_range_abs(char *range,
-                  int first_row, int first_col, int last_row, int last_col);
+void lxw_range_abs(char *range,
+                   int first_row, int first_col, int last_row, int last_col);
 
-uint32_t xl_get_row(const char *row_str);
+uint32_t lxw_get_row(const char *row_str);
 
-uint16_t xl_get_col(const char *col_str);
+uint16_t lxw_get_col(const char *col_str);
 
-uint16_t xl_get_col_2(const char *col_str);
+uint16_t lxw_get_col_2(const char *col_str);
 
 double _datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904);
 

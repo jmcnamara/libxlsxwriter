@@ -11,7 +11,7 @@
 #include "xlsxwriter/utility.h"
 
 // Test xl_range().
-TEST(utility, xl_range) {
+TEST(utility, lxw_range) {
 
     char got[MAX_CELL_RANGE_LENGTH];
 
@@ -32,7 +32,7 @@ TEST(utility, xl_range) {
 }
 
 // Test xl_range_abs().
-TEST(utility, xl_range_abs) {
+TEST(utility, lxw_range_abs) {
 
     char got[MAX_CELL_RANGE_LENGTH];
 

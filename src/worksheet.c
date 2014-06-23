@@ -422,15 +422,15 @@ _worksheet_write_dimension(lxw_worksheet *self)
     if (dim_rowmin == LXW_ROW_MAX && dim_colmin == LXW_COL_MAX) {
         /* If the rows and cols are still the defaults then no dimensions have
          * been set and we use the default range "A1". */
-        xl_range(ref, 0, 0, 0, 0);
+        lxw_range(ref, 0, 0, 0, 0);
     }
     else if (dim_rowmin == LXW_ROW_MAX && dim_colmin != LXW_COL_MAX) {
         /* If the rows aren't set but the columns are then the dimensions have
          * been changed via set_column(). */
-        xl_range(ref, 0, dim_colmin, 0, dim_colmax);
+        lxw_range(ref, 0, dim_colmin, 0, dim_colmax);
     }
     else {
-        xl_range(ref, dim_rowmin, dim_colmin, dim_rowmax, dim_colmax);
+        lxw_range(ref, dim_rowmin, dim_colmin, dim_rowmax, dim_colmax);
     }
 
     _INIT_ATTRIBUTES();
@@ -682,7 +682,7 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
     lxw_col_t col_num = cell->col_num;
     int32_t index = 0;
 
-    xl_rowcol_to_cell_abs(range, row_num, col_num, 0, 0);
+    lxw_rowcol_to_cell_abs(range, row_num, col_num, 0, 0);
 
     _INIT_ATTRIBUTES();
     _PUSH_ATTRIBUTES_STR("r", range);

@@ -48,27 +48,27 @@
 
 
 #define TEST_COL_TO_NAME(num, abs, exp)                             \
-    _xl_col_to_name(got, num, abs);                                 \
+    lxw_col_to_name(got, num, abs);                                 \
     EXPECT_STREQ(exp, got);
 
 
 #define TEST_ROWCOL_TO_CELL(row, col, exp)                          \
-    xl_rowcol_to_cell(got, row, col);                               \
+    lxw_rowcol_to_cell(got, row, col);                              \
     EXPECT_STREQ(exp, got);
 
 
 #define TEST_ROWCOL_TO_CELL_ABS(row, col, row_abs, col_abs, exp)    \
-    xl_rowcol_to_cell_abs(got, row, col, row_abs, col_abs);         \
+    lxw_rowcol_to_cell_abs(got, row, col, row_abs, col_abs);        \
     EXPECT_STREQ(exp, got);
 
 
 #define TEST_XL_RANGE(row1, col1, row2, col2, exp)                  \
-    xl_range(got, row1, col1, row2, col2);                          \
+    lxw_range(got, row1, col1, row2, col2);                         \
     EXPECT_STREQ(exp, got);
 
 
 #define TEST_XL_RANGE_ABS(row1, col1, row2, col2, exp)              \
-    xl_range_abs(got, row1, col1, row2, col2);                      \
+    lxw_range_abs(got, row1, col1, row2, col2);                     \
     EXPECT_STREQ(exp, got);
 
 
