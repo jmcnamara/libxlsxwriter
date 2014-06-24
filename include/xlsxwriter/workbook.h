@@ -89,6 +89,7 @@ typedef struct lxw_workbook {
     uint16_t font_count;
     uint16_t border_count;
     uint16_t fill_count;
+    uint8_t  optimize;
 
     lxw_hash_table *xf_format_indices;
 

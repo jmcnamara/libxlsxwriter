@@ -658,6 +658,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     init_data.hidden = 0;
     init_data.index = self->num_sheets;
     init_data.sst = self->sst;
+    init_data.optimize = self->optimize;
 
     /* Create a new worksheet object. */
     worksheet = _new_worksheet(&init_data);

@@ -20,7 +20,7 @@ TEST(worksheet, write_row) {
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
 
-    lxw_row *row = _get_row(worksheet->table, 0);
+    lxw_row *row = _get_row_list(worksheet, 0);
 
     _write_row(worksheet, row, NULL);
 
@@ -28,4 +28,3 @@ TEST(worksheet, write_row) {
 
     _free_worksheet(worksheet);
 }
-

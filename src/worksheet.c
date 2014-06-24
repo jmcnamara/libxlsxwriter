@@ -39,6 +39,11 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->table = calloc(1, sizeof(struct lxw_table_rows));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->table, mem_error);
 
+    if (init_data && init_data->optimize) {
+        worksheet->array = calloc(LXW_COL_MAX, sizeof(struct lxw_cell*));
+        GOTO_LABEL_ON_MEM_ERROR(worksheet->array, mem_error);
+    }
+
     worksheet->col_options =
         calloc(LXW_COL_META_MAX, sizeof(lxw_col_options *));
     worksheet->col_options_max = LXW_COL_META_MAX;
@@ -48,9 +53,16 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->col_formats_max = LXW_COL_META_MAX;
     GOTO_LABEL_ON_MEM_ERROR(worksheet->col_formats, mem_error);
 
+    worksheet->optimize_row = calloc(1, sizeof(struct lxw_row));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->optimize_row, mem_error);
+
     TAILQ_INIT(worksheet->table);
 
-    worksheet->file = NULL;
+    if (init_data && init_data->optimize) {
+        worksheet->optimize_tmpfile = tmpfile();
+        worksheet->file = worksheet->optimize_tmpfile;
+    }
+
     worksheet->dim_rowmax = 0;
     worksheet->dim_colmax = 0;
     worksheet->dim_rowmin = LXW_ROW_MAX;
@@ -61,6 +73,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
         worksheet->index = init_data->index;
         worksheet->hidden = init_data->hidden;
         worksheet->sst = init_data->sst;
+        worksheet->optimize = init_data->optimize;
     }
 
     return worksheet;
@@ -68,6 +81,22 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
 mem_error:
     _free_worksheet(worksheet);
     return NULL;
+}
+
+
+/*
+ * Free a worksheet cell.
+ */
+void
+_free_cell(lxw_cell *cell)
+{
+    if (!cell)
+        return;
+
+    if (cell->type == FORMULA_CELL)
+        free(cell->u.string);
+
+    free(cell);
 }
 
 /*
@@ -102,11 +131,7 @@ _free_worksheet(lxw_worksheet *worksheet)
             while (!TAILQ_EMPTY(row->cells)) {
                 cell = TAILQ_FIRST(row->cells);
                 TAILQ_REMOVE(row->cells, cell, list_pointers);
-                if (cell->type == FORMULA_CELL) {
-                    free(cell->u.formula);
-                    /* free(cell->formula_result.string); */
-                }
-                free(cell);
+                _free_cell(cell);
             }
             TAILQ_REMOVE(worksheet->table, row, list_pointers);
             free(row->cells);
@@ -115,6 +140,15 @@ _free_worksheet(lxw_worksheet *worksheet)
 
         free(worksheet->table);
     }
+
+    if (worksheet->array) {
+        for (col = 0; col < LXW_COL_MAX; col++) {
+            _free_cell(worksheet->array[col]);
+        }
+    }
+
+    if (worksheet->optimize_row)
+        free(worksheet->optimize_row);
 
     free(worksheet->name);
     free(worksheet);
@@ -184,6 +218,26 @@ _new_string_cell(lxw_row_t row_num,
     return cell;
 }
 
+
+/*
+ * Create a new worksheet inline_string cell object.
+ */
+STATIC lxw_cell *
+_new_inline_string_cell(lxw_row_t row_num,
+                        lxw_col_t col_num, char *string, lxw_format *format)
+{
+    lxw_cell *cell = calloc(1, sizeof(lxw_cell));
+    RETURN_ON_MEM_ERROR(cell, cell);
+
+    cell->row_num = row_num;
+    cell->col_num = col_num;
+    cell->type = INLINE_STRING_CELL;
+    cell->format = format;
+    cell->u.string = string;
+
+    return cell;
+}
+
 /*
  * Create a new worksheet formula cell object.
  */
@@ -198,7 +252,7 @@ _new_formula_cell(lxw_row_t row_num,
     cell->col_num = col_num;
     cell->type = FORMULA_CELL;
     cell->format = format;
-    cell->u.formula = formula;
+    cell->u.string = formula;
 
     return cell;
 }
@@ -224,8 +278,9 @@ _new_blank_cell(lxw_row_t row_num, lxw_col_t col_num, lxw_format *format)
  * Get or create the row object for a given row number.
  */
 STATIC lxw_row *
-_get_row(struct lxw_table_rows *table, lxw_row_t row_num)
+_get_row_list(lxw_worksheet *self, lxw_row_t row_num)
 {
+    struct lxw_table_rows *table = self->table;
     lxw_row *new_row;
     lxw_row *first_row = TAILQ_FIRST(table);
     lxw_row *last_row = TAILQ_LAST(table, lxw_table_rows);
@@ -285,11 +340,49 @@ _get_row(struct lxw_table_rows *table, lxw_row_t row_num)
 }
 
 /*
+ * Get or create the row object for a given row number.
+ */
+STATIC lxw_row *
+_get_row(lxw_worksheet *self, lxw_row_t row_num)
+{
+    lxw_row *row;
+
+    if (!self->optimize) {
+        row = _get_row_list(self, row_num);
+        return row;
+    }
+    else
+    {
+        if (row_num < self->optimize_row->row_num) {
+            return NULL;
+        }
+        else if (row_num == self->optimize_row->row_num) {
+            return self->optimize_row;
+        }
+        else {
+            /* Flush row. */
+            row = self->optimize_row;
+
+            /* Reset row. */
+            row->row_num = row_num;
+            row->height = LXW_DEF_ROW_HEIGHT;
+            row->format = NULL;
+            row->hidden = LXW_FALSE;
+            row->level = 0;
+            row->collapsed = LXW_FALSE;
+            
+            return row;
+        }
+    }
+}
+
+
+/*
  * Insert a cell object in the cell list of a row object.
  */
 STATIC void
-_insert_cell(struct lxw_table_cells *cell_list,
-             lxw_cell *cell, lxw_col_t col_num)
+_insert_cell_list(struct lxw_table_cells *cell_list,
+                  lxw_cell *cell, lxw_col_t col_num)
 {
     lxw_cell *first_cell = TAILQ_FIRST(cell_list);
     lxw_cell *last_cell = TAILQ_LAST(cell_list, lxw_table_cells);
@@ -349,6 +442,24 @@ _insert_cell(struct lxw_table_cells *cell_list,
     }
 
     return;
+}
+
+/*
+ * Insert a cell object into the cell list or array.
+ */
+STATIC void
+_insert_cell(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
+             lxw_cell *cell)
+{
+    lxw_row *row = _get_row(self, row_num);
+
+    if (!self->optimize) {
+        _insert_cell_list(row->cells, cell, col_num);
+    }
+    else {
+        if (row)
+            self->array[col_num] = cell;
+    }
 }
 
 /*
@@ -625,9 +736,9 @@ _write_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 {
     char data[ATTR_32];
 
-    __builtin_snprintf(data, ATTR_32, "%.16g", cell->formula_result.number);
+    __builtin_snprintf(data, ATTR_32, "%.16g", cell->formula_result);
 
-    _xml_data_element(self->file, "f", cell->u.formula, NULL);
+    _xml_data_element(self->file, "f", cell->u.string, NULL);
     _xml_data_element(self->file, "v", data, NULL);
 }
 
@@ -932,7 +1043,6 @@ worksheet_write_number(lxw_worksheet *self,
                        lxw_row_t row_num,
                        lxw_col_t col_num, double value, lxw_format *format)
 {
-    lxw_row *row;
     lxw_cell *cell;
     int8_t err;
 
@@ -941,10 +1051,9 @@ worksheet_write_number(lxw_worksheet *self,
     if (err)
         return err;
 
-    row = _get_row(self->table, row_num);
     cell = _new_number_cell(row_num, col_num, value, format);
 
-    _insert_cell(row->cells, cell, col_num);
+    _insert_cell(self, row_num, col_num, cell);
 
     return 0;
 }
@@ -958,9 +1067,9 @@ worksheet_write_string(lxw_worksheet *self,
                        lxw_col_t col_num, const char *string,
                        lxw_format *format)
 {
-    lxw_row *row;
     lxw_cell *cell;
     int32_t string_id;
+    char* string_copy;
     int8_t err;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
@@ -972,19 +1081,24 @@ worksheet_write_string(lxw_worksheet *self,
     if (!string && format)
         return worksheet_write_blank(self, row_num, col_num, format);
 
-    /* Get the SST string ID for the string. */
-    string_id = _get_sst_index(self->sst, string);
-
-    if (string_id < 0)
-        return LXW_STRING_HASH_ERROR;
-
     if (strlen(string) > LXW_STR_MAX)
         return LXW_STRING_LENGTH_ERROR;
 
-    row = _get_row(self->table, row_num);
-    cell = _new_string_cell(row_num, col_num, string_id, format);
+    if (!self->optimize) {
+        /* Get the SST string ID for the string. */
+        string_id = _get_sst_index(self->sst, string);
 
-    _insert_cell(row->cells, cell, col_num);
+        if (string_id < 0)
+            return LXW_STRING_HASH_ERROR;
+
+        cell = _new_string_cell(row_num, col_num, string_id, format);
+    }
+    else {
+        string_copy = __builtin_strdup(string);
+        cell = _new_inline_string_cell(row_num, col_num, string_copy, format);
+    }
+
+    _insert_cell(self, row_num, col_num, cell);
 
     return 0;
 }
@@ -999,7 +1113,6 @@ worksheet_write_formula_num(lxw_worksheet *self,
                             const char *formula,
                             lxw_format *format, double result)
 {
-    lxw_row *row;
     lxw_cell *cell;
     char *formula_copy;
     int8_t err;
@@ -1015,11 +1128,10 @@ worksheet_write_formula_num(lxw_worksheet *self,
     else
         formula_copy = __builtin_strdup(formula);
 
-    row = _get_row(self->table, row_num);
     cell = _new_formula_cell(row_num, col_num, formula_copy, format);
-    cell->formula_result.number = result;
+    cell->formula_result = result;
 
-    _insert_cell(row->cells, cell, col_num);
+    _insert_cell(self, row_num, col_num, cell);
 
     return 0;
 }
@@ -1046,7 +1158,6 @@ worksheet_write_blank(lxw_worksheet *self,
                       lxw_row_t row_num, lxw_col_t col_num,
                       lxw_format *format)
 {
-    lxw_row *row;
     lxw_cell *cell;
     int8_t err;
 
@@ -1059,10 +1170,9 @@ worksheet_write_blank(lxw_worksheet *self,
     if (err)
         return err;
 
-    row = _get_row(self->table, row_num);
     cell = _new_blank_cell(row_num, col_num, format);
 
-    _insert_cell(row->cells, cell, col_num);
+    _insert_cell(self, row_num, col_num, cell);
 
     return 0;
 }
@@ -1076,7 +1186,6 @@ worksheet_write_datetime(lxw_worksheet *self,
                          lxw_col_t col_num, lxw_datetime *datetime,
                          lxw_format *format)
 {
-    lxw_row *row;
     lxw_cell *cell;
     double excel_date;
     int8_t err;
@@ -1088,10 +1197,9 @@ worksheet_write_datetime(lxw_worksheet *self,
 
     excel_date = _datetime_to_excel_date(datetime, EPOCH_1900);
 
-    row = _get_row(self->table, row_num);
     cell = _new_number_cell(row_num, col_num, excel_date, format);
 
-    _insert_cell(row->cells, cell, col_num);
+    _insert_cell(self, row_num, col_num, cell);
 
     return 0;
 }
@@ -1248,14 +1356,13 @@ worksheet_set_row(lxw_worksheet *self,
 
     }
 
-    row = _get_row(self->table, row_num);
+    row = _get_row_list(self, row_num);
 
     row->height = height;
     row->format = format;
     row->hidden = hidden;
     row->level = level;
     row->collapsed = collapsed;
-    row->changed = LXW_TRUE;
 
     return 0;
 

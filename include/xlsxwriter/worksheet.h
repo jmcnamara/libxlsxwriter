@@ -85,6 +85,7 @@ typedef uint16_t lxw_col_t;
 enum cell_types {
     NUMBER_CELL = 1,
     STRING_CELL,
+    INLINE_STRING_CELL,
     FORMULA_CELL,
     BLANK_CELL
 };
@@ -133,7 +134,9 @@ typedef struct lxw_col_options {
 typedef struct lxw_worksheet {
 
     FILE *file;
+    FILE *optimize_tmpfile;
     struct lxw_table_rows *table;
+    struct lxw_cell **array;
 
     lxw_row_t dim_rowmin;
     lxw_row_t dim_rowmax;
@@ -158,6 +161,8 @@ typedef struct lxw_worksheet {
     uint16_t col_formats_max;
 
     uint8_t col_size_changed;
+    uint8_t optimize;
+    struct lxw_row *optimize_row;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -169,6 +174,7 @@ typedef struct lxw_worksheet {
 typedef struct lxw_worksheet_init_data {
     uint32_t index;
     uint8_t hidden;
+    uint8_t optimize;
 
     lxw_sst *sst;
     char *name;
@@ -183,7 +189,6 @@ typedef struct lxw_row {
     uint8_t hidden;
     uint8_t level;
     uint8_t collapsed;
-    uint8_t changed;
     struct lxw_table_cells *cells;
 
     /* List pointers for queue.h. */
@@ -200,13 +205,10 @@ typedef struct lxw_cell {
     union {
         double number;
         int32_t string_id;
-        char *formula;
+        char *string;
     } u;
 
-    union {
-        double number;
-        char *string;
-    } formula_result;
+    double formula_result;
 
     /* List pointers for queue.h. */
     TAILQ_ENTRY (lxw_cell) list_pointers;
@@ -672,7 +674,7 @@ STATIC void _worksheet_write_page_margins(lxw_worksheet *worksheet);
 STATIC void _write_row(lxw_worksheet *worksheet, lxw_row *row, char *spans);
 STATIC void _write_col_info(lxw_worksheet *worksheet,
                             lxw_col_options *options);
-STATIC lxw_row *_get_row(struct lxw_table_rows *table, lxw_row_t row_num);
+STATIC lxw_row *_get_row_list(lxw_worksheet *worksheet, lxw_row_t row_num);
 
 #endif /* TESTING */
 
