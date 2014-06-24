@@ -189,6 +189,8 @@ typedef struct lxw_row {
     uint8_t hidden;
     uint8_t level;
     uint8_t collapsed;
+    uint8_t row_changed;
+    uint8_t data_changed;
     struct lxw_table_cells *cells;
 
     /* List pointers for queue.h. */
@@ -659,6 +661,7 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);
 void _worksheet_assemble_xml_file(lxw_worksheet *worksheet);
+void _worksheet_write_single_row(lxw_worksheet *self);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

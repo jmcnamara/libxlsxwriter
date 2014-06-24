@@ -7,6 +7,8 @@
  *
  */
 
+#include <ctype.h>
+
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/worksheet.h"
 #include "xlsxwriter/format.h"
@@ -40,7 +42,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     GOTO_LABEL_ON_MEM_ERROR(worksheet->table, mem_error);
 
     if (init_data && init_data->optimize) {
-        worksheet->array = calloc(LXW_COL_MAX, sizeof(struct lxw_cell*));
+        worksheet->array = calloc(LXW_COL_MAX, sizeof(struct lxw_cell *));
         GOTO_LABEL_ON_MEM_ERROR(worksheet->array, mem_error);
     }
 
@@ -55,6 +57,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
 
     worksheet->optimize_row = calloc(1, sizeof(struct lxw_row));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->optimize_row, mem_error);
+    worksheet->optimize_row->height = LXW_DEF_ROW_HEIGHT;
 
     TAILQ_INIT(worksheet->table);
 
@@ -83,7 +86,6 @@ mem_error:
     return NULL;
 }
 
-
 /*
  * Free a worksheet cell.
  */
@@ -93,7 +95,7 @@ _free_cell(lxw_cell *cell)
     if (!cell)
         return;
 
-    if (cell->type == FORMULA_CELL)
+    if (cell->type == FORMULA_CELL || cell->type == INLINE_STRING_CELL)
         free(cell->u.string);
 
     free(cell);
@@ -145,6 +147,7 @@ _free_worksheet(lxw_worksheet *worksheet)
         for (col = 0; col < LXW_COL_MAX; col++) {
             _free_cell(worksheet->array[col]);
         }
+        free(worksheet->array);
     }
 
     if (worksheet->optimize_row)
@@ -217,7 +220,6 @@ _new_string_cell(lxw_row_t row_num,
 
     return cell;
 }
-
 
 /*
  * Create a new worksheet inline_string cell object.
@@ -351,8 +353,7 @@ _get_row(lxw_worksheet *self, lxw_row_t row_num)
         row = _get_row_list(self, row_num);
         return row;
     }
-    else
-    {
+    else {
         if (row_num < self->optimize_row->row_num) {
             return NULL;
         }
@@ -361,21 +362,13 @@ _get_row(lxw_worksheet *self, lxw_row_t row_num)
         }
         else {
             /* Flush row. */
+            _worksheet_write_single_row(self);
             row = self->optimize_row;
-
-            /* Reset row. */
             row->row_num = row_num;
-            row->height = LXW_DEF_ROW_HEIGHT;
-            row->format = NULL;
-            row->hidden = LXW_FALSE;
-            row->level = 0;
-            row->collapsed = LXW_FALSE;
-            
             return row;
         }
     }
 }
-
 
 /*
  * Insert a cell object in the cell list of a row object.
@@ -454,11 +447,14 @@ _insert_cell(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
     lxw_row *row = _get_row(self, row_num);
 
     if (!self->optimize) {
+        row->data_changed = LXW_TRUE;
         _insert_cell_list(row->cells, cell, col_num);
     }
     else {
-        if (row)
+        if (row) {
+            row->data_changed = LXW_TRUE;
             self->array[col_num] = cell;
+        }
     }
 }
 
@@ -622,6 +618,39 @@ _worksheet_write_sheet_data(lxw_worksheet *self)
 }
 
 /*
+ * Write the <sheetData> element when the memory optimisation is on. In which
+ * case we read the data stored in the temp file and rewrite it to the XML
+ * sheet file.
+ */
+STATIC void
+_worksheet_write_optimized_sheet_data(lxw_worksheet *self)
+{
+#define buffer_size 4096
+    uint16_t read_size = 1;
+    char buffer[buffer_size];
+
+    if (self->dim_rowmin == LXW_ROW_MAX) {
+        /* If the dimensions aren"t defined then there is no data to write. */
+        _xml_empty_tag(self->file, "sheetData", NULL);
+    }
+    else {
+
+        _xml_start_tag(self->file, "sheetData", NULL);
+
+        /* Flush and rewind the temp file. */
+        fflush(self->optimize_tmpfile);
+        rewind(self->optimize_tmpfile);
+
+        while (read_size) {
+            read_size = fread(buffer, 1, buffer_size, self->optimize_tmpfile);
+            fwrite(buffer, 1, read_size, self->file);
+        }
+
+        _xml_end_tag(self->file, "sheetData");
+    }
+}
+
+/*
  * Write the <pageMargins> element.
  */
 STATIC void
@@ -687,7 +716,7 @@ _write_row(lxw_worksheet *self, lxw_row *row, char *spans)
     if (row->collapsed)
         _PUSH_ATTRIBUTES_STR("collapsed", "1");
 
-    if (TAILQ_EMPTY(row->cells))
+    if (!row->data_changed)
         _xml_empty_tag(self->file, "row", &attributes);
     else
         _xml_start_tag(self->file, "row", &attributes);
@@ -740,6 +769,29 @@ _write_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 
     _xml_data_element(self->file, "f", cell->u.string, NULL);
     _xml_data_element(self->file, "v", data, NULL);
+}
+
+/*
+ * Write out an inline string.
+ */
+STATIC void
+_write_inline_string_cell(lxw_worksheet *self, lxw_cell *cell)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char *string = cell->u.string;
+
+    _INIT_ATTRIBUTES();
+
+    /* Add attribute to preserve leading or trailing whitespace. */
+    if (string && (isspace(string[0]) || isspace(string[strlen(string) - 1])))
+        _PUSH_ATTRIBUTES_STR("xml:space", "preserve");
+
+    _xml_start_tag(self->file, "is", NULL);
+    _xml_data_element(self->file, "t", string, &attributes);
+    _xml_end_tag(self->file, "is");
+
+    _FREE_ATTRIBUTES();
 }
 
 /*
@@ -811,17 +863,21 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
     if (index)
         _PUSH_ATTRIBUTES_INT("s", index);
 
-    if (cell->type == STRING_CELL)
-        _PUSH_ATTRIBUTES_STR("t", "s");
-
     if (cell->type == NUMBER_CELL) {
         _xml_start_tag(self->file, "c", &attributes);
         _write_number_cell(self, cell);
         _xml_end_tag(self->file, "c");
     }
     else if (cell->type == STRING_CELL) {
+        _PUSH_ATTRIBUTES_STR("t", "s");
         _xml_start_tag(self->file, "c", &attributes);
         _write_string_cell(self, cell);
+        _xml_end_tag(self->file, "c");
+    }
+    else if (cell->type == INLINE_STRING_CELL) {
+        _PUSH_ATTRIBUTES_STR("t", "inlineStr");
+        _xml_start_tag(self->file, "c", &attributes);
+        _write_inline_string_cell(self, cell);
         _xml_end_tag(self->file, "c");
     }
     else if (cell->type == FORMULA_CELL) {
@@ -866,6 +922,52 @@ _write_rows(lxw_worksheet *self)
             _xml_end_tag(self->file, "row");
         }
     }
+}
+
+/*
+ * Write out the worksheet data as a single row with cells. This method is
+ * used when memory optimisation is on. A single row is written and the data
+ * array is reset. That way only one row of data is kept in memory at any one
+ * time. We don't write span data in the optimised case since it is optional.
+ */
+void
+_worksheet_write_single_row(lxw_worksheet *self)
+{
+    lxw_row *row = self->optimize_row;
+    lxw_col_t col;
+
+    /* skip row if it doesn"t contain row formatting, cell data or a comment. */
+    if (!(row->row_changed || row->data_changed))
+        return;
+
+    /* Write the cells if the row contains data. */
+    if (!row->data_changed) {
+        /* Row data only. No cells. */
+        _write_row(self, row, NULL);
+    }
+    else {
+        /* Row and cell data. */
+        _write_row(self, row, NULL);
+
+        for (col = self->dim_colmin; col <= self->dim_colmax; col++) {
+            if (self->array[col]) {
+                _write_cell(self, self->array[col], row->format);
+                _free_cell(self->array[col]);
+                self->array[col] = NULL;
+            }
+        }
+
+        _xml_end_tag(self->file, "row");
+    }
+
+    /* Reset the row. */
+    row->height = LXW_DEF_ROW_HEIGHT;
+    row->format = NULL;
+    row->hidden = LXW_FALSE;
+    row->level = 0;
+    row->collapsed = LXW_FALSE;
+    row->data_changed = LXW_FALSE;
+    row->row_changed = LXW_FALSE;
 }
 
 /*
@@ -978,6 +1080,13 @@ _check_dimensions(lxw_worksheet *self,
     if (col_num >= LXW_COL_MAX)
         return LXW_RANGE_ERROR;
 
+    /* In optimization mode we don"t change dimensions for rows that are */
+    /* already written. */
+    if (!ignore_row && !ignore_col && self->optimize) {
+        if (row_num < self->optimize_row->row_num)
+            return LXW_RANGE_ERROR;
+    }
+
     if (!ignore_row) {
         if (row_num < self->dim_rowmin)
             self->dim_rowmin = row_num;
@@ -1020,7 +1129,10 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
     _write_cols(self);
 
     /* Write the sheetData element. */
-    _worksheet_write_sheet_data(self);
+    if (!self->optimize)
+        _worksheet_write_sheet_data(self);
+    else
+        _worksheet_write_optimized_sheet_data(self);
 
     /* Write the worksheet page_margins. */
     _worksheet_write_page_margins(self);
@@ -1069,7 +1181,7 @@ worksheet_write_string(lxw_worksheet *self,
 {
     lxw_cell *cell;
     int32_t string_id;
-    char* string_copy;
+    char *string_copy;
     int8_t err;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
@@ -1356,13 +1468,14 @@ worksheet_set_row(lxw_worksheet *self,
 
     }
 
-    row = _get_row_list(self, row_num);
+    row = _get_row(self, row_num);
 
     row->height = height;
     row->format = format;
     row->hidden = hidden;
     row->level = level;
     row->collapsed = collapsed;
+    row->row_changed = LXW_TRUE;
 
     return 0;
 

@@ -123,6 +123,9 @@ _write_worksheet_files(lxw_packager *self)
         __builtin_snprintf(sheetname, FILENAME_LEN,
                            "xl/worksheets/sheet%d.xml", index++);
 
+        if (worksheet->optimize_row)
+            _worksheet_write_single_row(worksheet);
+
         worksheet->file = tmpfile();
 
         _worksheet_assemble_xml_file(worksheet);
