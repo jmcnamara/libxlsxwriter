@@ -585,6 +585,15 @@ _workbook_assemble_xml_file(lxw_workbook *self)
 lxw_workbook *
 new_workbook(const char *filename)
 {
+    return new_workbook_opt(filename, NULL);
+}
+
+/*
+ * Create a new workbook object with options.
+ */
+lxw_workbook *
+new_workbook_opt(const char *filename, lxw_workbook_options *options)
+{
     lxw_format *format;
     lxw_workbook *workbook;
 
@@ -622,6 +631,9 @@ new_workbook(const char *filename)
     /* Initialise its index. */
     _get_xf_index(format);
 
+    if (options)
+        workbook->options.constant_memory = options->constant_memory;
+
     return workbook;
 
 mem_error:
@@ -658,7 +670,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     init_data.hidden = 0;
     init_data.index = self->num_sheets;
     init_data.sst = self->sst;
-    init_data.optimize = self->optimize;
+    init_data.optimize = self->options.constant_memory;
 
     /* Create a new worksheet object. */
     worksheet = _new_worksheet(&init_data);

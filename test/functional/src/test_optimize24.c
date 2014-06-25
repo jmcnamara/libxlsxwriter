@@ -11,10 +11,9 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_optimize24.xlsx");
+    lxw_workbook_options options = {1};
 
-    workbook->optimize = 1;
-
+    lxw_workbook  *workbook  = new_workbook_opt("test_optimize24.xlsx", &options);
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_format    *bold      = workbook_add_format(workbook);
 

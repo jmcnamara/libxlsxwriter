@@ -1,6 +1,6 @@
 /*
  * libxlsxwriter
- * 
+ *
  * Copyright 2014, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  */
 
@@ -12,7 +12,7 @@
  * represents the Excel file as it is written on disk.
  *
  * See @ref workbook.h for full details of the functionality.
- * 
+ *
  * @file workbook.h
  *
  * @brief Functions related to creating an Excel xlsx workbook.
@@ -65,6 +65,21 @@ enum lxw_close_error {
 };
 
 /**
+ * @brief Workbook options.
+ *
+ * Optional parameters when creating a new Workbool object via
+ * new_workbook_opt().
+ *
+ * Currently only the `constant_memory` property is supported:
+ *
+ * * `constant_memory`
+ */
+typedef struct lxw_workbook_options {
+    /** Optimise the workbook to use constant memory for worksheets */
+    uint8_t constant_memory;
+} lxw_workbook_options;
+
+/**
  * @brief Struct to represent an Excel workbook.
  *
  * The members of the lxw_workbook struct aren't modified directly. Instead
@@ -79,6 +94,7 @@ typedef struct lxw_workbook {
     lxw_sst *sst;
     lxw_doc_properties *properties;
     const char *filename;
+    lxw_workbook_options options;
 
     uint16_t num_sheets;
     uint16_t first_sheet;
@@ -121,6 +137,33 @@ extern "C" {
  *
  */
 lxw_workbook *new_workbook(const char *filename);
+
+/**
+ * @brief Create a new workbook object, and set the workbook options.
+ *
+ * @param filename The name of the new Excel file to create.
+ * @param options  Workbook options.
+ *
+ * @return A lxw_workbook instance.
+ *
+ * This method is the same as the `new_workbook()` constructor but allows
+ * additional options to be set.
+ *
+ * @code
+ *    lxw_workbook_options options = {.constant_memory = 1};
+ *
+ *    lxw_workbook  *workbook  = new_workbook_opt("filename.xlsx", &options);
+ * @endcode
+ *
+ * Note, in this mode a row of data is written and then discarded when a cell
+ * in a new row is added via one of the worksheet `worksheet_write_*()`
+ * methods.  Therefore, once this mode is active, data should be written in
+ * sequential row order.
+ *
+ * See @ref working_with_memory for more details.
+ *
+ */
+lxw_workbook *new_workbook_opt(const char *filename, lxw_workbook_options *options);
 
 /**
  * @brief Add a new worksheet to a workbook:

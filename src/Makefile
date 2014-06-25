@@ -19,7 +19,7 @@ INC_DIR     = ../include
 MINIZIP_DIR = ../third_party/minizip
 
 # Flags passed to compiler.
-CFLAGS   += -g -O0 -Wall -Wextra -pedantic -ansi
+CFLAGS   += -g -O3 -Wall -Wextra -pedantic -ansi
 
 # Library names.
 LIBXLSXWRITER_A  = libxlsxwriter.a
@@ -81,7 +81,7 @@ test_compile : $(OBJS)
 	$(Q)$(CC) -fPIC -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
 
 %.to : %.c $(HDRS)
-	$(Q)$(CC) -DTESTING -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(Q)$(CC) -g -O0 -DTESTING -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
 
 
 # Clean up any temp/build files.

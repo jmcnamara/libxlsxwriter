@@ -17,6 +17,7 @@
 #define LXW_ROW_MAX 1048576
 #define LXW_COL_MAX 16384
 #define LXW_STR_MAX 32767
+#define BUFFER_SIZE 4096
 
 /*
  * Forward declarations.
@@ -625,9 +626,8 @@ _worksheet_write_sheet_data(lxw_worksheet *self)
 STATIC void
 _worksheet_write_optimized_sheet_data(lxw_worksheet *self)
 {
-#define buffer_size 4096
     uint16_t read_size = 1;
-    char buffer[buffer_size];
+    char buffer[BUFFER_SIZE];
 
     if (self->dim_rowmin == LXW_ROW_MAX) {
         /* If the dimensions aren"t defined then there is no data to write. */
@@ -642,7 +642,7 @@ _worksheet_write_optimized_sheet_data(lxw_worksheet *self)
         rewind(self->optimize_tmpfile);
 
         while (read_size) {
-            read_size = fread(buffer, 1, buffer_size, self->optimize_tmpfile);
+            read_size = fread(buffer, 1, BUFFER_SIZE, self->optimize_tmpfile);
             fwrite(buffer, 1, read_size, self->file);
         }
 

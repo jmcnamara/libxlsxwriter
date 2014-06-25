@@ -11,10 +11,9 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_optimize02.xlsx");
+    lxw_workbook_options options = {1};
 
-    workbook->optimize = 1;
-
+    lxw_workbook  *workbook  = new_workbook_opt("test_optimize02.xlsx", &options);
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     worksheet_write_string(worksheet, 0, 0, "Hello", NULL);

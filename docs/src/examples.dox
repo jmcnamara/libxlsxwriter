@@ -89,7 +89,14 @@ Next example: @ref utf8.c
 @example utf8.c
 A simple Unicode UTF-8 example. Note, the source file is UTF-8 encoded.
 
-
+Next example: @ref constant_memory.c
 @image html utf8.png
+
+@example constant_memory.c
+Example of using libxlsxwriter for writing large files in constant memory
+mode.
+
+@image html constant_memory.png
+
 
 */
