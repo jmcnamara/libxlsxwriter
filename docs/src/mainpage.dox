@@ -9,15 +9,13 @@
 
 @section mainpage_intro libxlsxwriter
 
-Note: this is preliminary documentation. The libxlsxwriter library isn't
-released yet.
-
 Libxlsxwriter is a C library that can be used to write text, numbers and
 formulas to multiple worksheets in an Excel 2007+ XLSX file. It supports
 features such as:
 
 - 100% compatible Excel XLSX files
-- Full formatting
+- Full Excel formatting
+- Memory optimisation mode for writing large files
 - Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter)
 - FreeBSD @ref license
 - ANSI C
@@ -40,6 +38,17 @@ following sections for more information:
 - @ref worksheet.h "The Worksheet object"
 - @ref format.h    "The Format object"
 
+- @ref working_with_formats
+- @ref working_with_colors
+- @ref working_with_dates
+- @ref working_with_memory
+
 - @ref examples
+- @ref running_the_tests
+- @ref faq
+- @ref bugs
+- @ref author
+- @ref license
+- @ref changes
 
 */

@@ -53,6 +53,7 @@ Build the source code as follows:
 
     cd libxlsxwriter
     make
+    # For FreeBSD use gmake instead of make
 
 This will create a static and dynamic library in the local `./lib` directory:
 

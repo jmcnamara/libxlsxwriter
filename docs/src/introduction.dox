@@ -25,13 +25,6 @@ Libxlsxwriter is a C port of the Perl
 module and the Python [XlsxWriter](http://xlsxwriter.readthedocs.org) module
 and is licensed under a FreeBSD @ref license.
 
-
-@note
-
-The 0.0.1 version of libxlsxwriter should be considered as a beta. In
-particular it has some known performance/memory limitations that will be fixed
-in the next releases.
-
 Next: @ref getting_started
 
 */
