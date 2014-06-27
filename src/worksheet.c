@@ -63,7 +63,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     TAILQ_INIT(worksheet->table);
 
     if (init_data && init_data->optimize) {
-        worksheet->optimize_tmpfile = tmpfile();
+        worksheet->optimize_tmpfile = lxw_tmpfile();
         worksheet->file = worksheet->optimize_tmpfile;
     }
 

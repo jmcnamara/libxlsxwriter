@@ -97,7 +97,7 @@ _write_workbook_file(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
 
-    workbook->file = tmpfile();
+    workbook->file = lxw_tmpfile();
 
     _workbook_assemble_xml_file(workbook);
 
@@ -126,7 +126,7 @@ _write_worksheet_files(lxw_packager *self)
         if (worksheet->optimize_row)
             _worksheet_write_single_row(worksheet);
 
-        worksheet->file = tmpfile();
+        worksheet->file = lxw_tmpfile();
 
         _worksheet_assemble_xml_file(worksheet);
 
@@ -150,7 +150,7 @@ _write_shared_strings_file(lxw_packager *self)
     if (!sst->string_count)
         return 0;
 
-    sst->file = tmpfile();
+    sst->file = lxw_tmpfile();
 
     _sst_assemble_xml_file(sst);
 
@@ -172,7 +172,7 @@ _write_app_file(lxw_packager *self)
     lxw_app *app = _new_app();
     char num_sheets[ATTR_32] = { 0 };
 
-    app->file = tmpfile();
+    app->file = lxw_tmpfile();
 
     __builtin_snprintf(num_sheets, ATTR_32, "%d", self->workbook->num_sheets);
 
@@ -201,7 +201,7 @@ _write_core_file(lxw_packager *self)
 {
     lxw_core *core = _new_core();
 
-    core->file = tmpfile();
+    core->file = lxw_tmpfile();
 
     core->properties = self->workbook->properties;
 
@@ -224,7 +224,7 @@ _write_theme_file(lxw_packager *self)
 {
     lxw_theme *theme = _new_theme();
 
-    theme->file = tmpfile();
+    theme->file = lxw_tmpfile();
 
     _theme_assemble_xml_file(theme);
 
@@ -263,7 +263,7 @@ _write_styles_file(lxw_packager *self)
     styles->num_format_count = self->workbook->num_format_count;
     styles->xf_count = self->workbook->xf_format_indices->unique_count;
 
-    styles->file = tmpfile();
+    styles->file = lxw_tmpfile();
 
     _styles_assemble_xml_file(styles);
 
@@ -288,7 +288,7 @@ _write_content_types_file(lxw_packager *self)
     char sheetname[FILENAME_LEN] = { 0 };
     uint16_t index = 1;
 
-    content_types->file = tmpfile();
+    content_types->file = lxw_tmpfile();
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
         __builtin_snprintf(sheetname, FILENAME_LEN, "sheet%d", index++);
@@ -321,7 +321,7 @@ _write_workbook_rels_file(lxw_packager *self)
     char sheetname[FILENAME_LEN] = { 0 };
     uint16_t index = 1;
 
-    rels->file = tmpfile();
+    rels->file = lxw_tmpfile();
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
         __builtin_snprintf(sheetname, FILENAME_LEN, "worksheets/sheet%d.xml",
@@ -354,7 +354,7 @@ _write_root_rels_file(lxw_packager *self)
 {
     lxw_relationships *rels = _new_relationships();
 
-    rels->file = tmpfile();
+    rels->file = lxw_tmpfile();
 
     _add_document_relationship(rels, "/officeDocument", "xl/workbook.xml");
     _add_package_relationship(rels, "/metadata/core-properties",
