@@ -85,12 +85,8 @@ _free_sst(lxw_sst *sst)
             free(sst->buckets[i]);
     }
 
-    if (sst->order_list)
-        free(sst->order_list);
-
-    if (sst->buckets)
-        free(sst->buckets);
-
+    free(sst->order_list);
+    free(sst->buckets);
     free(sst);
 }
 
@@ -137,7 +133,7 @@ _write_t(lxw_sst *self, char *string)
     _INIT_ATTRIBUTES();
 
     /* Add attribute to preserve leading or trailing whitespace. */
-    if (string && (isspace(string[0]) || isspace(string[strlen(string) - 1])))
+    if (isspace(string[0]) || isspace(string[strlen(string) - 1]))
         _PUSH_ATTRIBUTES_STR("xml:space", "preserve");
 
     _xml_data_element(self->file, "t", string, &attributes);

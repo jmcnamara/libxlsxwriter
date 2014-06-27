@@ -711,12 +711,12 @@ workbook_add_format(lxw_workbook *self)
 {
     /* Create a new format object. */
     lxw_format *format = _new_format();
+    RETURN_ON_MEM_ERROR(format, NULL);
 
     format->xf_format_indices = self->xf_format_indices;
     format->num_xf_formats = &self->num_xf_formats;
 
-    if (format)
-        STAILQ_INSERT_TAIL(self->formats, format, list_pointers);
+    STAILQ_INSERT_TAIL(self->formats, format, list_pointers);
 
     return format;
 }
