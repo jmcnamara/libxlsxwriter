@@ -29,6 +29,13 @@
 #define ATTR_32 32
 #define MAX_CELL_NAME_LENGTH 13
 
+#define LXW_ATTRIBUTE_COPY(dst, src)                \
+    do{                                             \
+        strncpy(dst, src, MAX_ATTRIBUTE_LENGTH -1); \
+        dst[MAX_ATTRIBUTE_LENGTH - 1] = '\0';       \
+    } while (0)
+
+
  /* *INDENT-OFF* */
 #ifdef __cplusplus
 extern "C" {
