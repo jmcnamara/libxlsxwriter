@@ -454,6 +454,11 @@ _insert_cell(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
     else {
         if (row) {
             row->data_changed = LXW_TRUE;
+
+            /* Overwrite an existing cell if necessary. */
+            if (self->array[col_num])
+                _free_cell(self->array[col_num]);
+
             self->array[col_num] = cell;
         }
     }
