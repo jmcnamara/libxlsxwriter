@@ -144,8 +144,7 @@ _write_dcterms_created(lxw_core *self)
     struct xml_attribute *attribute;
     char datetime[ATTR_32];
 
-    _localtime_to_iso8601_date(&self->properties->created, datetime,
-                               MAX_ATTRIBUTE_LENGTH);
+    _localtime_to_iso8601_date(&self->properties->created, datetime, ATTR_32);
 
     _INIT_ATTRIBUTES();
     _PUSH_ATTRIBUTES_STR("xsi:type", "dcterms:W3CDTF");
@@ -165,8 +164,7 @@ _write_dcterms_modified(lxw_core *self)
     struct xml_attribute *attribute;
     char datetime[ATTR_32];
 
-    _localtime_to_iso8601_date(&self->properties->created, datetime,
-                               MAX_ATTRIBUTE_LENGTH);
+    _localtime_to_iso8601_date(&self->properties->created, datetime, ATTR_32);
 
     _INIT_ATTRIBUTES();
     _PUSH_ATTRIBUTES_STR("xsi:type", "dcterms:W3CDTF");
