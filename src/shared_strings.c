@@ -231,22 +231,22 @@ int32_t
 _get_sst_index(lxw_sst *sst, const char *string)
 {
     size_t hash_key = _generate_sst_hash_key(string);
-    struct sst_bucket_list *list;
-    struct sst_element *element;
+    struct sst_bucket_list *list = NULL;
+    struct sst_element *element = NULL;
 
     if (!sst->buckets[hash_key]) {
         /* The string isn't in the SST SharedString hash table. */
 
         /* Create a linked list in the bucket to hold the sst strings. */
         list = calloc(1, sizeof(struct sst_bucket_list));
-        RETURN_ON_MEM_ERROR(list, -1);
+        GOTO_LABEL_ON_MEM_ERROR(list, mem_error1);
 
         /* Initialise the bucket linked list. */
         SLIST_INIT(list);
 
         /* Create an sst element to add to the linked list. */
         element = calloc(1, sizeof(struct sst_element));
-        RETURN_ON_MEM_ERROR(element, -1);
+        GOTO_LABEL_ON_MEM_ERROR(element, mem_error1);
 
         /* Store the string and its index. */
         element->index = sst->unique_count;
@@ -285,7 +285,7 @@ _get_sst_index(lxw_sst *sst, const char *string)
         /* String doesn't exist in the list so this is a hash collision.
          * Create an sst element to add to the linked list. */
         element = calloc(1, sizeof(struct sst_element));
-        RETURN_ON_MEM_ERROR(element, -1);
+        GOTO_LABEL_ON_MEM_ERROR(element, mem_error2);
 
         /* Store the string and its index. */
         element->index = sst->unique_count;
@@ -303,4 +303,11 @@ _get_sst_index(lxw_sst *sst, const char *string)
 
         return element->index;
     }
+
+mem_error1:
+    free(list);
+
+mem_error2:
+    free(element);
+    return -1;
 }

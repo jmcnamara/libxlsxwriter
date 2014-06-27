@@ -71,22 +71,22 @@ _insert_hash_element(lxw_hash_table *lxw_hash, void *key, void *value,
                      size_t key_len)
 {
     size_t hash_key = _generate_hash_key(key, key_len, lxw_hash->num_buckets);
-    struct lxw_hash_bucket_list *list;
-    lxw_hash_element *element;
+    struct lxw_hash_bucket_list *list = NULL;
+    lxw_hash_element *element = NULL;
 
     if (!lxw_hash->buckets[hash_key]) {
         /* The key isn't in the LXW_HASH hash table. */
 
         /* Create a linked list in the bucket to hold the lxw_hash keys. */
         list = calloc(1, sizeof(struct lxw_hash_bucket_list));
-        RETURN_ON_MEM_ERROR(list, NULL);
+        GOTO_LABEL_ON_MEM_ERROR(list, mem_error1);
 
         /* Initialise the bucket linked list. */
         SLIST_INIT(list);
 
         /* Create an lxw_hash element to add to the linked list. */
         element = calloc(1, sizeof(lxw_hash_element));
-        RETURN_ON_MEM_ERROR(element, NULL);
+        GOTO_LABEL_ON_MEM_ERROR(element, mem_error1);
 
         /* Store the key and value. */
         element->key = key;
@@ -126,7 +126,7 @@ _insert_hash_element(lxw_hash_table *lxw_hash, void *key, void *value,
         /* Key doesn't exist in the list so this is a hash collision.
          * Create an lxw_hash element to add to the linked list. */
         element = calloc(1, sizeof(lxw_hash_element));
-        RETURN_ON_MEM_ERROR(element, NULL);
+        GOTO_LABEL_ON_MEM_ERROR(element, mem_error2);
 
         /* Store the key and value. */
         element->key = key;
@@ -143,6 +143,13 @@ _insert_hash_element(lxw_hash_table *lxw_hash, void *key, void *value,
 
         return element;
     }
+
+mem_error1:
+    free(list);
+
+mem_error2:
+    free(element);
+    return NULL;
 }
 
 /*
