@@ -183,15 +183,22 @@ _prepare_fills(lxw_workbook *self)
     lxw_hash_element *hash_element;
     lxw_format *format;
     uint16_t index = 2;
-    lxw_fill *default_fill_1 = calloc(1, sizeof(lxw_fill));
-    lxw_fill *default_fill_2 = calloc(1, sizeof(lxw_fill));
-    uint16_t *fill_index1 = calloc(1, sizeof(uint16_t));
-    uint16_t *fill_index2 = calloc(1, sizeof(uint16_t));
+    lxw_fill *default_fill_1 = NULL;
+    lxw_fill *default_fill_2 = NULL;
+    uint16_t *fill_index1 = NULL;
+    uint16_t *fill_index2 = NULL;
 
-    if (!default_fill_1 || !default_fill_2 || !fill_index1 || !fill_index2) {
-        MEM_ERROR();
-        return;
-    }
+    default_fill_1 = calloc(1, sizeof(lxw_fill));
+    GOTO_LABEL_ON_MEM_ERROR(default_fill_1, mem_error);
+
+    default_fill_2 = calloc(1, sizeof(lxw_fill));
+    GOTO_LABEL_ON_MEM_ERROR(default_fill_2, mem_error);
+
+    fill_index1 = calloc(1, sizeof(uint16_t));
+    GOTO_LABEL_ON_MEM_ERROR(fill_index1, mem_error);
+
+    fill_index2 = calloc(1, sizeof(uint16_t));
+    GOTO_LABEL_ON_MEM_ERROR(fill_index2, mem_error);
 
     /* Add the default fills. */
     default_fill_1->pattern = LXW_PATTERN_NONE;
@@ -267,6 +274,15 @@ _prepare_fills(lxw_workbook *self)
     _free_lxw_hash(fills);
 
     self->fill_count = index;
+
+    return;
+
+mem_error:
+    free(fill_index2);
+    free(fill_index1);
+    free(default_fill_2);
+    free(default_fill_1);
+    _free_lxw_hash(fills);
 }
 
 /*
