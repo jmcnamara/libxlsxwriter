@@ -323,7 +323,6 @@ _datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904)
     return days + seconds;
 }
 
-
 /*
  * Thin wrapper for tmpfile() so it can be over-ridden with a safer version if
  * required.

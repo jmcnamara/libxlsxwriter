@@ -1192,9 +1192,14 @@ worksheet_write_string(lxw_worksheet *self,
     if (err)
         return err;
 
-    /* Treat a NULL string with formatting as a blank cell. */
-    if (!string && format)
-        return worksheet_write_blank(self, row_num, col_num, format);
+    if (!string) {
+        /* Treat a NULL string with formatting as a blank cell. */
+        /* Null strings without formats should be ignored.      */
+        if (format)
+            return worksheet_write_blank(self, row_num, col_num, format);
+        else
+            return -4;
+    }
 
     if (strlen(string) > LXW_STR_MAX)
         return LXW_STRING_LENGTH_ERROR;
@@ -1236,6 +1241,9 @@ worksheet_write_formula_num(lxw_worksheet *self,
 
     if (err)
         return err;
+
+    if (!formula)
+        return -4;
 
     /* Strip leading "=" from formula. */
     if (formula[0] == '=')

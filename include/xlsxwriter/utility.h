@@ -126,7 +126,7 @@ uint16_t lxw_get_col_2(const char *col_str);
 
 double _datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904);
 
- FILE * lxw_tmpfile(void);
+FILE *lxw_tmpfile(void);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

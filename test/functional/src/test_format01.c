@@ -35,5 +35,12 @@ int main() {
     worksheet_write_string(worksheet3, 2, 1, "Bar", format);
     worksheet_write_number(worksheet3, 3, 2, 234, NULL);
 
+
+    /* For testing. This doesn't have a string or format and should be ignored. */
+    worksheet_write_string(worksheet1, 0, 0, NULL, NULL);
+
+    /* For testing. This doesn't have a formula and should be ignored. */
+    worksheet_write_formula(worksheet1, 0, 0, NULL, NULL);
+
     return workbook_close(workbook);
 }

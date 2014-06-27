@@ -163,7 +163,8 @@ lxw_workbook *new_workbook(const char *filename);
  * See @ref working_with_memory for more details.
  *
  */
-lxw_workbook *new_workbook_opt(const char *filename, lxw_workbook_options *options);
+lxw_workbook *new_workbook_opt(const char *filename,
+                               lxw_workbook_options *options);
 
 /**
  * @brief Add a new worksheet to a workbook:

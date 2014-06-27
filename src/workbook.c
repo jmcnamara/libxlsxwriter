@@ -654,6 +654,7 @@ new_workbook_opt(const char *filename, lxw_workbook_options *options)
 
 mem_error:
     _free_workbook(workbook);
+    workbook = NULL;
     return NULL;
 }
 

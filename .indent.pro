@@ -70,5 +70,6 @@
 -T lxw_theme
 -T lxw_tuple
 -T lxw_workbook
+-T lxw_workbook_options
 -T lxw_worksheet
 -T lxw_worksheet_init_data
