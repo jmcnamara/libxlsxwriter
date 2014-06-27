@@ -466,13 +466,11 @@ _insert_cell(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
 STATIC lxw_col_t
 _next_power_of_two(uint16_t col)
 {
-
     col--;
     col |= col >> 1;
     col |= col >> 2;
     col |= col >> 4;
     col |= col >> 8;
-    col |= col >> 16;
     col++;
 
     return col;
