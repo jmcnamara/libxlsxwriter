@@ -75,3 +75,13 @@ docs:
 install:
 	$(Q)cp -r include/* /usr/include
 	$(Q)cp lib/* /usr/lib
+
+# Run a coverity static analysis.
+coverity:
+	$(Q)$(MAKE) -C third_party/minizip
+	$(Q)$(MAKE) -C src clean
+	$(Q)rm -f  lib/*
+	$(Q)rm -rf  cov-int
+	$(Q)rm -f libxlsxwriter-coverity.tgz
+	$(Q)../cov-analysis-macosx-7.0.2/bin/cov-build --dir cov-int make -C src libxlsxwriter.a
+	$(Q)tar -czf libxlsxwriter-coverity.tgz cov-int

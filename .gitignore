@@ -32,7 +32,8 @@ _temp.c
 examples/*
 !examples/*.c
 !examples/Makefile
-
+cov-int
+libxlsxwriter-coverity.tgz
 
 third_party/gtest-1.7.0/Makefile
 third_party/gtest-1.7.0/build-aux/config.h
