@@ -32,7 +32,7 @@ all : $(TESTS)
 
 # Clean all the things!
 clean :
-	$(Q)rm -f $(TESTS) test*.o
+	$(Q)rm -f $(TESTS) test_all *.o
 
 # Build the testscases.
 %.o: %.c

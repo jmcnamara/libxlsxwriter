@@ -61,7 +61,7 @@ all :
 # END make all
 
 clean :
-	$(Q)rm -f $(TESTS) test_all
+	$(Q)rm -f $(TESTS) test_all *.o
 	$(Q)$(MAKE) clean -C utility
 	$(Q)$(MAKE) clean -C xmlwriter
 	$(Q)$(MAKE) clean -C worksheet

@@ -46,52 +46,25 @@ The functional tests can then be run:
 The unit tests test the components of the library at the level of individual
 functions or compilation units.
 
-The unit tests require the [googletest](https://code.google.com/p/googletest/)
-test framework. There isn't a default installation method for `googletest` but
-the following method from
-[StackOverflow](http://stackoverflow.com/questions/13513905/how-to-properly-setup-googletest-on-linux)
-works on Linux and OS X:
+The unit tests uses the [ctest](http://github.com/bvdberg/ctest) test
+framework. This is included as a header file in the `test/unit` directory
+and doesn't need to be installed.
 
-    wget http://googletest.googlecode.com/files/gtest-1.7.0.zip
-    unzip gtest-1.7.0.zip
-    cd gtest-1.7.0
-    ./configure
-    make
-
-    sudo cp -a include/gtest /usr/include
-    sudo cp -a lib/.libs/lib* /usr/lib/
-
-The unit tests can then be run as follows. Note, the compilation of the unit
-tests can take some time:
+The unit tests can then be run as follows:
 
     $ make test_unit
-
     Compiling unit tests ...
-    Running main() from gtest_main.cc
-    [==========] Running 146 tests from 10 test cases.
-    [----------] Global test environment set-up.
-    [----------] 9 tests from utility
-    [ RUN      ] utility._datetime_date_and_time
-    [       OK ] utility._datetime_date_and_time (0 ms)
-    [ RUN      ] utility._datetime_date_only
-    [       OK ] utility._datetime_date_only (0 ms)
+    TEST 1/155 utility:_datetime_date_and_time [OK]
+    TEST 2/155 utility:_datetime_date_only [OK]
+    TEST 3/155 utility:_datetime_date_only_1904 [OK]
+    TEST 4/155 utility:_datetime_time_only [OK]
     ...
-    [ RUN      ] styles.write_xf33
-    [       OK ] styles.write_xf33 (0 ms)
-    [ RUN      ] styles.write_xf34
-    [       OK ] styles.write_xf34 (1 ms)
-    [ RUN      ] styles.write_xf35
-    [       OK ] styles.write_xf35 (0 ms)
-    [ RUN      ] styles.write_xf36
-    [       OK ] styles.write_xf36 (0 ms)
-    [ RUN      ] styles.xml_declaration
-    [       OK ] styles.xml_declaration (0 ms)
-    [----------] 74 tests from styles (17 ms total)
+    TEST 152/155 styles:write_xf34 [OK]
+    TEST 153/155 styles:write_xf35 [OK]
+    TEST 154/155 styles:write_xf36 [OK]
+    TEST 155/155 styles:xml_declaration [OK]
 
-    [----------] Global test environment tear-down
-    [==========] 146 tests from 10 test cases ran. (33 ms total)
-    [  PASSED  ] 146 tests.
-
+    RESULTS: 155 tests (155 ok, 0 failed, 0 skipped) ran in 42 ms
 
 Both functional and unit test can be run together:
 

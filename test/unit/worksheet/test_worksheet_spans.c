@@ -161,6 +161,7 @@ CTEST(worksheet, spans04) {
 // Test assembling a Worksheet file with different span ranges.
 CTEST(worksheet, spans05) {
 
+    int i;
     char* got;
     char exp[] =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
@@ -281,7 +282,7 @@ CTEST(worksheet, spans05) {
     worksheet->file = testfile;
     worksheet->selected = 1;
 
-    for (int i = 0; i < 20; i++)
+    for (i = 0; i < 20; i++)
         worksheet_write_number(worksheet, i, i, i + 1, NULL);
 
     _worksheet_assemble_xml_file(worksheet);

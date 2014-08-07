@@ -18,6 +18,9 @@
 #ifndef CTEST_H
 #define CTEST_H
 
+#include <math.h>
+#include <float.h>
+
 typedef void (*SetupFunc)(void*);
 typedef void (*TearDownFunc)(void*);
 
@@ -264,8 +267,13 @@ void assert_not_equal(long exp, long real, const char* caller, int line) {
 }
 
 void assert_double(double exp, double real, const char* caller, int line) {
-    if (exp != real) {
-        CTEST_ERR("%s:%d  expected %g, got %g", caller, line, exp, real);
+    double diff = fabs(exp - real);
+    exp = fabs(exp);
+    real = fabs(real);
+    double largest = (real > exp) ? real : exp;
+
+    if (diff > largest * FLT_EPSILON) {
+        CTEST_ERR("%s:%d  DEXPECTED %g, got %g", caller, line, exp, real);
     }
 }
 
@@ -430,7 +438,7 @@ int ctest_main(int argc, const char *argv[])
     const char* color = (num_fail) ? ANSI_RED : ANSI_GREEN;
     char results[80];
     sprintf(results, "\nRESULTS: %d tests (%d ok, %d failed, %d skipped) ran in %lld ms",
-            total, num_ok, num_fail, num_skip, (t2 - t1)/1000);
+            total, num_ok, num_fail, num_skip, (long long int)(t2 - t1)/1000);
     color_print(color, results);
     return num_fail;
 }

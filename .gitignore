@@ -35,15 +35,6 @@ examples/*
 cov-int
 libxlsxwriter-coverity.tgz
 
-third_party/gtest-1.7.0/Makefile
-third_party/gtest-1.7.0/build-aux/config.h
-third_party/gtest-1.7.0/build-aux/stamp-h1
-third_party/gtest-1.7.0/config.log
-third_party/gtest-1.7.0/config.status
-third_party/gtest-1.7.0/lib/
-third_party/gtest-1.7.0/libtool
-third_party/gtest-1.7.0/scripts/gtest-config
-
 third_party/zlib-1.2.8/configure.log
 third_party/zlib-1.2.8/contrib/minizip/miniunz
 third_party/zlib-1.2.8/contrib/minizip/minizip
