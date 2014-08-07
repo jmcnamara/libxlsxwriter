@@ -14,43 +14,36 @@ endif
 # Directory variables.
 INC_DIR        = ../../../include
 LIB_DIR        = ../../../src
-GTEST_DIR      = /usr/lib
 
-# Conditional includes for testing.
-TESTING = -DTESTING
-
-# Flags passed to the preprocessor.
-CPPFLAGS += $(TESTING)
-
-# Flags passed to the C++ compiler.
-CXXFLAGS += -g -Wall -Wextra
+# Flags passed to the C compiler.
+CFLAGS += -DTESTING -DCOLOR_OK -g -Wall -Wextra -Wno-unused-parameter
 
 # Make targets and objects.
-SRCS  = $(wildcard test*.cpp)
-TESTS = $(patsubst %.cpp,%,$(SRCS))
-OBJS  = $(patsubst %.cpp,%.o,$(SRCS))
+SRCS  = $(wildcard test*.c)
+TESTS = $(patsubst %.c,%,$(SRCS))
+OBJS  = $(patsubst %.c,%.o,$(SRCS))
 
 # Libs to link.
-LIBS_A = $(LIB_DIR)/libxlsxwriter_test.a $(GTEST_DIR)/libgtest.a $(GTEST_DIR)/libgtest_main.a
-LIBS_O = -lpthread -lz
+LIBS_A = $(LIB_DIR)/libxlsxwriter_test.a
+LIBS_O = -lz
 
 # Make all the individual tests.
 all : $(TESTS)
 
 # Clean all the things!
 clean :
-	$(Q)rm -f $(TESTS) test_all test*.o
+	$(Q)rm -f $(TESTS) test*.o
 
 # Build the testscases.
-test_%.o: test_%.cpp
-	$(Q)$(CXX) -I$(INC_DIR) $(CPPFLAGS) $(CXXFLAGS) -c $<
+%.o: %.c
+	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) -c $<
 
-test_%: test_%.o $(LIBS_A)
-	$(Q)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS_O)
+test_%: main.o test_%.o $(LIBS_A)
+	$(Q)$(CC) $(CFLAGS) -o $@ $^ $(LIBS_O)
 
 # Link all the tests into one test executable.
-test_all : $(OBJS) $(LIBS_A)
-	$(Q)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -o $@ $^ $(LIBS_O)
+test_all : main.o $(OBJS) $(LIBS_A)
+	$(Q)$(CC) $(CFLAGS) -o $@ $^ $(LIBS_O)
 
 # Run the tests.
 test : all test_all

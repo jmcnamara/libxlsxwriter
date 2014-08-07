@@ -1,3 +1,5 @@
+#include <stdio.h>
+#include <stdlib.h>
 
 /* Compare expected results with the XML data written to the output
  * test file.
@@ -11,7 +13,7 @@
     rewind(testfile);                                               \
     fread(got, file_size, 1, testfile);                             \
                                                                     \
-    EXPECT_STREQ((exp), (got));                                     \
+    ASSERT_STR((exp), (got));                                       \
                                                                     \
     if (got)                                                        \
         free(got);                                                  \
@@ -39,7 +41,7 @@
         got_short++;                                                \
     }                                                               \
                                                                     \
-    EXPECT_STREQ(exp_short, got_short);                             \
+    ASSERT_STR(exp_short, got_short);                               \
                                                                     \
     if (got)                                                        \
         free(got);                                                  \
@@ -49,27 +51,27 @@
 
 #define TEST_COL_TO_NAME(num, abs, exp)                             \
     lxw_col_to_name(got, num, abs);                                 \
-    EXPECT_STREQ(exp, got);
+    ASSERT_STR(exp, got);
 
 
 #define TEST_ROWCOL_TO_CELL(row, col, exp)                          \
     lxw_rowcol_to_cell(got, row, col);                              \
-    EXPECT_STREQ(exp, got);
+    ASSERT_STR(exp, got);
 
 
 #define TEST_ROWCOL_TO_CELL_ABS(row, col, row_abs, col_abs, exp)    \
     lxw_rowcol_to_cell_abs(got, row, col, row_abs, col_abs);        \
-    EXPECT_STREQ(exp, got);
+    ASSERT_STR(exp, got);
 
 
 #define TEST_XL_RANGE(row1, col1, row2, col2, exp)                  \
     lxw_range(got, row1, col1, row2, col2);                         \
-    EXPECT_STREQ(exp, got);
+    ASSERT_STR(exp, got);
 
 
 #define TEST_XL_RANGE_ABS(row1, col1, row2, col2, exp)              \
     lxw_range_abs(got, row1, col1, row2, col2);                     \
-    EXPECT_STREQ(exp, got);
+    ASSERT_STR(exp, got);
 
 
 #define TEST_DATETIME_TIME(_hour, _min, _sec, exp)                  \
@@ -80,7 +82,7 @@
                                                                     \
     got = _datetime_to_excel_date(datetime, 0);                     \
                                                                     \
-    ASSERT_DOUBLE_EQ(exp, got);                                     \
+    ASSERT_DOUBLE(exp, got);                                        \
     free(datetime);
 
 #define TEST_DATETIME_DATE(_year, _month, _day, exp)                \
@@ -91,7 +93,7 @@
                                                                     \
     got = _datetime_to_excel_date(datetime, 0);                     \
                                                                     \
-    ASSERT_DOUBLE_EQ(exp, got);                                     \
+    ASSERT_DOUBLE(exp, got);                                        \
     free(datetime);
 
 #define TEST_DATETIME_DATE_1904(_year, _month, _day, exp)           \
@@ -102,7 +104,7 @@
                                                                     \
     got = _datetime_to_excel_date(datetime, 1);                     \
                                                                     \
-    ASSERT_DOUBLE_EQ(exp, got);                                     \
+    ASSERT_DOUBLE(exp, got);                                        \
     free(datetime);
 
 #define TEST_DATETIME(_year, _month, _day, _hour, _min, _sec, exp)  \
@@ -116,5 +118,5 @@
                                                                     \
     got = _datetime_to_excel_date(datetime, 0);                     \
                                                                     \
-    ASSERT_DOUBLE_EQ(exp, got);                                     \
+    ASSERT_DOUBLE(exp, got);                                        \
     free(datetime);

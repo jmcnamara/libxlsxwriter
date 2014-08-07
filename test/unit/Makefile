@@ -14,40 +14,36 @@ endif
 # Directory variables.
 INC_DIR        = ../../include
 LIB_DIR        = ../../src$
-GTEST_DIR      = /usr/lib
 
-# Conditional includes for testing.
-TESTING = -DTESTING
-
-# Flags passed to the preprocessor.
-CPPFLAGS += $(TESTING)
-
-# Flags passed to the C++ compiler.
-CXXFLAGS += -g -Wall -Wextra
+# Flags passed to the C compiler.
+CFLAGS += -DTESTING -DCOLOR_OK -g -Wall -Wextra -Wno-unused-parameter
 
 
 # All tests produced by this Makefile.
 TESTS = test_all
 
 # Objects to link for test_all executable.
-SRCS  = $(wildcard utility/test*.cpp)
-SRCS += $(wildcard xmlwriter/test*.cpp)
-SRCS += $(wildcard worksheet/test*.cpp)
-SRCS += $(wildcard sst/test*.cpp)
-SRCS += $(wildcard workbook/test*.cpp)
-SRCS += $(wildcard app/test*.cpp)
-SRCS += $(wildcard content_types/test*.cpp)
-SRCS += $(wildcard core/test*.cpp)
-SRCS += $(wildcard relationships/test*.cpp)
-SRCS += $(wildcard format/test*.cpp)
-SRCS += $(wildcard styles/test*.cpp)
+SRCS  = $(wildcard utility/test*.c)
+SRCS += $(wildcard xmlwriter/test*.c)
+SRCS += $(wildcard worksheet/test*.c)
+SRCS += $(wildcard sst/test*.c)
+SRCS += $(wildcard workbook/test*.c)
+SRCS += $(wildcard app/test*.c)
+SRCS += $(wildcard content_types/test*.c)
+SRCS += $(wildcard core/test*.c)
+SRCS += $(wildcard relationships/test*.c)
+SRCS += $(wildcard format/test*.c)
+SRCS += $(wildcard styles/test*.c)
+
+SRCS -= $(wildcard utility/test_all.c)
+SRCS -= $(wildcard styles/test_all.c)
 # End of SRCS
 
-OBJS  = $(patsubst %.cpp,%.o,$(SRCS))
+OBJS  = $(patsubst %.c,%.o,$(SRCS))
 
 # Libs to link.
-LIBS_A = $(LIB_DIR)/libxlsxwriter_test.a $(GTEST_DIR)/libgtest.a $(GTEST_DIR)/libgtest_main.a
-LIBS_O = -lpthread -lz
+LIBS_A = $(LIB_DIR)/libxlsxwriter_test.a
+LIBS_O = -lz
 # End of LIBS
 
 # House-keeping build targets.
@@ -83,8 +79,8 @@ clean :
 #
 # Builds the tests.
 #
-test_all : $(OBJS) $(LIBS_A)
-	$(Q)$(CXX) $(CPPFLAGS) $(CXXFLAGS) -I$(INC_DIR) -o $@ $^ $(LIBS_O)
+test_all : test_all.o $(OBJS) $(LIBS_A)
+	$(Q)$(CC) $(CFLAGS) -I$(INC_DIR) -o $@ $^ $(LIBS_O)
 
 
 ###############################################################################
