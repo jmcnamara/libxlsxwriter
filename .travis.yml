@@ -7,15 +7,7 @@ compiler:
 install:
   - sudo pip install pytest
   - sudo apt-get install -y valgrind
-  - wget http://googletest.googlecode.com/files/gtest-1.7.0.zip
-  - unzip gtest-1.7.0.zip
-  - cd gtest-1.7.0
-  - ./configure
-  - make
-  - sudo cp -a include/gtest /usr/include
-  - sudo cp -a lib/.libs/* /usr/lib/
-  - cd ..
-  - curl -O -L  http://zlib.net/zlib-1.2.8.tar.gz
+  - curl -O -L http://zlib.net/zlib-1.2.8.tar.gz
   - tar zxf zlib-1.2.8.tar.gz
   - cd zlib-1.2.8
   - ./configure
