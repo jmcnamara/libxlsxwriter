@@ -18,6 +18,9 @@
 #define LXW_COL_MAX 16384
 #define LXW_STR_MAX 32767
 #define BUFFER_SIZE 4096
+#define LXW_PORTRAIT 1
+#define LXW_LANDSCAPE 0
+#define LXW_PRINT_ACROSS 1
 
 /*
  * Forward declarations.
@@ -67,10 +70,23 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
         worksheet->file = worksheet->optimize_tmpfile;
     }
 
+    /* Initialise the worksheet dimensions. */
     worksheet->dim_rowmax = 0;
     worksheet->dim_colmax = 0;
     worksheet->dim_rowmin = LXW_ROW_MAX;
     worksheet->dim_colmin = LXW_COL_MAX;
+
+    /* Initialise the page setup properties. */
+    worksheet->fit_height = 0;
+    worksheet->fit_width = 0;
+    worksheet->page_start = 0;
+    worksheet->print_scale = 100;
+    worksheet->fit_page = 0;
+    worksheet->orientation = 1;
+    worksheet->page_order = 0;
+    worksheet->page_setup_changed = 0;
+    worksheet->page_view = 0;
+    worksheet->paper_size = 0;
 
     if (init_data) {
         worksheet->name = init_data->name;
@@ -682,6 +698,68 @@ _worksheet_write_page_margins(lxw_worksheet *self)
 }
 
 /*
+ * Write the <pageSetup> element.
+ * The following is an example taken from Excel.
+ * <pageSetup
+ *     paperSize="9"
+ *     scale="110"
+ *     fitToWidth="2"
+ *     fitToHeight="2"
+ *     pageOrder="overThenDown"
+ *     orientation="portrait"
+ *     blackAndWhite="1"
+ *     draft="1"
+ *     horizontalDpi="200"
+ *     verticalDpi="200"
+ *     r:id="rId1"
+ * />
+ */
+STATIC void
+_worksheet_write_page_setup(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    _INIT_ATTRIBUTES();
+
+    if (!self->page_setup_changed)
+        return;
+
+    /* Set paper size. */
+    if (self->paper_size)
+        _PUSH_ATTRIBUTES_INT("paperSize", self->paper_size);
+
+    /* Set the print_scale. */
+    if (self->print_scale != 100)
+        _PUSH_ATTRIBUTES_INT("scale", self->print_scale);
+
+    /* Set the "Fit to page" properties. */
+    if (self->fit_page && self->fit_width != 1)
+        _PUSH_ATTRIBUTES_INT("fitToWidth", self->fit_width);
+
+    if (self->fit_page && self->fit_height != 1)
+        _PUSH_ATTRIBUTES_INT("fitToHeight", self->fit_height);
+
+    /* Set the page print direction. */
+    if (self->page_order)
+        _PUSH_ATTRIBUTES_STR("pageOrder", "overThenDown");
+
+    /* Set page orientation. */
+    if (self->orientation)
+        _PUSH_ATTRIBUTES_STR("orientation", "portrait");
+    else
+        _PUSH_ATTRIBUTES_STR("orientation", "landscape");
+
+    /* Set start page. */
+    if (self->page_start)
+        _PUSH_ATTRIBUTES_INT("useFirstPageNumber", self->page_start);
+
+    _xml_empty_tag(self->file, "pageSetup", &attributes);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <row> element.
  */
 STATIC void
@@ -1140,6 +1218,9 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
     /* Write the worksheet page_margins. */
     _worksheet_write_page_margins(self);
 
+    /* Write the worksheet page setup. */
+    _worksheet_write_page_setup(self);
+
     /* Close the worksheet tag. */
     _xml_end_tag(self->file, "worksheet");
 }
@@ -1260,9 +1341,9 @@ worksheet_write_formula_num(lxw_worksheet *self,
 }
 
 /*
- *Write a formula with a default result to a cell in Excel .
-
- */ int8_t
+ * Write a formula with a default result to a cell in Excel .
+ */
+int8_t
 worksheet_write_formula(lxw_worksheet *self,
                         lxw_row_t row_num,
                         lxw_col_t col_num, const char *formula,
@@ -1274,7 +1355,6 @@ worksheet_write_formula(lxw_worksheet *self,
 
 /*
  * Write a blank cell with a format to a cell in Excel.
-
  */
 int8_t
 worksheet_write_blank(lxw_worksheet *self,
@@ -1490,4 +1570,53 @@ worksheet_set_row(lxw_worksheet *self,
 
     return 0;
 
+}
+
+/*
+ * Set the page orientation as portrait.
+ */
+void
+worksheet_set_portrait(lxw_worksheet *self)
+{
+    self->orientation = LXW_PORTRAIT;
+    self->page_setup_changed = LXW_TRUE;
+}
+
+/*
+ * Set the page orientation as landscape.
+ */
+void
+worksheet_set_landscape(lxw_worksheet *self)
+{
+    self->orientation = LXW_LANDSCAPE;
+    self->page_setup_changed = LXW_TRUE;
+}
+
+/*
+ * Set the page view mode for Mac Excel.
+ */
+void
+worksheet_set_page_view(lxw_worksheet *self)
+{
+    self->page_view = LXW_TRUE;
+}
+
+/*
+ * Set the paper type. Example. 1 = US Letter, 9 = A4
+ */
+void
+worksheet_set_paper(lxw_worksheet *self, uint8_t paper_size)
+{
+    self->paper_size = paper_size;
+    self->page_setup_changed = LXW_TRUE;
+}
+
+/*
+ * Set the order in which pages are printed.
+ */
+void
+worksheet_print_across(lxw_worksheet *self)
+{
+    self->page_order = LXW_PRINT_ACROSS;
+    self->page_setup_changed = LXW_TRUE;
 }

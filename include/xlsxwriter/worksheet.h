@@ -21,7 +21,7 @@
  * operations such as writing data to cells or formatting worksheet
  * layout.
  *
- * A Worksheet object isn’t created directly. Instead a worksheet is
+ * A Worksheet object isn't created directly. Instead a worksheet is
  * created by calling the workbook_add_worksheet() method from a
  * Workbook object:
  *
@@ -163,6 +163,17 @@ typedef struct lxw_worksheet {
     uint8_t col_size_changed;
     uint8_t optimize;
     struct lxw_row *optimize_row;
+
+    uint16_t fit_height;
+    uint16_t fit_width;
+    uint16_t page_start;
+    uint16_t print_scale;
+    uint8_t fit_page;
+    uint8_t orientation;
+    uint8_t page_order;
+    uint8_t page_setup_changed;
+    uint8_t page_view;
+    uint8_t paper_size;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -658,6 +669,12 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
                             lxw_col_t last_col, double width,
                             lxw_format *format, lxw_row_col_options *options);
 
+void worksheet_set_portrait(lxw_worksheet *self);
+void worksheet_set_landscape(lxw_worksheet *self);
+void worksheet_set_page_view(lxw_worksheet *self);
+void worksheet_set_paper(lxw_worksheet *self, uint8_t paper_size);
+void worksheet_print_across(lxw_worksheet *self);
+
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);
 void _worksheet_assemble_xml_file(lxw_worksheet *worksheet);
@@ -678,6 +695,7 @@ STATIC void _write_row(lxw_worksheet *worksheet, lxw_row *row, char *spans);
 STATIC void _write_col_info(lxw_worksheet *worksheet,
                             lxw_col_options *options);
 STATIC lxw_row *_get_row_list(lxw_worksheet *worksheet, lxw_row_t row_num);
+STATIC void _worksheet_write_page_setup(lxw_worksheet *self);
 
 #endif /* TESTING */
 
