@@ -582,6 +582,10 @@ _worksheet_write_sheet_view(lxw_worksheet *self)
     if (self->selected)
         _PUSH_ATTRIBUTES_STR("tabSelected", "1");
 
+    /* Set the page view/layout mode if required. */
+    if (self->page_view)
+        _PUSH_ATTRIBUTES_STR("view", "pageLayout");
+
     _PUSH_ATTRIBUTES_STR("workbookViewId", "0");
 
     _xml_empty_tag(self->file, "sheetView", &attributes);
