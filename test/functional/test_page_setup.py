@@ -19,3 +19,8 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_landscape01(self):
         self.run_exe_test('test_landscape01')
 
+    def test_print_across01(self):
+        self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins']}
+
+        self.run_exe_test('test_print_across01')
+
