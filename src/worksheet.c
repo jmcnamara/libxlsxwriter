@@ -82,11 +82,13 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->page_start = 0;
     worksheet->print_scale = 100;
     worksheet->fit_page = 0;
-    worksheet->orientation = 1;
+    worksheet->orientation = LXW_TRUE;
     worksheet->page_order = 0;
-    worksheet->page_setup_changed = 0;
-    worksheet->page_view = 0;
+    worksheet->page_setup_changed = LXW_FALSE;
+    worksheet->page_view = LXW_FALSE;
     worksheet->paper_size = 0;
+    worksheet->vertical_dpi = 0;
+    worksheet->horizontal_dpi = 0;
 
     if (init_data) {
         worksheet->name = init_data->name;
@@ -757,6 +759,13 @@ _worksheet_write_page_setup(lxw_worksheet *self)
     /* Set start page. */
     if (self->page_start)
         _PUSH_ATTRIBUTES_INT("useFirstPageNumber", self->page_start);
+
+    /* Set the DPI. Mainly only for testing. */
+    if (self->horizontal_dpi)
+        _PUSH_ATTRIBUTES_INT("horizontalDpi", self->horizontal_dpi);
+
+    if (self->vertical_dpi)
+        _PUSH_ATTRIBUTES_INT("verticalDpi", self->vertical_dpi);
 
     _xml_empty_tag(self->file, "pageSetup", &attributes);
 

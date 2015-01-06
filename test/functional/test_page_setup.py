@@ -14,6 +14,8 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     """
 
     def test_page_view01(self):
-        self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageSetup']}
         self.run_exe_test('test_page_view01')
+
+    def test_landscape01(self):
+        self.run_exe_test('test_landscape01')
 

@@ -166,8 +166,10 @@ typedef struct lxw_worksheet {
 
     uint16_t fit_height;
     uint16_t fit_width;
+    uint16_t horizontal_dpi;
     uint16_t page_start;
     uint16_t print_scale;
+    uint16_t vertical_dpi;
     uint8_t fit_page;
     uint8_t orientation;
     uint8_t page_order;
