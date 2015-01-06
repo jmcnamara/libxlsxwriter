@@ -22,7 +22,7 @@
  * layout.
  *
  * A Worksheet object isn't created directly. Instead a worksheet is
- * created by calling the workbook_add_worksheet() method from a
+ * created by calling the workbook_add_worksheet() function from a
  * Workbook object:
  *
  * @code
@@ -246,7 +246,7 @@ extern "C" {
  *
  * @return A #lxw_write_error code.
  *
- * The `worksheet_write_number()` method writes numeric types to the cell
+ * The `worksheet_write_number()` function writes numeric types to the cell
  * specified by `row` and `column`:
  *
  * @code
@@ -289,7 +289,7 @@ int8_t worksheet_write_number(lxw_worksheet *worksheet,
  *
  * @return A #lxw_write_error code.
  *
- * The `%worksheet_write_string()` method writes a string to the cell
+ * The `%worksheet_write_string()` function writes a string to the cell
  * specified by `row` and `column`:
  *
  * @code
@@ -337,8 +337,8 @@ int8_t worksheet_write_string(lxw_worksheet *worksheet,
  *
  * @return A #lxw_write_error code.
  *
- * The `%worksheet_write_formula()` method writes a formula or function to the cell
- * specified by `row` and `column`:
+ * The `%worksheet_write_formula()` function writes a formula or function to
+ * the cell specified by `row` and `column`:
  *
  * @code
  *  worksheet_write_formula(worksheet, 0, 0, "=B3 + 6",                    NULL);
@@ -366,8 +366,11 @@ int8_t worksheet_write_string(lxw_worksheet *worksheet,
  * should be written as follows:
  *
  * @code
- *     worksheet_write_formula(worksheet, 0, 0, "=SUM(1, 2, 3)", NULL); // OK.
- *     worksheet_write_formula(worksheet, 1, 0, "=SUM(1; 2; 3)", NULL); // NO. Error on load.
+ *     // OK.
+ *     worksheet_write_formula(worksheet, 0, 0, "=SUM(1, 2, 3)", NULL);
+ *
+ *     // NO. Error on load.
+ *     worksheet_write_formula(worksheet, 1, 0, "=SUM(1; 2; 3)", NULL);
  * @endcode
  *
  */
@@ -387,8 +390,9 @@ int8_t worksheet_write_formula(lxw_worksheet *worksheet,
  *
  * @return A #lxw_write_error code.
  *
- * The `%worksheet_write_formula_num()` method writes a formula or function to
- * the cell specified by `row` and `column` with a user defined result:
+ * The `%worksheet_write_formula_num()` function writes a formula or Excel
+ * function to the cell specified by `row` and `column` with a user defined
+ * result:
  *
  * @code
  *     // Required as a workaround only.
@@ -433,8 +437,8 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
  *
  * @return A #lxw_write_error code.
  *
- * The `worksheet_write_datetime()` method can be used to write a date or time
- * to the cell specified by `row` and `column`:
+ * The `worksheet_write_datetime()` function can be used to write a date or
+ * time to the cell specified by `row` and `column`:
  *
  * @dontinclude dates_and_times02.c
  * @skip include
@@ -470,7 +474,7 @@ int8_t worksheet_write_datetime(lxw_worksheet *worksheet,
  *     worksheet_write_blank(worksheet, 1, 1, border_format);
  * @endcode
  *
- * This method is used to add formatting to a cell which doesn't contain a
+ * This function is used to add formatting to a cell which doesn't contain a
  * string or number value.
  *
  * Excel differentiates between an "Empty" cell and a "Blank" cell. An Empty
@@ -494,9 +498,9 @@ int8_t worksheet_write_blank(lxw_worksheet *worksheet,
  * @param format    A pointer to a Format instance or NULL.
  * @param options   Optional row parameters: hidden, level, collapsed.
  *
- * The `%worksheet_set_row()` method is used to change the default properties
- * of a row. The most common use for this method is to change the height of a
- * row:
+ * The `%worksheet_set_row()` function is used to change the default
+ * properties of a row. The most common use for this function is to change the
+ * height of a row:
  *
  * @code
  *     // Set the height of Row 1 to 20.
@@ -544,8 +548,8 @@ int8_t worksheet_write_blank(lxw_worksheet *worksheet,
  * * `level`
  * * `collapsed`
  *
- * The `"hidden"` option is used to hide a row. This can be used, for example,
- * to hide intermediary steps in a complicated calculation:
+ * The `"hidden"` option is used to hide a row. This can be used, for
+ * example, to hide intermediary steps in a complicated calculation:
  *
  * @code
  *     lxw_row_col_options options = {.hidden = 1, .level = 0, .collapsed = 0};
@@ -570,7 +574,7 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  * @param format    A pointer to a Format instance or NULL.
  * @param options   Optional row parameters: hidden, level, collapsed.
  *
- * The `%worksheet_set_column()` method can be used to change the default
+ * The `%worksheet_set_column()` function can be used to change the default
  * properties of a single column or a range of columns:
  *
  * @code
@@ -588,8 +592,8 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  *
  * @endcode
  *
- * It is also possible, and generally clearer, to specify a column range using the
- * form of `COLS()` macro:
+ * It is also possible, and generally clearer, to specify a column range using
+ * the form of `COLS()` macro:
  *
  * @code
  *     worksheet_set_column(worksheet, 4, 4, 20, NULL, NULL);
@@ -657,8 +661,8 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  * * `level`
  * * `collapsed`
  *
- * The `"hidden"` option is used to hide a column. This can be used, for example,
- * to hide intermediary steps in a complicated calculation:
+ * The `"hidden"` option is used to hide a column. This can be used, for
+ * example, to hide intermediary steps in a complicated calculation:
  *
  * @code
  *     lxw_row_col_options options = {.hidden = 1, .level = 0, .collapsed = 0};
@@ -671,16 +675,148 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
                             lxw_col_t last_col, double width,
                             lxw_format *format, lxw_row_col_options *options);
 
-void worksheet_set_portrait(lxw_worksheet *self);
-void worksheet_set_landscape(lxw_worksheet *self);
-void worksheet_set_page_view(lxw_worksheet *self);
-void worksheet_set_paper(lxw_worksheet *self, uint8_t paper_size);
-void worksheet_print_across(lxw_worksheet *self);
+/**
+ * @brief Set the page orientation as landscape.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ *
+ * This function is used to set the orientation of a worksheet's printed page
+ * to landscape:
+ *
+ * @code
+ *     worksheet_set_landscape(worksheet);
+ * @endcode
+ */
+void worksheet_set_landscape(lxw_worksheet *worksheet);
+
+/**
+ * @brief Set the page orientation as portrait.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ *
+ * This function is used to set the orientation of a worksheet's printed page
+ * to portrait. The default worksheet orientation is portrait, so this
+ * function isn't generally required:
+ *
+ * @code
+ *     worksheet_set_portrait(worksheet);
+ * @endcode
+ */
+void worksheet_set_portrait(lxw_worksheet *worksheet);
+
+/**
+ * @brief Set the page layout to page view mode.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ *
+ * This function is used to display the worksheet in "Page View/Layout" mode:
+ *
+ * @code
+ *     worksheet_set_page_view(worksheet);
+ * @endcode
+ */
+void worksheet_set_page_view(lxw_worksheet *worksheet);
+
+/**
+ * @brief Set the paper type for printing.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param paper_type The Excel paper format type.
+ *
+ * This function is used to set the paper format for the printed output of a
+ * worksheet. The following paper styles are available:
+ *
+ *
+ *   Index    | Paper format            | Paper size
+ *   :------- | :---------------------- | :-------------------
+ *   0        | Printer default         | Printer default
+ *   1        | Letter                  | 8 1/2 x 11 in
+ *   2        | Letter Small            | 8 1/2 x 11 in
+ *   3        | Tabloid                 | 11 x 17 in
+ *   4        | Ledger                  | 17 x 11 in
+ *   5        | Legal                   | 8 1/2 x 14 in
+ *   6        | Statement               | 5 1/2 x 8 1/2 in
+ *   7        | Executive               | 7 1/4 x 10 1/2 in
+ *   8        | A3                      | 297 x 420 mm
+ *   9        | A4                      | 210 x 297 mm
+ *   10       | A4 Small                | 210 x 297 mm
+ *   11       | A5                      | 148 x 210 mm
+ *   12       | B4                      | 250 x 354 mm
+ *   13       | B5                      | 182 x 257 mm
+ *   14       | Folio                   | 8 1/2 x 13 in
+ *   15       | Quarto                  | 215 x 275 mm
+ *   16       | ---                     | 10x14 in
+ *   17       | ---                     | 11x17 in
+ *   18       | Note                    | 8 1/2 x 11 in
+ *   19       | Envelope 9              | 3 7/8 x 8 7/8
+ *   20       | Envelope 10             | 4 1/8 x 9 1/2
+ *   21       | Envelope 11             | 4 1/2 x 10 3/8
+ *   22       | Envelope 12             | 4 3/4 x 11
+ *   23       | Envelope 14             | 5 x 11 1/2
+ *   24       | C size sheet            | ---
+ *   25       | D size sheet            | ---
+ *   26       | E size sheet            | ---
+ *   27       | Envelope DL             | 110 x 220 mm
+ *   28       | Envelope C3             | 324 x 458 mm
+ *   29       | Envelope C4             | 229 x 324 mm
+ *   30       | Envelope C5             | 162 x 229 mm
+ *   31       | Envelope C6             | 114 x 162 mm
+ *   32       | Envelope C65            | 114 x 229 mm
+ *   33       | Envelope B4             | 250 x 353 mm
+ *   34       | Envelope B5             | 176 x 250 mm
+ *   35       | Envelope B6             | 176 x 125 mm
+ *   36       | Envelope                | 110 x 230 mm
+ *   37       | Monarch                 | 3.875 x 7.5 in
+ *   38       | Envelope                | 3 5/8 x 6 1/2 in
+ *   39       | Fanfold                 | 14 7/8 x 11 in
+ *   40       | German Std Fanfold      | 8 1/2 x 12 in
+ *   41       | German Legal Fanfold    | 8 1/2 x 13 in
+ *
+ * Note, it is likely that not all of these paper types will be available to
+ * the end user since it will depend on the paper formats that the user's
+ * printer supports. Therefore, it is best to stick to standard paper types:
+ *
+ * @code
+ *     worksheet_set_paper(worksheet1, 1);  // US Letter
+ *     worksheet_set_paper(worksheet2, 9);  // A4
+ * @endcode
+ *
+ * If you do not specify a paper type the worksheet will print using the
+ * printer's default paper style.
+ */
+void worksheet_set_paper(lxw_worksheet *worksheet, uint8_t paper_type);
+
+/**
+ * @brief Set the order in which pages are printed.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+*
+ * The `print_across()` function is used to change the default print
+ * direction. This is referred to by Excel as the sheet "page order":
+ *
+ * @code
+ *     worksheet_print_across(worksheet);
+ * @endcode
+ *
+ * The default page order is shown below for a worksheet that extends over 4
+ * pages. The order is called "down then across":
+ *
+ *     [1] [3]
+ *     [2] [4]
+ *
+ * However, by using the `print_across` function the print order will be
+ * changed to "across then down":
+ *
+ *     [1] [2]
+ *     [3] [4]
+ *
+ */
+void worksheet_print_across(lxw_worksheet *worksheet);
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);
 void _worksheet_assemble_xml_file(lxw_worksheet *worksheet);
-void _worksheet_write_single_row(lxw_worksheet *self);
+void _worksheet_write_single_row(lxw_worksheet *worksheet);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING
@@ -693,11 +829,11 @@ STATIC void _worksheet_write_sheet_views(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_format_pr(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_data(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_page_margins(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_page_setup(lxw_worksheet *worksheet);
 STATIC void _write_row(lxw_worksheet *worksheet, lxw_row *row, char *spans);
 STATIC void _write_col_info(lxw_worksheet *worksheet,
                             lxw_col_options *options);
 STATIC lxw_row *_get_row_list(lxw_worksheet *worksheet, lxw_row_t row_num);
-STATIC void _worksheet_write_page_setup(lxw_worksheet *self);
 
 #endif /* TESTING */
 
