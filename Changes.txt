@@ -2,6 +2,17 @@
 @page changes Changes
 
 
+## 0.0.3 January 7 2015
+
+-   Added worksheet page setup methods.
+
+    -   `worksheet_set_landscape()`
+    -   `worksheet_set_portrait()`
+    -   `worksheet_set_page_view()`
+    -   `worksheet_set_paper()`
+    -   `worksheet_print_across()`
+
+
 ## 0.0.2 June 26 2014
 
 - First public release.

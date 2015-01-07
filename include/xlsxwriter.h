@@ -9,8 +9,6 @@
  *
  * xlsxwriter - A library for creating Excel XLSX files.
  *
- * TODO.
- *
  */
 #ifndef __LXW_XLSXWRITER_H__
 #define __LXW_XLSXWRITER_H__
@@ -20,6 +18,6 @@
 #include "xlsxwriter/format.h"
 #include "xlsxwriter/utility.h"
 
-#define LXW_VERSION "0.0.2"
+#define LXW_VERSION "0.0.3"
 
 #endif /* __LXW_XLSXWRITER_H__ */
