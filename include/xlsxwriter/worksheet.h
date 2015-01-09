@@ -176,6 +176,12 @@ typedef struct lxw_worksheet {
     uint8_t page_setup_changed;
     uint8_t page_view;
     uint8_t paper_size;
+    double margin_left;
+    double margin_right;
+    double margin_top;
+    double margin_bottom;
+    double margin_header;
+    double margin_footer;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -785,6 +791,9 @@ void worksheet_set_page_view(lxw_worksheet *worksheet);
  * printer's default paper style.
  */
 void worksheet_set_paper(lxw_worksheet *worksheet, uint8_t paper_type);
+
+void worksheet_set_margins(lxw_worksheet *worksheet, double left,
+                           double right, double top, double bottom);
 
 /**
  * @brief Set the order in which pages are printed.

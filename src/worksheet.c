@@ -89,6 +89,12 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->paper_size = 0;
     worksheet->vertical_dpi = 0;
     worksheet->horizontal_dpi = 0;
+    worksheet->margin_left = 0.7;
+    worksheet->margin_right = 0.7;
+    worksheet->margin_top = 0.75;
+    worksheet->margin_bottom = 0.75;
+    worksheet->margin_header = 0.3;
+    worksheet->margin_footer = 0.3;
 
     if (init_data) {
         worksheet->name = init_data->name;
@@ -683,20 +689,20 @@ _worksheet_write_page_margins(lxw_worksheet *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char left[] = "0.7";
-    char right[] = "0.7";
-    char top[] = "0.75";
-    char bottom[] = "0.75";
-    char header[] = "0.3";
-    char footer[] = "0.3";
+    double left = self->margin_left;
+    double right = self->margin_right;
+    double top = self->margin_top;
+    double bottom = self->margin_bottom;
+    double header = self->margin_header;
+    double footer = self->margin_footer;
 
     _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("left", left);
-    _PUSH_ATTRIBUTES_STR("right", right);
-    _PUSH_ATTRIBUTES_STR("top", top);
-    _PUSH_ATTRIBUTES_STR("bottom", bottom);
-    _PUSH_ATTRIBUTES_STR("header", header);
-    _PUSH_ATTRIBUTES_STR("footer", footer);
+    _PUSH_ATTRIBUTES_DBL("left", left);
+    _PUSH_ATTRIBUTES_DBL("right", right);
+    _PUSH_ATTRIBUTES_DBL("top", top);
+    _PUSH_ATTRIBUTES_DBL("bottom", bottom);
+    _PUSH_ATTRIBUTES_DBL("header", header);
+    _PUSH_ATTRIBUTES_DBL("footer", footer);
 
     _xml_empty_tag(self->file, "pageMargins", &attributes);
 
@@ -1632,4 +1638,25 @@ worksheet_print_across(lxw_worksheet *self)
 {
     self->page_order = LXW_PRINT_ACROSS;
     self->page_setup_changed = LXW_TRUE;
+}
+
+/*
+ * Set all the page margins in inches.
+ */
+void
+worksheet_set_margins(lxw_worksheet *self, double left, double right,
+                      double top, double bottom)
+{
+
+    if (left >= 0)
+        self->margin_left = left;
+
+    if (right >= 0)
+        self->margin_right = right;
+
+    if (top >= 0)
+        self->margin_top = top;
+
+    if (bottom >= 0)
+        self->margin_bottom = bottom;
 }
