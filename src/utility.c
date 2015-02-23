@@ -295,7 +295,7 @@ _datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904)
     }
 
     /*
-     * Caclcluate the serial date by accumulating the number of days
+     * Calculate the serial date by accumulating the number of days
      * since the epoch.
      */
 
@@ -313,7 +313,7 @@ _datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904)
     days -= (range + offset) / 100;
     /* Add 400 year leapdays. */
     days += (range + offset + norm) / 400;
-    /* Removee leap days already counted. */
+    /* Remove leap days already counted. */
     days -= leap;
 
     /* Adjust for Excel erroneously treating 1900 as a leap year. */
