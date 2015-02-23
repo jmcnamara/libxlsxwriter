@@ -677,6 +677,8 @@ _worksheet_write_optimized_sheet_data(lxw_worksheet *self)
             fwrite(buffer, 1, read_size, self->file);
         }
 
+        fclose(self->optimize_tmpfile);
+
         _xml_end_tag(self->file, "sheetData");
     }
 }
