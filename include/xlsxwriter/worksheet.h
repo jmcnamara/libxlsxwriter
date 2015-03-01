@@ -792,6 +792,24 @@ void worksheet_set_page_view(lxw_worksheet *worksheet);
  */
 void worksheet_set_paper(lxw_worksheet *worksheet, uint8_t paper_type);
 
+/**
+ * @brief Set the worksheet margins for the printed page.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param left    Left margin in inches.   Excel default is 0.7.
+ * @param right   Right margin in inches.  Excel default is 0.7.
+ * @param top     Top margin in inches.    Excel default is 0.75.
+ * @param bottom  Bottom margin in inches. Excel default is 0.75.
+ *
+ * The `set_margins()` function is used to set the margins of the worksheet
+ * when it is printed. The units are in inches. Specifying `-1` for any
+ * parameter will give the default Excel value as shown above.
+ *
+ * @code
+ *    worksheet_set_margins(worksheet, 1.3, 1.2, -1, -1);
+ * @endcode
+ *
+ */
 void worksheet_set_margins(lxw_worksheet *worksheet, double left,
                            double right, double top, double bottom);
 
@@ -799,7 +817,7 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  * @brief Set the order in which pages are printed.
  *
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
-*
+ *
  * The `print_across()` function is used to change the default print
  * direction. This is referred to by Excel as the sheet "page order":
  *

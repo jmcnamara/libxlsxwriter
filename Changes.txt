@@ -2,6 +2,22 @@
 @page changes Changes
 
 
+
+## 0.0.4 March 1 2015
+
+- Added `worksheet_set_margins()` function to set top, bottom, left and right
+  margins in a worksheet.
+
+- Fix for issue where format objects were written to the file in the order of
+  creation rather than the order of use. This issue caused incorrect formats
+  in cells.
+  Issue [#3](https://github.com/jmcnamara/libxlsxwriter/issues/3).
+
+- Fix for issue where tmp files in `constant_memory` mode weren't closed
+  until application exited.
+  Issue [#1](https://github.com/jmcnamara/libxlsxwriter/issues/1).
+
+
 ## 0.0.3 January 7 2015
 
 -   Added worksheet page setup methods.
