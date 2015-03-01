@@ -63,7 +63,7 @@ _free_workbook(lxw_workbook *workbook)
         _free_format(format);
     }
 
-    _free_lxw_hash(workbook->xf_format_indices);
+    _free_lxw_hash(workbook->used_xf_formats);
     _free_sst(workbook->sst);
     free(workbook->worksheets);
     free(workbook->formats);
@@ -93,10 +93,11 @@ _prepare_fonts(lxw_workbook *self)
 
     lxw_hash_table *fonts = _new_lxw_hash(128, 1, 1);
     lxw_hash_element *hash_element;
-    lxw_format *format;
+    lxw_hash_element *used_format_element;
     uint16_t index = 0;
 
-    STAILQ_FOREACH(format, self->formats, list_pointers) {
+    LXW_FOREACH_ORDERED(used_format_element, self->used_xf_formats) {
+        lxw_format *format = (lxw_format *) used_format_element->value;
         lxw_font *key = _get_font_key(format);
 
         if (key) {
@@ -137,10 +138,11 @@ _prepare_borders(lxw_workbook *self)
 
     lxw_hash_table *borders = _new_lxw_hash(128, 1, 1);
     lxw_hash_element *hash_element;
-    lxw_format *format;
+    lxw_hash_element *used_format_element;
     uint16_t index = 0;
 
-    STAILQ_FOREACH(format, self->formats, list_pointers) {
+    LXW_FOREACH_ORDERED(used_format_element, self->used_xf_formats) {
+        lxw_format *format = (lxw_format *) used_format_element->value;
         lxw_border *key = _get_border_key(format);
 
         if (key) {
@@ -181,7 +183,7 @@ _prepare_fills(lxw_workbook *self)
 
     lxw_hash_table *fills = _new_lxw_hash(128, 1, 1);
     lxw_hash_element *hash_element;
-    lxw_format *format;
+    lxw_hash_element *used_format_element;
     uint16_t index = 2;
     lxw_fill *default_fill_1 = NULL;
     lxw_fill *default_fill_2 = NULL;
@@ -215,7 +217,8 @@ _prepare_fills(lxw_workbook *self)
     _insert_hash_element(fills, default_fill_2, fill_index2,
                          sizeof(lxw_fill));
 
-    STAILQ_FOREACH(format, self->formats, list_pointers) {
+    LXW_FOREACH_ORDERED(used_format_element, self->used_xf_formats) {
+        lxw_format *format = (lxw_format *) used_format_element->value;
         lxw_fill *key = _get_fill_key(format);
 
         /* The following logical statements jointly take care of special */
@@ -295,13 +298,14 @@ _prepare_num_formats(lxw_workbook *self)
 
     lxw_hash_table *num_formats = _new_lxw_hash(128, 0, 1);
     lxw_hash_element *hash_element;
-    lxw_format *format;
+    lxw_hash_element *used_format_element;
     uint16_t index = 0xA4;
     uint16_t num_format_count = 0;
     char *num_format;
     uint16_t *num_format_index;
 
-    STAILQ_FOREACH(format, self->formats, list_pointers) {
+    LXW_FOREACH_ORDERED(used_format_element, self->used_xf_formats) {
+        lxw_format *format = (lxw_format *) used_format_element->value;
 
         /* Format already has a number format index. */
         if (format->num_format_index)
@@ -343,25 +347,6 @@ _prepare_num_formats(lxw_workbook *self)
 STATIC void
 _prepare_workbook(lxw_workbook *self)
 {
-    lxw_worksheet *worksheet;
-
-    /* Add a default worksheet if non have been added. */
-    if (!self->num_sheets)
-        workbook_add_worksheet(self, NULL);
-
-    /* Ensure that at least one worksheet has been selected. */
-    if (self->active_tab == 0) {
-        worksheet = STAILQ_FIRST(self->worksheets);
-        worksheet->selected = 1;
-        worksheet->hidden = 0;
-    }
-
-    /* Set the active sheet. */
-    STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
-        if (worksheet->index == self->active_tab)
-            worksheet->active = 1;
-    }
-
     /* Set the font index for the format objects. */
     _prepare_fonts(self);
 
@@ -564,6 +549,9 @@ _write_calc_pr(lxw_workbook *self)
 void
 _workbook_assemble_xml_file(lxw_workbook *self)
 {
+    /* Prepare workbook and sub-objects for writing. */
+    _prepare_workbook(self);
+
     /* Write the XML declaration. */
     _workbook_xml_declaration(self);
 
@@ -637,8 +625,8 @@ new_workbook_opt(const char *filename, lxw_workbook_options *options)
     GOTO_LABEL_ON_MEM_ERROR(workbook->properties, mem_error);
 
     /* Add a hash table to track format indices. */
-    workbook->xf_format_indices = _new_lxw_hash(128, 1, 0);
-    GOTO_LABEL_ON_MEM_ERROR(workbook->xf_format_indices, mem_error);
+    workbook->used_xf_formats = _new_lxw_hash(128, 1, 0);
+    GOTO_LABEL_ON_MEM_ERROR(workbook->used_xf_formats, mem_error);
 
     /* Add the default cell format. */
     format = workbook_add_format(workbook);
@@ -713,7 +701,7 @@ workbook_add_format(lxw_workbook *self)
     lxw_format *format = _new_format();
     RETURN_ON_MEM_ERROR(format, NULL);
 
-    format->xf_format_indices = self->xf_format_indices;
+    format->xf_format_indices = self->used_xf_formats;
     format->num_xf_formats = &self->num_xf_formats;
 
     STAILQ_INSERT_TAIL(self->formats, format, list_pointers);
@@ -727,11 +715,26 @@ workbook_add_format(lxw_workbook *self)
 uint8_t
 workbook_close(lxw_workbook *self)
 {
+    lxw_worksheet *worksheet;
     lxw_packager *packager;
     uint8_t error = 0;
 
-    /* Prepare workbook and sub-objects for writing. */
-    _prepare_workbook(self);
+    /* Add a default worksheet if non have been added. */
+    if (!self->num_sheets)
+        workbook_add_worksheet(self, NULL);
+
+    /* Ensure that at least one worksheet has been selected. */
+    if (self->active_tab == 0) {
+        worksheet = STAILQ_FIRST(self->worksheets);
+        worksheet->selected = 1;
+        worksheet->hidden = 0;
+    }
+
+    /* Set the active sheet. */
+    STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
+        if (worksheet->index == self->active_tab)
+            worksheet->active = 1;
+    }
 
     packager = _new_packager(self->filename);
     GOTO_LABEL_ON_MEM_ERROR(packager, mem_error);

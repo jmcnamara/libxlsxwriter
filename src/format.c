@@ -286,9 +286,7 @@ _get_xf_index(lxw_format *self)
         return existing_format->xf_index;
     }
     else {
-        /* New format requiring an index. Note. +1 since Excel has an
-         * implicit "General" format at index 0.
-         */
+        /* New format requiring an index. */
         index = formats_hash_table->unique_count;
         self->xf_index = index;
         _insert_hash_element(formats_hash_table, format_key, self,

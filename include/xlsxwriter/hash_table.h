@@ -1,6 +1,6 @@
 /*
  * libxlsxwriter
- * 
+ *
  * Copyright 2014, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  *
  * hash_table - Hash table functions for libxlsxwriter.
@@ -12,6 +12,10 @@
 
 #include "xlsxwriter/third_party/queue.h"
 #include "common.h"
+
+/* Macro to loop over hash table elements in insertion orfder. */
+#define LXW_FOREACH_ORDERED(elem, hash_table) \
+    STAILQ_FOREACH((elem), (hash_table)->order_list, lxw_hash_order_pointers)
 
 /* List declarations. */
 STAILQ_HEAD(lxw_hash_order_list, lxw_hash_element);

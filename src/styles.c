@@ -545,7 +545,7 @@ _write_border_color(lxw_styles *self, lxw_color_t color)
 
     _INIT_ATTRIBUTES();
 
-    if (color) {
+    if (color != LXW_COLOR_UNSET) {
         __builtin_snprintf(rgb_str, ATTR_32, "FF%06X",
                            color & LXW_COLOR_MASK);
         _PUSH_ATTRIBUTES_STR("rgb", rgb_str);

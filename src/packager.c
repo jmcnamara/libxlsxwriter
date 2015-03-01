@@ -246,11 +246,9 @@ _write_styles_file(lxw_packager *self)
     lxw_styles *styles = _new_styles();
     lxw_hash_element *hash_element;
 
-    /* Copy the unique and in-use formats from the workbook xf_format_indices
-     * list to the styles xf_format list. */
-    STAILQ_FOREACH(hash_element,
-                   self->workbook->xf_format_indices->order_list,
-                   lxw_hash_order_pointers) {
+    /* Copy the unique and in-use formats from the workbook to the styles
+     * xf_format list. */
+    LXW_FOREACH_ORDERED(hash_element, self->workbook->used_xf_formats) {
         lxw_format *workbook_format = (lxw_format *) hash_element->value;
         lxw_format *style_format = _new_format();
         memcpy(style_format, workbook_format, sizeof(lxw_format));
@@ -261,7 +259,7 @@ _write_styles_file(lxw_packager *self)
     styles->border_count = self->workbook->border_count;
     styles->fill_count = self->workbook->fill_count;
     styles->num_format_count = self->workbook->num_format_count;
-    styles->xf_count = self->workbook->xf_format_indices->unique_count;
+    styles->xf_count = self->workbook->used_xf_formats->unique_count;
 
     styles->file = lxw_tmpfile();
 
@@ -442,8 +440,8 @@ uint8_t
 _create_package(lxw_packager *self)
 {
 
-    _write_workbook_file(self);
     _write_worksheet_files(self);
+    _write_workbook_file(self);
     _write_shared_strings_file(self);
     _write_app_file(self);
     _write_core_file(self);
