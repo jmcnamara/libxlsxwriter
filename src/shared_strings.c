@@ -133,7 +133,8 @@ _write_t(lxw_sst *self, char *string)
     _INIT_ATTRIBUTES();
 
     /* Add attribute to preserve leading or trailing whitespace. */
-    if (isspace(string[0]) || isspace(string[strlen(string) - 1]))
+    if (isspace((unsigned char) string[0])
+        || isspace((unsigned char) string[strlen(string) - 1]))
         _PUSH_ATTRIBUTES_STR("xml:space", "preserve");
 
     _xml_data_element(self->file, "t", string, &attributes);

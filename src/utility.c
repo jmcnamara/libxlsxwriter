@@ -163,7 +163,7 @@ lxw_get_row(const char *row_str)
     const char *p = row_str;
 
     /* Skip the column letters of the A1 cell. */
-    while (p && isalpha(*p))
+    while (p && isalpha((unsigned char) *p))
         p++;
 
     /* Convert the row part of the A1 cell to a number. */
@@ -183,7 +183,7 @@ lxw_get_col(const char *col_str)
     const char *p = col_str;
 
     /* Convert the leading column letters of the A1 cell. */
-    while (p && isupper(*p)) {
+    while (p && isupper((unsigned char) *p)) {
         col_num = (col_num * 26) + (*p - 'A' + 1);
         p++;
     }
