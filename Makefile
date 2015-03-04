@@ -36,7 +36,6 @@ clean :
 
 # Run the unit tests.
 test : all test_functional test_unit
-	$(Q)$(MAKE) test -C test/unit
 
 # Run the functional tests.
 test_functional : all

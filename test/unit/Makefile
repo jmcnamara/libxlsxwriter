@@ -34,9 +34,6 @@ SRCS += $(wildcard core/test*.c)
 SRCS += $(wildcard relationships/test*.c)
 SRCS += $(wildcard format/test*.c)
 SRCS += $(wildcard styles/test*.c)
-
-SRCS -= $(wildcard utility/test_all.c)
-SRCS -= $(wildcard styles/test_all.c)
 # End of SRCS
 
 OBJS  = $(patsubst %.c,%.o,$(SRCS))
