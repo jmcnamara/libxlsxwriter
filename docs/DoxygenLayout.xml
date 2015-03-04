@@ -97,6 +97,9 @@
   <file>
     <detaileddescription title="Description"/>
     <sourcelink visible="yes"/>
+    <memberdecl>
+      <functions title=""/>
+    </memberdecl>
     <memberdef>
       <functions title=""/>
       <inlineclasses title=""/>
