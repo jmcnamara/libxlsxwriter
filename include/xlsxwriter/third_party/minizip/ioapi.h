@@ -18,6 +18,10 @@
 
 */
 
+
+/* Pragma added by libxlsxwriter to avoid warnings with -pedantic -ansi. */
+#pragma GCC system_header
+
 #ifndef _ZLIBIOAPI64_H
 #define _ZLIBIOAPI64_H
 

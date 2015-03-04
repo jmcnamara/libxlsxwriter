@@ -37,7 +37,7 @@
 
 */
 
-/* Pragma added by libxlsxwriter project to avoid warnings with -pedantic -ansi. */
+/* Pragma added by libxlsxwriter to avoid warnings with -pedantic -ansi. */
 #pragma GCC system_header
 
 #ifndef _zip12_H
