@@ -681,6 +681,10 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
                             lxw_col_t last_col, double width,
                             lxw_format *format, lxw_row_col_options *options);
 
+void worksheet_select(lxw_worksheet *worksheet);
+
+void worksheet_activate(lxw_worksheet *worksheet);
+
 /**
  * @brief Set the page orientation as landscape.
  *

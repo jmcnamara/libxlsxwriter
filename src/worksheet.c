@@ -1595,6 +1595,33 @@ worksheet_set_row(lxw_worksheet *self,
 }
 
 /*
+ * Set this worksheet as a selected worksheet, i.e. the worksheet has its tab
+ * highlighted.
+ */
+void
+worksheet_select(lxw_worksheet *self)
+{
+    self->selected = LXW_TRUE;
+
+    /* Selected worksheet can"t be hidden. */
+    self->hidden = LXW_FALSE;
+}
+
+/*
+ * Set this worksheet as the active worksheet, i.e. the worksheet that is
+ * displayed when the workbook is opened. Also set it as selected.
+ */
+void
+worksheet_activate(lxw_worksheet *self)
+{
+    self->selected = LXW_TRUE;
+    self->active = LXW_TRUE;
+
+    /* Active worksheet can"t be hidden. */
+    self->hidden = LXW_FALSE;
+}
+
+/*
  * Set the page orientation as portrait.
  */
 void

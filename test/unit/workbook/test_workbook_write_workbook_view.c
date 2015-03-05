@@ -38,7 +38,7 @@ CTEST(workbook, write_workbook_view2) {
 
     lxw_workbook *workbook = new_workbook(NULL);
     workbook->file = testfile;
-    workbook->active_tab = 1;
+    workbook->active_sheet = 1;
 
     _write_workbook_view(workbook);
 
@@ -58,7 +58,7 @@ CTEST(workbook, write_workbook_view3) {
 
     lxw_workbook *workbook = new_workbook(NULL);
     workbook->file = testfile;
-    workbook->active_tab = 1;
+    workbook->active_sheet = 1;
     workbook->first_sheet = 2;
 
     _write_workbook_view(workbook);

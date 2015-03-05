@@ -19,7 +19,7 @@ CTEST(worksheet, write_sheet_view) {
 
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
-    worksheet->selected = 1;
+    worksheet_select(worksheet);
 
     _worksheet_write_sheet_view(worksheet);
 

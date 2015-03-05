@@ -31,7 +31,7 @@ CTEST(worksheet, worksheet01) {
 
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
-    worksheet->selected = 1;
+    worksheet_select(worksheet);
 
     _worksheet_assemble_xml_file(worksheet);
 
@@ -66,7 +66,7 @@ CTEST(worksheet, worksheet02) {
 
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
-    worksheet->selected = 1;
+    worksheet_select(worksheet);
 
     worksheet_write_number(worksheet, 0, 0, 123, NULL);
 
@@ -119,7 +119,7 @@ CTEST(worksheet, worksheet03) {
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
     worksheet->sst = _new_sst();
-    worksheet->selected = 1;
+    worksheet_select(worksheet);
 
     worksheet_write_string(worksheet, 0, 0, "Foo", NULL);
     worksheet_write_number(worksheet, 1, 2, 123, NULL);

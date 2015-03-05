@@ -453,8 +453,8 @@ _write_workbook_view(lxw_workbook *self)
     if (self->first_sheet)
         _PUSH_ATTRIBUTES_INT("firstSheet", self->first_sheet);
 
-    if (self->active_tab)
-        _PUSH_ATTRIBUTES_INT("activeTab", self->active_tab);
+    if (self->active_sheet)
+        _PUSH_ATTRIBUTES_INT("activeTab", self->active_sheet);
 
     _xml_empty_tag(self->file, "workbookView", &attributes);
 
@@ -724,7 +724,7 @@ workbook_close(lxw_workbook *self)
         workbook_add_worksheet(self, NULL);
 
     /* Ensure that at least one worksheet has been selected. */
-    if (self->active_tab == 0) {
+    if (self->active_sheet == 0) {
         worksheet = STAILQ_FIRST(self->worksheets);
         worksheet->selected = 1;
         worksheet->hidden = 0;
@@ -732,7 +732,7 @@ workbook_close(lxw_workbook *self)
 
     /* Set the active sheet. */
     STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
-        if (worksheet->index == self->active_tab)
+        if (worksheet->index == self->active_sheet)
             worksheet->active = 1;
     }
 

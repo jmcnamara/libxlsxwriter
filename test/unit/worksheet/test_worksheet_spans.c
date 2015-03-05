@@ -36,7 +36,7 @@ CTEST(worksheet, spans01) {
 
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
-    worksheet->selected = 1;
+    worksheet_select(worksheet);
 
     worksheet_write_number(worksheet, 2, 1, 2000, NULL);
 
@@ -73,7 +73,7 @@ CTEST(worksheet, spans02) {
 
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
-    worksheet->selected = 1;
+    worksheet_select(worksheet);
 
     worksheet_write_number(worksheet, 1048575, 0, 123, NULL);
 
@@ -110,7 +110,7 @@ CTEST(worksheet, spans03) {
 
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
-    worksheet->selected = 1;
+    worksheet_select(worksheet);
 
     worksheet_write_number(worksheet, 0, 16383, 123, NULL);
 
@@ -147,7 +147,7 @@ CTEST(worksheet, spans04) {
 
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
-    worksheet->selected = 1;
+    worksheet_select(worksheet);
 
     worksheet_write_number(worksheet, 1048575, 16383, 123, NULL);
 
@@ -280,7 +280,7 @@ CTEST(worksheet, spans05) {
 
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
-    worksheet->selected = 1;
+    worksheet_select(worksheet);
 
     for (i = 0; i < 20; i++)
         worksheet_write_number(worksheet, i, i, i + 1, NULL);
@@ -300,7 +300,7 @@ CTEST(worksheet, spans06) {
 
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
-    worksheet->selected = 1;
+    worksheet_select(worksheet);
 
     err = worksheet_write_number(worksheet, 0, 16384, 123, NULL);
     ASSERT_EQUAL(LXW_RANGE_ERROR, err);
