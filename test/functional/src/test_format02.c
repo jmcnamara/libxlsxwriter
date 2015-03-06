@@ -9,10 +9,6 @@
 
 #include "xlsxwriter.h"
 
-/* Ignore warnings about unused variables since this file is testing how
- * unused formats are handled.
- */
-#pragma GCC diagnostic ignored "-Wunused-variable"
 
 int main() {
 

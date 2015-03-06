@@ -9,8 +9,6 @@
 
 #include "xlsxwriter.h"
 
-#pragma GCC diagnostic ignored "-Wunused-variable"
-
 int main() {
 
     lxw_workbook  *workbook  = new_workbook("test_format12.xlsx");

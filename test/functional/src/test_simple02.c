@@ -9,10 +9,6 @@
 
 #include "xlsxwriter.h"
 
-/* Ignore warnings about unused variables since this file is testing how
- * unused formats are handled.
- */
-#pragma GCC diagnostic ignored "-Wunused-variable"
 
 int main() {
 
@@ -30,6 +26,8 @@ int main() {
     worksheet_write_string(worksheet3, 1, 1, "Foo", NULL);
     worksheet_write_string(worksheet3, 2, 1, "Bar", format);
     worksheet_write_number(worksheet3, 3, 2, 234, NULL);
+
+    (void)worksheet2; /* Unused. For testing only. */
 
     return workbook_close(workbook);
 }

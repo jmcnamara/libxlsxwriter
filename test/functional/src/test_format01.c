@@ -9,11 +9,6 @@
 
 #include "xlsxwriter.h"
 
-/* Ignore warnings about unused variables since this file is testing how
- * unused formats are handled.
- */
-#pragma GCC diagnostic ignored "-Wunused-variable"
-
 int main() {
 
     lxw_workbook  *workbook  = new_workbook("test_format01.xlsx");
@@ -25,6 +20,15 @@ int main() {
     lxw_format    *format     = workbook_add_format(workbook);
     lxw_format    *unused2    = workbook_add_format(workbook);
     lxw_format    *unused3    = workbook_add_format(workbook);
+
+
+    /* Avoid warnings about unused variables since this test is checking
+     * how unused formats are handled.
+     */
+    (void)worksheet2;
+    (void)unused1;
+    (void)unused2;
+    (void)unused3;
 
     format_set_bold(format);
 
