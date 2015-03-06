@@ -39,7 +39,7 @@ _new_packager(const char *filename)
     packager->buffer = calloc(1, LXW_ZIP_BUFFER_SIZE);
     GOTO_LABEL_ON_MEM_ERROR(packager->buffer, mem_error);
 
-    packager->filename = __builtin_strdup(filename);
+    packager->filename = lxw_strdup(filename);
     GOTO_LABEL_ON_MEM_ERROR(packager->filename, mem_error);
 
     packager->buffer_size = LXW_ZIP_BUFFER_SIZE;

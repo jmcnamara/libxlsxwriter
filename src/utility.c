@@ -323,6 +323,25 @@ _datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904)
     return days + seconds;
 }
 
+/* Simple strdup() implementation since it isn't ANSI C. */
+char *
+lxw_strdup(const char *str)
+{
+    size_t len;
+    char *copy;
+
+    if (!str)
+        return NULL;
+
+    len = strlen(str) + 1;
+    copy = malloc(len);
+
+    if (copy)
+        memcpy(copy, str, len);
+
+    return copy;
+}
+
 /*
  * Thin wrapper for tmpfile() so it can be over-ridden with a safer version if
  * required.

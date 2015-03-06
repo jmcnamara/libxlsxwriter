@@ -230,10 +230,10 @@ _ct_add_default(lxw_content_types *self, const char *key, const char *value)
     tuple = calloc(1, sizeof(lxw_tuple));
     GOTO_LABEL_ON_MEM_ERROR(tuple, mem_error);
 
-    tuple->key = __builtin_strdup(key);
+    tuple->key = lxw_strdup(key);
     GOTO_LABEL_ON_MEM_ERROR(tuple->key, mem_error);
 
-    tuple->value = __builtin_strdup(value);
+    tuple->value = lxw_strdup(value);
     GOTO_LABEL_ON_MEM_ERROR(tuple->value, mem_error);
 
     STAILQ_INSERT_TAIL(self->default_types, tuple, list_pointers);
@@ -262,10 +262,10 @@ _ct_add_override(lxw_content_types *self, const char *key, const char *value)
     tuple = calloc(1, sizeof(lxw_tuple));
     GOTO_LABEL_ON_MEM_ERROR(tuple, mem_error);
 
-    tuple->key = __builtin_strdup(key);
+    tuple->key = lxw_strdup(key);
     GOTO_LABEL_ON_MEM_ERROR(tuple->key, mem_error);
 
-    tuple->value = __builtin_strdup(value);
+    tuple->value = lxw_strdup(value);
     GOTO_LABEL_ON_MEM_ERROR(tuple->value, mem_error);
 
     STAILQ_INSERT_TAIL(self->overrides, tuple, list_pointers);

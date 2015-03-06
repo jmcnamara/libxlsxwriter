@@ -247,7 +247,7 @@ _get_sst_index(lxw_sst *sst, const char *string)
 
         /* Store the string and its index. */
         element->index = sst->unique_count;
-        element->string = __builtin_strdup(string);
+        element->string = lxw_strdup(string);
 
         /* Add the sst element to the bucket linked list. */
         SLIST_INSERT_HEAD(list, element, sst_list_pointers);
@@ -286,7 +286,7 @@ _get_sst_index(lxw_sst *sst, const char *string)
 
         /* Store the string and its index. */
         element->index = sst->unique_count;
-        element->string = __builtin_strdup(string);
+        element->string = lxw_strdup(string);
 
         /* Add the sst element to the bucket linked list. */
         SLIST_INSERT_HEAD(list, element, sst_list_pointers);

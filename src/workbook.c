@@ -661,7 +661,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
         if (strlen(sheetname) > LXW_SHEETNAME_MAX)
             return NULL;
         else
-            init_data.name = __builtin_strdup(sheetname);
+            init_data.name = lxw_strdup(sheetname);
     }
     else {
         /* Use the default SheetN name. */

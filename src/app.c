@@ -372,7 +372,7 @@ _add_part_name(lxw_app *self, const char *name)
     part_name = calloc(1, sizeof(lxw_part_name));
     GOTO_LABEL_ON_MEM_ERROR(part_name, mem_error);
 
-    part_name->name = __builtin_strdup(name);
+    part_name->name = lxw_strdup(name);
     GOTO_LABEL_ON_MEM_ERROR(part_name->name, mem_error);
 
     STAILQ_INSERT_TAIL(self->part_names, part_name, list_pointers);
@@ -402,10 +402,10 @@ _add_heading_pair(lxw_app *self, const char *key, const char *value)
     heading_pair = calloc(1, sizeof(lxw_heading_pair));
     GOTO_LABEL_ON_MEM_ERROR(heading_pair, mem_error);
 
-    heading_pair->key = __builtin_strdup(key);
+    heading_pair->key = lxw_strdup(key);
     GOTO_LABEL_ON_MEM_ERROR(heading_pair->key, mem_error);
 
-    heading_pair->value = __builtin_strdup(value);
+    heading_pair->value = lxw_strdup(value);
     GOTO_LABEL_ON_MEM_ERROR(heading_pair->value, mem_error);
 
     STAILQ_INSERT_TAIL(self->heading_pairs, heading_pair, list_pointers);

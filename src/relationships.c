@@ -174,11 +174,11 @@ _add_relationship(lxw_relationships *self, const char *schema,
     __builtin_snprintf(relationship->type, MAX_ATTRIBUTE_LENGTH, "%s%s",
                        schema, type);
 
-    relationship->target = __builtin_strdup(target);
+    relationship->target = lxw_strdup(target);
     GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
 
     if (target_mode) {
-        relationship->target_mode = __builtin_strdup(target_mode);
+        relationship->target_mode = lxw_strdup(target_mode);
         GOTO_LABEL_ON_MEM_ERROR(relationship->target_mode, mem_error);
     }
 

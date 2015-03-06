@@ -1317,7 +1317,7 @@ worksheet_write_string(lxw_worksheet *self,
         cell = _new_string_cell(row_num, col_num, string_id, format);
     }
     else {
-        string_copy = __builtin_strdup(string);
+        string_copy = lxw_strdup(string);
         cell = _new_inline_string_cell(row_num, col_num, string_copy, format);
     }
 
@@ -1350,9 +1350,9 @@ worksheet_write_formula_num(lxw_worksheet *self,
 
     /* Strip leading "=" from formula. */
     if (formula[0] == '=')
-        formula_copy = __builtin_strdup(formula + 1);
+        formula_copy = lxw_strdup(formula + 1);
     else
-        formula_copy = __builtin_strdup(formula);
+        formula_copy = lxw_strdup(formula);
 
     cell = _new_formula_cell(row_num, col_num, formula_copy, format);
     cell->formula_result = result;
