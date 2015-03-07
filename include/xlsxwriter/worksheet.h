@@ -683,7 +683,7 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
                             lxw_format *format, lxw_row_col_options *options);
 
  /**
-  * @brief Make a worksheet the active, i.e., visible worksheet:
+  * @brief Make a worksheet the active, i.e., visible worksheet.
   *
   *
   * The `activate()` method is used to specify which worksheet is initially

@@ -2,6 +2,14 @@
 @page changes Changes
 
 
+## 0.0.5 March 6 2015
+
+- Added `worksheet_select()` function to set worksheets as selected.
+
+- Added `worksheet_activate()` to set the active worksheet.
+
+- Several portability fixes to fix warnings with different compilers.
+
 
 ## 0.0.4 March 1 2015
 
