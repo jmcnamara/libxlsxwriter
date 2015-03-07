@@ -682,9 +682,52 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
                             lxw_col_t last_col, double width,
                             lxw_format *format, lxw_row_col_options *options);
 
-void worksheet_select(lxw_worksheet *worksheet);
-
+ /**
+  * @brief Make a worksheet the active, i.e., visible worksheet:
+  *
+  *
+  * The `activate()` method is used to specify which worksheet is initially
+  * visible in a multi-sheet workbook:
+  *
+  * @code
+  *     lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, NULL);
+  *     lxw_worksheet *worksheet2 = workbook_add_worksheet(workbook, NULL);
+  *     lxw_worksheet *worksheet3 = workbook_add_worksheet(workbook, NULL);
+  *
+  *     worksheet_activate(worksheet3);
+  * @endcode
+  *
+  * @image html worksheet_activate.png
+  *
+  * More than one worksheet can be selected via the `select()` method, see
+  * below, however only one worksheet can be active.
+  *
+  * The default active worksheet is the first worksheet.
+  *
+  */
 void worksheet_activate(lxw_worksheet *worksheet);
+
+ /**
+  * @brief Set a worksheet tab as selected.
+  *
+  *
+  * The `select()` method is used to indicate that a worksheet is selected in
+  * a multi-sheet workbook:
+  *
+  * @code
+  *     worksheet_activate(worksheet1);
+  *     worksheet_select(worksheet2);
+  *     worksheet_select(worksheet3);
+  *
+  * @endcode
+  *
+  * A selected worksheet has its tab highlighted. Selecting worksheets is a
+  * way of grouping them together so that, for example, several worksheets
+  * could be printed in one go. A worksheet that has been activated via the
+  * `activate()` method will also appear as selected.
+  *
+  */
+void worksheet_select(lxw_worksheet *worksheet);
 
 /**
  * @brief Set the page orientation as landscape.
