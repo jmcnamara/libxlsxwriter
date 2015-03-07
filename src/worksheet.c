@@ -760,15 +760,19 @@ _worksheet_write_page_setup(lxw_worksheet *self)
     if (self->page_order)
         _PUSH_ATTRIBUTES_STR("pageOrder", "overThenDown");
 
+    /* Set start page. */
+    if (self->page_start > 1)
+        _PUSH_ATTRIBUTES_INT("firstPageNumber", self->page_start);
+
     /* Set page orientation. */
     if (self->orientation)
         _PUSH_ATTRIBUTES_STR("orientation", "portrait");
     else
         _PUSH_ATTRIBUTES_STR("orientation", "landscape");
 
-    /* Set start page. */
+    /* Set start page active flag. */
     if (self->page_start)
-        _PUSH_ATTRIBUTES_INT("useFirstPageNumber", self->page_start);
+        _PUSH_ATTRIBUTES_INT("useFirstPageNumber", 1);
 
     /* Set the DPI. Mainly only for testing. */
     if (self->horizontal_dpi)
