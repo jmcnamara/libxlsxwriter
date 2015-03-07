@@ -14,7 +14,7 @@ int main() {
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Add a format. */
-    lxw_format    *format    = workbook_add_format(workbook);
+    lxw_format *format = workbook_add_format(workbook);
 
     /* Set the bold property for the format */
     format_set_bold(format);

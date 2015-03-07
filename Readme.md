@@ -19,7 +19,7 @@ It supports features such as:
 - Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter)
 - FreeBSD license
 - ANSI C
-- Works with GCC 4.4, 4.6, 4.7, 4.8, tcc and clang
+- Works with GCC 4.4, 4.6, 4.7, 4.8, 4.9, Clang, ICC and TCC.
 - Works on Linux, FreeBSD and OS X.
 - The only dependency is on `zlib`
 
@@ -37,7 +37,7 @@ int main() {
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Add a format. */
-    lxw_format    *format    = workbook_add_format(workbook);
+    lxw_format *format = workbook_add_format(workbook);
 
     /* Set the bold property for the format */
     format_set_bold(format);
