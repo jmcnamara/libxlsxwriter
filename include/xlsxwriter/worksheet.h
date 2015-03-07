@@ -150,6 +150,7 @@ typedef struct lxw_worksheet {
     uint8_t active;
     uint8_t selected;
     uint8_t hidden;
+    uint32_t *active_sheet;
 
     lxw_col_options **col_options;
     uint16_t col_options_max;
@@ -194,7 +195,7 @@ typedef struct lxw_worksheet_init_data {
     uint32_t index;
     uint8_t hidden;
     uint8_t optimize;
-
+    uint32_t *active_sheet;
     lxw_sst *sst;
     char *name;
 

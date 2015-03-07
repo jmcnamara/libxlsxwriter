@@ -102,6 +102,8 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
         worksheet->hidden = init_data->hidden;
         worksheet->sst = init_data->sst;
         worksheet->optimize = init_data->optimize;
+        worksheet->active_sheet = init_data->active_sheet;
+
     }
 
     return worksheet;
@@ -1619,6 +1621,8 @@ worksheet_activate(lxw_worksheet *self)
 
     /* Active worksheet can"t be hidden. */
     self->hidden = LXW_FALSE;
+
+    *self->active_sheet = self->index;
 }
 
 /*

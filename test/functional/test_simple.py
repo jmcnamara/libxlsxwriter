@@ -19,8 +19,8 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_simple02(self):
         self.run_exe_test('test_simple02')
 
-    # def test_simple03(self):
-    #     self.run_exe_test('test_simple03')
+    def test_simple03(self):
+        self.run_exe_test('test_simple03')
 
     def test_simple04(self):
         self.run_exe_test('test_simple04')

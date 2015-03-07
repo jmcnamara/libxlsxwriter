@@ -98,7 +98,7 @@ typedef struct lxw_workbook {
 
     uint16_t num_sheets;
     uint16_t first_sheet;
-    uint16_t active_sheet;
+    uint32_t active_sheet;
     uint16_t num_xf_formats;
     uint16_t num_format_count;
 
