@@ -1,7 +1,7 @@
 /*
  * libxlsxwriter
  * 
- * Copyright 2014, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
+ * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  *
  * app - A libxlsxwriter library for creating Excel XLSX app files.
  *

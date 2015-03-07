@@ -4,7 +4,7 @@
 # Simple program to arrange the example programs in a user defined order
 # instead or sorted order. Also add a caption.
 #
-# Copyright 2014, John McNamara, jmcnamara@cpan.org
+# Copyright 2014-2015, John McNamara, jmcnamara@cpan.org
 #
 use warnings;
 use strict;
