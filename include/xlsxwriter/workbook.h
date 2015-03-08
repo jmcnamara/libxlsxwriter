@@ -49,8 +49,22 @@
 #include "hash_table.h"
 #include "common.h"
 
-/* Define the queue.h TAILQ structs for the workbook list. */
+/* Define the queue.h structs for the workbook lists. */
 STAILQ_HEAD(lxw_worksheets, lxw_worksheet);
+LIST_HEAD(lxw_defined_names, lxw_defined_name);
+
+#define LXW_DEFINED_NAME_LENGTH 128
+
+/* Struct to represent a defined name. */
+typedef struct lxw_defined_name {
+    int16_t index;
+    uint8_t hidden;
+    char name[LXW_DEFINED_NAME_LENGTH];
+    char range[LXW_DEFINED_NAME_LENGTH];
+
+    /* List pointers for queue.h. */
+    LIST_ENTRY (lxw_defined_name) list_pointers;
+} lxw_defined_name;
 
 /**
  * @brief Errors conditions encountered when closing the Workbook and writing
@@ -91,6 +105,7 @@ typedef struct lxw_workbook {
     FILE *file;
     struct lxw_worksheets *worksheets;
     struct lxw_formats *formats;
+    struct lxw_defined_names *defined_names;
     lxw_sst *sst;
     lxw_doc_properties *properties;
     const char *filename;
@@ -278,6 +293,10 @@ STATIC void _write_sheet(lxw_workbook *self,
                          const char *name, uint32_t sheet_id, uint8_t hidden);
 STATIC void _write_sheets(lxw_workbook *self);
 STATIC void _write_calc_pr(lxw_workbook *self);
+
+STATIC void _write_defined_name(lxw_workbook *self,
+                                lxw_defined_name *define_name);
+STATIC void _write_defined_names(lxw_workbook *self);
 
 #endif /* TESTING */
 

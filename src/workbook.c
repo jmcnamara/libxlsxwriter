@@ -31,6 +31,7 @@ _free_workbook(lxw_workbook *workbook)
 {
     lxw_worksheet *worksheet;
     lxw_format *format;
+    lxw_defined_name *defined_name;
 
     if (!workbook)
         return;
@@ -63,10 +64,18 @@ _free_workbook(lxw_workbook *workbook)
         _free_format(format);
     }
 
+    /* Free the defined_names in the workbook. */
+    while (!LIST_EMPTY(workbook->defined_names)) {
+        defined_name = LIST_FIRST(workbook->defined_names);
+        LIST_REMOVE(defined_name, list_pointers);
+        free(defined_name);
+    }
+
     _free_lxw_hash(workbook->used_xf_formats);
     _free_sst(workbook->sst);
     free(workbook->worksheets);
     free(workbook->formats);
+    free(workbook->defined_names);
     free(workbook);
 }
 
@@ -537,6 +546,50 @@ _write_calc_pr(lxw_workbook *self)
     _FREE_ATTRIBUTES();
 }
 
+/*
+ * Write the <definedName> element.
+ */
+STATIC void
+_write_defined_name(lxw_workbook *self, lxw_defined_name *defined_name)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    _INIT_ATTRIBUTES();
+    _PUSH_ATTRIBUTES_STR("name", defined_name->name);
+
+    if (defined_name->index != -1)
+        _PUSH_ATTRIBUTES_INT("localSheetId", defined_name->index);
+
+    if (defined_name->hidden)
+        _PUSH_ATTRIBUTES_INT("hidden", 1);
+
+    _xml_data_element(self->file, "definedName", defined_name->range,
+                      &attributes);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <definedNames> element.
+ */
+STATIC void
+_write_defined_names(lxw_workbook *self)
+{
+    lxw_defined_name *defined_name;
+
+    if (LIST_EMPTY(self->defined_names))
+        return;
+
+    _xml_start_tag(self->file, "definedNames", NULL);
+
+    LIST_FOREACH(defined_name, self->defined_names, list_pointers) {
+        _write_defined_name(self, defined_name);
+    }
+
+    _xml_end_tag(self->file, "definedNames");
+}
+
 /*****************************************************************************
  *
  * XML file assembly functions.
@@ -569,6 +622,9 @@ _workbook_assemble_xml_file(lxw_workbook *self)
 
     /* Write the worksheet names and ids. */
     _write_sheets(self);
+
+    /* Write the workbook defined names. */
+    _write_defined_names(self);
 
     /* Write the workbook calculation properties. */
     _write_calc_pr(self);
@@ -615,6 +671,11 @@ new_workbook_opt(const char *filename, lxw_workbook_options *options)
     workbook->formats = calloc(1, sizeof(struct lxw_formats));
     GOTO_LABEL_ON_MEM_ERROR(workbook->formats, mem_error);
     STAILQ_INIT(workbook->formats);
+
+    /* Add the defined_names list. */
+    workbook->defined_names = calloc(1, sizeof(struct lxw_defined_names));
+    GOTO_LABEL_ON_MEM_ERROR(workbook->defined_names, mem_error);
+    LIST_INIT(workbook->defined_names);
 
     /* Add the shared strings table. */
     workbook->sst = _new_sst();

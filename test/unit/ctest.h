@@ -235,7 +235,7 @@ void assert_str(const char* exp, const char*  real, const char* caller, int line
     if ((exp == NULL && real != NULL) ||
         (exp != NULL && real == NULL) ||
         (exp && real && strcmp(exp, real) != 0)) {
-        CTEST_ERR("%s:%d  expected '%s', got '%s'", caller, line, exp, real);
+        CTEST_ERR("%s:%d\n\texpected '%s',\n\tgot      '%s'", caller, line, exp, real);
     }
 }
 
@@ -244,11 +244,11 @@ void assert_data(const unsigned char* exp, int expsize,
                  const char* caller, int line) {
     int i;
     if (expsize != realsize) {
-        CTEST_ERR("%s:%d  expected %d bytes, got %d", caller, line, expsize, realsize);
+        CTEST_ERR("%s:%d\n\texpected %d bytes,\n\tgot      %d", caller, line, expsize, realsize);
     }
     for (i=0; i<expsize; i++) {
         if (exp[i] != real[i]) {
-            CTEST_ERR("%s:%d expected 0x%02x at offset %d got 0x%02x",
+            CTEST_ERR("%s:%d expected 0x%02x at offset %d\n\tgot      0x%02x",
                 caller, line, exp[i], i, real[i]);
         }
     }
@@ -256,7 +256,7 @@ void assert_data(const unsigned char* exp, int expsize,
 
 void assert_equal(long exp, long real, const char* caller, int line) {
     if (exp != real) {
-        CTEST_ERR("%s:%d  expected %ld, got %ld", caller, line, exp, real);
+        CTEST_ERR("%s:%d\n\texpected %ld,\n\tgot      %ld", caller, line, exp, real);
     }
 }
 
@@ -273,7 +273,7 @@ void assert_double(double exp, double real, const char* caller, int line) {
     double largest = (real > exp) ? real : exp;
 
     if (diff > largest * FLT_EPSILON) {
-        CTEST_ERR("%s:%d  DEXPECTED %g, got %g", caller, line, exp, real);
+        CTEST_ERR("%s:%d  DEXPECTED %g,\n\tgot      %g", caller, line, exp, real);
     }
 }
 
