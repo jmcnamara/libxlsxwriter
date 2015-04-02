@@ -45,6 +45,9 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->table = calloc(1, sizeof(struct lxw_table_rows));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->table, mem_error);
 
+    worksheet->merge_ranges = calloc(1, sizeof(struct lxw_merge_ranges));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->merge_ranges, mem_error);
+
     if (init_data && init_data->optimize) {
         worksheet->array = calloc(LXW_COL_MAX, sizeof(struct lxw_cell *));
         GOTO_LABEL_ON_MEM_ERROR(worksheet->array, mem_error);
@@ -64,6 +67,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->optimize_row->height = LXW_DEF_ROW_HEIGHT;
 
     TAILQ_INIT(worksheet->table);
+    TAILQ_INIT(worksheet->merge_ranges);
 
     if (init_data && init_data->optimize) {
         worksheet->optimize_tmpfile = lxw_tmpfile();
@@ -137,6 +141,7 @@ _free_worksheet(lxw_worksheet *worksheet)
     lxw_row *row;
     lxw_cell *cell;
     lxw_col_t col;
+    lxw_merge_range *range;
 
     if (!worksheet)
         return;
@@ -168,6 +173,15 @@ _free_worksheet(lxw_worksheet *worksheet)
         }
 
         free(worksheet->table);
+    }
+
+    if (worksheet->merge_ranges) {
+        while(!TAILQ_EMPTY(worksheet->merge_ranges)) {
+            range = TAILQ_FIRST(worksheet->merge_ranges);
+            TAILQ_REMOVE(worksheet->merge_ranges, range, list_pointers);
+            free(range);
+        }
+        free(worksheet->merge_ranges);
     }
 
     if (worksheet->array) {
@@ -714,6 +728,58 @@ _worksheet_write_page_margins(lxw_worksheet *self)
 }
 
 /*
+ * Write the <mergeCell> element for one merge range.
+ */
+STATIC void
+_worksheet_write_merge_range(lxw_worksheet *self, lxw_merge_range *range) {
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char ref[MAX_CELL_RANGE_LENGTH];
+
+    lxw_range(ref, range->first_row, range->first_col,
+              range->last_row, range->last_col);
+
+    _INIT_ATTRIBUTES();
+    _PUSH_ATTRIBUTES_STR("ref", ref);
+
+    _xml_empty_tag(self->file, "mergeCell", &attributes);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <mergeCells> element for all merge ranges.
+ */
+STATIC void
+_worksheet_write_merge_ranges(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    lxw_merge_range *range;
+    uint16_t count = 0;
+
+    TAILQ_FOREACH(range, self->merge_ranges, list_pointers) {
+        count++;
+    }
+
+    if(count == 0)
+        return;
+
+    _INIT_ATTRIBUTES();
+    _PUSH_ATTRIBUTES_INT("count", count);
+
+    _xml_start_tag(self->file, "mergeCells", &attributes);
+
+    TAILQ_FOREACH(range, self->merge_ranges, list_pointers) {
+        _worksheet_write_merge_range(self, range);
+    }
+
+    _xml_end_tag(self->file, "mergeCells");
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <pageSetup> element.
  * The following is an example taken from Excel.
  * <pageSetup
@@ -1243,6 +1309,9 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
     else
         _worksheet_write_optimized_sheet_data(self);
 
+    /* Write any merged cell ranges. */
+    _worksheet_write_merge_ranges(self);
+
     /* Write the worksheet page_margins. */
     _worksheet_write_page_margins(self);
 
@@ -1697,4 +1766,33 @@ worksheet_set_margins(lxw_worksheet *self, double left, double right,
 
     if (bottom >= 0)
         self->margin_bottom = bottom;
+}
+
+/*
+ * Define a range of cells to be merged.
+ */
+int8_t
+worksheet_merge_range(lxw_worksheet *self,
+                      lxw_row_t first_row, lxw_col_t first_col,
+                      lxw_row_t last_row, lxw_col_t last_col)
+{
+    int8_t err;
+    lxw_merge_range *range;
+
+    err = _check_dimensions(self, last_row, last_col, LXW_FALSE, LXW_FALSE);
+
+    if (err)
+        return err;
+
+    range = calloc(1, sizeof(lxw_merge_range));
+    RETURN_ON_MEM_ERROR(range, -1);
+
+    range->first_row = first_row;
+    range->first_col = first_col;
+    range->last_row = last_row;
+    range->last_col = last_col;
+
+    TAILQ_INSERT_TAIL(self->merge_ranges, range, list_pointers);
+
+    return 0;
 }

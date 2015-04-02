@@ -93,6 +93,7 @@ enum cell_types {
 /* Define the queue.h TAILQ structs for the list head types. */
 TAILQ_HEAD(lxw_table_cells, lxw_cell);
 TAILQ_HEAD(lxw_table_rows, lxw_row);
+TAILQ_HEAD(lxw_merge_ranges, lxw_merge_range);
 
 /**
  * @brief Options for rows and columns.
@@ -151,6 +152,7 @@ typedef struct lxw_worksheet {
     uint8_t selected;
     uint8_t hidden;
     uint32_t *active_sheet;
+    struct lxw_merge_ranges *merge_ranges;
 
     lxw_col_options **col_options;
     uint16_t col_options_max;
@@ -235,6 +237,15 @@ typedef struct lxw_cell {
     /* List pointers for queue.h. */
     TAILQ_ENTRY (lxw_cell) list_pointers;
 } lxw_cell;
+
+typedef struct lxw_merge_range {
+    lxw_row_t first_row;
+    lxw_col_t first_col;
+    lxw_row_t last_row;
+    lxw_col_t last_col;
+
+    TAILQ_ENTRY (lxw_merge_range) list_pointers;
+} lxw_merge_range;
 
 /* *INDENT-OFF* */
 #ifdef __cplusplus
@@ -888,6 +899,26 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  */
 void worksheet_print_across(lxw_worksheet *worksheet);
 
+/**
+ * @brief Define a range of cells to be merged into one cell.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param first_row First row of the merged range.
+ * @param first_col First column of the merged range.
+ * @param last_row  Last row of the merged range.
+ * @param last_col  Last column of the merged range.
+ *
+ *
+ * @code
+ *   // Cell A1 spans 10 columns.
+ *   worksheet_merge_range(worksheet, 0, 0, 0, 9);
+ * @endcode
+ *
+ */
+int8_t worksheet_merge_range(lxw_worksheet *worksheet,
+                             lxw_row_t first_row, lxw_col_t first_col,
+                             lxw_row_t last_row, lxw_col_t last_col);
+
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);
 void _worksheet_assemble_xml_file(lxw_worksheet *worksheet);
@@ -904,6 +935,7 @@ STATIC void _worksheet_write_sheet_views(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_format_pr(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_data(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_page_margins(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_merge_ranges(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_page_setup(lxw_worksheet *worksheet);
 STATIC void _write_row(lxw_worksheet *worksheet, lxw_row *row, char *spans);
 STATIC void _write_col_info(lxw_worksheet *worksheet,
