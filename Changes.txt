@@ -2,6 +2,12 @@
 @page changes Changes
 
 
+## 0.0.6 March 5 2015
+
+- Added the `workbook_define_name()` method to create defined names and ranges
+  in a workbook or worksheet.
+
+
 ## 0.0.5 March 6 2015
 
 - Added `worksheet_select()` function to set worksheets as selected.

@@ -295,7 +295,7 @@ uint8_t workbook_close(lxw_workbook *workbook);
  *     worksheet_write_formula(worksheet, 2, 1, "=Exchange_rate", NULL);
  *
  * @endcode
- * 
+ *
  * @image html defined_name.png
  *
  * As in Excel a name defined like this is "global" to the workbook and can be
@@ -321,7 +321,7 @@ uint8_t workbook_close(lxw_workbook *workbook);
  *     workbook_define_name(workbook, "'New Data'!Sales", "=Sheet2!$G$1:$G$10");
  * @endcode
  *
- * The rules for names in Excel are explained in the 
+ * The rules for names in Excel are explained in the
  * [Miscrosoft Office
 documentation](http://office.microsoft.com/en-001/excel-help/define-and-use-names-in-formulas-HA010147120.aspx).
  *
