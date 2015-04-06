@@ -92,11 +92,22 @@ A simple Unicode UTF-8 example. Note, the source file is UTF-8 encoded.
 Next example: @ref constant_memory.c
 @image html utf8.png
 
+
 @example constant_memory.c
 Example of using libxlsxwriter for writing large files in constant memory
 mode.
 
+Next example: @ref defined_name.c
 @image html constant_memory.png
+
+
+@example defined_name.c
+Example of how to create defined names (named ranges) using libxlsxwriter.
+
+Defined names are used to define descriptive names to represent a value, a
+single cell or a range of cells in a workbook or worksheet.
+
+@image html defined_name.png
 
 
 */

@@ -128,6 +128,8 @@ double _datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904);
 
 char *lxw_strdup(const char *str);
 
+void lxw_str_tolower(char *str);
+
 FILE *lxw_tmpfile(void);
 
 /* Declarations required for unit testing. */

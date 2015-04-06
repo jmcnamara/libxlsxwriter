@@ -342,6 +342,16 @@ lxw_strdup(const char *str)
     return copy;
 }
 
+/* Simple tolower() for strings. */
+void
+lxw_str_tolower(char *str)
+{
+    int i;
+
+    for (i = 0; str[i]; i++)
+        str[i] = tolower(str[i]);
+}
+
 /*
  * Thin wrapper for tmpfile() so it can be over-ridden with a safer version if
  * required.

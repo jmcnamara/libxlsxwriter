@@ -2,7 +2,7 @@
  * Example of writing some data with font formatting to a simple Excel
  * file using libxlsxwriter.
  *
- * Copyright 2014, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org
  *
  */
 

@@ -65,9 +65,9 @@ _free_workbook(lxw_workbook *workbook)
     }
 
     /* Free the defined_names in the workbook. */
-    while (!LIST_EMPTY(workbook->defined_names)) {
-        defined_name = LIST_FIRST(workbook->defined_names);
-        LIST_REMOVE(defined_name, list_pointers);
+    while (!TAILQ_EMPTY(workbook->defined_names)) {
+        defined_name = TAILQ_FIRST(workbook->defined_names);
+        TAILQ_REMOVE(workbook->defined_names, defined_name, list_pointers);
         free(defined_name);
     }
 
@@ -370,6 +370,141 @@ _prepare_workbook(lxw_workbook *self)
 
 }
 
+/*
+ * Compare two defined_name structures.
+ */
+static int
+_compare_defined_names(lxw_defined_name *a, lxw_defined_name *b)
+{
+    int res = strcmp(a->normalised_name, b->normalised_name);
+
+    /* Primary comparison based on defined name. */
+    if (res)
+        return res;
+
+    /* Secondary comparison based on worksheet name. */
+    res = strcmp(a->normalised_sheetname, b->normalised_sheetname);
+    return res;
+}
+
+STATIC uint8_t
+_store_defined_name(lxw_workbook *self, const char *name,
+                    const char *formula, int16_t index, uint8_t hidden)
+{
+    lxw_worksheet *worksheet;
+    lxw_defined_name *defined_name;
+    lxw_defined_name *list_defined_name;
+    char name_copy[LXW_DEFINED_NAME_LENGTH];
+    char *tmp_name;
+    char *worksheet_name;
+
+    /* Do some checks on the input data */
+    if (!name || !formula)
+        return 1;
+
+    if (strlen(name) > LXW_DEFINED_NAME_LENGTH ||
+        strlen(formula) > LXW_DEFINED_NAME_LENGTH) {
+        return 1;
+    }
+
+    defined_name = calloc(1, sizeof(struct lxw_defined_name));
+    RETURN_ON_MEM_ERROR(defined_name, 1);
+
+    /* Copy the user input string. */
+    strcpy(name_copy, name);
+
+    /* Set the worksheet index or -1 for a global defined name. */
+    defined_name->index = index;
+    defined_name->hidden = hidden;
+
+    /* Check for local defined names like like "Sheet1!name". */
+    tmp_name = strchr(name_copy, '!');
+
+    if (tmp_name != NULL) {
+        /* Split the string into the worksheet name and define name. */
+        *tmp_name = '\0';
+        tmp_name++;
+        worksheet_name = name_copy;
+
+        /* Remove any worksheet quoting. */
+        if (worksheet_name[0] == '\'')
+            worksheet_name++;
+        if (worksheet_name[strlen(worksheet_name) - 1] == '\'')
+            worksheet_name[strlen(worksheet_name) - 1] = '\0';
+
+        /* Search for worksheet name to get the equivalent worksheet index. */
+        STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
+            if (strcmp(worksheet_name, worksheet->name) == 0) {
+                defined_name->index = worksheet->index;
+                strcpy(defined_name->normalised_sheetname, worksheet_name);
+            }
+        }
+
+        /* If we didn't find the worksheet name we exit. */
+        if (defined_name->index == -1)
+            goto mem_error;
+
+        strcpy(defined_name->name, tmp_name);
+    }
+    else {
+        /* For non-local names we just store the defined name string. */
+        strcpy(defined_name->name, name_copy);
+    }
+
+    /* We need to normalise the defined names for sorting. This involves
+     * removing any _xlnm namespace from the string and converting it to
+     * lowercase. */
+    tmp_name = strstr(defined_name->name, "_xlnm.");
+
+    if (tmp_name != NULL)
+        strcpy(defined_name->normalised_name, tmp_name + 6);
+    else
+        strcpy(defined_name->normalised_name, defined_name->name);
+
+    lxw_str_tolower(defined_name->normalised_name);
+    lxw_str_tolower(defined_name->normalised_sheetname);
+
+    /* Strip leading "=" from the formula. */
+    if (formula[0] == '=')
+        strcpy(defined_name->range, formula + 1);
+    else
+        strcpy(defined_name->range, formula);
+
+    /* We add the defined name to the list in sorted order. */
+    list_defined_name = TAILQ_FIRST(self->defined_names);
+
+    if (list_defined_name == NULL ||
+        _compare_defined_names(defined_name, list_defined_name) < 1) {
+        /* List is empty or defined name goes to the head. */
+        TAILQ_INSERT_HEAD(self->defined_names, defined_name, list_pointers);
+        return 0;
+    }
+
+    TAILQ_FOREACH(list_defined_name, self->defined_names, list_pointers) {
+        int res = _compare_defined_names(defined_name, list_defined_name);
+
+        /* The entry already exists. We exit and don't overwrite. */
+        if (res == 0)
+            goto mem_error;
+
+        /* New defined name is inserted in sorted order before other entries. */
+        if (res < 0) {
+            TAILQ_INSERT_BEFORE(list_defined_name, defined_name,
+                                list_pointers);
+            return 0;
+        }
+    }
+
+    /* If the entry wasn't less than any of the entries in the list we add it
+     * to the end. */
+    TAILQ_INSERT_TAIL(self->defined_names, defined_name, list_pointers);
+    return 0;
+
+mem_error:
+    free(defined_name);
+    return 1;
+}
+
 /*****************************************************************************
  *
  * XML functions.
@@ -578,12 +713,12 @@ _write_defined_names(lxw_workbook *self)
 {
     lxw_defined_name *defined_name;
 
-    if (LIST_EMPTY(self->defined_names))
+    if (TAILQ_EMPTY(self->defined_names))
         return;
 
     _xml_start_tag(self->file, "definedNames", NULL);
 
-    LIST_FOREACH(defined_name, self->defined_names, list_pointers) {
+    TAILQ_FOREACH(defined_name, self->defined_names, list_pointers) {
         _write_defined_name(self, defined_name);
     }
 
@@ -675,7 +810,7 @@ new_workbook_opt(const char *filename, lxw_workbook_options *options)
     /* Add the defined_names list. */
     workbook->defined_names = calloc(1, sizeof(struct lxw_defined_names));
     GOTO_LABEL_ON_MEM_ERROR(workbook->defined_names, mem_error);
-    LIST_INIT(workbook->defined_names);
+    TAILQ_INIT(workbook->defined_names);
 
     /* Add the shared strings table. */
     workbook->sst = _new_sst();
@@ -812,4 +947,15 @@ workbook_close(lxw_workbook *self)
 
 mem_error:
     return 1;
+}
+
+/*
+ * Create a defined name in Excel. We handle global/workbook level names and
+ * local/worksheet names.
+ */
+uint8_t
+workbook_define_name(lxw_workbook *self, const char *name,
+                     const char *formula)
+{
+    return _store_defined_name(self, name, formula, -1, 0);
 }

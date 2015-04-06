@@ -51,7 +51,7 @@
 
 /* Define the queue.h structs for the workbook lists. */
 STAILQ_HEAD(lxw_worksheets, lxw_worksheet);
-LIST_HEAD(lxw_defined_names, lxw_defined_name);
+TAILQ_HEAD(lxw_defined_names, lxw_defined_name);
 
 #define LXW_DEFINED_NAME_LENGTH 128
 
@@ -61,9 +61,11 @@ typedef struct lxw_defined_name {
     uint8_t hidden;
     char name[LXW_DEFINED_NAME_LENGTH];
     char range[LXW_DEFINED_NAME_LENGTH];
+    char normalised_name[LXW_DEFINED_NAME_LENGTH];
+    char normalised_sheetname[LXW_DEFINED_NAME_LENGTH];
 
     /* List pointers for queue.h. */
-    LIST_ENTRY (lxw_defined_name) list_pointers;
+    TAILQ_ENTRY (lxw_defined_name) list_pointers;
 } lxw_defined_name;
 
 /**
@@ -275,6 +277,58 @@ lxw_format *workbook_add_format(lxw_workbook *workbook);
  */
 uint8_t workbook_close(lxw_workbook *workbook);
 
+/**
+ * @brief Create a defined name in the workbook to use as a variable.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param name     The defined name.
+ * @param formula  The cell or range that the defined name refers to.
+ *
+ * @return 0 for success, non-zero on errror.
+ *
+ * This method is used to defined a name that can be used to represent a
+ * value, a single cell or a range of cells in a workbook: These defined names
+ * can then be used in formulas:
+ *
+ * @code
+ *     workbook_define_name(workbook, "Exchange_rate", "=0.96");
+ *     worksheet_write_formula(worksheet, 2, 1, "=Exchange_rate", NULL);
+ *
+ * @endcode
+ * 
+ * @image html defined_name.png
+ *
+ * As in Excel a name defined like this is "global" to the workbook and can be
+ * referred to from any worksheet:
+ *
+ * @code
+ *     // Global workbook name.
+ *     workbook_define_name(workbook, "Sales", "=Sheet1!$G$1:$H$10");
+ * @endcode
+ *
+ * It is also possible to define a local/worksheet name by prefixing it with
+ * the sheet name using the syntax `'sheetname!definedname'`:
+ *
+ * @code
+ *     // Local worksheet name.
+ *     workbook_define_name(workbook, "Sheet2!Sales", "=Sheet2!$G$1:$G$10");
+ * @endcode
+ *
+ * If the sheet name contains spaces or special characters you must follow the
+ * Excel convention and enclose it in single quotes:
+ *
+ * @code
+ *     workbook_define_name(workbook, "'New Data'!Sales", "=Sheet2!$G$1:$G$10");
+ * @endcode
+ *
+ * The rules for names in Excel are explained in the 
+ * [Miscrosoft Office
+documentation](http://office.microsoft.com/en-001/excel-help/define-and-use-names-in-formulas-HA010147120.aspx).
+ *
+ */
+uint8_t workbook_define_name(lxw_workbook *workbook, const char *name,
+                             const char *formula);
+
 void _free_workbook(lxw_workbook *workbook);
 void _workbook_assemble_xml_file(lxw_workbook *workbook);
 void _set_default_xf_indices(lxw_workbook *workbook);
@@ -297,6 +351,10 @@ STATIC void _write_calc_pr(lxw_workbook *self);
 STATIC void _write_defined_name(lxw_workbook *self,
                                 lxw_defined_name *define_name);
 STATIC void _write_defined_names(lxw_workbook *self);
+
+STATIC uint8_t _store_defined_name(lxw_workbook *self, const char *name,
+                                   const char *formula, int16_t index,
+                                   uint8_t hidden);
 
 #endif /* TESTING */
 

@@ -24,6 +24,7 @@ my @examples = (
     [ 'dates_and_times03.c', 'Dates and times with different formats' ],
     [ 'utf8.c',              'A example of some UTF-8 text' ],
     [ 'constant_memory.c',   'Write a large file with constant memory usage' ],
+    [ 'defined_name.c',      'Example of how to create defined names' ],
 );
 
 # Convert the array refs to a hash for lookups.

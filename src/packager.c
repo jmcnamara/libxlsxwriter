@@ -169,17 +169,36 @@ _write_app_file(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
+    lxw_defined_name *defined_name;
     lxw_app *app = _new_app();
-    char num_sheets[ATTR_32] = { 0 };
+    uint16_t named_range_count = 0;
+    char *tmp_name;
+    char number[ATTR_32] = { 0 };
 
     app->file = lxw_tmpfile();
 
-    __builtin_snprintf(num_sheets, ATTR_32, "%d", self->workbook->num_sheets);
+    __builtin_snprintf(number, ATTR_32, "%d", self->workbook->num_sheets);
 
-    _add_heading_pair(app, "Worksheets", num_sheets);
+    _add_heading_pair(app, "Worksheets", number);
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
         _add_part_name(app, worksheet->name);
+    }
+
+    /* Add the Named Ranges parts. */
+    TAILQ_FOREACH(defined_name, workbook->defined_names, list_pointers) {
+        tmp_name = strstr(defined_name->name, "_xlnm.");
+
+        if (!tmp_name) {
+            _add_part_name(app, defined_name->name);
+            named_range_count++;
+        }
+    }
+
+    /* Add the Named Range heading pairs. */
+    if (named_range_count) {
+        __builtin_snprintf(number, ATTR_32, "%d", named_range_count);
+        _add_heading_pair(app, "Named Ranges", number);
     }
 
     _app_assemble_xml_file(app);
