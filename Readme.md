@@ -15,12 +15,14 @@ It supports features such as:
 
 - 100% compatible Excel XLSX files
 - Full Excel formatting
+- Merged cells
+- Defined names
 - Memory optimisation mode for writing large files
 - Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter)
 - FreeBSD license
 - ANSI C
 - Works with GCC 4.4, 4.6, 4.7, 4.8, 4.9, Clang, ICC and TCC.
-- Works on Linux, FreeBSD and OS X.
+- Works on Linux, FreeBSD, OS X and iOS.
 - The only dependency is on `zlib`
 
 
