@@ -97,8 +97,16 @@ Next example: @ref constant_memory.c
 Example of using libxlsxwriter for writing large files in constant memory
 mode.
 
-Next example: @ref defined_name.c
+Next example: @ref merge1.c
 @image html constant_memory.png
+
+
+@example merge1.c
+Example of merging cells in a worksheet.
+
+Next example: @ref defined_name.c
+@image html merge1.png
+
 
 
 @example defined_name.c

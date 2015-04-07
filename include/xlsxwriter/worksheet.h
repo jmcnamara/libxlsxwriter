@@ -93,6 +93,7 @@ enum cell_types {
 /* Define the queue.h TAILQ structs for the list head types. */
 TAILQ_HEAD(lxw_table_cells, lxw_cell);
 TAILQ_HEAD(lxw_table_rows, lxw_row);
+STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
 
 /**
  * @brief Options for rows and columns.
@@ -124,6 +125,15 @@ typedef struct lxw_col_options {
     uint8_t collapsed;
 } lxw_col_options;
 
+typedef struct lxw_merged_range {
+    lxw_row_t first_row;
+    lxw_row_t last_row;
+    lxw_col_t first_col;
+    lxw_col_t last_col;
+
+    STAILQ_ENTRY (lxw_merged_range) list_pointers;
+} lxw_merged_range;
+
 /**
  * @brief Struct to represent an Excel worksheet.
  *
@@ -137,6 +147,7 @@ typedef struct lxw_worksheet {
     FILE *optimize_tmpfile;
     struct lxw_table_rows *table;
     struct lxw_cell **array;
+    struct lxw_merged_ranges *merged_ranges;
 
     lxw_row_t dim_rowmin;
     lxw_row_t dim_rowmax;
@@ -183,6 +194,8 @@ typedef struct lxw_worksheet {
     double margin_bottom;
     double margin_header;
     double margin_footer;
+
+    uint16_t merged_range_count;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -682,9 +695,72 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
                             lxw_col_t last_col, double width,
                             lxw_format *format, lxw_row_col_options *options);
 
+/**
+ * @brief Merge a range of cells.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param first_row The first row of the range. (All zero indexed.)
+ * @param first_col The first column of the range.
+ * @param last_row  The last row of the range.
+ * @param last_col  The last col of the range.
+ * @param string    String to write to the merged range.
+ * @param format    A pointer to a Format instance or NULL.
+ *
+ * @return 0 for success, non-zero on error.
+ *
+ * The `merge_range()` function allows cells to be merged together so that
+ * they act as a single area.
+ *
+ * Excel generally merges and centers cells at same time. To get similar
+ * behaviour with libxlsxwriter you need to apply a @ref format.h "Format"
+ * object with the appropriate alignment:
+ *
+ * @code
+ *     lxw_format *merge_format = workbook_add_format(workbook);
+ *     format_set_align(merge_format, LXW_ALIGN_CENTER);
+ *
+ *     worksheet_merge_range(worksheet, 1, 1, 1, 3, "Merged Range", merge_format);
+ *
+ * @endcode
+ *
+ * It is possible to apply other formatting to the merged cells as well:
+ *
+ * @code
+ *    format_set_align   (merge_format, LXW_ALIGN_CENTER);
+ *    format_set_align   (merge_format, LXW_ALIGN_VERTICAL_CENTER);
+ *    format_set_border  (merge_format, LXW_BORDER_DOUBLE);
+ *    format_set_bold    (merge_format);
+ *    format_set_bg_color(merge_format, 0xD7E4BC);
+ *
+ *    worksheet_merge_range(worksheet, 2, 1, 3, 3, "Merged Range", merge_format);
+ *
+ * @endcode
+ *
+ * @image html merge_range.png
+ *
+ * The `merge_range()` function writes a `char*` string using
+ * `worksheet_write_string()`. In order to write other data types, such as a
+ * number or a formula, you can overwrite the first cell with a call to one of
+ * the other write functions. The same Format should be used as was used in
+ * the merged range.
+ *
+ * @code
+ *    // First write a range with a blank string.
+ *    worksheet_merge_range (worksheet, 1, 1, 1, 3, "", format);
+ *
+ *    // Then overwrite the first cell with a number.
+ *    worksheet_write_number(worksheet, 1, 1, 123, format);
+ * @endcode
+ */
+uint8_t worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
+                              lxw_col_t first_col, lxw_row_t last_row,
+                              lxw_col_t last_col, const char *string,
+                              lxw_format *format);
+
  /**
   * @brief Make a worksheet the active, i.e., visible worksheet.
   *
+  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
   *
   * The `activate()` method is used to specify which worksheet is initially
   * visible in a multi-sheet workbook:
@@ -710,6 +786,7 @@ void worksheet_activate(lxw_worksheet *worksheet);
  /**
   * @brief Set a worksheet tab as selected.
   *
+  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
   *
   * The `select()` method is used to indicate that a worksheet is selected in
   * a multi-sheet workbook:
@@ -909,6 +986,10 @@ STATIC void _write_row(lxw_worksheet *worksheet, lxw_row *row, char *spans);
 STATIC void _write_col_info(lxw_worksheet *worksheet,
                             lxw_col_options *options);
 STATIC lxw_row *_get_row_list(lxw_worksheet *worksheet, lxw_row_t row_num);
+
+STATIC void _write_merge_cell(lxw_worksheet *worksheet,
+                              lxw_merged_range * merged_range);
+STATIC void _write_merge_cells(lxw_worksheet *worksheet);
 
 #endif /* TESTING */
 

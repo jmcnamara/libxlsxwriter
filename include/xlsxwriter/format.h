@@ -814,8 +814,8 @@ void format_set_hidden(lxw_format *format);
  * @code
  *     format = workbook_add_format(workbook);
  *
- *     format_set_align(format, "center");
- *     format_set_align(format, "vcenter");
+ *     format_set_align(format, LXW_ALIGN_CENTER);
+ *     format_set_align(format, LXW_ALIGN_VERTICAL_CENTER);
  *
  *     worksheet_set_row(0, 30);
  *     worksheet_write_string(worksheet, 0, 0, "Some Text", format);

@@ -63,7 +63,11 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     GOTO_LABEL_ON_MEM_ERROR(worksheet->optimize_row, mem_error);
     worksheet->optimize_row->height = LXW_DEF_ROW_HEIGHT;
 
+    worksheet->merged_ranges = calloc(1, sizeof(struct lxw_merged_ranges));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->merged_ranges, mem_error);
+
     TAILQ_INIT(worksheet->table);
+    STAILQ_INIT(worksheet->merged_ranges);
 
     if (init_data && init_data->optimize) {
         worksheet->optimize_tmpfile = lxw_tmpfile();
@@ -137,6 +141,7 @@ _free_worksheet(lxw_worksheet *worksheet)
     lxw_row *row;
     lxw_cell *cell;
     lxw_col_t col;
+    lxw_merged_range *merged_range;
 
     if (!worksheet)
         return;
@@ -168,6 +173,16 @@ _free_worksheet(lxw_worksheet *worksheet)
         }
 
         free(worksheet->table);
+    }
+
+    if (worksheet->merged_ranges) {
+        while (!STAILQ_EMPTY(worksheet->merged_ranges)) {
+            merged_range = STAILQ_FIRST(worksheet->merged_ranges);
+            STAILQ_REMOVE_HEAD(worksheet->merged_ranges, list_pointers);
+            free(merged_range);
+        }
+
+        free(worksheet->merged_ranges);
     }
 
     if (worksheet->array) {
@@ -1085,7 +1100,6 @@ _worksheet_write_single_row(lxw_worksheet *self)
 STATIC void
 _write_col_info(lxw_worksheet *self, lxw_col_options *options)
 {
-
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
@@ -1172,6 +1186,56 @@ _write_cols(lxw_worksheet *self)
 }
 
 /*
+ * Write the <mergeCell> element.
+ */
+STATIC void
+_write_merge_cell(lxw_worksheet *self, lxw_merged_range * merged_range)
+{
+
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char ref[MAX_CELL_RANGE_LENGTH];
+
+    _INIT_ATTRIBUTES();
+
+    /* Convert the merge dimensions to a cell range. */
+    lxw_range(ref, merged_range->first_row, merged_range->first_col,
+              merged_range->last_row, merged_range->last_col);
+
+    _PUSH_ATTRIBUTES_STR("ref", ref);
+
+    _xml_empty_tag(self->file, "mergeCell", &attributes);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <mergeCells> element.
+ */
+STATIC void
+_write_merge_cells(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    lxw_merged_range *merged_range;
+
+    if (self->merged_range_count) {
+        _INIT_ATTRIBUTES();
+
+        _PUSH_ATTRIBUTES_INT("count", self->merged_range_count);
+
+        _xml_start_tag(self->file, "mergeCells", &attributes);
+
+        STAILQ_FOREACH(merged_range, self->merged_ranges, list_pointers) {
+            _write_merge_cell(self, merged_range);
+        }
+        _xml_end_tag(self->file, "mergeCells");
+
+        _FREE_ATTRIBUTES();
+    }
+}
+
+/*
  * Check that row and col are within the allowed Excel range and store max
  * and min values for use in other methods/elements.
  *
@@ -1243,6 +1307,9 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
     else
         _worksheet_write_optimized_sheet_data(self);
 
+    /* Write the mergeCells element. */
+    _write_merge_cells(self);
+
     /* Write the worksheet page_margins. */
     _worksheet_write_page_margins(self);
 
@@ -1301,8 +1368,8 @@ worksheet_write_string(lxw_worksheet *self,
     if (err)
         return err;
 
-    if (!string) {
-        /* Treat a NULL string with formatting as a blank cell. */
+    if (!string || !strlen(string)) {
+        /* Treat a NULL or empty string with formatting as a blank cell. */
         /* Null strings without formats should be ignored.      */
         if (format)
             return worksheet_write_blank(self, row_num, col_num, format);
@@ -1598,6 +1665,71 @@ worksheet_set_row(lxw_worksheet *self,
 
     return 0;
 
+}
+
+/*
+ * Merge a range of cells. The first cell should contain the data and the others
+ * should be blank. All cells should contain the same format.
+ */
+uint8_t
+worksheet_merge_range(lxw_worksheet *self, lxw_row_t first_row,
+                      lxw_col_t first_col, lxw_row_t last_row,
+                      lxw_col_t last_col, const char *string,
+                      lxw_format *format)
+{
+    lxw_merged_range *merged_range;
+    lxw_row_t tmp_row;
+    lxw_col_t tmp_col;
+    int8_t err;
+
+    /* Excel doesn"t allow a single cell to be merged */
+    if (first_row == last_row && first_col == last_col)
+        return 1;
+
+    /* Swap last row/col with first row/col as necessary */
+    if (first_row > last_row) {
+        tmp_row = last_row;
+        last_row = first_row;
+        first_row = tmp_row;
+    }
+    if (first_col > last_col) {
+        tmp_col = last_col;
+        last_col = first_col;
+        first_col = tmp_col;
+    }
+
+    /* Check that column number is valid and store the max value */
+    err = _check_dimensions(self, last_row, last_col, LXW_FALSE, LXW_FALSE);
+
+    if (err)
+        return err;
+
+    /* Store the merge range. */
+    merged_range = calloc(1, sizeof(lxw_merged_range));
+    RETURN_ON_MEM_ERROR(merged_range, 2);
+
+    merged_range->first_row = first_row;
+    merged_range->first_col = first_col;
+    merged_range->last_row = last_row;
+    merged_range->last_col = last_col;
+
+    STAILQ_INSERT_TAIL(self->merged_ranges, merged_range, list_pointers);
+    self->merged_range_count++;
+
+    /* Write the first cell */
+    worksheet_write_string(self, first_row, first_col, string, format);
+
+    /* Pad out the rest of the area with formatted blank cells. */
+    for (tmp_row = first_row; tmp_row <= last_row; tmp_row++) {
+        for (tmp_col = first_col; tmp_col <= last_col; tmp_col++) {
+            if (tmp_row == first_row && tmp_col == first_col)
+                continue;
+
+            worksheet_write_blank(self, tmp_row, tmp_col, format);
+        }
+    }
+
+    return 0;
 }
 
 /*

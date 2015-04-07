@@ -284,7 +284,7 @@ uint8_t workbook_close(lxw_workbook *workbook);
  * @param name     The defined name.
  * @param formula  The cell or range that the defined name refers to.
  *
- * @return 0 for success, non-zero on errror.
+ * @return 0 for success, non-zero on error.
  *
  * This method is used to defined a name that can be used to represent a
  * value, a single cell or a range of cells in a workbook: These defined names
