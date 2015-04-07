@@ -108,7 +108,6 @@ Next example: @ref defined_name.c
 @image html merge1.png
 
 
-
 @example defined_name.c
 Example of how to create defined names (named ranges) using libxlsxwriter.
 

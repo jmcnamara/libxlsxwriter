@@ -83,7 +83,7 @@ enum lxw_close_error {
 /**
  * @brief Workbook options.
  *
- * Optional parameters when creating a new Workbool object via
+ * Optional parameters when creating a new Workbook object via
  * new_workbook_opt().
  *
  * Currently only the `constant_memory` property is supported:
@@ -322,7 +322,7 @@ uint8_t workbook_close(lxw_workbook *workbook);
  * @endcode
  *
  * The rules for names in Excel are explained in the
- * [Miscrosoft Office
+ * [Microsoft Office
 documentation](http://office.microsoft.com/en-001/excel-help/define-and-use-names-in-formulas-HA010147120.aspx).
  *
  */

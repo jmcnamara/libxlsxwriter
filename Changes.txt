@@ -2,6 +2,12 @@
 @page changes Changes
 
 
+## 0.0.7 March 7 2015
+
+- Added the `worksheet_merge_range()` method to merge worksheet cells. See
+  also @ref merge1.c.
+
+
 ## 0.0.6 March 5 2015
 
 - Added the `workbook_define_name()` method to create defined names and ranges
