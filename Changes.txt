@@ -2,6 +2,13 @@
 @page changes Changes
 
 
+## 0.0.8 March 8 2015
+
+- Added support for worksheet headers and footers via the
+  `worksheet_set_header()` and `worksheet_set_footer()` functions. See also
+  @ref headers_footers.c.
+
+
 ## 0.0.7 March 7 2015
 
 - Added the `worksheet_merge_range()` method to merge worksheet cells. See
