@@ -1,7 +1,7 @@
 /*****************************************************************************
  * Test cases for libxlsxwriter.
  *
- * Test to comparse output againsst Excel files.
+ * Test to compare output against Excel files.
  *
  * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org
  *

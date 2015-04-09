@@ -11,13 +11,13 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_gridlines01.xlsx");
+    lxw_workbook  *workbook  = new_workbook("test_print_options04.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     worksheet_set_paper(worksheet, 9);
     worksheet->vertical_dpi = 200;
 
-    worksheet_gridlines(worksheet, LXW_HIDE_ALL_GRIDLINES);
+    worksheet_print_row_col_headers(worksheet);
 
     worksheet_write_string(worksheet, CELL("A1"), "Foo" , NULL);
 

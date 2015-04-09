@@ -2026,3 +2026,13 @@ worksheet_center_vertically(lxw_worksheet *self)
     self->print_options_changed = 1;
     self->vcenter = 1;
 }
+
+/*
+ * Set the option to print the row and column headers on the printed page.
+ */
+void
+worksheet_print_row_col_headers(lxw_worksheet *self)
+{
+    self->print_headers = 1;
+    self->print_options_changed = 1;
+}

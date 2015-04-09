@@ -801,7 +801,7 @@ uint8_t worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
   *
   * @param worksheet Pointer to a lxw_worksheet instance to be updated.
   *
-  * The `activate()` method is used to specify which worksheet is initially
+  * The `activate()` function is used to specify which worksheet is initially
   * visible in a multi-sheet workbook:
   *
   * @code
@@ -814,7 +814,7 @@ uint8_t worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
   *
   * @image html worksheet_activate.png
   *
-  * More than one worksheet can be selected via the `select()` method, see
+  * More than one worksheet can be selected via the `select()` function, see
   * below, however only one worksheet can be active.
   *
   * The default active worksheet is the first worksheet.
@@ -827,7 +827,7 @@ void worksheet_activate(lxw_worksheet *worksheet);
   *
   * @param worksheet Pointer to a lxw_worksheet instance to be updated.
   *
-  * The `select()` method is used to indicate that a worksheet is selected in
+  * The `select()` function is used to indicate that a worksheet is selected in
   * a multi-sheet workbook:
   *
   * @code
@@ -840,7 +840,7 @@ void worksheet_activate(lxw_worksheet *worksheet);
   * A selected worksheet has its tab highlighted. Selecting worksheets is a
   * way of grouping them together so that, for example, several worksheets
   * could be printed in one go. A worksheet that has been activated via the
-  * `activate()` method will also appear as selected.
+  * `activate()` function will also appear as selected.
   *
   */
 void worksheet_select(lxw_worksheet *worksheet);
@@ -1291,6 +1291,25 @@ void worksheet_center_horizontally(lxw_worksheet *worksheet);
  *
  */
 void worksheet_center_vertically(lxw_worksheet *worksheet);
+
+/**
+ * @brief Set the option to print the row and column headers on the printed
+ *        page.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ *
+ * When printing a worksheet from Excel the row and column headers (the row
+ * numbers on the left and the column letters at the top) aren't printed by
+ * default.
+ *
+ * This function sets the printer option to print these headers:
+ *
+ * @code
+ *    worksheet_print_row_col_headers(worksheet);
+ * @endcode
+ *
+ */
+void worksheet_print_row_col_headers(lxw_worksheet *worksheet);
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);

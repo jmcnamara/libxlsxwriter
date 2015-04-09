@@ -10,6 +10,9 @@
 - Added `worksheet_center_horizontally()` and `worksheet_center_vertically()`
   functions to center worksheet on the printed page.
 
+- Added `worksheet_print_row_col_headers()` function to enable printing of row
+  and column headers.
+
 
 ## 0.0.8 March 8 2015
 
