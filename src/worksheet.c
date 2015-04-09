@@ -25,7 +25,7 @@
 /*
  * Forward declarations.
  */
-STATIC void _write_rows(lxw_worksheet *self);
+STATIC void _worksheet_write_rows(lxw_worksheet *self);
 
 /*****************************************************************************
  *
@@ -525,6 +525,48 @@ _next_power_of_two(uint16_t col)
     return col;
 }
 
+/*
+ * Check that row and col are within the allowed Excel range and store max
+ * and min values for use in other methods/elements.
+ *
+ * The ignore_row/ignore_col flags are used to indicate that we wish to
+ * perform the dimension check without storing the value.
+ */
+STATIC int8_t
+_check_dimensions(lxw_worksheet *self,
+                  lxw_row_t row_num,
+                  lxw_col_t col_num, int8_t ignore_row, int8_t ignore_col)
+{
+    if (row_num >= LXW_ROW_MAX)
+        return LXW_RANGE_ERROR;
+
+    if (col_num >= LXW_COL_MAX)
+        return LXW_RANGE_ERROR;
+
+    /* In optimization mode we don"t change dimensions for rows that are */
+    /* already written. */
+    if (!ignore_row && !ignore_col && self->optimize) {
+        if (row_num < self->optimize_row->row_num)
+            return LXW_RANGE_ERROR;
+    }
+
+    if (!ignore_row) {
+        if (row_num < self->dim_rowmin)
+            self->dim_rowmin = row_num;
+        if (row_num > self->dim_rowmax)
+            self->dim_rowmax = row_num;
+    }
+
+    if (!ignore_col) {
+        if (col_num < self->dim_colmin)
+            self->dim_colmin = col_num;
+        if (col_num > self->dim_colmax)
+            self->dim_colmax = col_num;
+    }
+
+    return 0;
+}
+
 /*****************************************************************************
  *
  * XML functions.
@@ -667,7 +709,7 @@ _worksheet_write_sheet_data(lxw_worksheet *self)
     }
     else {
         _xml_start_tag(self->file, "sheetData", NULL);
-        _write_rows(self);
+        _worksheet_write_rows(self);
         _xml_end_tag(self->file, "sheetData");
     }
 }
@@ -1064,7 +1106,7 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
  * Write out the worksheet data as a series of rows and cells.
  */
 STATIC void
-_write_rows(lxw_worksheet *self)
+_worksheet_write_rows(lxw_worksheet *self)
 {
     lxw_row *row;
     lxw_cell *cell;
@@ -1142,7 +1184,7 @@ _worksheet_write_single_row(lxw_worksheet *self)
  * Write the <col> element.
  */
 STATIC void
-_write_col_info(lxw_worksheet *self, lxw_col_options *options)
+_worksheet_write_col_info(lxw_worksheet *self, lxw_col_options *options)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -1212,7 +1254,7 @@ _write_col_info(lxw_worksheet *self, lxw_col_options *options)
  * Write the <cols> element and <col> sub elements.
  */
 STATIC void
-_write_cols(lxw_worksheet *self)
+_worksheet_write_cols(lxw_worksheet *self)
 {
     lxw_col_t col;
 
@@ -1223,7 +1265,7 @@ _write_cols(lxw_worksheet *self)
 
     for (col = 0; col < self->col_options_max; col++) {
         if (self->col_options[col])
-            _write_col_info(self, self->col_options[col]);
+            _worksheet_write_col_info(self, self->col_options[col]);
     }
 
     _xml_end_tag(self->file, "cols");
@@ -1233,7 +1275,8 @@ _write_cols(lxw_worksheet *self)
  * Write the <mergeCell> element.
  */
 STATIC void
-_write_merge_cell(lxw_worksheet *self, lxw_merged_range * merged_range)
+_worksheet_write_merge_cell(lxw_worksheet *self,
+                            lxw_merged_range * merged_range)
 {
 
     struct xml_attribute_list attributes;
@@ -1257,7 +1300,7 @@ _write_merge_cell(lxw_worksheet *self, lxw_merged_range * merged_range)
  * Write the <mergeCells> element.
  */
 STATIC void
-_write_merge_cells(lxw_worksheet *self)
+_worksheet_write_merge_cells(lxw_worksheet *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -1271,7 +1314,7 @@ _write_merge_cells(lxw_worksheet *self)
         _xml_start_tag(self->file, "mergeCells", &attributes);
 
         STAILQ_FOREACH(merged_range, self->merged_ranges, list_pointers) {
-            _write_merge_cell(self, merged_range);
+            _worksheet_write_merge_cell(self, merged_range);
         }
         _xml_end_tag(self->file, "mergeCells");
 
@@ -1318,48 +1361,6 @@ _worksheet_write_header_footer(lxw_worksheet *self)
 }
 
 /*
- * Check that row and col are within the allowed Excel range and store max
- * and min values for use in other methods/elements.
- *
- * The ignore_row/ignore_col flags are used to indicate that we wish to
- * perform the dimension check without storing the value.
- */
-STATIC int8_t
-_check_dimensions(lxw_worksheet *self,
-                  lxw_row_t row_num,
-                  lxw_col_t col_num, int8_t ignore_row, int8_t ignore_col)
-{
-    if (row_num >= LXW_ROW_MAX)
-        return LXW_RANGE_ERROR;
-
-    if (col_num >= LXW_COL_MAX)
-        return LXW_RANGE_ERROR;
-
-    /* In optimization mode we don"t change dimensions for rows that are */
-    /* already written. */
-    if (!ignore_row && !ignore_col && self->optimize) {
-        if (row_num < self->optimize_row->row_num)
-            return LXW_RANGE_ERROR;
-    }
-
-    if (!ignore_row) {
-        if (row_num < self->dim_rowmin)
-            self->dim_rowmin = row_num;
-        if (row_num > self->dim_rowmax)
-            self->dim_rowmax = row_num;
-    }
-
-    if (!ignore_col) {
-        if (col_num < self->dim_colmin)
-            self->dim_colmin = col_num;
-        if (col_num > self->dim_colmax)
-            self->dim_colmax = col_num;
-    }
-
-    return 0;
-}
-
-/*
  * Assemble and write the XML file.
  */
 void
@@ -1381,7 +1382,7 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
     _worksheet_write_sheet_format_pr(self);
 
     /* Write the sheet column info. */
-    _write_cols(self);
+    _worksheet_write_cols(self);
 
     /* Write the sheetData element. */
     if (!self->optimize)
@@ -1390,7 +1391,7 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
         _worksheet_write_optimized_sheet_data(self);
 
     /* Write the mergeCells element. */
-    _write_merge_cells(self);
+    _worksheet_write_merge_cells(self);
 
     /* Write the printOptions element. */
     _worksheet_write_print_options(self);

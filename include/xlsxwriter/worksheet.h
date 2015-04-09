@@ -1309,14 +1309,14 @@ STATIC void _worksheet_write_sheet_format_pr(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_data(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_page_margins(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_page_setup(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_col_info(lxw_worksheet *worksheet,
+                                      lxw_col_options *options);
 STATIC void _write_row(lxw_worksheet *worksheet, lxw_row *row, char *spans);
-STATIC void _write_col_info(lxw_worksheet *worksheet,
-                            lxw_col_options *options);
 STATIC lxw_row *_get_row_list(lxw_worksheet *worksheet, lxw_row_t row_num);
 
-STATIC void _write_merge_cell(lxw_worksheet *worksheet,
-                              lxw_merged_range * merged_range);
-STATIC void _write_merge_cells(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_merge_cell(lxw_worksheet *worksheet,
+                                        lxw_merged_range * merged_range);
+STATIC void _worksheet_write_merge_cells(lxw_worksheet *worksheet);
 
 STATIC void _worksheet_write_odd_header(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_odd_footer(lxw_worksheet *worksheet);

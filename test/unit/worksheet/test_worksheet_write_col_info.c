@@ -22,7 +22,7 @@ CTEST(worksheet, write_col_info01) {
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
 
-    _write_col_info(worksheet, &col_options);
+    _worksheet_write_col_info(worksheet, &col_options);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -40,7 +40,7 @@ CTEST(worksheet, write_col_info02) {
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
 
-    _write_col_info(worksheet, &col_options);
+    _worksheet_write_col_info(worksheet, &col_options);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -62,7 +62,7 @@ CTEST(worksheet, write_col_info03) {
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
 
-    _write_col_info(worksheet, &col_options);
+    _worksheet_write_col_info(worksheet, &col_options);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -84,7 +84,7 @@ CTEST(worksheet, write_col_info04) {
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
 
-    _write_col_info(worksheet, &col_options);
+    _worksheet_write_col_info(worksheet, &col_options);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -102,7 +102,7 @@ CTEST(worksheet, write_col_info05) {
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
 
-    _write_col_info(worksheet, &col_options);
+    _worksheet_write_col_info(worksheet, &col_options);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -120,7 +120,7 @@ CTEST(worksheet, write_col_info06) {
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
 
-    _write_col_info(worksheet, &col_options);
+    _worksheet_write_col_info(worksheet, &col_options);
 
     RUN_XLSX_STREQ(exp, got);
 
