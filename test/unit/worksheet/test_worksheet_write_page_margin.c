@@ -116,3 +116,26 @@ CTEST(worksheet, write_page_margin06) {
 
     _free_worksheet(worksheet);
 }
+
+/* Test the _write_page_margins() method. */
+CTEST(worksheet, write_page_margin07) {
+    char* got;
+    char exp[] = "<pageMargins left=\"0.7\" right=\"0.7\" top=\"0.75\" "
+                 "bottom=\"0.75\" header=\"0.2\" footer=\"0.4\"/>";
+    FILE* testfile = tmpfile();
+    lxw_header_footer_options header_options = {0.2};
+    lxw_header_footer_options footer_options = {0.4};
+
+    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    worksheet->file = testfile;
+
+    worksheet_set_header_opt(worksheet, "", &header_options);
+    worksheet_set_footer_opt(worksheet, "", &footer_options);
+
+    _worksheet_write_page_margins(worksheet);
+
+    RUN_XLSX_STREQ(exp, got);
+
+    _free_worksheet(worksheet);
+}
+

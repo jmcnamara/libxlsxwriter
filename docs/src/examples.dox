@@ -104,8 +104,15 @@ Next example: @ref merge1.c
 @example merge1.c
 Example of merging cells in a worksheet.
 
-Next example: @ref defined_name.c
+Next example: @ref headers_footers.c
 @image html merge1.png
+
+
+@example headers_footers.c
+Example of adding worksheet headers and footers to worksheets.
+
+Next example: @ref defined_name.c
+@image html headers_footers.png
 
 
 @example defined_name.c

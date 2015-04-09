@@ -1236,6 +1236,44 @@ _write_merge_cells(lxw_worksheet *self)
 }
 
 /*
+ * Write the <oddHeader> element.
+ */
+STATIC void
+_worksheet_write_odd_header(lxw_worksheet *self)
+{
+    _xml_data_element(self->file, "oddHeader", self->header, NULL);
+}
+
+/*
+ * Write the <oddFooter> element.
+ */
+STATIC void
+_worksheet_write_odd_footer(lxw_worksheet *self)
+{
+    _xml_data_element(self->file, "oddFooter", self->footer, NULL);
+}
+
+/*
+ * Write the <headerFooter> element.
+ */
+STATIC void
+_worksheet_write_header_footer(lxw_worksheet *self)
+{
+    if (!self->header_footer_changed)
+        return;
+
+    _xml_start_tag(self->file, "headerFooter", NULL);
+
+    if (self->header[0] != '\0')
+        _worksheet_write_odd_header(self);
+
+    if (self->footer[0] != '\0')
+        _worksheet_write_odd_footer(self);
+
+    _xml_end_tag(self->file, "headerFooter");
+}
+
+/*
  * Check that row and col are within the allowed Excel range and store max
  * and min values for use in other methods/elements.
  *
@@ -1315,6 +1353,9 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
 
     /* Write the worksheet page setup. */
     _worksheet_write_page_setup(self);
+
+    /* Write the headerFooter element. */
+    _worksheet_write_header_footer(self);
 
     /* Close the worksheet tag. */
     _xml_end_tag(self->file, "worksheet");
@@ -1829,4 +1870,70 @@ worksheet_set_margins(lxw_worksheet *self, double left, double right,
 
     if (bottom >= 0)
         self->margin_bottom = bottom;
+}
+
+/*
+ * Set the page header caption and options.
+ */
+uint8_t
+worksheet_set_header_opt(lxw_worksheet *self, char *string,
+                         lxw_header_footer_options * options)
+{
+    if (options) {
+        if (options->margin > 0)
+            self->margin_header = options->margin;
+    }
+
+    if (!string)
+        return 1;
+
+    if (strlen(string) >= LXW_HEADER_FOOTER_MAX)
+        return 1;
+
+    strcpy(self->header, string);
+    self->header_footer_changed = 1;
+
+    return 0;
+}
+
+/*
+ * Set the page footer caption and options.
+ */
+uint8_t
+worksheet_set_footer_opt(lxw_worksheet *self, char *string,
+                         lxw_header_footer_options * options)
+{
+    if (options) {
+        if (options->margin > 0)
+            self->margin_footer = options->margin;
+    }
+
+    if (!string)
+        return 1;
+
+    if (strlen(string) >= LXW_HEADER_FOOTER_MAX)
+        return 1;
+
+    strcpy(self->footer, string);
+    self->header_footer_changed = 1;
+
+    return 0;
+}
+
+/*
+ * Set the page header caption.
+ */
+uint8_t
+worksheet_set_header(lxw_worksheet *self, char *string)
+{
+    return worksheet_set_header_opt(self, string, NULL);
+}
+
+/*
+ * Set the page footer caption.
+ */
+uint8_t
+worksheet_set_footer(lxw_worksheet *self, char *string)
+{
+    return worksheet_set_footer_opt(self, string, NULL);
 }
