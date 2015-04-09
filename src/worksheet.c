@@ -99,6 +99,9 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->margin_bottom = 0.75;
     worksheet->margin_header = 0.3;
     worksheet->margin_footer = 0.3;
+    worksheet->print_gridlines = 0;
+    worksheet->screen_gridlines = 1;
+    worksheet->print_options_changed = 0;
 
     if (init_data) {
         worksheet->name = init_data->name;
@@ -604,6 +607,9 @@ _worksheet_write_sheet_view(lxw_worksheet *self)
 
     _INIT_ATTRIBUTES();
 
+    if (!self->screen_gridlines)
+        _PUSH_ATTRIBUTES_STR("showGridLines", "0");
+
     if (self->selected)
         _PUSH_ATTRIBUTES_STR("tabSelected", "1");
 
@@ -797,6 +803,44 @@ _worksheet_write_page_setup(lxw_worksheet *self)
         _PUSH_ATTRIBUTES_INT("verticalDpi", self->vertical_dpi);
 
     _xml_empty_tag(self->file, "pageSetup", &attributes);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <printOptions> element.
+ */
+STATIC void
+_worksheet_write_print_options(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    if (!self->print_options_changed)
+        return;
+
+    _INIT_ATTRIBUTES();
+
+    /* Set horizontal centering. */
+    if (self->hcenter) {
+        _PUSH_ATTRIBUTES_STR("horizontalCentered", "1");
+    }
+
+    /* Set vertical centering. */
+    if (self->vcenter) {
+        _PUSH_ATTRIBUTES_STR("verticalCentered", "1");
+    }
+
+    /* Enable row and column headers. */
+    if (self->print_headers) {
+        _PUSH_ATTRIBUTES_STR("headings", "1");
+    }
+
+    /* Set printed gridlines. */
+    if (self->print_gridlines) {
+        _PUSH_ATTRIBUTES_STR("gridLines", "1");
+    }
+
+    _xml_empty_tag(self->file, "printOptions", &attributes);
 
     _FREE_ATTRIBUTES();
 }
@@ -1347,6 +1391,9 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
 
     /* Write the mergeCells element. */
     _write_merge_cells(self);
+
+    /* Write the printOptions element. */
+    _worksheet_write_print_options(self);
 
     /* Write the worksheet page_margins. */
     _worksheet_write_page_margins(self);
@@ -1936,4 +1983,45 @@ uint8_t
 worksheet_set_footer(lxw_worksheet *self, char *string)
 {
     return worksheet_set_footer_opt(self, string, NULL);
+}
+
+/*
+ * Set the option to show/hide gridlines on the screen and the printed page.
+ */
+void
+worksheet_gridlines(lxw_worksheet *self, uint8_t option)
+{
+    if (option == LXW_HIDE_ALL_GRIDLINES) {
+        self->print_gridlines = 0;
+        self->screen_gridlines = 0;
+    }
+
+    if (option & LXW_SHOW_SCREEN_GRIDLINES) {
+        self->screen_gridlines = 1;
+    }
+
+    if (option & LXW_SHOW_PRINT_GRIDLINES) {
+        self->print_gridlines = 1;
+        self->print_options_changed = 1;
+    }
+}
+
+/*
+ * Center the page horizontally.
+ */
+void
+worksheet_center_horizontally(lxw_worksheet *self)
+{
+    self->print_options_changed = 1;
+    self->hcenter = 1;
+}
+
+/*
+ * Center the page horizontally.
+ */
+void
+worksheet_center_vertically(lxw_worksheet *self)
+{
+    self->print_options_changed = 1;
+    self->vcenter = 1;
 }

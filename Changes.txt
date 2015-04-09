@@ -2,6 +2,15 @@
 @page changes Changes
 
 
+## 0.0.9 March 9 2015
+
+- Added `worksheet_gridlines()` function to show/hide screen and print
+  gridlines.
+
+- Added `worksheet_center_horizontally()` and `worksheet_center_vertically()`
+  functions to center worksheet on the printed page.
+
+
 ## 0.0.8 March 8 2015
 
 - Added support for worksheet headers and footers via the

@@ -64,11 +64,26 @@
 
 /** Error codes from `worksheet_write*()` functions. */
 enum lxw_write_error {
+    /** No error. */
     LXW_WRITE_ERROR_NONE = 0,
+    /** Row or column index out of range. */
     LXW_RANGE_ERROR,
-    LXW_STRING_HASH_ERROR,
+    /** String exceeds Excel's LXW_STRING_LENGTH_ERROR limit. */
     LXW_STRING_LENGTH_ERROR,
-    LXW_END
+    /** Error finding string index. */
+    LXW_STRING_HASH_ERROR
+};
+
+/** Gridline options using in `worksheet_gridlines()`. */
+enum lxw_gridlines {
+    /** Hide screen and print gridlines. */
+    LXW_HIDE_ALL_GRIDLINES = 0,
+    /** Show screen gridlines. */
+    LXW_SHOW_SCREEN_GRIDLINES,
+    /** Show print gridlines. */
+    LXW_SHOW_PRINT_GRIDLINES,
+    /** Show screen and print gridlines. */
+    LXW_SHOW_ALL_GRIDLINES
 };
 
 /** Data type to represent a row value.
@@ -196,11 +211,18 @@ typedef struct lxw_worksheet {
     uint16_t print_scale;
     uint16_t vertical_dpi;
     uint8_t fit_page;
+    uint8_t hcenter;
     uint8_t orientation;
     uint8_t page_order;
     uint8_t page_setup_changed;
     uint8_t page_view;
     uint8_t paper_size;
+    uint8_t print_gridlines;
+    uint8_t print_headers;
+    uint8_t print_options_changed;
+    uint8_t screen_gridlines;
+    uint8_t vcenter;
+
     double margin_left;
     double margin_right;
     double margin_top;
@@ -1186,7 +1208,7 @@ uint8_t worksheet_set_header_opt(lxw_worksheet *worksheet, char *string,
  * @return 0 for success, non-zero on error.
  *
  * The syntax of this function is the same as worksheet_set_header_opt().
- * 
+ *
  */
 uint8_t worksheet_set_footer_opt(lxw_worksheet *worksheet, char *string,
                                  lxw_header_footer_options * options);
@@ -1218,6 +1240,58 @@ uint8_t worksheet_set_footer_opt(lxw_worksheet *worksheet, char *string,
  */
 void worksheet_print_across(lxw_worksheet *worksheet);
 
+/**
+ * @brief Set the option to display or hide gridlines on the screen and
+ *        the printed page.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param option    Gridline option.
+ *
+ * Display or hide screen and print gridlines using one of the values of
+ * @ref lxw_gridlines.
+ *
+ * @code
+ *    worksheet_gridlines(worksheet1, LXW_HIDE_ALL_GRIDLINES);
+ *
+ *    worksheet_gridlines(worksheet2, LXW_SHOW_PRINT_GRIDLINES);
+ * @endcode
+ *
+ * The Excel default is that the screen gridlines are on  and the printed
+ * worksheet is off.
+ *
+ */
+void worksheet_gridlines(lxw_worksheet *worksheet, uint8_t option);
+
+/**
+ * @brief Center the printed page horizontally.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ *
+ * Center the worksheet data horizontally between the margins on the printed
+ * page:
+ *
+ * @code
+ *     worksheet_center_horizontally(worksheet);
+ * @endcode
+ *
+ */
+void worksheet_center_horizontally(lxw_worksheet *worksheet);
+
+/**
+ * @brief Center the printed page vertically.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ *
+ * Center the worksheet data vertically between the margins on the printed
+ * page:
+ *
+ * @code
+ *     worksheet_center_vertically(worksheet);
+ * @endcode
+ *
+ */
+void worksheet_center_vertically(lxw_worksheet *worksheet);
+
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);
 void _worksheet_assemble_xml_file(lxw_worksheet *worksheet);
@@ -1248,6 +1322,7 @@ STATIC void _worksheet_write_odd_header(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_odd_footer(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_header_footer(lxw_worksheet *worksheet);
 
+STATIC void _worksheet_write_print_options(lxw_worksheet *worksheet);
 #endif /* TESTING */
 
 /* *INDENT-OFF* */
