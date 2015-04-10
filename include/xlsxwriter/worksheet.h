@@ -150,6 +150,18 @@ typedef struct lxw_merged_range {
     STAILQ_ENTRY (lxw_merged_range) list_pointers;
 } lxw_merged_range;
 
+typedef struct lxw_repeat_rows {
+    uint8_t in_used;
+    lxw_row_t first_row;
+    lxw_row_t last_row;
+} lxw_repeat_rows;
+
+typedef struct lxw_repeat_cols {
+    uint8_t in_used;
+    lxw_col_t first_col;
+    lxw_col_t last_col;
+} lxw_repeat_cols;
+
 /**
  * @brief Header and footer options.
  *
@@ -184,6 +196,7 @@ typedef struct lxw_worksheet {
 
     lxw_sst *sst;
     char *name;
+    char *quoted_name;
 
     uint32_t index;
     uint8_t active;
@@ -234,6 +247,9 @@ typedef struct lxw_worksheet {
     char header[LXW_HEADER_FOOTER_MAX];
     char footer[LXW_HEADER_FOOTER_MAX];
 
+    struct lxw_repeat_rows repeat_rows;
+    struct lxw_repeat_cols repeat_cols;
+
     uint16_t merged_range_count;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
@@ -250,6 +266,7 @@ typedef struct lxw_worksheet_init_data {
     uint32_t *active_sheet;
     lxw_sst *sst;
     char *name;
+    char *quoted_name;
 
 } lxw_worksheet_init_data;
 

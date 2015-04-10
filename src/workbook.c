@@ -854,10 +854,13 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
 
     if (sheetname) {
         /* Use the user supplied name. */
-        if (strlen(sheetname) > LXW_SHEETNAME_MAX)
+        if (strlen(sheetname) > LXW_SHEETNAME_MAX) {
             return NULL;
-        else
+        }
+        else {
             init_data.name = lxw_strdup(sheetname);
+            init_data.quoted_name = lxw_quote_sheetname(sheetname);
+        }
     }
     else {
         /* Use the default SheetN name. */
@@ -866,6 +869,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
         __builtin_snprintf(new_name, LXW_SHEETNAME_LEN, "Sheet%d",
                            self->num_sheets + 1);
         init_data.name = new_name;
+        init_data.quoted_name = lxw_strdup(new_name);
     }
 
     init_data.hidden = 0;

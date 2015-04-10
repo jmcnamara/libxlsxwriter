@@ -105,6 +105,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
 
     if (init_data) {
         worksheet->name = init_data->name;
+        worksheet->quoted_name = init_data->quoted_name;
         worksheet->index = init_data->index;
         worksheet->hidden = init_data->hidden;
         worksheet->sst = init_data->sst;
@@ -199,6 +200,8 @@ _free_worksheet(lxw_worksheet *worksheet)
         free(worksheet->optimize_row);
 
     free(worksheet->name);
+    free(worksheet->quoted_name);
+
     free(worksheet);
     worksheet = NULL;
 }
@@ -543,7 +546,7 @@ _check_dimensions(lxw_worksheet *self,
     if (col_num >= LXW_COL_MAX)
         return LXW_RANGE_ERROR;
 
-    /* In optimization mode we don"t change dimensions for rows that are */
+    /* In optimization mode we don't change dimensions for rows that are */
     /* already written. */
     if (!ignore_row && !ignore_col && self->optimize) {
         if (row_num < self->optimize_row->row_num)
@@ -2035,4 +2038,54 @@ worksheet_print_row_col_headers(lxw_worksheet *self)
 {
     self->print_headers = 1;
     self->print_options_changed = 1;
+}
+
+/*
+ * Set the rows to repeat at the top of each printed page.
+ */
+uint8_t
+worksheet_repeat_rows(lxw_worksheet *self, lxw_row_t first_row,
+                      lxw_row_t last_row)
+{
+    lxw_row_t tmp_row;
+
+    if (first_row > last_row) {
+        tmp_row = last_row;
+        last_row = first_row;
+        first_row = tmp_row;
+    }
+
+    if (_check_dimensions(self, last_row, 0, LXW_TRUE, LXW_TRUE))
+        return 1;
+
+    self->repeat_rows.in_used = LXW_TRUE;
+    self->repeat_rows.first_row = first_row;
+    self->repeat_rows.last_row = last_row;
+
+    return 0;
+}
+
+/*
+ * Set the columns to repeat at the left hand side of each printed page.
+ */
+uint8_t
+worksheet_repeat_cols(lxw_worksheet *self, lxw_col_t first_col,
+                      lxw_col_t last_col)
+{
+    lxw_col_t tmp_col;
+
+    if (first_col > last_col) {
+        tmp_col = last_col;
+        last_col = first_col;
+        first_col = tmp_col;
+    }
+
+    if (_check_dimensions(self, last_col, 0, LXW_TRUE, LXW_TRUE))
+        return 1;
+
+    self->repeat_cols.in_used = LXW_TRUE;
+    self->repeat_cols.first_col = first_col;
+    self->repeat_cols.last_col = last_col;
+
+    return 0;
 }

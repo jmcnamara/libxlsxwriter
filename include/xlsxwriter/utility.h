@@ -96,7 +96,8 @@ typedef struct lxw_datetime {
 
 } lxw_datetime;
 
-
+/* Create a quoted version of the worksheet name */
+char *lxw_quote_sheetname(char *str);
 
  /* *INDENT-OFF* */
 #ifdef __cplusplus

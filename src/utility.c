@@ -128,7 +128,7 @@ lxw_range(char *range,
 
 /*
  * Convert zero indexed row and column pair to an Excel style A1:C5
- * range reference with abosolute values.
+ * range reference with absolute values.
  */
 void
 lxw_range_abs(char *range,
@@ -350,6 +350,58 @@ lxw_str_tolower(char *str)
 
     for (i = 0; str[i]; i++)
         str[i] = tolower(str[i]);
+}
+
+/* Create a quoted version of the worksheet name, or return an unmodified
+ * copy if it doesn't required quoting. */
+char *
+lxw_quote_sheetname(char *str)
+{
+
+    uint8_t needs_quoting = 0;
+    size_t number_of_quotes = 2;
+    size_t i, j;
+    size_t len = strlen(str);
+
+    /* Don't quote the sheetname if it is already quoted. */
+    if (str[0] == '\'')
+        return lxw_strdup(str);
+
+    /* Check if the sheetname contains any characters that require it
+     * to be quoted. Also check for single quotes within the string. */
+    for (i = 0; i < len; i++) {
+        if (!isalnum(str[i]) && str[i] != '_' && str[i] != '.')
+            needs_quoting = 1;
+
+        if (str[i] == '\'') {
+            needs_quoting = 1;
+            number_of_quotes++;
+        }
+    }
+
+    if (!needs_quoting) {
+        return lxw_strdup(str);
+    }
+    else {
+        /* Add single quotes to the start and end of the string. */
+        char *quoted_name = calloc(1, len + number_of_quotes + 1);
+        RETURN_ON_MEM_ERROR(quoted_name, NULL);
+
+        quoted_name[0] = '\'';
+
+        for (i = 0, j = 1; i < len; i++, j++) {
+            quoted_name[j] = str[i];
+
+            /* Double quote inline single quotes. */
+            if (str[i] == '\'') {
+                quoted_name[++j] = '\'';
+            }
+        }
+        quoted_name[j++] = '\'';
+        quoted_name[j++] = '\0';
+
+        return quoted_name;
+    }
 }
 
 /*
