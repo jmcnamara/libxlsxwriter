@@ -21,4 +21,6 @@ CTEST(utility, _quote_sheetname) {
     ASSERT_STR("'Sheet 5'",  lxw_quote_sheetname("Sheet 5"));
     ASSERT_STR("'Sheet!6'",  lxw_quote_sheetname("Sheet!6"));
     ASSERT_STR("'Sheet''7'", lxw_quote_sheetname("Sheet'7"));
+    ASSERT_STR("'a''''''''''''''''''''''''''''''''''''''''''''''''''''''''''b'",
+               lxw_quote_sheetname("a'''''''''''''''''''''''''''''b"));
 }

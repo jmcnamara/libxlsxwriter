@@ -389,7 +389,8 @@ _compare_defined_names(lxw_defined_name *a, lxw_defined_name *b)
 
 STATIC uint8_t
 _store_defined_name(lxw_workbook *self, const char *name,
-                    const char *formula, int16_t index, uint8_t hidden)
+                    const char *app_name, const char *formula, int16_t index,
+                    uint8_t hidden)
 {
     lxw_worksheet *worksheet;
     lxw_defined_name *defined_name;
@@ -451,16 +452,20 @@ _store_defined_name(lxw_workbook *self, const char *name,
         strcpy(defined_name->name, name_copy);
     }
 
-    /* We need to normalise the defined names for sorting. This involves
-     * removing any _xlnm namespace from the string and converting it to
-     * lowercase. */
-    tmp_name = strstr(defined_name->name, "_xlnm.");
-
-    if (tmp_name != NULL)
-        strcpy(defined_name->normalised_name, tmp_name + 6);
-    else
+    /* The defined name format used for app.xml uses the sheet name instead
+     * of _xlnm. If required, this is passed in by the caller. */
+    if (app_name) {
+        strcpy(defined_name->app_name, app_name);
+        strcpy(defined_name->normalised_name, app_name);
+    }
+    else {
+        strcpy(defined_name->app_name, defined_name->name);
         strcpy(defined_name->normalised_name, defined_name->name);
+    }
 
+    /* We need to normalise the defined names for sorting. This involves
+     * removing any _xlnm namespace (already done in app_name above) and
+     * converting it to lowercase. */
     lxw_str_tolower(defined_name->normalised_name);
     lxw_str_tolower(defined_name->normalised_sheetname);
 
@@ -503,6 +508,80 @@ _store_defined_name(lxw_workbook *self, const char *name,
 mem_error:
     free(defined_name);
     return 1;
+}
+
+/*
+ * Iterate through the worksheets and store any defined names used for print
+ * ranges or repeat rows/columns.
+ */
+STATIC void
+_prepare_defined_names(lxw_workbook *self)
+{
+    lxw_worksheet *worksheet;
+    char app_name[LXW_DEFINED_NAME_LENGTH];
+    char range[LXW_DEFINED_NAME_LENGTH];
+    char first_col[8];
+    char last_col[8];
+
+    /* Set the active sheet. */
+    STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
+
+        if (worksheet->repeat_rows.in_use || worksheet->repeat_cols.in_use) {
+            if (worksheet->repeat_rows.in_use
+                && worksheet->repeat_cols.in_use) {
+                snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+                         "%s!Print_Titles", worksheet->quoted_name);
+
+                lxw_col_to_name(first_col,
+                                worksheet->repeat_cols.first_col, LXW_FALSE);
+
+                lxw_col_to_name(last_col,
+                                worksheet->repeat_cols.last_col, LXW_FALSE);
+
+                snprintf(range, LXW_DEFINED_NAME_LENGTH - 1,
+                         "%s!$%s:$%s,%s!$%d:$%d",
+                         worksheet->quoted_name, first_col, last_col,
+                         worksheet->quoted_name,
+                         worksheet->repeat_rows.first_row + 1,
+                         worksheet->repeat_rows.last_row + 1);
+
+                _store_defined_name(self, "_xlnm.Print_Titles", app_name,
+                                    range, worksheet->index, LXW_FALSE);
+            }
+            else if (worksheet->repeat_rows.in_use) {
+
+                snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+                         "%s!Print_Titles", worksheet->quoted_name);
+
+                snprintf(range, LXW_DEFINED_NAME_LENGTH - 1, "%s!$%d:$%d",
+                         worksheet->quoted_name,
+                         worksheet->repeat_rows.first_row + 1,
+                         worksheet->repeat_rows.last_row + 1);
+
+                _store_defined_name(self, "_xlnm.Print_Titles", app_name,
+                                    range, worksheet->index, LXW_FALSE);
+            }
+            else if (worksheet->repeat_cols.in_use) {
+                snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+                         "%s!Print_Titles", worksheet->quoted_name);
+
+                lxw_col_to_name(first_col,
+                                worksheet->repeat_cols.first_col, LXW_FALSE);
+
+                lxw_col_to_name(last_col,
+                                worksheet->repeat_cols.last_col, LXW_FALSE);
+
+                snprintf(range, LXW_DEFINED_NAME_LENGTH - 1, "%s!$%s:$%s",
+                         worksheet->quoted_name, first_col, last_col);
+
+                _store_defined_name(self, "_xlnm.Print_Titles", app_name,
+                                    range, worksheet->index, LXW_FALSE);
+            }
+
+        }
+
+    }
+
 }
 
 /*****************************************************************************
@@ -859,7 +938,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
         }
         else {
             init_data.name = lxw_strdup(sheetname);
-            init_data.quoted_name = lxw_quote_sheetname(sheetname);
+            init_data.quoted_name = lxw_quote_sheetname((char *) sheetname);
         }
     }
     else {
@@ -937,6 +1016,9 @@ workbook_close(lxw_workbook *self)
             worksheet->active = 1;
     }
 
+    /* Set the defined names for the worksheets such as Print Titles. */
+    _prepare_defined_names(self);
+
     packager = _new_packager(self->filename);
     GOTO_LABEL_ON_MEM_ERROR(packager, mem_error);
 
@@ -961,5 +1043,5 @@ uint8_t
 workbook_define_name(lxw_workbook *self, const char *name,
                      const char *formula)
 {
-    return _store_defined_name(self, name, formula, -1, 0);
+    return _store_defined_name(self, name, NULL, formula, -1, LXW_FALSE);
 }

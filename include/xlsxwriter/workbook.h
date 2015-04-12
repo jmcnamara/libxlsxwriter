@@ -60,6 +60,7 @@ typedef struct lxw_defined_name {
     int16_t index;
     uint8_t hidden;
     char name[LXW_DEFINED_NAME_LENGTH];
+    char app_name[LXW_DEFINED_NAME_LENGTH];
     char range[LXW_DEFINED_NAME_LENGTH];
     char normalised_name[LXW_DEFINED_NAME_LENGTH];
     char normalised_sheetname[LXW_DEFINED_NAME_LENGTH];
@@ -353,8 +354,8 @@ STATIC void _write_defined_name(lxw_workbook *self,
 STATIC void _write_defined_names(lxw_workbook *self);
 
 STATIC uint8_t _store_defined_name(lxw_workbook *self, const char *name,
-                                   const char *formula, int16_t index,
-                                   uint8_t hidden);
+                                   const char *app_name, const char *formula,
+                                   int16_t index, uint8_t hidden);
 
 #endif /* TESTING */
 

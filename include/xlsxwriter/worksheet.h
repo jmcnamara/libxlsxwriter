@@ -151,13 +151,13 @@ typedef struct lxw_merged_range {
 } lxw_merged_range;
 
 typedef struct lxw_repeat_rows {
-    uint8_t in_used;
+    uint8_t in_use;
     lxw_row_t first_row;
     lxw_row_t last_row;
 } lxw_repeat_rows;
 
 typedef struct lxw_repeat_cols {
-    uint8_t in_used;
+    uint8_t in_use;
     lxw_col_t first_col;
     lxw_col_t last_col;
 } lxw_repeat_cols;
@@ -1327,6 +1327,20 @@ void worksheet_center_vertically(lxw_worksheet *worksheet);
  *
  */
 void worksheet_print_row_col_headers(lxw_worksheet *worksheet);
+
+uint8_t
+
+
+
+worksheet_repeat_rows(lxw_worksheet *self, lxw_row_t first_row,
+                      lxw_row_t last_row);
+
+uint8_t
+
+
+
+worksheet_repeat_columns(lxw_worksheet *self, lxw_col_t first_col,
+                         lxw_col_t last_col);
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);

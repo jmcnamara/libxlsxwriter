@@ -22,7 +22,7 @@ CTEST(workbook, write_defined_names) {
 
     workbook_add_worksheet(workbook, NULL);
 
-    _store_defined_name(workbook, "_xlnm.Print_Titles", "Sheet1!$1:$1", 0, 0);
+    _store_defined_name(workbook, "_xlnm.Print_Titles", "", "Sheet1!$1:$1", 0, 0);
 
     _write_defined_names(workbook);
 

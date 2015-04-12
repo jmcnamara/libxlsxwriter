@@ -187,10 +187,10 @@ _write_app_file(lxw_packager *self)
 
     /* Add the Named Ranges parts. */
     TAILQ_FOREACH(defined_name, workbook->defined_names, list_pointers) {
-        tmp_name = strstr(defined_name->name, "_xlnm.");
+        tmp_name = strstr(defined_name->name, "_xlnm.ZZZ");
 
         if (!tmp_name) {
-            _add_part_name(app, defined_name->name);
+            _add_part_name(app, defined_name->app_name);
             named_range_count++;
         }
     }

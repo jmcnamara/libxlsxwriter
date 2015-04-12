@@ -33,4 +33,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
         self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins']}
         self.run_exe_test('test_print_options05')
 
+    # def test_print_options06(self):
+    #     self.ignore_files = ['docProps/app.xml']
+    #     self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins']}
+    #     self.run_exe_test('test_print_options06')
+
    

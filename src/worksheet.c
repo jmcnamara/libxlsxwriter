@@ -2058,7 +2058,7 @@ worksheet_repeat_rows(lxw_worksheet *self, lxw_row_t first_row,
     if (_check_dimensions(self, last_row, 0, LXW_TRUE, LXW_TRUE))
         return 1;
 
-    self->repeat_rows.in_used = LXW_TRUE;
+    self->repeat_rows.in_use = LXW_TRUE;
     self->repeat_rows.first_row = first_row;
     self->repeat_rows.last_row = last_row;
 
@@ -2069,8 +2069,8 @@ worksheet_repeat_rows(lxw_worksheet *self, lxw_row_t first_row,
  * Set the columns to repeat at the left hand side of each printed page.
  */
 uint8_t
-worksheet_repeat_cols(lxw_worksheet *self, lxw_col_t first_col,
-                      lxw_col_t last_col)
+worksheet_repeat_columns(lxw_worksheet *self, lxw_col_t first_col,
+                         lxw_col_t last_col)
 {
     lxw_col_t tmp_col;
 
@@ -2083,7 +2083,7 @@ worksheet_repeat_cols(lxw_worksheet *self, lxw_col_t first_col,
     if (_check_dimensions(self, last_col, 0, LXW_TRUE, LXW_TRUE))
         return 1;
 
-    self->repeat_cols.in_used = LXW_TRUE;
+    self->repeat_cols.in_use = LXW_TRUE;
     self->repeat_cols.first_col = first_col;
     self->repeat_cols.last_col = last_col;
 
