@@ -2,6 +2,12 @@
 @page changes Changes
 
 
+## 0.1.0 March 12 2015
+
+- Added `worksheet_repeat_rows()` and `worksheet_repeat_columns()` functions
+  to control the repeated rows/columns on printed worksheets.
+
+
 ## 0.0.9 March 9 2015
 
 - Added `worksheet_gridlines()` function to show/hide screen and print
