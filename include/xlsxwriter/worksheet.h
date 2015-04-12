@@ -1328,19 +1328,51 @@ void worksheet_center_vertically(lxw_worksheet *worksheet);
  */
 void worksheet_print_row_col_headers(lxw_worksheet *worksheet);
 
-uint8_t
+/**
+ * @brief Set the number of rows to repeat at the top of each printed page.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param first_row First row of repeat range.
+ * @param last_row  Last row of repeat range.
+ *
+ * For large Excel documents it is often desirable to have the first row or
+ * rows of the worksheet print out at the top of each page.
+ *
+ * This can be achieved by using this function. The parameters `first_row`
+ * and `last_row` are zero based:
+ *
+ * @code
+ *     worksheet_repeat_rows(worksheet, 0, 0); // Repeat the first row.
+ *     worksheet_repeat_rows(worksheet, 0, 1); // Repeat the first two rows.
+ * @endcode
+ *
+ * @return 0 for success, non-zero on error.
+ */
+uint8_t worksheet_repeat_rows(lxw_worksheet *worksheet, lxw_row_t first_row,
+                              lxw_row_t last_row);
 
-
-
-worksheet_repeat_rows(lxw_worksheet *self, lxw_row_t first_row,
-                      lxw_row_t last_row);
-
-uint8_t
-
-
-
-worksheet_repeat_columns(lxw_worksheet *self, lxw_col_t first_col,
-                         lxw_col_t last_col);
+/**
+ * @brief Set the number of columns to repeat at the top of each printed page.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param first_col First column of repeat range.
+ * @param last_col  Last column of repeat range.
+ *
+ * For large Excel documents it is often desirable to have the first column or
+ * columns of the worksheet print out at the left of each page.
+ *
+ * This can be achieved by using this function. The parameters `first_col`
+ * and `last_col` are zero based:
+ *
+ * @code
+ *     worksheet_repeat_columns(worksheet, 0, 0); // Repeat the first col.
+ *     worksheet_repeat_columns(worksheet, 0, 1); // Repeat the first two cols.
+ * @endcode
+ *
+ * @return 0 for success, non-zero on error.
+ */
+uint8_t worksheet_repeat_columns(lxw_worksheet *worksheet,
+                                 lxw_col_t first_col, lxw_col_t last_col);
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);

@@ -42,6 +42,7 @@
 #define __LXW_WORKBOOK_H__
 
 #include <stdint.h>
+#include <stdio.h>
 #include "xlsxwriter/third_party/queue.h"
 
 #include "worksheet.h"
