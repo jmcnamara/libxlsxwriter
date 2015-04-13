@@ -2206,3 +2206,20 @@ worksheet_set_start_page(lxw_worksheet *self, uint16_t start_page)
 {
     self->page_start = start_page;
 }
+
+/*
+ * Set the scale factor for the printed page.
+ */
+void
+worksheet_set_print_scale(lxw_worksheet *self, uint16_t scale)
+{
+    /* Confine the scale to Excel"s range */
+    if (scale < 10 || scale > 400)
+        return;
+
+    /* Turn off "fit to page" option. */
+    self->fit_page = LXW_FALSE;
+
+    self->print_scale = scale;
+    self->page_setup_changed = LXW_TRUE;
+}

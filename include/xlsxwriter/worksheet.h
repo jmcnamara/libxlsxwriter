@@ -1471,8 +1471,8 @@ void worksheet_fit_to_pages(lxw_worksheet *worksheet, uint16_t width,
 /**
  * @brief Set the start page number when printing.
  *
- * @param worksheet Pointer to a lxw_worksheet instance to be updated.
- * @param start_page  Starting page number.
+ * @param worksheet  Pointer to a lxw_worksheet instance to be updated.
+ * @param start_page Starting page number.
  *
  * The `%worksheet_set_start_page()` function is used to set the number of
  * the starting page when the worksheet is printed out:
@@ -1483,6 +1483,32 @@ void worksheet_fit_to_pages(lxw_worksheet *worksheet, uint16_t width,
  * @endcode
  */
 void worksheet_set_start_page(lxw_worksheet *worksheet, uint16_t start_page);
+
+/**
+ * @brief Set the scale factor for the printed page.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param scale     Print scale of worksheet to be printed.
+ *
+ * This function sets the scale factor of the printed page. The Scale factor
+ * must be in the range `10 <= scale <= 400`:
+ *
+ * @code
+ *     worksheet_set_print_scale(worksheet1, 75);
+ *     worksheet_set_print_scale(worksheet2, 400);
+ * @endcode
+ *
+ * The default scale factor is 100. Note, `%worksheet_set_print_scale()` does
+ * not affect the scale of the visible page in Excel. For that you should use
+ * `worksheet_set_zoom()`.
+ *
+ * Note that although it is valid to use both `worksheet_fit_to_pages()` and
+ * `%worksheet_set_print_scale()` on the same worksheet Excel only allows one
+ * of these options to be active at a time. The last function call made will
+ * set the active option.
+ *
+ */
+void worksheet_set_print_scale(lxw_worksheet *worksheet, uint16_t scale);
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);

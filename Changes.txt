@@ -2,13 +2,22 @@
 @page changes Changes
 
 
+## 0.1.2 March 14 2015
+
+- Added `worksheet_set_print_scale()` function to set the scale factor for
+  the printed page.
+
+- Added `worksheet_set_start_page()` function to set the start page number
+  when printing.
+
+
 ## 0.1.1 March 13 2015
 
 - Added `worksheet_print_area()` function to control the print area of a
   worksheet.
   
-- Added `worksheet_print_area()` function to fit the printed area to a specific
-  number of pages both vertically and horizontally.
+- Added `worksheet_fit_to_pages()` function to fit the printed area to a 
+  specific number of pages both vertically and horizontally.
 
 
 ## 0.1.0 March 12 2015
