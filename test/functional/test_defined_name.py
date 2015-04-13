@@ -13,6 +13,8 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     """
 
+    # Requires autofilter and fit_to_pages.
+
     # def test_defined_name01(self):
     #     self.run_exe_test('test_defined_name01')
 

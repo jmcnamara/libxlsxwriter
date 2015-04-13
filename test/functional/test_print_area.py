@@ -13,28 +13,30 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     """
 
-    def test_print_options01(self):
+    def test_print_area01(self):
         self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins']}
-        self.run_exe_test('test_print_options01')
+        self.run_exe_test('test_print_area01')
 
-    def test_print_options02(self):
+    def test_print_area02(self):
         self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins']}
-        self.run_exe_test('test_print_options02')
+        self.run_exe_test('test_print_area02')
 
-    def test_print_options03(self):
+    def test_print_area03(self):
         self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins']}
-        self.run_exe_test('test_print_options03')
+        self.run_exe_test('test_print_area03')
 
-    def test_print_options04(self):
+    def test_print_area04(self):
         self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins']}
-        self.run_exe_test('test_print_options04')
+        self.run_exe_test('test_print_area04')
 
-    def test_print_options05(self):
+    def test_print_area05(self):
         self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins']}
-        self.run_exe_test('test_print_options05')
+        self.run_exe_test('test_print_area05')
 
-    def test_print_options06(self):
+    def test_print_area06(self):
         self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins']}
-        self.run_exe_test('test_print_options06')
+        self.run_exe_test('test_print_area06')
 
-   
+    def test_print_area07(self):
+        self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins']}
+        self.run_exe_test('test_print_area07')

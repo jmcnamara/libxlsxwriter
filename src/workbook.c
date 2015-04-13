@@ -520,12 +520,61 @@ _prepare_defined_names(lxw_workbook *self)
     lxw_worksheet *worksheet;
     char app_name[LXW_DEFINED_NAME_LENGTH];
     char range[LXW_DEFINED_NAME_LENGTH];
+    char area[MAX_CELL_RANGE_LENGTH];
     char first_col[8];
     char last_col[8];
 
-    /* Set the active sheet. */
     STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
 
+        /*
+         * Check for Print Area settings.
+         */
+        if (worksheet->print_area.in_use) {
+
+            snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+                     "%s!Print_Area", worksheet->quoted_name);
+
+            /* Check for print area that is the max row range. */
+            if (worksheet->print_area.first_row == 0
+                && worksheet->print_area.last_row == LXW_ROW_MAX - 1) {
+
+                lxw_col_to_name(first_col,
+                                worksheet->print_area.first_col, LXW_FALSE);
+
+                lxw_col_to_name(last_col,
+                                worksheet->print_area.last_col, LXW_FALSE);
+
+                snprintf(area, MAX_CELL_RANGE_LENGTH - 1, "$%s:$%s",
+                         first_col, last_col);
+
+            }
+            /* Check for print area that is the max column range. */
+            else if (worksheet->print_area.first_col == 0
+                     && worksheet->print_area.last_col == LXW_COL_MAX - 1) {
+
+                snprintf(area, MAX_CELL_RANGE_LENGTH - 1, "$%d:$%d",
+                         worksheet->print_area.first_row + 1,
+                         worksheet->print_area.last_row + 1);
+
+            }
+            else {
+                lxw_range_abs(area,
+                              worksheet->print_area.first_row,
+                              worksheet->print_area.first_col,
+                              worksheet->print_area.last_row,
+                              worksheet->print_area.last_col);
+            }
+
+            snprintf(range, LXW_DEFINED_NAME_LENGTH - 1, "%s!%s",
+                     worksheet->quoted_name, area);
+
+            _store_defined_name(self, "_xlnm.Print_Area", app_name,
+                                range, worksheet->index, LXW_FALSE);
+        }
+
+        /*
+         * Check for repeat rows/cols. aka, Print Titles.
+         */
         if (worksheet->repeat_rows.in_use || worksheet->repeat_cols.in_use) {
             if (worksheet->repeat_rows.in_use
                 && worksheet->repeat_cols.in_use) {
@@ -577,11 +626,8 @@ _prepare_defined_names(lxw_workbook *self)
                 _store_defined_name(self, "_xlnm.Print_Titles", app_name,
                                     range, worksheet->index, LXW_FALSE);
             }
-
         }
-
     }
-
 }
 
 /*****************************************************************************

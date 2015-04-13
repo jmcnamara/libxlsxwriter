@@ -14,8 +14,6 @@
 #include "xlsxwriter/format.h"
 #include "xlsxwriter/utility.h"
 
-#define LXW_ROW_MAX 1048576
-#define LXW_COL_MAX 16384
 #define LXW_STR_MAX 32767
 #define BUFFER_SIZE 4096
 #define LXW_PORTRAIT 1
@@ -2055,7 +2053,7 @@ worksheet_repeat_rows(lxw_worksheet *self, lxw_row_t first_row,
         first_row = tmp_row;
     }
 
-    if (_check_dimensions(self, last_row, 0, LXW_TRUE, LXW_TRUE))
+    if (_check_dimensions(self, last_row, 0, LXW_IGNORE, LXW_IGNORE))
         return 1;
 
     self->repeat_rows.in_use = LXW_TRUE;
@@ -2080,12 +2078,53 @@ worksheet_repeat_columns(lxw_worksheet *self, lxw_col_t first_col,
         first_col = tmp_col;
     }
 
-    if (_check_dimensions(self, last_col, 0, LXW_TRUE, LXW_TRUE))
+    if (_check_dimensions(self, last_col, 0, LXW_IGNORE, LXW_IGNORE))
         return 1;
 
     self->repeat_cols.in_use = LXW_TRUE;
     self->repeat_cols.first_col = first_col;
     self->repeat_cols.last_col = last_col;
+
+    return 0;
+}
+
+/*
+ * Set the print area in the current worksheet.
+ */
+uint8_t
+worksheet_print_area(lxw_worksheet *self, lxw_row_t first_row,
+                     lxw_col_t first_col, lxw_row_t last_row,
+                     lxw_col_t last_col)
+{
+    lxw_row_t tmp_row;
+    lxw_col_t tmp_col;
+
+    if (first_row > last_row) {
+        tmp_row = last_row;
+        last_row = first_row;
+        first_row = tmp_row;
+    }
+
+    if (first_col > last_col) {
+        tmp_col = last_col;
+        last_col = first_col;
+        first_col = tmp_col;
+    }
+
+    if (_check_dimensions(self, last_row, last_col, LXW_IGNORE, LXW_IGNORE))
+        return 1;
+
+    /* Ignore max area since it is the same as no print area in Excel. */
+    if (first_row == 0 && first_col == 0 && last_row == LXW_ROW_MAX - 1
+        && last_col == LXW_COL_MAX - 1) {
+        return 0;
+    }
+
+    self->print_area.in_use = LXW_TRUE;
+    self->print_area.first_row = first_row;
+    self->print_area.last_row = last_row;
+    self->print_area.first_col = first_col;
+    self->print_area.last_col = last_col;
 
     return 0;
 }

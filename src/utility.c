@@ -127,7 +127,7 @@ lxw_range(char *range,
 }
 
 /*
- * Convert zero indexed row and column pair to an Excel style A1:C5
+ * Convert zero indexed row and column pair to an Excel style $A$1:$C$5
  * range reference with absolute values.
  */
 void
@@ -194,7 +194,7 @@ lxw_get_col(const char *col_str)
 /*
  * Convert the second row of an Excel range ref to a zero indexed number.
  */
-uint16_t
+uint32_t
 lxw_get_row_2(const char *row_str)
 {
     const char *p = row_str;

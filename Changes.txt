@@ -2,6 +2,12 @@
 @page changes Changes
 
 
+## 0.1.1 March 13 2015
+
+- Added `worksheet_print_area()` function to control the print area of a
+  worksheet.
+
+
 ## 0.1.0 March 12 2015
 
 - Added `worksheet_repeat_rows()` and `worksheet_repeat_columns()` functions

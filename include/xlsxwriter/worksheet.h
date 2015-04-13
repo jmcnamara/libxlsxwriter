@@ -53,6 +53,8 @@
 #include "format.h"
 #include "utility.h"
 
+#define LXW_ROW_MAX 1048576
+#define LXW_COL_MAX 16384
 #define LXW_COL_META_MAX 128
 #define LXW_HEADER_FOOTER_MAX 255
 
@@ -162,6 +164,14 @@ typedef struct lxw_repeat_cols {
     lxw_col_t last_col;
 } lxw_repeat_cols;
 
+typedef struct lxw_print_area {
+    uint8_t in_use;
+    lxw_row_t first_row;
+    lxw_row_t last_row;
+    lxw_col_t first_col;
+    lxw_col_t last_col;
+} lxw_print_area;
+
 /**
  * @brief Header and footer options.
  *
@@ -249,6 +259,7 @@ typedef struct lxw_worksheet {
 
     struct lxw_repeat_rows repeat_rows;
     struct lxw_repeat_cols repeat_cols;
+    struct lxw_print_area print_area;
 
     uint16_t merged_range_count;
 
@@ -1373,6 +1384,37 @@ uint8_t worksheet_repeat_rows(lxw_worksheet *worksheet, lxw_row_t first_row,
  */
 uint8_t worksheet_repeat_columns(lxw_worksheet *worksheet,
                                  lxw_col_t first_col, lxw_col_t last_col);
+
+/**
+ * @brief Set the print area for a worksheet.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param first_row   The first row of the range. (All zero indexed.)
+ * @param first_col   The first column of the range.
+ * @param last_row    The last row of the range.
+ * @param last_col    The last col of the range.
+ *
+ * This function is used to specify the area of the worksheet that will be
+ * printed. The RANGE() macro is often convenient for this.
+ *
+ * @code
+ *     worksheet_print_area(worksheet, 0, 0, 41, 10); // A1:K42.
+ *
+ *     // Same as:
+ *     worksheet_print_area(worksheet, RANGE("A1:K42"));
+ * @endcode
+ *
+ * In order to set a row or column range you must specify the entire range:
+ *
+ * @code
+ *     worksheet_print_area(worksheet, RANGE("A1:H1048576")); // Same as A:H.
+ * @endcode
+ *
+ * @return 0 for success, non-zero on error.
+ */
+uint8_t worksheet_print_area(lxw_worksheet *worksheet, lxw_row_t first_row,
+                             lxw_col_t first_col, lxw_row_t last_row,
+                             lxw_col_t last_col);
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);

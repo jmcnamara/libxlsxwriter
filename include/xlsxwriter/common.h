@@ -1,6 +1,6 @@
 /*
  * libxlsxwriter
- * 
+ *
  * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  *
  * common - Common functions and defines for the libxlsxwriter library.
@@ -25,6 +25,8 @@ enum lxw_boolean {
     LXW_FALSE,
     LXW_TRUE
 };
+
+#define LXW_IGNORE 1
 
 #define ERROR(message)                          \
     fprintf(stderr, "[ERROR][%s:%d]: " message "\n", __FILE__, __LINE__)
