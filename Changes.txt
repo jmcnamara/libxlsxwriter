@@ -6,6 +6,9 @@
 
 - Added `worksheet_print_area()` function to control the print area of a
   worksheet.
+  
+- Added `worksheet_print_area()` function to fit the printed area to a specific
+  number of pages both vertically and horizontally.
 
 
 ## 0.1.0 March 12 2015
