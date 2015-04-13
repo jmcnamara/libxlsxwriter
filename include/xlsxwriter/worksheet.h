@@ -1447,7 +1447,7 @@ uint8_t worksheet_print_area(lxw_worksheet *worksheet, lxw_row_t first_row,
  *
  * @code
  *     // 1 page wide and as long as necessary.
- *     worksheet_fit_to_pages(worksheet, 1, 0);  
+ *     worksheet_fit_to_pages(worksheet, 1, 0);
  * @endcode
  *
  * **Note**:
@@ -1467,6 +1467,22 @@ uint8_t worksheet_print_area(lxw_worksheet *worksheet, lxw_row_t first_row,
  */
 void worksheet_fit_to_pages(lxw_worksheet *worksheet, uint16_t width,
                             uint16_t height);
+
+/**
+ * @brief Set the start page number when printing.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param start_page  Starting page number.
+ *
+ * The `%worksheet_set_start_page()` function is used to set the number of
+ * the starting page when the worksheet is printed out:
+ *
+ * @code
+ *     // Start print from page 2.
+ *     worksheet_set_start_page(worksheet, 2);
+ * @endcode
+ */
+void worksheet_set_start_page(lxw_worksheet *worksheet, uint16_t start_page);
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);

@@ -2197,3 +2197,12 @@ worksheet_fit_to_pages(lxw_worksheet *self, uint16_t width, uint16_t height)
     self->fit_height = height;
     self->page_setup_changed = 1;
 }
+
+/*
+ * Set the start page number.
+ */
+void
+worksheet_set_start_page(lxw_worksheet *self, uint16_t start_page)
+{
+    self->page_start = start_page;
+}
