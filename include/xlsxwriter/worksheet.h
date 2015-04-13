@@ -233,9 +233,11 @@ typedef struct lxw_worksheet {
     uint16_t page_start;
     uint16_t print_scale;
     uint16_t vertical_dpi;
+    uint8_t filter_on;
     uint8_t fit_page;
     uint8_t hcenter;
     uint8_t orientation;
+    uint8_t outline_changed;
     uint8_t page_order;
     uint8_t page_setup_changed;
     uint8_t page_view;
@@ -244,6 +246,8 @@ typedef struct lxw_worksheet {
     uint8_t print_headers;
     uint8_t print_options_changed;
     uint8_t screen_gridlines;
+    uint8_t tab_color;
+    uint8_t vba_codename;
     uint8_t vcenter;
 
     double margin_left;
@@ -631,9 +635,9 @@ int8_t worksheet_write_blank(lxw_worksheet *worksheet,
  * The `options` parameter is a #lxw_row_col_options struct. It has the
  * following members but currently only the `hidden` property is supported:
  *
- * * `hidden`
- * * `level`
- * * `collapsed`
+ * - `hidden`
+ * - `level`
+ * - `collapsed`
  *
  * The `"hidden"` option is used to hide a row. This can be used, for
  * example, to hide intermediary steps in a complicated calculation:
@@ -744,9 +748,9 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  * The `options` parameter is a #lxw_row_col_options struct. It has the
  * following members but currently only the `hidden` property is supported:
  *
- * * `hidden`
- * * `level`
- * * `collapsed`
+ * - `hidden`
+ * - `level`
+ * - `collapsed`
  *
  * The `"hidden"` option is used to hide a column. This can be used, for
  * example, to hide intermediary steps in a complicated calculation:
@@ -775,8 +779,8 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
  *
  * @return 0 for success, non-zero on error.
  *
- * The `merge_range()` function allows cells to be merged together so that
- * they act as a single area.
+ * The `%worksheet_merge_range()` function allows cells to be merged together
+ * so that they act as a single area.
  *
  * Excel generally merges and centers cells at same time. To get similar
  * behaviour with libxlsxwriter you need to apply a @ref format.h "Format"
@@ -805,7 +809,7 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
  *
  * @image html merge_range.png
  *
- * The `merge_range()` function writes a `char*` string using
+ * The `%worksheet_merge_range()` function writes a `char*` string using
  * `worksheet_write_string()`. In order to write other data types, such as a
  * number or a formula, you can overwrite the first cell with a call to one of
  * the other write functions. The same Format should be used as was used in
@@ -829,8 +833,8 @@ uint8_t worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
   *
   * @param worksheet Pointer to a lxw_worksheet instance to be updated.
   *
-  * The `activate()` function is used to specify which worksheet is initially
-  * visible in a multi-sheet workbook:
+  * The `%worksheet_activate()` function is used to specify which worksheet is
+  * initially visible in a multi-sheet workbook:
   *
   * @code
   *     lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, NULL);
@@ -842,8 +846,8 @@ uint8_t worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
   *
   * @image html worksheet_activate.png
   *
-  * More than one worksheet can be selected via the `select()` function, see
-  * below, however only one worksheet can be active.
+  * More than one worksheet can be selected via the `worksheet_select()`
+  * function, see below, however only one worksheet can be active.
   *
   * The default active worksheet is the first worksheet.
   *
@@ -855,8 +859,8 @@ void worksheet_activate(lxw_worksheet *worksheet);
   *
   * @param worksheet Pointer to a lxw_worksheet instance to be updated.
   *
-  * The `select()` function is used to indicate that a worksheet is selected in
-  * a multi-sheet workbook:
+  * The `%worksheet_select()` function is used to indicate that a worksheet is
+  * selected in a multi-sheet workbook:
   *
   * @code
   *     worksheet_activate(worksheet1);
@@ -868,7 +872,7 @@ void worksheet_activate(lxw_worksheet *worksheet);
   * A selected worksheet has its tab highlighted. Selecting worksheets is a
   * way of grouping them together so that, for example, several worksheets
   * could be printed in one go. A worksheet that has been activated via the
-  * `activate()` function will also appear as selected.
+  * `worksheet_activate()` function will also appear as selected.
   *
   */
 void worksheet_select(lxw_worksheet *worksheet);
@@ -993,9 +997,9 @@ void worksheet_set_paper(lxw_worksheet *worksheet, uint8_t paper_type);
  * @param top     Top margin in inches.    Excel default is 0.75.
  * @param bottom  Bottom margin in inches. Excel default is 0.75.
  *
- * The `set_margins()` function is used to set the margins of the worksheet
- * when it is printed. The units are in inches. Specifying `-1` for any
- * parameter will give the default Excel value as shown above.
+ * The `%worksheet_set_margins()` function is used to set the margins of the
+ * worksheet when it is printed. The units are in inches. Specifying `-1` for
+ * any parameter will give the default Excel value as shown above.
  *
  * @code
  *    worksheet_set_margins(worksheet, 1.3, 1.2, -1, -1);
@@ -1162,8 +1166,7 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  * @code
  *
  *    $ unzip myfile.xlsm -d myfile
- *    $ xmllint --format `find myfile -name "*.xml" | xargs` \
- *                        | egrep "Header|Footer"
+ *    $ xmllint --format `find myfile -name "*.xml" | xargs` | egrep "Header|Footer"
  *
  *      <headerFooter scaleWithDoc="0">
  *        <oddHeader>&amp;L&amp;P</oddHeader>
@@ -1246,8 +1249,8 @@ uint8_t worksheet_set_footer_opt(lxw_worksheet *worksheet, char *string,
  *
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  *
- * The `print_across()` function is used to change the default print
- * direction. This is referred to by Excel as the sheet "page order":
+ * The `%worksheet_print_across()` function is used to change the default
+ * print direction. This is referred to by Excel as the sheet "page order":
  *
  * @code
  *     worksheet_print_across(worksheet);
@@ -1389,10 +1392,10 @@ uint8_t worksheet_repeat_columns(lxw_worksheet *worksheet,
  * @brief Set the print area for a worksheet.
  *
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
- * @param first_row   The first row of the range. (All zero indexed.)
- * @param first_col   The first column of the range.
- * @param last_row    The last row of the range.
- * @param last_col    The last col of the range.
+ * @param first_row The first row of the range. (All zero indexed.)
+ * @param first_col The first column of the range.
+ * @param last_row  The last row of the range.
+ * @param last_col  The last col of the range.
  *
  * This function is used to specify the area of the worksheet that will be
  * printed. The RANGE() macro is often convenient for this.
@@ -1415,6 +1418,55 @@ uint8_t worksheet_repeat_columns(lxw_worksheet *worksheet,
 uint8_t worksheet_print_area(lxw_worksheet *worksheet, lxw_row_t first_row,
                              lxw_col_t first_col, lxw_row_t last_row,
                              lxw_col_t last_col);
+/**
+ * @brief Fit the printed area to a specific number of pages both vertically
+ *        and horizontally.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param width     Number of pages horizontally.
+ * @param height    Number of pages vertically.
+ *
+ * The `%worksheet_fit_to_pages()` function is used to fit the printed area to
+ * a specific number of pages both vertically and horizontally. If the printed
+ * area exceeds the specified number of pages it will be scaled down to
+ * fit. This ensures that the printed area will always appear on the specified
+ * number of pages even if the page size or margins change:
+ *
+ * @code
+ *     worksheet_fit_to_pages(worksheet1, 1, 1); // Fit to 1x1 pages.
+ *     worksheet_fit_to_pages(worksheet2, 2, 1); // Fit to 2x1 pages.
+ *     worksheet_fit_to_pages(worksheet3, 1, 2); // Fit to 1x2 pages.
+ * @endcode
+ *
+ * The print area can be defined using the `worksheet_print_area()` function
+ * as described above.
+ *
+ * A common requirement is to fit the printed output to `n` pages wide but
+ * have the height be as long as necessary. To achieve this set the `height`
+ * to zero:
+ *
+ * @code
+ *     // 1 page wide and as long as necessary.
+ *     worksheet_fit_to_pages(worksheet, 1, 0);  
+ * @endcode
+ *
+ * **Note**:
+ *
+ * - Although it is valid to use both `%worksheet_fit_to_pages()` and
+ *   `worksheet_set_print_scale()` on the same worksheet Excel only allows one
+ *   of these options to be active at a time. The last function call made will
+ *   set the active option.
+ *
+ * - The `%worksheet_fit_to_pages()` function will override any manual page
+ *   breaks that are defined in the worksheet.
+ *
+ * - When using `%worksheet_fit_to_pages()` it may also be required to set the
+ *   printer paper size using `worksheet_set_paper()` or else Excel will
+ *   default to "US Letter".
+ *
+ */
+void worksheet_fit_to_pages(lxw_worksheet *worksheet, uint16_t width,
+                            uint16_t height);
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);

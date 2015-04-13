@@ -1362,6 +1362,60 @@ _worksheet_write_header_footer(lxw_worksheet *self)
 }
 
 /*
+ * Write the <pageSetUpPr> element.
+ */
+STATIC void
+_worksheet_write_page_set_up_pr(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!self->fit_page)
+        return;
+
+    _INIT_ATTRIBUTES();
+    _PUSH_ATTRIBUTES_STR("fitToPage", "1");
+
+    _xml_empty_tag(self->file, "pageSetUpPr", &attributes);
+}
+
+/*
+ * Write the <sheetPr> element for Sheet level properties.
+ */
+STATIC void
+_worksheet_write_sheet_pr(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!self->fit_page
+        && !self->filter_on
+        && !self->tab_color
+        && !self->outline_changed && !self->vba_codename) {
+        return;
+    }
+
+    _INIT_ATTRIBUTES();
+
+    if (self->vba_codename)
+        _PUSH_ATTRIBUTES_INT("codeName", self->vba_codename);
+
+    if (self->filter_on)
+        _PUSH_ATTRIBUTES_STR("filterMode", "1");
+
+    if (self->fit_page || self->tab_color || self->outline_changed) {
+        _xml_start_tag(self->file, "sheetPr", &attributes);
+        /* _worksheet_write_tab_color(self); */
+        /* _worksheet_write_outline_pr(self); */
+        _worksheet_write_page_set_up_pr(self);
+        _xml_end_tag(self->file, "sheetPr");
+    }
+    else {
+        _xml_empty_tag(self->file, "sheetPr", &attributes);
+    }
+}
+
+/*
  * Assemble and write the XML file.
  */
 void
@@ -1372,6 +1426,9 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
 
     /* Write the worksheet element. */
     _worksheet_write_worksheet(self);
+
+    /* Write the worksheet properties. */
+    _worksheet_write_sheet_pr(self);
 
     /* Write the worksheet dimensions. */
     _worksheet_write_dimension(self);
@@ -2127,4 +2184,16 @@ worksheet_print_area(lxw_worksheet *self, lxw_row_t first_row,
     self->print_area.last_col = last_col;
 
     return 0;
+}
+
+/* Store the vertical and horizontal number of pages that will define the
+ * maximum area printed.
+ */
+void
+worksheet_fit_to_pages(lxw_worksheet *self, uint16_t width, uint16_t height)
+{
+    self->fit_page = 1;
+    self->fit_width = width;
+    self->fit_height = height;
+    self->page_setup_changed = 1;
 }
