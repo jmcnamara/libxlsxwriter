@@ -74,7 +74,7 @@ TAILQ_HEAD(lxw_defined_names, lxw_defined_name);
  *    lxw_worksheet *worksheet3 = workbook_add_worksheet(workbook, NULL);
  *
  *    // Iterate over the 3 worksheets and perform the same operation on each.
- *    LXW_FOREACH_WORKSHEET(worksheet, workbook){
+ *    LXW_FOREACH_WORKSHEET(worksheet, workbook) {
  *        worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
  *    }
  * @endcode
