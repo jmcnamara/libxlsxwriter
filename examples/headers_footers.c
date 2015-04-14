@@ -3,7 +3,7 @@
  * footers with libxlsxwriter.
  *
  * The control characters used in the header/footer strings are:
- * 
+ *
  *     Control             Category            Description
  *     =======             ========            ===========
  *     &L                  Justification       Left
@@ -39,7 +39,9 @@ int main() {
 
     char preview[] = "Select Print Preview to see the header and footer";
 
-    /* A simple example to start */
+    /*
+     * A simple example to start
+     */
     lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, "Simple");
     char header1[] = "&CHere is some centred text.";
     char footer1[] = "&LHere is some left aligned text.";
@@ -51,10 +53,13 @@ int main() {
     worksheet_write_string(worksheet1, 0, 0, preview, NULL);
 
 
-    /* This is an example of some of the header/footer variables. */
+    /*
+     * This is an example of some of the header/footer variables.
+     */
     lxw_worksheet *worksheet2 = workbook_add_worksheet(workbook, "Variables");
     char header2[] = "&LPage &P of &N" "&CFilename: &F" "&RSheetname: &A";
     char footer2[] = "&LCurrent date: &D" "&RCurrent time: &T";
+    lxw_row_t breaks[] = {20, 0};
 
     worksheet_set_header(worksheet2, header2);
     worksheet_set_footer(worksheet2, footer2);
@@ -62,8 +67,13 @@ int main() {
     worksheet_set_column(worksheet2, 0, 0, 50, NULL, NULL);
     worksheet_write_string(worksheet2, 0, 0, preview, NULL);
 
+    worksheet_set_h_pagebreaks(worksheet2, breaks);
+    worksheet_write_string(worksheet2, 20, 0, "Next page", NULL);
 
-    /* This example shows how to use more than one font. */
+
+    /*
+     * This example shows how to use more than one font.
+     */
     lxw_worksheet *worksheet3 = workbook_add_worksheet(workbook, "Mixed fonts");
     char header3[] = "&C&\"Courier New,Bold\"Hello &\"Arial,Italic\"World";
     char footer3[] = "&C&\"Symbol\"e&\"Arial\" = mc&X2";
@@ -75,7 +85,9 @@ int main() {
     worksheet_write_string(worksheet3, 0, 0, preview, NULL);
 
 
-    /*Example of line wrapping. */
+    /*
+     * Example of line wrapping.
+     */
     lxw_worksheet *worksheet4 = workbook_add_worksheet(workbook, "Word wrap");
     char header4[] = "&CHeading 1\nHeading 2";
 
@@ -85,7 +97,9 @@ int main() {
     worksheet_write_string(worksheet4, 0, 0, preview, NULL);
 
 
-    /* Example of inserting a literal ampersand & */
+    /*
+     * Example of inserting a literal ampersand &
+     */
     lxw_worksheet *worksheet5 = workbook_add_worksheet(workbook, "Ampersand");
     char header5[] = "&CCuriouser && Curiouser - Attorneys at Law";
 

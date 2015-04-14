@@ -1416,6 +1416,93 @@ _worksheet_write_sheet_pr(lxw_worksheet *self)
 }
 
 /*
+ * Write the <brk> element.
+ */
+STATIC void
+_worksheet_write_brk(lxw_worksheet *self, uint32_t id, uint32_t max)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    _INIT_ATTRIBUTES();
+    _PUSH_ATTRIBUTES_INT("id", id);
+    _PUSH_ATTRIBUTES_INT("max", max);
+    _PUSH_ATTRIBUTES_STR("man", "1");
+
+    _xml_empty_tag(self->file, "brk", &attributes);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <rowBreaks> element.
+ */
+STATIC void
+_worksheet_write_row_breaks(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    uint16_t count = 0;
+    uint16_t i;
+
+    if (self->hbreaks == NULL)
+        return;
+
+    while (self->hbreaks[count])
+        count++;
+
+    if (count > LXW_BREAKS_MAX)
+        count = LXW_BREAKS_MAX;
+
+    _INIT_ATTRIBUTES();
+    _PUSH_ATTRIBUTES_INT("count", count);
+    _PUSH_ATTRIBUTES_INT("manualBreakCount", count);
+
+    _xml_start_tag(self->file, "rowBreaks", &attributes);
+
+    for (i = 0; i < count; i++)
+        _worksheet_write_brk(self, self->hbreaks[i], LXW_COL_MAX - 1);
+
+    _xml_end_tag(self->file, "rowBreaks");
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <colBreaks> element.
+ */
+STATIC void
+_worksheet_write_col_breaks(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    uint16_t count = 0;
+    uint16_t i;
+
+    if (self->vbreaks == NULL)
+        return;
+
+    while (self->vbreaks[count])
+        count++;
+
+    if (count > LXW_BREAKS_MAX)
+        count = LXW_BREAKS_MAX;
+
+    _INIT_ATTRIBUTES();
+    _PUSH_ATTRIBUTES_INT("count", count);
+    _PUSH_ATTRIBUTES_INT("manualBreakCount", count);
+
+    _xml_start_tag(self->file, "colBreaks", &attributes);
+
+    for (i = 0; i < count; i++)
+        _worksheet_write_brk(self, self->vbreaks[i], LXW_ROW_MAX - 1);
+
+    _xml_end_tag(self->file, "colBreaks");
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
  * Assemble and write the XML file.
  */
 void
@@ -1462,6 +1549,12 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
 
     /* Write the headerFooter element. */
     _worksheet_write_header_footer(self);
+
+    /* Write the rowBreaks element. */
+    _worksheet_write_row_breaks(self);
+
+    /* Write the colBreaks element. */
+    _worksheet_write_col_breaks(self);
 
     /* Close the worksheet tag. */
     _xml_end_tag(self->file, "worksheet");
@@ -2222,4 +2315,22 @@ worksheet_set_print_scale(lxw_worksheet *self, uint16_t scale)
 
     self->print_scale = scale;
     self->page_setup_changed = LXW_TRUE;
+}
+
+/*
+ * Store the horizontal page breaks on a worksheet.
+ */
+void
+worksheet_set_h_pagebreaks(lxw_worksheet *self, lxw_row_t hbreaks[])
+{
+    self->hbreaks = hbreaks;
+}
+
+/*
+ * Store the vertical page breaks on a worksheet.
+ */
+void
+worksheet_set_v_pagebreaks(lxw_worksheet *self, lxw_col_t vbreaks[])
+{
+    self->vbreaks = vbreaks;
 }

@@ -58,6 +58,10 @@
 #define LXW_COL_META_MAX 128
 #define LXW_HEADER_FOOTER_MAX 255
 
+/* The Excel 2007 specification says that the maximum number of page
+ * breaks is 1026. However, in practice it is actually 1023. */
+#define LXW_BREAKS_MAX 1023
+
 /** Default column width in Excel */
 #define LXW_DEF_COL_WIDTH 8.43
 
@@ -266,6 +270,9 @@ typedef struct lxw_worksheet {
     struct lxw_print_area print_area;
 
     uint16_t merged_range_count;
+
+    lxw_row_t *hbreaks;
+    lxw_col_t *vbreaks;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -1243,6 +1250,86 @@ uint8_t worksheet_set_header_opt(lxw_worksheet *worksheet, char *string,
  */
 uint8_t worksheet_set_footer_opt(lxw_worksheet *worksheet, char *string,
                                  lxw_header_footer_options * options);
+
+/**
+ * @brief Set the horizontal page breaks on a worksheet.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param breaks    Array of page breaks.
+ *
+ * The `%worksheet_set_h_pagebreaks()` function adds horizontal page breaks to
+ * a worksheet. A page break causes all the data that follows it to be printed
+ * on the next page. Horizontal page breaks act between rows.
+ *
+ * The function takes an array of one or more page breaks. The type of the
+ * array data is @ref lxw_row_t and the last element of the array must be 0:
+ *
+ * @code
+ *    lxw_row_t breaks1[] = {20, 0}; // 1 page break. Zero indicates the end.
+ *    lxw_row_t breaks2[] = {20, 40, 60, 80, 0};
+ *
+ *    worksheet_set_h_pagebreaks(worksheet1, breaks1);
+ *    worksheet_set_h_pagebreaks(worksheet2, breaks2);
+ * @endcode
+ *
+ * To create a page break between rows 20 and 21 you must specify the break at
+ * row 21. However in zero index notation this is actually row 20:
+ *
+ * @code
+ *    // Break between row 20 and 21.
+ *    lxw_row_t breaks[] = {20, 0};
+ *
+ *    worksheet_set_h_pagebreaks(worksheet, breaks);
+ * @endcode
+ *
+ * There is an Excel limitation of 1023 horizontal page breaks per worksheet.
+ *
+ * Note: If you specify the "fit to page" option via the
+ * `worksheet_fit_to_pages()` function it will override all manual page
+ * breaks.
+ *
+ */
+void worksheet_set_h_pagebreaks(lxw_worksheet *worksheet, lxw_row_t breaks[]);
+
+/**
+ * @brief Set the vertical page breaks on a worksheet.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param breaks    Array of page breaks.
+ *
+ * The `%worksheet_set_v_pagebreaks()` function adds vertical page breaks to a
+ * worksheet. A page break causes all the data that follows it to be printed
+ * on the next page. Vertical page breaks act between columns.
+ *
+ * The function takes an array of one or more page breaks. The type of the
+ * array data is @ref lxw_col_t and the last element of the array must be 0:
+ *
+ * @code
+ *    lxw_col_t breaks1[] = {20, 0}; // 1 page break. Zero indicates the end.
+ *    lxw_col_t breaks2[] = {20, 40, 60, 80, 0};
+ *
+ *    worksheet_set_v_pagebreaks(worksheet1, breaks1);
+ *    worksheet_set_v_pagebreaks(worksheet2, breaks2);
+ * @endcode
+ *
+ * To create a page break between columns 20 and 21 you must specify the break
+ * at column 21. However in zero index notation this is actually column 20:
+ *
+ * @code
+ *    // Break between column 20 and 21.
+ *    lxw_col_t breaks[] = {20, 0};
+ *
+ *    worksheet_set_v_pagebreaks(worksheet, breaks);
+ * @endcode
+ *
+ * There is an Excel limitation of 1023 vertical page breaks per worksheet.
+ *
+ * Note: If you specify the "fit to page" option via the
+ * `worksheet_fit_to_pages()` function it will override all manual page
+ * breaks.
+ *
+ */
+void worksheet_set_v_pagebreaks(lxw_worksheet *worksheet, lxw_col_t breaks[]);
 
 /**
  * @brief Set the order in which pages are printed.
