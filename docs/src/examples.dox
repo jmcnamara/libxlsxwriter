@@ -12,7 +12,8 @@ Next example: @ref anatomy.c
 
 
 @example anatomy.c
-Anatomy of a simple libxlsxwriter program.
+Anatomy of a simple libxlsxwriter program where the program is
+explained line by line with comments.
 
 Next example: @ref demo.c
 @image html anatomy.png
@@ -97,15 +98,15 @@ Next example: @ref constant_memory.c
 Example of using libxlsxwriter for writing large files in constant memory
 mode.
 
-Next example: @ref merge1.c
+Next example: @ref merge_range.c
 @image html constant_memory.png
 
 
-@example merge1.c
+@example merge_range.c
 Example of merging cells in a worksheet.
 
 Next example: @ref headers_footers.c
-@image html merge1.png
+@image html merge_range.png
 
 
 @example headers_footers.c

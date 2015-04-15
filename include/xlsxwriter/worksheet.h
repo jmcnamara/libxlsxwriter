@@ -814,7 +814,7 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
  *
  * @endcode
  *
- * @image html merge_range.png
+ * @image html merge.png
  *
  * The `%worksheet_merge_range()` function writes a `char*` string using
  * `worksheet_write_string()`. In order to write other data types, such as a
