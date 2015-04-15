@@ -131,6 +131,8 @@ _free_cell(lxw_cell *cell)
     if (cell->type == FORMULA_CELL || cell->type == INLINE_STRING_CELL)
         free(cell->u.string);
 
+    free(cell->range);
+
     free(cell);
 }
 
@@ -301,6 +303,26 @@ _new_formula_cell(lxw_row_t row_num,
     cell->type = FORMULA_CELL;
     cell->format = format;
     cell->u.string = formula;
+
+    return cell;
+}
+
+/*
+ * Create a new worksheet array formula cell object.
+ */
+STATIC lxw_cell *
+_new_array_formula_cell(lxw_row_t row_num, lxw_col_t col_num, char *formula,
+                        char *range, lxw_format *format)
+{
+    lxw_cell *cell = calloc(1, sizeof(lxw_cell));
+    RETURN_ON_MEM_ERROR(cell, cell);
+
+    cell->row_num = row_num;
+    cell->col_num = col_num;
+    cell->type = ARRAY_FORMULA_CELL;
+    cell->format = format;
+    cell->u.string = formula;
+    cell->range = range;
 
     return cell;
 }
@@ -982,6 +1004,28 @@ _write_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 }
 
 /*
+ * Write out an array formula worksheet cell with a numeric result.
+ */
+STATIC void
+_write_array_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char data[ATTR_32];
+
+    _INIT_ATTRIBUTES();
+    _PUSH_ATTRIBUTES_STR("t", "array");
+    _PUSH_ATTRIBUTES_STR("ref", cell->range);
+
+    __builtin_snprintf(data, ATTR_32, "%.16g", cell->formula_result);
+
+    _xml_data_element(self->file, "f", cell->u.string, &attributes);
+    _xml_data_element(self->file, "v", data, NULL);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
  * Write out an inline string.
  */
 STATIC void
@@ -1098,6 +1142,11 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
     }
     else if (cell->type == BLANK_CELL) {
         _xml_empty_tag(self->file, "c", &attributes);
+    }
+    else if (cell->type == ARRAY_FORMULA_CELL) {
+        _xml_start_tag(self->file, "c", &attributes);
+        _write_array_formula_num_cell(self, cell);
+        _xml_end_tag(self->file, "c");
     }
 
     _FREE_ATTRIBUTES();
@@ -1689,6 +1738,107 @@ worksheet_write_formula(lxw_worksheet *self,
 }
 
 /*
+ * Write a formula with a numerical result to a cell in Excel.
+ */
+int8_t
+worksheet_write_array_formula_num(lxw_worksheet *self,
+                                  lxw_row_t first_row,
+                                  lxw_col_t first_col,
+                                  lxw_row_t last_row,
+                                  lxw_col_t last_col,
+                                  const char *formula,
+                                  lxw_format *format, double result)
+{
+    lxw_cell *cell;
+    lxw_row_t tmp_row;
+    lxw_col_t tmp_col;
+    char *formula_copy;
+    char *range;
+    int8_t err;
+
+    /* Swap last row/col with first row/col as necessary */
+    if (first_row > last_row) {
+        tmp_row = last_row;
+        last_row = first_row;
+        first_row = tmp_row;
+    }
+    if (first_col > last_col) {
+        tmp_col = last_col;
+        last_col = first_col;
+        first_col = tmp_col;
+    }
+
+    /* Check that column number is valid and store the max value */
+    err = _check_dimensions(self, last_row, last_col, LXW_FALSE, LXW_FALSE);
+
+    if (err)
+        return err;
+
+    if (!formula)
+        return -4;
+
+    /* Define the array range. */
+    range = calloc(1, MAX_CELL_RANGE_LENGTH);
+    RETURN_ON_MEM_ERROR(range, -1);
+
+    if (first_row == last_row && first_col == last_col)
+        lxw_rowcol_to_cell(range, first_row, last_col);
+    else
+        lxw_range(range, first_row, first_col, last_row, last_col);
+
+    /* Copy and trip leading "{=" from formula. */
+    if (formula[0] == '{')
+        if (formula[1] == '=')
+            formula_copy = lxw_strdup(formula + 2);
+        else
+            formula_copy = lxw_strdup(formula + 1);
+    else
+        formula_copy = lxw_strdup(formula);
+
+    /* Strip trailing "}" from formula. */
+    if (formula_copy[strlen(formula_copy) - 1] == '}')
+        formula_copy[strlen(formula_copy) - 1] = '\0';
+
+    /* Create a new array formula cell object. */
+    cell = _new_array_formula_cell(first_row, first_col,
+                                   formula_copy, range, format);
+
+    cell->formula_result = result;
+
+    _insert_cell(self, first_row, first_col, cell);
+
+    /* Pad out the rest of the area with formatted zeroes. */
+    if (!self->optimize) {
+        for (tmp_row = first_row; tmp_row <= last_row; tmp_row++) {
+            for (tmp_col = first_col; tmp_col <= last_col; tmp_col++) {
+                if (tmp_row == first_row && tmp_col == first_col)
+                    continue;
+
+                worksheet_write_number(self, tmp_row, tmp_col, 0, format);
+            }
+        }
+    }
+
+    return 0;
+}
+
+/*
+ * Write an array formula with a default result to a cell in Excel .
+ */
+int8_t
+worksheet_write_array_formula(lxw_worksheet *self,
+                              lxw_row_t first_row,
+                              lxw_col_t first_col,
+                              lxw_row_t last_row,
+                              lxw_col_t last_col,
+                              const char *formula, lxw_format *format)
+{
+    return worksheet_write_array_formula_num(self, first_row, first_col,
+                                             last_row, last_col, formula,
+                                             format, 0);
+}
+
+/*
  * Write a blank cell with a format to a cell in Excel.
  */
 int8_t
@@ -1922,7 +2072,7 @@ worksheet_merge_range(lxw_worksheet *self, lxw_row_t first_row,
     lxw_col_t tmp_col;
     int8_t err;
 
-    /* Excel doesn"t allow a single cell to be merged */
+    /* Excel doesn't allow a single cell to be merged */
     if (first_row == last_row && first_col == last_col)
         return 1;
 

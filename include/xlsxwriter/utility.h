@@ -19,9 +19,15 @@
 #include <stdint.h>
 #include "common.h"
 
+/* Max col: $XFD\0 */
 #define MAX_COL_NAME_LENGTH   5
-#define MAX_CELL_NAME_LENGTH  13
-#define MAX_CELL_RANGE_LENGTH (MAX_CELL_NAME_LENGTH * 2 + 1)
+
+/* Max cell: $XFWD$1048576\0 */
+#define MAX_CELL_NAME_LENGTH  14
+
+/* Max range: $XFWD$1048576:$XFWD$1048576\0 */
+#define MAX_CELL_RANGE_LENGTH (MAX_CELL_NAME_LENGTH * 2)
+
 #define EPOCH_1900            0
 #define EPOCH_1904            1
 

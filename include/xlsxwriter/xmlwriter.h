@@ -1,6 +1,6 @@
 /*
  * libxlsxwriter
- * 
+ *
  * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  *
  * xmlwriter - A libxlsxwriter library for creating Excel XLSX
@@ -24,10 +24,8 @@
 #include <stdint.h>
 #include "xlsxwriter/third_party/queue.h"
 
-/* Defines. */
 #define MAX_ATTRIBUTE_LENGTH 140
-#define ATTR_32 32
-#define MAX_CELL_NAME_LENGTH 13
+#define ATTR_32              32
 
 #define LXW_ATTRIBUTE_COPY(dst, src)                \
     do{                                             \

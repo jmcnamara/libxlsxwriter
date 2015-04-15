@@ -109,6 +109,7 @@ enum cell_types {
     STRING_CELL,
     INLINE_STRING_CELL,
     FORMULA_CELL,
+    ARRAY_FORMULA_CELL,
     BLANK_CELL
 };
 
@@ -322,6 +323,7 @@ typedef struct lxw_cell {
     } u;
 
     double formula_result;
+    char *range;
 
     /* List pointers for queue.h. */
     TAILQ_ENTRY (lxw_cell) list_pointers;
@@ -523,6 +525,21 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
                                    lxw_col_t col,
                                    const char *formula,
                                    lxw_format *format, double result);
+
+int8_t worksheet_write_array_formula(lxw_worksheet *worksheet,
+                                     lxw_row_t first_row,
+                                     lxw_col_t first_col,
+                                     lxw_row_t last_row,
+                                     lxw_col_t last_col,
+                                     const char *formula, lxw_format *format);
+
+int8_t worksheet_write_array_formula_num(lxw_worksheet *worksheet,
+                                         lxw_row_t first_row,
+                                         lxw_col_t first_col,
+                                         lxw_row_t last_row,
+                                         lxw_col_t last_col,
+                                         const char *formula,
+                                         lxw_format *format, double result);
 
 /**
  * @brief Write a date or time to a worksheet cell.
