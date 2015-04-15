@@ -83,8 +83,15 @@ Next example: @ref dates_and_times03.c
 @example dates_and_times03.c
 Example of writing dates and times in Excel using different date formats.
 
-Next example: @ref utf8.c
+Next example: @ref array_formula.c
 @image html date_example03.png
+
+
+@example array_formula.c
+Example of writing array formulas to a worksheet.
+
+Next example: @ref utf8.c
+@image html array_formula.png
 
 
 @example utf8.c

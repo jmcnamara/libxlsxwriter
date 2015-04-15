@@ -479,53 +479,47 @@ int8_t worksheet_write_formula(lxw_worksheet *worksheet,
                                lxw_col_t col, const char *formula,
                                lxw_format *format);
 /**
- * @brief Write a formula to a worksheet cell with a user defined result.
+ * @brief Write an array formula to a worksheet cell.
  *
- * @param worksheet Pointer to the lxw_worksheet instance to be updated.
- * @param row       The zero indexed row number.
- * @param col       The zero indexed column number.
- * @param formula   Formula string to write to cell.
- * @param format    A pointer to a Format instance or NULL.
- * @param result    A user defined result for a formula.
+ * @param worksheet
+ * @param first_row   The first row of the range. (All zero indexed.)
+ * @param first_col   The first column of the range.
+ * @param last_row    The last row of the range.
+ * @param last_col    The last col of the range.
+ * @param formula     Array formula to write to cell.
+ * @param format      A pointer to a Format instance or NULL.
  *
  * @return A #lxw_write_error code.
  *
- * The `%worksheet_write_formula_num()` function writes a formula or Excel
- * function to the cell specified by `row` and `column` with a user defined
- * result:
+  * The `%worksheet_write_array_formula()` function writes an array formula to
+ * a cell range. In Excel an array formula is a formula that performs a
+ * calculation on a set of values.
+ *
+ * In Excel an array formula is indicated by a pair of braces around the
+ * formula: `{=SUM(A1:B1*A2:B2)}`.
+ *
+ * Array formulas can return a single value or a range or values. For array
+ * formulas that return a range of values you must specify the range that the
+ * return values will be written to. This is why this function has `first_`
+ * and `last_` row/column parameters. The RANGE() macro can also be used to
+ * specify the range:
  *
  * @code
- *     // Required as a workaround only.
- *     worksheet_write_formula_num(worksheet, 0, 0, "=1 + 2", NULL, 3);
+ *     worksheet_write_array_formula(worksheet, 4, 0, 6, 0,     "{=TREND(C5:C7,B5:B7)}", NULL);
+ *
+ *     // Same as above using the RANGE() macro.
+ *     worksheet_write_array_formula(worksheet, RANGE("A5:A7"), "{=TREND(C5:C7,B5:B7)}", NULL);
  * @endcode
  *
- * Libxlsxwriter doesn't calculate the value of a formula and instead stores
- * the value `0` as the formula result. It then sets a global flag in the XLSX
- * file to say that all formulas and functions should be recalculated when the
- * file is opened.
+ * If the array formula returns a single value then the `first_` and `last_`
+ * parameters should be the same:
  *
- * This is the method recommended in the Excel documentation and in general it
- * works fine with spreadsheet applications.
- *
- * However, applications that don't have a facility to calculate formulas,
- * such as Excel Viewer, or some mobile applications will only display the `0`
- * results.
- *
- * If required, the `%worksheet_write_formula_num()` function can be used to
- * specify a formula and its result.
- *
- * This function is rarely required and is only provided for compatibility
- * with some third party applications. For most applications the
- * worksheet_write_formula() function is the recommended way of writing
- * formulas.
+ * @code
+ *     worksheet_write_array_formula(worksheet, 1, 0, 1, 0,     "{=SUM(B1:C1*B2:C2)}", NULL);
+ *     worksheet_write_array_formula(worksheet, RANGE("A2:A2"), "{=SUM(B1:C1*B2:C2)}", NULL);
+ * @endcode
  *
  */
-int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
-                                   lxw_row_t row,
-                                   lxw_col_t col,
-                                   const char *formula,
-                                   lxw_format *format, double result);
-
 int8_t worksheet_write_array_formula(lxw_worksheet *worksheet,
                                      lxw_row_t first_row,
                                      lxw_col_t first_col,
@@ -603,6 +597,54 @@ int8_t worksheet_write_datetime(lxw_worksheet *worksheet,
 int8_t worksheet_write_blank(lxw_worksheet *worksheet,
                              lxw_row_t row, lxw_col_t col,
                              lxw_format *format);
+
+/**
+ * @brief Write a formula to a worksheet cell with a user defined result.
+ *
+ * @param worksheet Pointer to the lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param formula   Formula string to write to cell.
+ * @param format    A pointer to a Format instance or NULL.
+ * @param result    A user defined result for a formula.
+ *
+ * @return A #lxw_write_error code.
+ *
+ * The `%worksheet_write_formula_num()` function writes a formula or Excel
+ * function to the cell specified by `row` and `column` with a user defined
+ * result:
+ *
+ * @code
+ *     // Required as a workaround only.
+ *     worksheet_write_formula_num(worksheet, 0, 0, "=1 + 2", NULL, 3);
+ * @endcode
+ *
+ * Libxlsxwriter doesn't calculate the value of a formula and instead stores
+ * the value `0` as the formula result. It then sets a global flag in the XLSX
+ * file to say that all formulas and functions should be recalculated when the
+ * file is opened.
+ *
+ * This is the method recommended in the Excel documentation and in general it
+ * works fine with spreadsheet applications.
+ *
+ * However, applications that don't have a facility to calculate formulas,
+ * such as Excel Viewer, or some mobile applications will only display the `0`
+ * results.
+ *
+ * If required, the `%worksheet_write_formula_num()` function can be used to
+ * specify a formula and its result.
+ *
+ * This function is rarely required and is only provided for compatibility
+ * with some third party applications. For most applications the
+ * worksheet_write_formula() function is the recommended way of writing
+ * formulas.
+ *
+ */
+int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
+                                   lxw_row_t row,
+                                   lxw_col_t col,
+                                   const char *formula,
+                                   lxw_format *format, double result);
 
 /**
  * @brief Set the properties for a row of cells.

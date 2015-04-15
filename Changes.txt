@@ -4,14 +4,17 @@
 
 ## 0.1.3 March 15 2015
 
+- Added `worksheet_write_array_formula()` function to allow writing of
+  array formulas in worksheets.
+
+
+## 0.1.2 March 14 2015
+
 - Added `worksheet_set_h_pagebreaks()` and `worksheet_set_v_pagebreaks()`
   functions to define worksheet page breaks.
 
 - Added LXW_FOREACH_WORKSHEET() macro to allow iteration over all the
   worksheets in a workbook.
-
-
-## 0.1.2 March 14 2015
 
 - Added `worksheet_set_print_scale()` function to set the scale factor for
   the printed page.
@@ -24,8 +27,8 @@
 
 - Added `worksheet_print_area()` function to control the print area of a
   worksheet.
-  
-- Added `worksheet_fit_to_pages()` function to fit the printed area to a 
+
+- Added `worksheet_fit_to_pages()` function to fit the printed area to a
   specific number of pages both vertically and horizontally.
 
 
