@@ -40,6 +40,5 @@ clean :
 	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) $< -o $@ $(LIBS)
 
 test_valgrind: all
-	$(Q)for exe in $(EXES); do \
-	    valgrind -q --error-exitcode=1 --leak-check=full ./$$exe; \
-	done
+	$(Q)$(foreach exe,$(EXES),valgrind -q --error-exitcode=1 --leak-check=full ./$(exe);)
+
