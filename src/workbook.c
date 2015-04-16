@@ -531,8 +531,8 @@ _prepare_defined_names(lxw_workbook *self)
          */
         if (worksheet->print_area.in_use) {
 
-            snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
-                     "%s!Print_Area", worksheet->quoted_name);
+            __builtin_snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+                               "%s!Print_Area", worksheet->quoted_name);
 
             /* Check for print area that is the max row range. */
             if (worksheet->print_area.first_row == 0
@@ -544,17 +544,17 @@ _prepare_defined_names(lxw_workbook *self)
                 lxw_col_to_name(last_col,
                                 worksheet->print_area.last_col, LXW_FALSE);
 
-                snprintf(area, MAX_CELL_RANGE_LENGTH - 1, "$%s:$%s",
-                         first_col, last_col);
+                __builtin_snprintf(area, MAX_CELL_RANGE_LENGTH - 1, "$%s:$%s",
+                                   first_col, last_col);
 
             }
             /* Check for print area that is the max column range. */
             else if (worksheet->print_area.first_col == 0
                      && worksheet->print_area.last_col == LXW_COL_MAX - 1) {
 
-                snprintf(area, MAX_CELL_RANGE_LENGTH - 1, "$%d:$%d",
-                         worksheet->print_area.first_row + 1,
-                         worksheet->print_area.last_row + 1);
+                __builtin_snprintf(area, MAX_CELL_RANGE_LENGTH - 1, "$%d:$%d",
+                                   worksheet->print_area.first_row + 1,
+                                   worksheet->print_area.last_row + 1);
 
             }
             else {
@@ -565,8 +565,8 @@ _prepare_defined_names(lxw_workbook *self)
                               worksheet->print_area.last_col);
             }
 
-            snprintf(range, LXW_DEFINED_NAME_LENGTH - 1, "%s!%s",
-                     worksheet->quoted_name, area);
+            __builtin_snprintf(range, LXW_DEFINED_NAME_LENGTH - 1, "%s!%s",
+                               worksheet->quoted_name, area);
 
             _store_defined_name(self, "_xlnm.Print_Area", app_name,
                                 range, worksheet->index, LXW_FALSE);
@@ -578,8 +578,8 @@ _prepare_defined_names(lxw_workbook *self)
         if (worksheet->repeat_rows.in_use || worksheet->repeat_cols.in_use) {
             if (worksheet->repeat_rows.in_use
                 && worksheet->repeat_cols.in_use) {
-                snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
-                         "%s!Print_Titles", worksheet->quoted_name);
+                __builtin_snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+                                   "%s!Print_Titles", worksheet->quoted_name);
 
                 lxw_col_to_name(first_col,
                                 worksheet->repeat_cols.first_col, LXW_FALSE);
@@ -587,32 +587,32 @@ _prepare_defined_names(lxw_workbook *self)
                 lxw_col_to_name(last_col,
                                 worksheet->repeat_cols.last_col, LXW_FALSE);
 
-                snprintf(range, LXW_DEFINED_NAME_LENGTH - 1,
-                         "%s!$%s:$%s,%s!$%d:$%d",
-                         worksheet->quoted_name, first_col, last_col,
-                         worksheet->quoted_name,
-                         worksheet->repeat_rows.first_row + 1,
-                         worksheet->repeat_rows.last_row + 1);
+                __builtin_snprintf(range, LXW_DEFINED_NAME_LENGTH - 1,
+                                   "%s!$%s:$%s,%s!$%d:$%d",
+                                   worksheet->quoted_name, first_col,
+                                   last_col, worksheet->quoted_name,
+                                   worksheet->repeat_rows.first_row + 1,
+                                   worksheet->repeat_rows.last_row + 1);
 
                 _store_defined_name(self, "_xlnm.Print_Titles", app_name,
                                     range, worksheet->index, LXW_FALSE);
             }
             else if (worksheet->repeat_rows.in_use) {
 
-                snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
-                         "%s!Print_Titles", worksheet->quoted_name);
+                __builtin_snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+                                   "%s!Print_Titles", worksheet->quoted_name);
 
-                snprintf(range, LXW_DEFINED_NAME_LENGTH - 1, "%s!$%d:$%d",
-                         worksheet->quoted_name,
-                         worksheet->repeat_rows.first_row + 1,
-                         worksheet->repeat_rows.last_row + 1);
+                __builtin_snprintf(range, LXW_DEFINED_NAME_LENGTH - 1,
+                                   "%s!$%d:$%d", worksheet->quoted_name,
+                                   worksheet->repeat_rows.first_row + 1,
+                                   worksheet->repeat_rows.last_row + 1);
 
                 _store_defined_name(self, "_xlnm.Print_Titles", app_name,
                                     range, worksheet->index, LXW_FALSE);
             }
             else if (worksheet->repeat_cols.in_use) {
-                snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
-                         "%s!Print_Titles", worksheet->quoted_name);
+                __builtin_snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+                                   "%s!Print_Titles", worksheet->quoted_name);
 
                 lxw_col_to_name(first_col,
                                 worksheet->repeat_cols.first_col, LXW_FALSE);
@@ -620,8 +620,9 @@ _prepare_defined_names(lxw_workbook *self)
                 lxw_col_to_name(last_col,
                                 worksheet->repeat_cols.last_col, LXW_FALSE);
 
-                snprintf(range, LXW_DEFINED_NAME_LENGTH - 1, "%s!$%s:$%s",
-                         worksheet->quoted_name, first_col, last_col);
+                __builtin_snprintf(range, LXW_DEFINED_NAME_LENGTH - 1,
+                                   "%s!$%s:$%s", worksheet->quoted_name,
+                                   first_col, last_col);
 
                 _store_defined_name(self, "_xlnm.Print_Titles", app_name,
                                     range, worksheet->index, LXW_FALSE);
