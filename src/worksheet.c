@@ -128,7 +128,8 @@ _free_cell(lxw_cell *cell)
     if (!cell)
         return;
 
-    if (cell->type == FORMULA_CELL || cell->type == INLINE_STRING_CELL)
+    if (cell->type == FORMULA_CELL || cell->type == ARRAY_FORMULA_CELL
+        || cell->type == INLINE_STRING_CELL)
         free(cell->u.string);
 
     free(cell->range);
@@ -1426,6 +1427,9 @@ _worksheet_write_page_set_up_pr(lxw_worksheet *self)
     _PUSH_ATTRIBUTES_STR("fitToPage", "1");
 
     _xml_empty_tag(self->file, "pageSetUpPr", &attributes);
+
+    _FREE_ATTRIBUTES();
+
 }
 
 /*
@@ -1462,6 +1466,9 @@ _worksheet_write_sheet_pr(lxw_worksheet *self)
     else {
         _xml_empty_tag(self->file, "sheetPr", &attributes);
     }
+
+    _FREE_ATTRIBUTES();
+
 }
 
 /*
