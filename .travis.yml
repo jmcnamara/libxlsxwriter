@@ -17,7 +17,7 @@ install:
   - cd ..
 
 script:
-  - make
+  - CFLAGS=-Werror make
   - make test_functional
   - make test_unit
   - make test_valgrind
