@@ -177,6 +177,14 @@ typedef struct lxw_print_area {
     lxw_col_t last_col;
 } lxw_print_area;
 
+typedef struct lxw_autofilter {
+    uint8_t in_use;
+    lxw_row_t first_row;
+    lxw_row_t last_row;
+    lxw_col_t first_col;
+    lxw_col_t last_col;
+} lxw_autofilter;
+
 /**
  * @brief Header and footer options.
  *
@@ -269,6 +277,7 @@ typedef struct lxw_worksheet {
     struct lxw_repeat_rows repeat_rows;
     struct lxw_repeat_cols repeat_cols;
     struct lxw_print_area print_area;
+    struct lxw_autofilter autofilter;
 
     uint16_t merged_range_count;
 
@@ -893,6 +902,42 @@ uint8_t worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
                               lxw_col_t first_col, lxw_row_t last_row,
                               lxw_col_t last_col, const char *string,
                               lxw_format *format);
+
+/**
+ * @brief Set the autofilter area in the worksheet.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param first_row The first row of the range. (All zero indexed.)
+ * @param first_col The first column of the range.
+ * @param last_row  The last row of the range.
+ * @param last_col  The last col of the range.
+ *
+ * @return 0 for success, non-zero on error.
+ *
+ * The `%worksheet_autofilter()` method allows an autofilter to be added to a
+ * worksheet.
+ *
+ * An autofilter is a way of adding drop down lists to the headers of a 2D
+ * range of worksheet data. This allows users to filter the data based on
+ * simple criteria so that some data is shown and some is hidden.
+ *
+ * @image html autofilter.png
+ *
+ * To add an autofilter to a worksheet:
+ *
+ * @code
+ *     worksheet_autofilter(worksheet, 0, 0, 50, 3);
+ *
+ *     // Same as above using the RANGE() macro.
+ *     worksheet_autofilter(worksheet, RANGE("A1:D51"));
+ * @endcode
+ *
+ * Note: it isn't currently possible to apply filter conditions to the
+ * autofilter.
+ */
+uint8_t worksheet_autofilter(lxw_worksheet *worksheet, lxw_row_t first_row,
+                             lxw_col_t first_col, lxw_row_t last_row,
+                             lxw_col_t last_col);
 
  /**
   * @brief Make a worksheet the active, i.e., visible worksheet.

@@ -1559,6 +1559,32 @@ _worksheet_write_col_breaks(lxw_worksheet *self)
 }
 
 /*
+ * Write the <autoFilter> element.
+ */
+STATIC void
+_worksheet_write_auto_filter(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char range[MAX_CELL_RANGE_LENGTH];
+
+    if (!self->autofilter.in_use)
+        return;
+
+    lxw_range(range,
+              self->autofilter.first_row,
+              self->autofilter.first_col,
+              self->autofilter.last_row, self->autofilter.last_col);
+
+    _INIT_ATTRIBUTES();
+    _PUSH_ATTRIBUTES_STR("ref", range);
+
+    _xml_empty_tag(self->file, "autoFilter", &attributes);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
  * Assemble and write the XML file.
  */
 void
@@ -1590,6 +1616,9 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
         _worksheet_write_sheet_data(self);
     else
         _worksheet_write_optimized_sheet_data(self);
+
+    /* Write the autoFilter element. */
+    _worksheet_write_auto_filter(self);
 
     /* Write the mergeCells element. */
     _worksheet_write_merge_cells(self);
@@ -2125,6 +2154,49 @@ worksheet_merge_range(lxw_worksheet *self, lxw_row_t first_row,
             worksheet_write_blank(self, tmp_row, tmp_col, format);
         }
     }
+
+    return 0;
+}
+
+/*
+ * Set the autofilter area in the worksheet.
+ */
+uint8_t
+worksheet_autofilter(lxw_worksheet *self, lxw_row_t first_row,
+                     lxw_col_t first_col, lxw_row_t last_row,
+                     lxw_col_t last_col)
+{
+    lxw_row_t tmp_row;
+    lxw_col_t tmp_col;
+    int8_t err;
+
+    /* Excel doesn't allow a single cell to be merged */
+    if (first_row == last_row && first_col == last_col)
+        return 1;
+
+    /* Swap last row/col with first row/col as necessary */
+    if (first_row > last_row) {
+        tmp_row = last_row;
+        last_row = first_row;
+        first_row = tmp_row;
+    }
+    if (first_col > last_col) {
+        tmp_col = last_col;
+        last_col = first_col;
+        first_col = tmp_col;
+    }
+
+    /* Check that column number is valid and store the max value */
+    err = _check_dimensions(self, last_row, last_col, LXW_FALSE, LXW_FALSE);
+
+    if (err)
+        return err;
+
+    self->autofilter.in_use = LXW_TRUE;
+    self->autofilter.first_row = first_row;
+    self->autofilter.first_col = first_col;
+    self->autofilter.last_row = last_row;
+    self->autofilter.last_col = last_col;
 
     return 0;
 }

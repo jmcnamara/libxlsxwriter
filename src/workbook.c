@@ -527,9 +527,32 @@ _prepare_defined_names(lxw_workbook *self)
     STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
 
         /*
+         * Check for autofilter settings.
+         */
+        if (worksheet->autofilter.in_use) {
+
+            /* Autofilters are different to other defined names. They are
+             * hidden and thus not stored in the App file. This entry
+             * will be filtered out in the Packager module. */
+            strncat(app_name, "FilterDatabase", LXW_DEFINED_NAME_LENGTH - 1);
+
+            lxw_range_abs(area,
+                          worksheet->autofilter.first_row,
+                          worksheet->autofilter.first_col,
+                          worksheet->autofilter.last_row,
+                          worksheet->autofilter.last_col);
+
+            __builtin_snprintf(range, LXW_DEFINED_NAME_LENGTH - 1, "%s!%s",
+                               worksheet->quoted_name, area);
+
+            _store_defined_name(self, "_xlnm._FilterDatabase", app_name,
+                                range, worksheet->index, LXW_TRUE);
+        }
+
+        /*
          * Check for Print Area settings.
          */
-        if (worksheet->print_area.in_use) {
+        else if (worksheet->print_area.in_use) {
 
             __builtin_snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
                                "%s!Print_Area", worksheet->quoted_name);
