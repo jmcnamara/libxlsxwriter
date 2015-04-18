@@ -15,8 +15,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     # Requires autofilter and fit_to_pages.
 
-    # def test_defined_name01(self):
-    #     self.run_exe_test('test_defined_name01')
+    def test_defined_name01(self):
+        self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins']}
+        self.run_exe_test('test_defined_name01')
 
     def test_defined_name02(self):
         self.run_exe_test('test_defined_name02')

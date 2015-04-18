@@ -384,6 +384,7 @@ _compare_defined_names(lxw_defined_name *a, lxw_defined_name *b)
 
     /* Secondary comparison based on worksheet name. */
     res = strcmp(a->normalised_sheetname, b->normalised_sheetname);
+
     return res;
 }
 
@@ -396,7 +397,7 @@ _store_defined_name(lxw_workbook *self, const char *name,
     lxw_defined_name *defined_name;
     lxw_defined_name *list_defined_name;
     char name_copy[LXW_DEFINED_NAME_LENGTH];
-    char *tmp_name;
+    char *tmp_str;
     char *worksheet_name;
 
     /* Do some checks on the input data */
@@ -419,12 +420,12 @@ _store_defined_name(lxw_workbook *self, const char *name,
     defined_name->hidden = hidden;
 
     /* Check for local defined names like like "Sheet1!name". */
-    tmp_name = strchr(name_copy, '!');
+    tmp_str = strchr(name_copy, '!');
 
-    if (tmp_name != NULL) {
+    if (tmp_str != NULL) {
         /* Split the string into the worksheet name and define name. */
-        *tmp_name = '\0';
-        tmp_name++;
+        *tmp_str = '\0';
+        tmp_str++;
         worksheet_name = name_copy;
 
         /* Remove any worksheet quoting. */
@@ -445,7 +446,7 @@ _store_defined_name(lxw_workbook *self, const char *name,
         if (defined_name->index == -1)
             goto mem_error;
 
-        strcpy(defined_name->name, tmp_name);
+        strcpy(defined_name->name, tmp_str);
     }
     else {
         /* For non-local names we just store the defined name string. */
@@ -456,16 +457,21 @@ _store_defined_name(lxw_workbook *self, const char *name,
      * of _xlnm. If required, this is passed in by the caller. */
     if (app_name) {
         strcpy(defined_name->app_name, app_name);
-        strcpy(defined_name->normalised_name, app_name);
+        strcpy(defined_name->normalised_sheetname, app_name);
     }
     else {
-        strcpy(defined_name->app_name, defined_name->name);
-        strcpy(defined_name->normalised_name, defined_name->name);
+        strcpy(defined_name->app_name, name);
     }
 
     /* We need to normalise the defined names for sorting. This involves
-     * removing any _xlnm namespace (already done in app_name above) and
-     * converting it to lowercase. */
+     * removing any _xlnm namespace  and converting it to lowercase. */
+    tmp_str = strstr(name_copy, "_xlnm.");
+
+    if (tmp_str)
+        strcpy(defined_name->normalised_name, defined_name->name + 6);
+    else
+        strcpy(defined_name->normalised_name, defined_name->name);
+
     lxw_str_tolower(defined_name->normalised_name);
     lxw_str_tolower(defined_name->normalised_sheetname);
 
@@ -531,10 +537,8 @@ _prepare_defined_names(lxw_workbook *self)
          */
         if (worksheet->autofilter.in_use) {
 
-            /* Autofilters are different to other defined names. They are
-             * hidden and thus not stored in the App file. This entry
-             * will be filtered out in the Packager module. */
-            strncat(app_name, "FilterDatabase", LXW_DEFINED_NAME_LENGTH - 1);
+            __builtin_snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+                               "%s!_FilterDatabase", worksheet->quoted_name);
 
             lxw_range_abs(area,
                           worksheet->autofilter.first_row,
@@ -552,7 +556,7 @@ _prepare_defined_names(lxw_workbook *self)
         /*
          * Check for Print Area settings.
          */
-        else if (worksheet->print_area.in_use) {
+        if (worksheet->print_area.in_use) {
 
             __builtin_snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
                                "%s!Print_Area", worksheet->quoted_name);

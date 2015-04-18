@@ -172,7 +172,8 @@ _write_app_file(lxw_packager *self)
     lxw_defined_name *defined_name;
     lxw_app *app = _new_app();
     uint16_t named_range_count = 0;
-    char *tmp_name;
+    char *autofilter;
+    char *has_range;
     char number[ATTR_32] = { 0 };
 
     app->file = lxw_tmpfile();
@@ -188,10 +189,11 @@ _write_app_file(lxw_packager *self)
     /* Add the Named Ranges parts. */
     TAILQ_FOREACH(defined_name, workbook->defined_names, list_pointers) {
 
-        /*Ignore autofilters. */
-        tmp_name = strstr(defined_name->name, "FilterDatabase");
+        has_range = strchr(defined_name->range, '!');
+        autofilter = strstr(defined_name->app_name, "_FilterDatabase");
 
-        if (!tmp_name) {
+        /* Only store defined names with ranges (except for autofilters). */
+        if (has_range && !autofilter) {
             _add_part_name(app, defined_name->app_name);
             named_range_count++;
         }
