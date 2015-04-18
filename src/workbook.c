@@ -388,6 +388,13 @@ _compare_defined_names(lxw_defined_name *a, lxw_defined_name *b)
     return res;
 }
 
+/*
+ * Process and store the defined names. The defined names are stored with
+ * the Workbook.xml but also with the App.xml if they refer to a sheet
+ * range like "Sheet1!:A1". The defined names are store in sorted
+ * order for consistency with Excel. The names need to be normalised before
+ * sorting.
+ */
 STATIC uint8_t
 _store_defined_name(lxw_workbook *self, const char *name,
                     const char *app_name, const char *formula, int16_t index,
@@ -409,6 +416,7 @@ _store_defined_name(lxw_workbook *self, const char *name,
         return 1;
     }
 
+    /* Allocate a new defined_name to be added to the linked list of names. */
     defined_name = calloc(1, sizeof(struct lxw_defined_name));
     RETURN_ON_MEM_ERROR(defined_name, 1);
 
@@ -422,8 +430,15 @@ _store_defined_name(lxw_workbook *self, const char *name,
     /* Check for local defined names like like "Sheet1!name". */
     tmp_str = strchr(name_copy, '!');
 
-    if (tmp_str != NULL) {
-        /* Split the string into the worksheet name and define name. */
+    if (tmp_str == NULL) {
+        /* The name is global. We just store the defined name string. */
+        strcpy(defined_name->name, name_copy);
+    }
+    else {
+        /* The name is worksheet local. We need to extract the sheet name
+         * and map it to a sheet index. */
+
+        /* Split the into the worksheet name and defined name. */
         *tmp_str = '\0';
         tmp_str++;
         worksheet_name = name_copy;
@@ -448,13 +463,8 @@ _store_defined_name(lxw_workbook *self, const char *name,
 
         strcpy(defined_name->name, tmp_str);
     }
-    else {
-        /* For non-local names we just store the defined name string. */
-        strcpy(defined_name->name, name_copy);
-    }
 
-    /* The defined name format used for app.xml uses the sheet name instead
-     * of _xlnm. If required, this is passed in by the caller. */
+    /* Print titles and repeat title pass in the name used for App.xml. */
     if (app_name) {
         strcpy(defined_name->app_name, app_name);
         strcpy(defined_name->normalised_sheetname, app_name);
@@ -477,9 +487,9 @@ _store_defined_name(lxw_workbook *self, const char *name,
 
     /* Strip leading "=" from the formula. */
     if (formula[0] == '=')
-        strcpy(defined_name->range, formula + 1);
+        strcpy(defined_name->formula, formula + 1);
     else
-        strcpy(defined_name->range, formula);
+        strcpy(defined_name->formula, formula);
 
     /* We add the defined name to the list in sorted order. */
     list_defined_name = TAILQ_FIRST(self->defined_names);
@@ -533,7 +543,7 @@ _prepare_defined_names(lxw_workbook *self)
     STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
 
         /*
-         * Check for autofilter settings.
+         * Check for autofilter settings and store them.
          */
         if (worksheet->autofilter.in_use) {
 
@@ -549,12 +559,13 @@ _prepare_defined_names(lxw_workbook *self)
             __builtin_snprintf(range, LXW_DEFINED_NAME_LENGTH - 1, "%s!%s",
                                worksheet->quoted_name, area);
 
+            /* Autofilters are the only defined name to set the hidden flag. */
             _store_defined_name(self, "_xlnm._FilterDatabase", app_name,
                                 range, worksheet->index, LXW_TRUE);
         }
 
         /*
-         * Check for Print Area settings.
+         * Check for Print Area settings and store them.
          */
         if (worksheet->print_area.in_use) {
 
@@ -600,7 +611,7 @@ _prepare_defined_names(lxw_workbook *self)
         }
 
         /*
-         * Check for repeat rows/cols. aka, Print Titles.
+         * Check for repeat rows/cols. aka, Print Titles and store them.
          */
         if (worksheet->repeat_rows.in_use || worksheet->repeat_cols.in_use) {
             if (worksheet->repeat_rows.in_use
@@ -852,7 +863,7 @@ _write_defined_name(lxw_workbook *self, lxw_defined_name *defined_name)
     if (defined_name->hidden)
         _PUSH_ATTRIBUTES_INT("hidden", 1);
 
-    _xml_data_element(self->file, "definedName", defined_name->range,
+    _xml_data_element(self->file, "definedName", defined_name->formula,
                       &attributes);
 
     _FREE_ATTRIBUTES();

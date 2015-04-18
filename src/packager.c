@@ -189,7 +189,7 @@ _write_app_file(lxw_packager *self)
     /* Add the Named Ranges parts. */
     TAILQ_FOREACH(defined_name, workbook->defined_names, list_pointers) {
 
-        has_range = strchr(defined_name->range, '!');
+        has_range = strchr(defined_name->formula, '!');
         autofilter = strstr(defined_name->app_name, "_FilterDatabase");
 
         /* Only store defined names with ranges (except for autofilters). */

@@ -88,7 +88,7 @@ typedef struct lxw_defined_name {
     uint8_t hidden;
     char name[LXW_DEFINED_NAME_LENGTH];
     char app_name[LXW_DEFINED_NAME_LENGTH];
-    char range[LXW_DEFINED_NAME_LENGTH];
+    char formula[LXW_DEFINED_NAME_LENGTH];
     char normalised_name[LXW_DEFINED_NAME_LENGTH];
     char normalised_sheetname[LXW_DEFINED_NAME_LENGTH];
 

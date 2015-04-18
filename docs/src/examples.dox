@@ -112,8 +112,15 @@ Next example: @ref merge_range.c
 @example merge_range.c
 Example of merging cells in a worksheet.
 
-Next example: @ref headers_footers.c
+Next example: @ref autofilter.c
 @image html merge_range.png
+
+
+@example autofilter.c
+Example of adding an autofilter to a worksheet.
+
+Next example: @ref headers_footers.c
+@image html autofilter.png
 
 
 @example headers_footers.c
