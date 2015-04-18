@@ -16,6 +16,7 @@ It supports features such as:
 - 100% compatible Excel XLSX files
 - Full Excel formatting
 - Merged cells
+- Autofilters
 - Defined names
 - Memory optimisation mode for writing large files
 - Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter)
