@@ -110,7 +110,8 @@ enum cell_types {
     INLINE_STRING_CELL,
     FORMULA_CELL,
     ARRAY_FORMULA_CELL,
-    BLANK_CELL
+    BLANK_CELL,
+    HYPERLLINK_URL
 };
 
 /* Define the queue.h TAILQ structs for the list head types. */
@@ -209,6 +210,7 @@ typedef struct lxw_worksheet {
     FILE *file;
     FILE *optimize_tmpfile;
     struct lxw_table_rows *table;
+    struct lxw_table_rows *hyperlinks;
     struct lxw_cell **array;
     struct lxw_merged_ranges *merged_ranges;
 
@@ -332,7 +334,7 @@ typedef struct lxw_cell {
     } u;
 
     double formula_result;
-    char *range;
+    char *user_data;
 
     /* List pointers for queue.h. */
     TAILQ_ENTRY (lxw_cell) list_pointers;
@@ -1338,7 +1340,7 @@ uint8_t worksheet_set_footer(lxw_worksheet *worksheet, char *string);
  *
  */
 uint8_t worksheet_set_header_opt(lxw_worksheet *worksheet, char *string,
-                                 lxw_header_footer_options * options);
+                                 lxw_header_footer_options *options);
 
 /**
  * @brief Set the printed page footer caption with additional options.
@@ -1353,7 +1355,7 @@ uint8_t worksheet_set_header_opt(lxw_worksheet *worksheet, char *string,
  *
  */
 uint8_t worksheet_set_footer_opt(lxw_worksheet *worksheet, char *string,
-                                 lxw_header_footer_options * options);
+                                 lxw_header_footer_options *options);
 
 /**
  * @brief Set the horizontal page breaks on a worksheet.
@@ -1721,10 +1723,11 @@ STATIC void _worksheet_write_page_setup(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_col_info(lxw_worksheet *worksheet,
                                       lxw_col_options *options);
 STATIC void _write_row(lxw_worksheet *worksheet, lxw_row *row, char *spans);
-STATIC lxw_row *_get_row_list(lxw_worksheet *worksheet, lxw_row_t row_num);
+STATIC lxw_row *_get_row_list(struct lxw_table_rows *table,
+                              lxw_row_t row_num);
 
 STATIC void _worksheet_write_merge_cell(lxw_worksheet *worksheet,
-                                        lxw_merged_range * merged_range);
+                                        lxw_merged_range *merged_range);
 STATIC void _worksheet_write_merge_cells(lxw_worksheet *worksheet);
 
 STATIC void _worksheet_write_odd_header(lxw_worksheet *worksheet);

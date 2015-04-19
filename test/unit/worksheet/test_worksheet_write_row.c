@@ -20,7 +20,7 @@ CTEST(worksheet, write_row) {
     lxw_worksheet *worksheet = _new_worksheet(NULL);
     worksheet->file = testfile;
 
-    lxw_row *row = _get_row_list(worksheet, 0);
+    lxw_row *row = _get_row_list(worksheet->table, 0);
 
     _write_row(worksheet, row, NULL);
 

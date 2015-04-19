@@ -43,6 +43,9 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->table = calloc(1, sizeof(struct lxw_table_rows));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->table, mem_error);
 
+    worksheet->hyperlinks = calloc(1, sizeof(struct lxw_table_rows));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->hyperlinks, mem_error);
+
     if (init_data && init_data->optimize) {
         worksheet->array = calloc(LXW_COL_MAX, sizeof(struct lxw_cell *));
         GOTO_LABEL_ON_MEM_ERROR(worksheet->array, mem_error);
@@ -65,6 +68,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     GOTO_LABEL_ON_MEM_ERROR(worksheet->merged_ranges, mem_error);
 
     TAILQ_INIT(worksheet->table);
+    TAILQ_INIT(worksheet->hyperlinks);
     STAILQ_INIT(worksheet->merged_ranges);
 
     if (init_data && init_data->optimize) {
@@ -132,7 +136,7 @@ _free_cell(lxw_cell *cell)
         || cell->type == INLINE_STRING_CELL)
         free(cell->u.string);
 
-    free(cell->range);
+    free(cell->user_data);
 
     free(cell);
 }
@@ -178,6 +182,24 @@ _free_worksheet(lxw_worksheet *worksheet)
         }
 
         free(worksheet->table);
+    }
+
+    if (worksheet->hyperlinks) {
+
+        while (!TAILQ_EMPTY(worksheet->hyperlinks)) {
+            row = TAILQ_FIRST(worksheet->hyperlinks);
+
+            while (!TAILQ_EMPTY(row->cells)) {
+                cell = TAILQ_FIRST(row->cells);
+                TAILQ_REMOVE(row->cells, cell, list_pointers);
+                _free_cell(cell);
+            }
+            TAILQ_REMOVE(worksheet->hyperlinks, row, list_pointers);
+            free(row->cells);
+            free(row);
+        }
+
+        free(worksheet->hyperlinks);
     }
 
     if (worksheet->merged_ranges) {
@@ -323,7 +345,7 @@ _new_array_formula_cell(lxw_row_t row_num, lxw_col_t col_num, char *formula,
     cell->type = ARRAY_FORMULA_CELL;
     cell->format = format;
     cell->u.string = formula;
-    cell->range = range;
+    cell->user_data = range;
 
     return cell;
 }
@@ -349,9 +371,8 @@ _new_blank_cell(lxw_row_t row_num, lxw_col_t col_num, lxw_format *format)
  * Get or create the row object for a given row number.
  */
 STATIC lxw_row *
-_get_row_list(lxw_worksheet *self, lxw_row_t row_num)
+_get_row_list(struct lxw_table_rows *table, lxw_row_t row_num)
 {
-    struct lxw_table_rows *table = self->table;
     lxw_row *new_row;
     lxw_row *first_row = TAILQ_FIRST(table);
     lxw_row *last_row = TAILQ_LAST(table, lxw_table_rows);
@@ -419,7 +440,7 @@ _get_row(lxw_worksheet *self, lxw_row_t row_num)
     lxw_row *row;
 
     if (!self->optimize) {
-        row = _get_row_list(self, row_num);
+        row = _get_row_list(self->table, row_num);
         return row;
     }
     else {
@@ -1016,7 +1037,7 @@ _write_array_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 
     _INIT_ATTRIBUTES();
     _PUSH_ATTRIBUTES_STR("t", "array");
-    _PUSH_ATTRIBUTES_STR("ref", cell->range);
+    _PUSH_ATTRIBUTES_STR("ref", cell->user_data);
 
     __builtin_snprintf(data, ATTR_32, "%.16g", cell->formula_result);
 
@@ -1327,7 +1348,7 @@ _worksheet_write_cols(lxw_worksheet *self)
  */
 STATIC void
 _worksheet_write_merge_cell(lxw_worksheet *self,
-                            lxw_merged_range * merged_range)
+                            lxw_merged_range *merged_range)
 {
 
     struct xml_attribute_list attributes;
@@ -2305,7 +2326,7 @@ worksheet_set_margins(lxw_worksheet *self, double left, double right,
  */
 uint8_t
 worksheet_set_header_opt(lxw_worksheet *self, char *string,
-                         lxw_header_footer_options * options)
+                         lxw_header_footer_options *options)
 {
     if (options) {
         if (options->margin > 0)
@@ -2329,7 +2350,7 @@ worksheet_set_header_opt(lxw_worksheet *self, char *string,
  */
 uint8_t
 worksheet_set_footer_opt(lxw_worksheet *self, char *string,
-                         lxw_header_footer_options * options)
+                         lxw_header_footer_options *options)
 {
     if (options) {
         if (options->margin > 0)

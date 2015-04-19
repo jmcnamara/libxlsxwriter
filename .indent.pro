@@ -43,6 +43,7 @@
 
 /* libxlsxwriter typedefs. */
 -T lxw_app
+-T lxw_autofilter
 -T lxw_border
 -T lxw_cell
 -T lxw_col_options
@@ -58,11 +59,16 @@
 -T lxw_format
 -T lxw_hash_element
 -T lxw_hash_table
+-T lxw_header_footer_options
 -T lxw_heading_pair
+-T lxw_merged_range
 -T lxw_packager
 -T lxw_part_name
+-T lxw_print_area
 -T lxw_rel_tuple
 -T lxw_relationships
+-T lxw_repeat_cols
+-T lxw_repeat_rows
 -T lxw_row
 -T lxw_row_col_options
 -T lxw_row_t
