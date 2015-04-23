@@ -371,7 +371,8 @@ _new_blank_cell(lxw_row_t row_num, lxw_col_t col_num, lxw_format *format)
  * Create a new worksheet hyperlink cell object.
  */
 STATIC lxw_cell *
-_new_hyperlink_cell(lxw_row_t row_num, lxw_col_t col_num, char *url)
+_new_hyperlink_cell(lxw_row_t row_num, lxw_col_t col_num, char *url,
+                    char *string)
 {
     lxw_cell *cell = calloc(1, sizeof(lxw_cell));
     RETURN_ON_MEM_ERROR(cell, cell);
@@ -380,6 +381,7 @@ _new_hyperlink_cell(lxw_row_t row_num, lxw_col_t col_num, char *url)
     cell->col_num = col_num;
     cell->type = HYPERLLINK_URL;
     cell->u.string = url;
+    cell->user_data = string;
 
     return cell;
 }
@@ -2072,7 +2074,7 @@ worksheet_write_url(lxw_worksheet *self,
 
     url_copy = lxw_strdup(url);
 
-    link = _new_hyperlink_cell(row_num, col_num, url_copy);
+    link = _new_hyperlink_cell(row_num, col_num, url_copy, string_copy);
 
     _insert_hyperlink(self, row_num, col_num, link);
 
