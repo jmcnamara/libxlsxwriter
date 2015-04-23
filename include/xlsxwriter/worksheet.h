@@ -247,6 +247,7 @@ typedef struct lxw_worksheet {
     uint16_t horizontal_dpi;
     uint16_t page_start;
     uint16_t print_scale;
+    uint16_t rel_count;
     uint16_t vertical_dpi;
     uint8_t filter_on;
     uint8_t fit_page;
@@ -577,6 +578,11 @@ int8_t worksheet_write_datetime(lxw_worksheet *worksheet,
                                 lxw_row_t row,
                                 lxw_col_t col, lxw_datetime *datetime,
                                 lxw_format *format);
+
+int8_t worksheet_write_url(lxw_worksheet *worksheet,
+                           lxw_row_t row_num,
+                           lxw_col_t col_num, const char *url,
+                           lxw_format *format, const char *string);
 
 /**
  * @brief Write a formatted blank worksheet cell.

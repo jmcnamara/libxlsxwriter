@@ -368,6 +368,23 @@ _new_blank_cell(lxw_row_t row_num, lxw_col_t col_num, lxw_format *format)
 }
 
 /*
+ * Create a new worksheet hyperlink cell object.
+ */
+STATIC lxw_cell *
+_new_hyperlink_cell(lxw_row_t row_num, lxw_col_t col_num, char *url)
+{
+    lxw_cell *cell = calloc(1, sizeof(lxw_cell));
+    RETURN_ON_MEM_ERROR(cell, cell);
+
+    cell->row_num = row_num;
+    cell->col_num = col_num;
+    cell->type = HYPERLLINK_URL;
+    cell->u.string = url;
+
+    return cell;
+}
+
+/*
  * Get or create the row object for a given row number.
  */
 STATIC lxw_row *
@@ -551,6 +568,18 @@ _insert_cell(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
             self->array[col_num] = cell;
         }
     }
+}
+
+/*
+ * Insert a hyperlink object into the hyperlink list.
+ */
+STATIC void
+_insert_hyperlink(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
+                  lxw_cell *link)
+{
+    lxw_row *row = _get_row_list(self->hyperlinks, row_num);
+
+    _insert_cell_list(row->cells, link, col_num);
 }
 
 /*
@@ -1122,7 +1151,7 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
     lxw_col_t col_num = cell->col_num;
     int32_t index = 0;
 
-    lxw_rowcol_to_cell_abs(range, row_num, col_num, 0, 0);
+    lxw_rowcol_to_cell(range, row_num, col_num);
 
     _INIT_ATTRIBUTES();
     _PUSH_ATTRIBUTES_STR("r", range);
@@ -1606,6 +1635,64 @@ _worksheet_write_auto_filter(lxw_worksheet *self)
 }
 
 /*
+ * Write the <hyperlink> element.
+ */
+STATIC void
+_worksheet_write_hyperlink_external(lxw_worksheet *self, lxw_row_t row_num,
+                                    lxw_col_t col_num, uint16_t id)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char ref[MAX_CELL_NAME_LENGTH];
+    char r_id[MAX_ATTRIBUTE_LENGTH];
+
+    lxw_rowcol_to_cell(ref, row_num, col_num);
+
+    __builtin_snprintf(r_id, ATTR_32, "rId%d", id);
+
+    _INIT_ATTRIBUTES();
+    _PUSH_ATTRIBUTES_STR("ref", ref);
+    _PUSH_ATTRIBUTES_STR("r:id", r_id);
+
+    _xml_empty_tag(self->file, "hyperlink", &attributes);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
+ * Process any stored hyperlinks in row/col order and write the <hyperlinks>
+ * element. The attributes are different for internal and external links.
+ */
+STATIC void
+_worksheet_write_hyperlinks(lxw_worksheet *self)
+{
+
+    lxw_row *row;
+    lxw_cell *link;
+
+    if (TAILQ_EMPTY(self->hyperlinks))
+        return;
+
+    /* Write the hyperlink elements. */
+    _xml_start_tag(self->file, "hyperlinks", NULL);
+
+    TAILQ_FOREACH(row, self->hyperlinks, list_pointers) {
+
+        TAILQ_FOREACH(link, row->cells, list_pointers) {
+
+            self->rel_count++;
+
+            _worksheet_write_hyperlink_external(self, link->row_num,
+                                                link->col_num,
+                                                self->rel_count);
+        }
+
+    }
+
+    _xml_end_tag(self->file, "hyperlinks");
+}
+
+/*
  * Assemble and write the XML file.
  */
 void
@@ -1643,6 +1730,9 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
 
     /* Write the mergeCells element. */
     _worksheet_write_merge_cells(self);
+
+    /* Write the hyperlink element. */
+    _worksheet_write_hyperlinks(self);
 
     /* Write the printOptions element. */
     _worksheet_write_print_options(self);
@@ -1945,6 +2035,46 @@ worksheet_write_datetime(lxw_worksheet *self,
     cell = _new_number_cell(row_num, col_num, excel_date, format);
 
     _insert_cell(self, row_num, col_num, cell);
+
+    return 0;
+}
+
+/*
+ * Write a hyperlink/url to an Excel file.
+ */
+int8_t
+worksheet_write_url(lxw_worksheet *self,
+                    lxw_row_t row_num,
+                    lxw_col_t col_num, const char *url,
+                    lxw_format *format, const char *string)
+{
+    lxw_cell *link;
+    char *url_copy;
+    char *string_copy;
+    int8_t err;
+    /*uint8_t link_type = 1; */
+
+    if (!url || !strlen(url))
+        return -4;
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
+    if (err)
+        return err;
+
+    if (string)
+        string_copy = lxw_strdup(string);
+    else
+        string_copy = lxw_strdup(url);
+
+    err = worksheet_write_string(self, row_num, col_num, string_copy, format);
+    if (err)
+        return err;
+
+    url_copy = lxw_strdup(url);
+
+    link = _new_hyperlink_cell(row_num, col_num, url_copy);
+
+    _insert_hyperlink(self, row_num, col_num, link);
 
     return 0;
 }
