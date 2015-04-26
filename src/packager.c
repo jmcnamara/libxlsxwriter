@@ -368,6 +368,48 @@ _write_workbook_rels_file(lxw_packager *self)
 }
 
 /*
+ * Write the worksheet .rels files for worksheets that contain links to
+ * external data such as hyperlinks or drawings.
+ */
+STATIC uint8_t
+_write_worksheet_rels_file(lxw_packager *self)
+{
+    lxw_relationships *rels;
+    lxw_rel_tuple *hlink;
+    lxw_workbook *workbook = self->workbook;
+    lxw_worksheet *worksheet;
+    char sheetname[FILENAME_LEN] = { 0 };
+    uint16_t index = 1;
+
+    STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+
+        if (STAILQ_EMPTY(worksheet->external_hyperlinks))
+            continue;
+
+        rels = _new_relationships();
+        rels->file = lxw_tmpfile();
+
+        STAILQ_FOREACH(hlink, worksheet->external_hyperlinks, list_pointers) {
+            _add_worksheet_relationship(rels, hlink->type, hlink->target,
+                                        hlink->target_mode);
+
+        }
+
+        __builtin_snprintf(sheetname, FILENAME_LEN,
+                           "xl/worksheets/_rels/sheet%d.xml.rels", index++);
+
+        _relationships_assemble_xml_file(rels);
+
+        _add_file_to_zip(self, rels->file, sheetname);
+
+        fclose(rels->file);
+        _free_relationships(rels);
+    }
+
+    return 0;
+}
+
+/*
  * Write the _rels/.rels xml file.
  */
 STATIC uint8_t
@@ -472,6 +514,7 @@ _create_package(lxw_packager *self)
     _write_styles_file(self);
     _write_content_types_file(self);
     _write_workbook_rels_file(self);
+    _write_worksheet_rels_file(self);
     _write_root_rels_file(self);
 
     zipClose(self->zipfile, NULL);

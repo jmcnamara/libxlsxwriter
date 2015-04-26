@@ -287,6 +287,8 @@ typedef struct lxw_worksheet {
     lxw_row_t *hbreaks;
     lxw_col_t *vbreaks;
 
+    struct lxw_rel_tuples *external_hyperlinks;
+
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
 } lxw_worksheet;

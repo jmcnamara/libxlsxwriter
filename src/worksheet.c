@@ -13,6 +13,7 @@
 #include "xlsxwriter/worksheet.h"
 #include "xlsxwriter/format.h"
 #include "xlsxwriter/utility.h"
+#include "xlsxwriter/relationships.h"
 
 #define LXW_STR_MAX 32767
 #define BUFFER_SIZE 4096
@@ -67,9 +68,13 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->merged_ranges = calloc(1, sizeof(struct lxw_merged_ranges));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->merged_ranges, mem_error);
 
+    worksheet->external_hyperlinks = calloc(1, sizeof(struct lxw_rel_tuples));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->external_hyperlinks, mem_error);
+
     TAILQ_INIT(worksheet->table);
     TAILQ_INIT(worksheet->hyperlinks);
     STAILQ_INIT(worksheet->merged_ranges);
+    STAILQ_INIT(worksheet->external_hyperlinks);
 
     if (init_data && init_data->optimize) {
         worksheet->optimize_tmpfile = lxw_tmpfile();
@@ -133,8 +138,10 @@ _free_cell(lxw_cell *cell)
         return;
 
     if (cell->type == FORMULA_CELL || cell->type == ARRAY_FORMULA_CELL
-        || cell->type == INLINE_STRING_CELL)
+        || cell->type == INLINE_STRING_CELL || cell->type == HYPERLLINK_URL) {
+
         free(cell->u.string);
+    }
 
     free(cell->user_data);
 
@@ -151,6 +158,7 @@ _free_worksheet(lxw_worksheet *worksheet)
     lxw_cell *cell;
     lxw_col_t col;
     lxw_merged_range *merged_range;
+    lxw_rel_tuple *external_hyperlink;
 
     if (!worksheet)
         return;
@@ -211,6 +219,17 @@ _free_worksheet(lxw_worksheet *worksheet)
 
         free(worksheet->merged_ranges);
     }
+
+    while (!STAILQ_EMPTY(worksheet->external_hyperlinks)) {
+        external_hyperlink = STAILQ_FIRST(worksheet->external_hyperlinks);
+        STAILQ_REMOVE_HEAD(worksheet->external_hyperlinks, list_pointers);
+        free(external_hyperlink->type);
+        free(external_hyperlink->target);
+        free(external_hyperlink->target_mode);
+        free(external_hyperlink);
+    }
+
+    free(worksheet->external_hyperlinks);
 
     if (worksheet->array) {
         for (col = 0; col < LXW_COL_MAX; col++) {
@@ -1671,6 +1690,7 @@ _worksheet_write_hyperlinks(lxw_worksheet *self)
 
     lxw_row *row;
     lxw_cell *link;
+    lxw_rel_tuple *relationship;
 
     if (TAILQ_EMPTY(self->hyperlinks))
         return;
@@ -1683,6 +1703,14 @@ _worksheet_write_hyperlinks(lxw_worksheet *self)
         TAILQ_FOREACH(link, row->cells, list_pointers) {
 
             self->rel_count++;
+
+            relationship = calloc(1, sizeof(lxw_rel_tuple));
+            relationship->type = lxw_strdup("/hyperlink");
+            relationship->target = lxw_strdup(link->u.string);
+            relationship->target_mode = lxw_strdup("External");
+
+            STAILQ_INSERT_TAIL(self->external_hyperlinks, relationship,
+                               list_pointers);
 
             _worksheet_write_hyperlink_external(self, link->row_num,
                                                 link->col_num,
@@ -2106,7 +2134,7 @@ worksheet_set_column(lxw_worksheet *self,
         collapsed = user_options->collapsed;
     }
 
-    /* Ensure 2nd col is larger than first. */
+    /* Ensure second col is larger than first. */
     if (firstcol > lastcol) {
         lxw_col_t tmp = firstcol;
         firstcol = lastcol;
