@@ -337,7 +337,8 @@ typedef struct lxw_cell {
     } u;
 
     double formula_result;
-    char *user_data;
+    char *user_data1;
+    char *user_data2;
 
     /* List pointers for queue.h. */
     TAILQ_ENTRY (lxw_cell) list_pointers;
@@ -581,10 +582,16 @@ int8_t worksheet_write_datetime(lxw_worksheet *worksheet,
                                 lxw_col_t col, lxw_datetime *datetime,
                                 lxw_format *format);
 
+int8_t worksheet_write_url_opt(lxw_worksheet *worksheet,
+                               lxw_row_t row_num,
+                               lxw_col_t col_num, const char *url,
+                               lxw_format *format, const char *string,
+                               const char *tooltip);
+
 int8_t worksheet_write_url(lxw_worksheet *worksheet,
                            lxw_row_t row_num,
                            lxw_col_t col_num, const char *url,
-                           lxw_format *format, const char *string);
+                           lxw_format *format);
 
 /**
  * @brief Write a formatted blank worksheet cell.
