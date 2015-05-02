@@ -111,7 +111,9 @@ enum cell_types {
     FORMULA_CELL,
     ARRAY_FORMULA_CELL,
     BLANK_CELL,
-    HYPERLLINK_URL
+    HYPERLINK_URL,
+    HYPERLINK_INTERNAL,
+    HYPERLINK_EXTERNAL
 };
 
 /* Define the queue.h TAILQ structs for the list head types. */
