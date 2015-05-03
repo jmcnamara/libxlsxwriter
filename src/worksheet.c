@@ -2154,10 +2154,10 @@ worksheet_write_url_opt(lxw_worksheet *self,
                         const char *tooltip)
 {
     lxw_cell *link;
-    char *url_copy = NULL;
     char *string_copy = NULL;
-    char *url_string = NULL;
+    char *url_copy = NULL;
     char *url_external = NULL;
+    char *url_string = NULL;
     char *tooltip_copy = NULL;
     char *found_string;
     int8_t err;
@@ -2262,6 +2262,11 @@ worksheet_write_url_opt(lxw_worksheet *self,
 
         }
 
+        /* Convert a ./dir/file.xlsx link to dir/file.xlsx. */
+        found_string = strstr(url_copy, ".\\");
+        if (found_string == url_copy)
+            memmove(url_copy, url_copy + 2, strlen(url_copy) - 1);
+
         if (url_external) {
             free(url_copy);
             url_copy = lxw_strdup(url_external);
@@ -2282,6 +2287,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
 
     _insert_hyperlink(self, row_num, col_num, link);
 
+    free(string_copy);
     return 0;
 
 mem_error:

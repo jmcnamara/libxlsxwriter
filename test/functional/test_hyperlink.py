@@ -49,3 +49,18 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_hyperlink12(self):
         self.run_exe_test('test_hyperlink12')
 
+    def test_hyperlink13(self):
+        # Ignore the count of duplicate strings.
+        self.ignore_elements = {'xl/sharedStrings.xml': ['<sst']}
+        self.run_exe_test('test_hyperlink13')
+
+    def test_hyperlink14(self):
+        # Ignore unused/overwritten strings.
+        self.ignore_files = ['xl/sharedStrings.xml']
+        self.run_exe_test('test_hyperlink14')
+
+    def test_hyperlink15(self):
+        self.run_exe_test('test_hyperlink15')
+
+    def test_hyperlink16(self):
+        self.run_exe_test('test_hyperlink16')
