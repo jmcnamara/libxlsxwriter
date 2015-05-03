@@ -2221,6 +2221,53 @@ worksheet_write_url_opt(lxw_worksheet *self,
         GOTO_LABEL_ON_MEM_ERROR(url_string, mem_error);
     }
 
+    /* Escape the URL. */
+    if (link_type == HYPERLINK_URL && strlen(url_copy) >= 3) {
+        uint8_t not_escaped = 1;
+
+        /* First check if the URL is already escaped by the user. */
+        for (i = 0; i <= strlen(url_copy) - 3; i++) {
+            if (url_copy[i] == '%' && isxdigit(url_copy[i + 1])
+                && isxdigit(url_copy[i + 2])) {
+
+                not_escaped = 0;
+                break;
+            }
+        }
+
+        if (not_escaped) {
+            url_external = calloc(1, strlen(url_copy) * 3 + 1);
+            GOTO_LABEL_ON_MEM_ERROR(url_external, mem_error);
+
+            for (i = 0; i <= strlen(url_copy); i++) {
+                switch (url_copy[i]) {
+                    case (' '):
+                    case ('%'):
+                    case ('<'):
+                    case ('>'):
+                    case ('['):
+                    case (']'):
+                    case ('`'):
+                    case ('^'):
+                    case ('{'):
+                    case ('}'):
+                        sprintf(url_external + strlen(url_external), "%%%2X",
+                                url_copy[i]);
+                        break;
+                    default:
+                        url_external[strlen(url_external)] = url_copy[i];
+                }
+
+            }
+
+            free(url_copy);
+            url_copy = lxw_strdup(url_external);
+            GOTO_LABEL_ON_MEM_ERROR(url_copy, mem_error);
+
+            free(url_external);
+        }
+    }
+
     if (link_type == HYPERLINK_EXTERNAL) {
         /* External Workbook links need to be modified into the right format.
          * The URL will look something like "c:\temp\file.xlsx#Sheet!A1".

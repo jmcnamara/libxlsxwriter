@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include "xlsxwriter/third_party/queue.h"
 
-#define MAX_ATTRIBUTE_LENGTH 140
+#define MAX_ATTRIBUTE_LENGTH 256
 #define ATTR_32              32
 
 #define LXW_ATTRIBUTE_COPY(dst, src)                \

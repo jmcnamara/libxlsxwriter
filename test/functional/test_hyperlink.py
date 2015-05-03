@@ -64,3 +64,24 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_hyperlink16(self):
         self.run_exe_test('test_hyperlink16')
+
+    def test_hyperlink17(self):
+        self.run_exe_test('test_hyperlink17')
+
+    def test_hyperlink18(self):
+        self.run_exe_test('test_hyperlink18')
+
+    # This test requires that we check if the cell that the hyperlink refers
+    # to is a string. If it isn't be have to add a display attribute. However,
+    # looking up the cell is currently too expensive.
+    # 
+    # def test_hyperlink19(self):
+    #     self.ignore_files = ['xl/calcChain.xml',
+    #                          '[Content_Types].xml',
+    #                          'xl/_rels/workbook.xml.rels']
+    #     self.run_exe_test('test_hyperlink19')
+
+    def test_hyperlink20(self):
+        # Ignore custom colours.
+        self.ignore_files = ['xl/styles.xml']
+        self.run_exe_test('test_hyperlink20')
