@@ -28,4 +28,24 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_hyperlink05(self):
         self.run_exe_test('test_hyperlink05')
 
-   
+    def test_hyperlink06(self):
+        self.run_exe_test('test_hyperlink06')
+
+    def test_hyperlink07(self):
+        self.run_exe_test('test_hyperlink07')
+
+    def test_hyperlink08(self):
+        self.run_exe_test('test_hyperlink08')
+
+    def test_hyperlink09(self):
+        self.run_exe_test('test_hyperlink09')
+
+    def test_hyperlink10(self):
+        self.run_exe_test('test_hyperlink10')
+
+    def test_hyperlink11(self):
+        self.run_exe_test('test_hyperlink11')
+
+    def test_hyperlink12(self):
+        self.run_exe_test('test_hyperlink12')
+

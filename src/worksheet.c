@@ -137,8 +137,8 @@ _free_cell(lxw_cell *cell)
     if (!cell)
         return;
 
-    if (cell->type == FORMULA_CELL || cell->type == ARRAY_FORMULA_CELL
-        || cell->type == INLINE_STRING_CELL || cell->type == HYPERLINK_URL) {
+    if (cell->type != NUMBER_CELL && cell->type != STRING_CELL
+        && cell->type != BLANK_CELL) {
 
         free(cell->u.string);
     }
@@ -1663,8 +1663,8 @@ _worksheet_write_auto_filter(lxw_worksheet *self)
  */
 STATIC void
 _worksheet_write_hyperlink_external(lxw_worksheet *self, lxw_row_t row_num,
-                                    lxw_col_t col_num, const char *tooltip,
-                                    uint16_t id)
+                                    lxw_col_t col_num, const char *location,
+                                    const char *tooltip, uint16_t id)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -1678,6 +1678,9 @@ _worksheet_write_hyperlink_external(lxw_worksheet *self, lxw_row_t row_num,
     _INIT_ATTRIBUTES();
     _PUSH_ATTRIBUTES_STR("ref", ref);
     _PUSH_ATTRIBUTES_STR("r:id", r_id);
+
+    if (location)
+        _PUSH_ATTRIBUTES_STR("location", location);
 
     if (tooltip)
         _PUSH_ATTRIBUTES_STR("tooltip", tooltip);
@@ -1740,7 +1743,8 @@ _worksheet_write_hyperlinks(lxw_worksheet *self)
 
         TAILQ_FOREACH(link, row->cells, list_pointers) {
 
-            if (link->type == HYPERLINK_URL) {
+            if (link->type == HYPERLINK_URL
+                || link->type == HYPERLINK_EXTERNAL) {
 
                 self->rel_count++;
 
@@ -1761,6 +1765,7 @@ _worksheet_write_hyperlinks(lxw_worksheet *self)
 
                 _worksheet_write_hyperlink_external(self, link->row_num,
                                                     link->col_num,
+                                                    link->user_data1,
                                                     link->user_data2,
                                                     self->rel_count);
             }
@@ -2151,9 +2156,14 @@ worksheet_write_url_opt(lxw_worksheet *self,
     lxw_cell *link;
     char *url_copy = NULL;
     char *string_copy = NULL;
+    char *url_string = NULL;
+    char *url_external = NULL;
     char *tooltip_copy = NULL;
-    char *tmp_str;
+    char *found_string;
     int8_t err;
+    size_t string_size;
+    size_t i;
+
     enum cell_types link_type = HYPERLINK_URL;
 
     if (!url || !strlen(url))
@@ -2163,27 +2173,34 @@ worksheet_write_url_opt(lxw_worksheet *self,
     if (err)
         return err;
 
-    tmp_str = strstr(url, "internal:");
-
-    if (tmp_str)
+    /* Set the URI scheme from internal links. */
+    found_string = strstr(url, "internal:");
+    if (found_string)
         link_type = HYPERLINK_INTERNAL;
+
+    /* Set the URI scheme from external links. */
+    found_string = strstr(url, "external:");
+    if (found_string)
+        link_type = HYPERLINK_EXTERNAL;
 
     if (string) {
         string_copy = lxw_strdup(string);
         GOTO_LABEL_ON_MEM_ERROR(string_copy, mem_error);
     }
     else {
-        if (link_type == HYPERLINK_URL)
-            string_copy = lxw_strdup(url);
-        else
+        if (link_type == HYPERLINK_URL) {
+            /* Strip the mailto header. */
+            found_string = strstr(url, "mailto:");
+            if (found_string)
+                string_copy = lxw_strdup(url + sizeof("mailto"));
+            else
+                string_copy = lxw_strdup(url);
+        }
+        else {
             string_copy = lxw_strdup(url + sizeof("__ternal"));
-
+        }
         GOTO_LABEL_ON_MEM_ERROR(string_copy, mem_error);
     }
-
-    err = worksheet_write_string(self, row_num, col_num, string_copy, format);
-    if (err)
-        goto mem_error;
 
     if (url) {
         if (link_type == HYPERLINK_URL)
@@ -2199,8 +2216,68 @@ worksheet_write_url_opt(lxw_worksheet *self,
         GOTO_LABEL_ON_MEM_ERROR(tooltip_copy, mem_error);
     }
 
+    if (link_type == HYPERLINK_INTERNAL) {
+        url_string = lxw_strdup(string_copy);
+        GOTO_LABEL_ON_MEM_ERROR(url_string, mem_error);
+    }
+
+    if (link_type == HYPERLINK_EXTERNAL) {
+        /* External Workbook links need to be modified into the right format.
+         * The URL will look something like "c:\temp\file.xlsx#Sheet!A1".
+         * We need the part to the left of the # as the URL and the part to
+         * the right as the "location" string (if it exists).
+         */
+
+        /* For external links change the dir separator from Unix to DOS. */
+        for (i = 0; i <= strlen(url_copy); i++)
+            if (url_copy[i] == '/')
+                url_copy[i] = '\\';
+
+        for (i = 0; i <= strlen(string_copy); i++)
+            if (string_copy[i] == '/')
+                string_copy[i] = '\\';
+
+        found_string = strchr(url_copy, '#');
+
+        if (found_string) {
+            url_string = lxw_strdup(found_string + 1);
+            GOTO_LABEL_ON_MEM_ERROR(url_string, mem_error);
+
+            *found_string = '\0';
+        }
+
+        /* Look for Windows style "C:/" link or Windows share "\\" link. */
+        found_string = strchr(url_copy, ':');
+        if (!found_string)
+            found_string = strstr(url_copy, "\\\\");
+
+        if (found_string) {
+            /* Add the file:/// URI to the url if non-local. */
+            string_size = sizeof("file:///") + strlen(url_copy);
+            url_external = calloc(1, string_size);
+            GOTO_LABEL_ON_MEM_ERROR(url_external, mem_error);
+
+            __builtin_snprintf(url_external, string_size, "file:///%s",
+                               url_copy);
+
+        }
+
+        if (url_external) {
+            free(url_copy);
+            url_copy = lxw_strdup(url_external);
+            GOTO_LABEL_ON_MEM_ERROR(url_copy, mem_error);
+
+            free(url_external);
+        }
+
+    }
+
+    err = worksheet_write_string(self, row_num, col_num, string_copy, format);
+    if (err)
+        goto mem_error;
+
     link = _new_hyperlink_cell(row_num, col_num, link_type, url_copy,
-                               string_copy, tooltip_copy);
+                               url_string, tooltip_copy);
     GOTO_LABEL_ON_MEM_ERROR(link, mem_error);
 
     _insert_hyperlink(self, row_num, col_num, link);
@@ -2210,6 +2287,8 @@ worksheet_write_url_opt(lxw_worksheet *self,
 mem_error:
     free(string_copy);
     free(url_copy);
+    free(url_external);
+    free(url_string);
     free(tooltip_copy);
     return -5;
 }
