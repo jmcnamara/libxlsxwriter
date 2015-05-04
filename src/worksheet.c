@@ -2242,6 +2242,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
             for (i = 0; i <= strlen(url_copy); i++) {
                 switch (url_copy[i]) {
                     case (' '):
+                    case ('"'):
                     case ('%'):
                     case ('<'):
                     case ('>'):
@@ -2251,7 +2252,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
                     case ('^'):
                     case ('{'):
                     case ('}'):
-                        sprintf(url_external + strlen(url_external), "%%%2X",
+                        sprintf(url_external + strlen(url_external), "%%%2x",
                                 url_copy[i]);
                         break;
                     default:
