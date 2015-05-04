@@ -247,6 +247,7 @@ typedef struct lxw_worksheet {
     uint16_t fit_height;
     uint16_t fit_width;
     uint16_t horizontal_dpi;
+    uint16_t hlink_count;
     uint16_t page_start;
     uint16_t print_scale;
     uint16_t rel_count;
@@ -589,10 +590,139 @@ int8_t worksheet_write_url_opt(lxw_worksheet *worksheet,
                                lxw_col_t col_num, const char *url,
                                lxw_format *format, const char *string,
                                const char *tooltip);
-
+/**
+ *
+ * @param worksheet Pointer to the lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param url       The url to write to the cell.
+ * @param format    A pointer to a Format instance or NULL.
+ *
+ * @return A #lxw_write_error code.
+ *
+ *
+ * The `%worksheet_write_url()` function is used to write a URL/hyperlink to a
+ * worksheet cell specified by `row` and `column`.
+ *
+ * @code
+ *     worksheet_write_url(worksheet, 0, 0, "http://libxlsxwriter.github.io", url_format);
+ * @endcode
+ *
+ * @image html hyperlinks_short.png
+ *
+ * The `format` parameter is used to apply formatting to the cell. This
+ * parameter can be `NULL` to indicate no formatting or it can be a @ref
+ * format.h "Format" object. The typical worksheet format for a hyperlink is a
+ * blue underline:
+ *
+ * @code
+ *    lxw_format *url_format   = workbook_add_format(workbook);
+ *
+ *    format_set_underline (url_format, LXW_UNDERLINE_SINGLE);
+ *    format_set_font_color(url_format, LXW_COLOR_BLUE);
+ *
+ * @endcode
+ *
+ * The usual web style URI's are supported: `%http://`, `%https://`, `%ftp://`
+ * and `mailto:` :
+ *
+ * @code
+ *     worksheet_write_url(worksheet, 0, 0, "ftp://www.python.org/",    url_format);
+ *     worksheet_write_url(worksheet, 1, 0, "http://www.python.org/",   url_format);
+ *     worksheet_write_url(worksheet, 2, 0, "https://www.python.org/",  url_format);
+ *     worksheet_write_url(worksheet, 3, 0, "mailto:jmcnamaracpan.org", url_format);
+ *
+ * @endcode
+ *
+ * An Excel hyperlink is comprised of two elements: the displayed string and
+ * the non-displayed link. By default the displayed string is the same as the
+ * link. However, it is possible to overwrite it with any other
+ * `libxlsxwriter` type using the appropriate `worksheet_write_*()`
+ * function. The most common case is to overwrite the displayed link text with
+ * another string:
+ *
+ * @code
+ *  // Write a hyperlink but overwrite the displayed string.
+ *  worksheet_write_url   (worksheet, 2, 0, "http://libxlsxwriter.github.io", url_format);
+ *  worksheet_write_string(worksheet, 2, 0, "Read the documentation.",        url_format);
+ *
+ * @endcode
+ *
+ * @image html hyperlinks_short2.png
+ *
+ * Two local URIs are supported: `internal:` and `external:`. These are used
+ * for hyperlinks to internal worksheet references or external workbook and
+ * worksheet references:
+ *
+ * @code
+ *     worksheet_write_url(worksheet, 0, 0, "internal:Sheet2!A1",                url_format);
+ *     worksheet_write_url(worksheet, 1, 0, "internal:Sheet2!B2",                url_format);
+ *     worksheet_write_url(worksheet, 2, 0, "internal:Sheet2!A1:B2",             url_format);
+ *     worksheet_write_url(worksheet, 3, 0, "internal:'Sales Data'!A1",          url_format);
+ *     worksheet_write_url(worksheet, 4, 0, "external:c:\\temp\\foo.xlsx",       url_format);
+ *     worksheet_write_url(worksheet, 5, 0, "external:c:\\foo.xlsx#Sheet2!A1",   url_format);
+ *     worksheet_write_url(worksheet, 6, 0, "external:..\\foo.xlsx",             url_format);
+ *     worksheet_write_url(worksheet, 7, 0, "external:..\\foo.xlsx#Sheet2!A1",   url_format);
+ *     worksheet_write_url(worksheet, 8, 0, "external:\\\\NET\\share\\foo.xlsx", url_format);
+ *
+ * @endcode
+ *
+ * Worksheet references are typically of the form `Sheet1!A1`. You can also
+ * link to a worksheet range using the standard Excel notation:
+ * `Sheet1!A1:B2`.
+ *
+ * In external links the workbook and worksheet name must be separated by the
+ * `#` character:
+ *
+ * @code
+ *     worksheet_write_url(worksheet, 0, 0, "external:c:\\foo.xlsx#Sheet2!A1",   url_format);
+ * @endcode
+ *
+ * You can also link to a named range in the target worksheet: For example say
+ * you have a named range called `my_name` in the workbook `c:\temp\foo.xlsx`
+ * you could link to it as follows:
+ *
+ * @code
+ *     worksheet_write_url(worksheet, 0, 0, "external:c:\\temp\\foo.xlsx#my_name", url_format);
+ *
+ * @endcode
+ *
+ * Excel requires that worksheet names containing spaces or non alphanumeric
+ * characters are single quoted as follows:
+ *
+ * @code
+ *     worksheet_write_url(worksheet, 0, 0, "internal:'Sales Data'!A1", url_format);
+ * @endcode
+ *
+ * Links to network files are also supported. Network files normally begin
+ * with two back slashes as follows `\\NETWORK\etc`. In order to represent
+ * this in a C string literal the backslashes should be escaped:
+ * @code
+ *     worksheet_write_url(worksheet, 0, 0, "external:\\\\NET\\share\\foo.xlsx", url_format);
+ * @endcode
+ *
+ *
+ * Alternatively, you can use Windows style forward slashes. These are
+ * translated internally to backslashes:
+ *
+ * @code
+ *     worksheet_write_url(worksheet, 0, 0, "external:c:/temp/foo.xlsx",     url_format);
+ *     worksheet_write_url(worksheet, 1, 0, "external://NET/share/foo.xlsx", url_format);
+ *
+ * @endcode
+ *
+ *
+ * **Note:**
+ *
+ *    libxlsxwriter will escape the following characters in URLs as required
+ *    by Excel: `\s " < > \ [ ]  ^ { }` unless the URL already contains `%%xx`
+ *    style escapes. In which case it is assumed that the URL was escaped
+ *    correctly by the user and will by passed directly to Excel.
+ *
+ */
 int8_t worksheet_write_url(lxw_worksheet *worksheet,
-                           lxw_row_t row_num,
-                           lxw_col_t col_num, const char *url,
+                           lxw_row_t row,
+                           lxw_col_t col, const char *url,
                            lxw_format *format);
 
 /**

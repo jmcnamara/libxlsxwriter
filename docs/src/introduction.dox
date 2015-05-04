@@ -5,7 +5,7 @@
 <b>libxlsxwriter</b> is a C library for writing files in the Excel 2007+ XLSX
 file format.
 
-It can be used to write text, numbers, and formulas to multiple
+It can be used to write text, numbers, formulas and hyperlinks to multiple
 worksheets and it supports features such as formatting.
 
 The main advantages of using `libxlsxwriter` are:

@@ -2163,8 +2163,11 @@ worksheet_write_url_opt(lxw_worksheet *self,
     int8_t err;
     size_t string_size;
     size_t i;
-
     enum cell_types link_type = HYPERLINK_URL;
+
+    /* Check the Excel limit of URLS per worksheet. */
+    if (self->hlink_count > 65530)
+        return -5;
 
     if (!url || !strlen(url))
         return -4;
@@ -2266,6 +2269,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
             GOTO_LABEL_ON_MEM_ERROR(url_copy, mem_error);
 
             free(url_external);
+            url_external = NULL;
         }
     }
 
@@ -2321,9 +2325,14 @@ worksheet_write_url_opt(lxw_worksheet *self,
             GOTO_LABEL_ON_MEM_ERROR(url_copy, mem_error);
 
             free(url_external);
+            url_external = NULL;
         }
 
     }
+
+    /* Excel limits escaped URL to 255 characters. */
+    if (strlen(url_copy) > 255)
+        goto mem_error;
 
     err = worksheet_write_string(self, row_num, col_num, string_copy, format);
     if (err)
@@ -2336,6 +2345,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
     _insert_hyperlink(self, row_num, col_num, link);
 
     free(string_copy);
+    self->hlink_count++;
     return 0;
 
 mem_error:

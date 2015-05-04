@@ -83,8 +83,15 @@ Next example: @ref dates_and_times03.c
 @example dates_and_times03.c
 Example of writing dates and times in Excel using different date formats.
 
-Next example: @ref array_formula.c
+Next example: @ref hyperlinks.c
 @image html date_example03.png
+
+
+@example hyperlinks.c
+Example of writing urls/hyperlinks to a worksheet.
+
+Next example: @ref array_formula.c
+@image html hyperlinks.png
 
 
 @example array_formula.c
