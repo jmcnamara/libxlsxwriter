@@ -1,6 +1,12 @@
 /**
 @page changes Changes
 
+## 0.1.6 September 27 2015
+
+- Added CocoaPod spec file to allow the library to be installed using
+  [CocoaPods](https://cocoapods.org).
+  Pull Request [#7](https://github.com/jmcnamara/libxlsxwriter/issues/7).
+
 
 ## 0.1.5 May 3 2015
 

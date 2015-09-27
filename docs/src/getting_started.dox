@@ -65,6 +65,12 @@ To see a verbose summary of the compilation steps use `V=1`:
     make V=1
 
 
+### Install using Cocoa Pods
+
+For iOS and OS X progects in Xcode you can install libxlsxwriter using
+[CocoaPods](https://cocoapods.org).
+
+
 ### Try an example
 
 If there weren't any warnings or errors in the previous step (and there
