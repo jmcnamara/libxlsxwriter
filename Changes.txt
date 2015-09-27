@@ -1,6 +1,11 @@
 /**
 @page changes Changes
 
+## 0.1.7 September 27 2015
+
+- Fixed CocoaPod spec file for iOS and OS X.
+
+
 ## 0.1.6 September 27 2015
 
 - Added CocoaPod spec file to allow the library to be installed using
