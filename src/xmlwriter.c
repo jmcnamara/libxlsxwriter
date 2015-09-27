@@ -182,7 +182,7 @@ _escape_attributes(struct xml_attribute *attribute)
 char *
 _escape_data(const char *data)
 {
-    int encoded_len = (strlen(data) * 5 + 1);
+    size_t encoded_len = (strlen(data) * 5 + 1);
 
     char *encoded = (char *) calloc(encoded_len, 1);
     char *p_encoded = encoded;

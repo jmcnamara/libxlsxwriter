@@ -475,7 +475,9 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
             }
         }
 
-        error = zipWriteInFileInZip(self->zipfile, self->buffer, size_read);
+        error = zipWriteInFileInZip(self->zipfile,
+                                    self->buffer, (unsigned int) size_read);
+
         if (error < 0) {
             ERROR("Error in writing member in the zipfile");
             return error;

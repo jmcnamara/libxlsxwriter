@@ -3,6 +3,7 @@ Pod::Spec.new do |s|
   s.version             = "0.1.5"
   s.summary             = "A C library for creating Excel XLSX files."
   s.platform            = :ios
+  s.platform            = :osx
 
   s.description         = <<-DESC
                           Libxlsxwriter is a C library that can be used to write text, numbers, formulas and hyperlinks to multiple worksheets in an Excel 2007+ XLSX file.
@@ -23,13 +24,13 @@ Pod::Spec.new do |s|
                           * The only dependency is on zlib
                           DESC
 
-  s.homepage            = "http://libxlsxwriter.github.io"
+  s.homepage            = "http://github.com/jmcnamara/libxlsxwriter"
   s.documentation_url   = "http://libxlsxwriter.github.io"
   s.license             = "FreeBSD"
   s.author              = { "John McNamara" => "jmcnamara@cpan.org" }
-  
-  s.source              = { :git => "https://github.com/jmcnamara/libxlsxwriter.git", :commit => "818c7fa0e103c60750916bffe270c4708b6d90c0" }
-  s.source_files        = "src/**/*.{h,c}", "third_party/**/{zip.c,ioapi.c}", "include/**/*.h"
+
+  s.source              = { :git => "https://github.com/jmcnamara/libxlsxwriter.git", :tag => "RELEASE_0.1.5" }
+  s.source_files        = "src/**/*.c", "third_party/**/{zip.c,ioapi.c}", "include/**/*.h"
 
   s.header_dir          = "xlsxwriter"
   s.header_mappings_dir = "include/xlsxwriter"

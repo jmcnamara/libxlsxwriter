@@ -45,8 +45,8 @@ typedef struct lxw_app {
     struct lxw_part_names *part_names;
     lxw_doc_properties *properties;
 
-    size_t num_heading_pairs;
-    size_t num_part_names;
+    uint32_t num_heading_pairs;
+    uint32_t num_part_names;
 
 } lxw_app;
 

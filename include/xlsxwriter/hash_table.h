@@ -23,9 +23,9 @@ SLIST_HEAD(lxw_hash_bucket_list, lxw_hash_element);
 
 /* LXW_HASH hash table struct. */
 typedef struct lxw_hash_table {
-    size_t num_buckets;
-    size_t used_buckets;
-    size_t unique_count;
+    uint32_t num_buckets;
+    uint32_t used_buckets;
+    uint32_t unique_count;
     uint8_t free_key;
     uint8_t free_value;
 
@@ -59,7 +59,7 @@ lxw_hash_element *_hash_key_exists(lxw_hash_table *lxw_hash, void *key,
                                    size_t key_len);
 lxw_hash_element *_insert_hash_element(lxw_hash_table *lxw_hash, void *key,
                                        void *value, size_t key_len);
-lxw_hash_table *_new_lxw_hash(size_t num_buckets, uint8_t free_key,
+lxw_hash_table *_new_lxw_hash(uint32_t num_buckets, uint8_t free_key,
                               uint8_t free_value);
 void _free_lxw_hash(lxw_hash_table *lxw_hash);
 

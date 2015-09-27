@@ -34,7 +34,7 @@ struct sst_bucket_list {
  * track the insertion order in a separate list.
  */
 struct sst_element {
-    size_t index;
+    uint32_t index;
     char *string;
 
     STAILQ_ENTRY (sst_element) sst_order_pointers;
@@ -47,10 +47,10 @@ struct sst_element {
 typedef struct lxw_sst {
     FILE *file;
 
-    size_t num_buckets;
-    size_t used_buckets;
-    size_t string_count;
-    size_t unique_count;
+    uint32_t num_buckets;
+    uint32_t used_buckets;
+    uint32_t string_count;
+    uint32_t unique_count;
 
     struct sst_order_list *order_list;
     struct sst_bucket_list **buckets;

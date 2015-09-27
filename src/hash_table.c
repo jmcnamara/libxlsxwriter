@@ -156,7 +156,7 @@ mem_error2:
  * Create a new LXW_HASH hash table object.
  */
 lxw_hash_table *
-_new_lxw_hash(size_t num_buckets, uint8_t free_key, uint8_t free_value)
+_new_lxw_hash(uint32_t num_buckets, uint8_t free_key, uint8_t free_value)
 {
     /* Create the new hash table. */
     lxw_hash_table *lxw_hash = calloc(1, sizeof(lxw_hash_table));
