@@ -636,16 +636,16 @@ _check_dimensions(lxw_worksheet *self,
                   lxw_col_t col_num, int8_t ignore_row, int8_t ignore_col)
 {
     if (row_num >= LXW_ROW_MAX)
-        return LXW_RANGE_ERROR;
+        return -LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE;
 
     if (col_num >= LXW_COL_MAX)
-        return LXW_RANGE_ERROR;
+        return -LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE;
 
     /* In optimization mode we don't change dimensions for rows that are */
     /* already written. */
     if (!ignore_row && !ignore_col && self->optimize) {
         if (row_num < self->optimize_row->row_num)
-            return LXW_RANGE_ERROR;
+            return -LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE;
     }
 
     if (!ignore_row) {
@@ -1903,29 +1903,28 @@ worksheet_write_string(lxw_worksheet *self,
     char *string_copy;
     int8_t err;
 
-    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
-
-    if (err)
-        return err;
-
     if (!string || !strlen(string)) {
         /* Treat a NULL or empty string with formatting as a blank cell. */
         /* Null strings without formats should be ignored.      */
         if (format)
             return worksheet_write_blank(self, row_num, col_num, format);
         else
-            return -4;
+            return -LXW_ERROR_WORKSHEET_NULL_STRING_IGNORED;
     }
 
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
+    if (err)
+        return err;
+
     if (strlen(string) > LXW_STR_MAX)
-        return LXW_STRING_LENGTH_ERROR;
+        return -LXW_ERROR_WORKSHEET_MAX_STRING_LENGTH_EXCEEDED;
 
     if (!self->optimize) {
         /* Get the SST string ID for the string. */
         string_id = _get_sst_index(self->sst, string);
 
         if (string_id < 0)
-            return LXW_STRING_HASH_ERROR;
+            return -LXW_ERROR_WORKSHEET_STRING_HASH_NOT_FOUND;
 
         cell = _new_string_cell(row_num, col_num, string_id, format);
     }
@@ -1953,13 +1952,12 @@ worksheet_write_formula_num(lxw_worksheet *self,
     char *formula_copy;
     int8_t err;
 
-    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
+    if (!formula)
+        return -LXW_ERROR_WORKSHEET_NULL_STRING_IGNORED;
 
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
         return err;
-
-    if (!formula)
-        return -4;
 
     /* Strip leading "=" from formula. */
     if (formula[0] == '=')
@@ -2019,14 +2017,13 @@ worksheet_write_array_formula_num(lxw_worksheet *self,
         first_col = tmp_col;
     }
 
+    if (!formula)
+        return -LXW_ERROR_WORKSHEET_NULL_STRING_IGNORED;
+
     /* Check that column number is valid and store the max value */
     err = _check_dimensions(self, last_row, last_col, LXW_FALSE, LXW_FALSE);
-
     if (err)
         return err;
-
-    if (!formula)
-        return -4;
 
     /* Define the array range. */
     range = calloc(1, MAX_CELL_RANGE_LENGTH);
@@ -2165,12 +2162,12 @@ worksheet_write_url_opt(lxw_worksheet *self,
     size_t i;
     enum cell_types link_type = HYPERLINK_URL;
 
-    /* Check the Excel limit of URLS per worksheet. */
-    if (self->hlink_count > 65530)
-        return -5;
-
     if (!url || !strlen(url))
-        return -4;
+        return -LXW_ERROR_WORKSHEET_NULL_STRING_IGNORED;
+
+    /* Check the Excel limit of URLS per worksheet. */
+    if (self->hlink_count > LXW_MAX_NUMBER_URLS)
+        return -LXW_ERROR_WORKSHEET_MAX_NUMBER_URLS_EXCEEDED;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
@@ -2354,7 +2351,7 @@ mem_error:
     free(url_external);
     free(url_string);
     free(tooltip_copy);
-    return -5;
+    return -LXW_ERROR_WORKSHEET_MEMORY_ERROR;
 }
 
 /*
@@ -2432,7 +2429,7 @@ worksheet_set_column(lxw_worksheet *self,
             self->col_options_max = new_size;
         }
         else {
-            return -1;
+            return -LXW_ERROR_WORKSHEET_MEMORY_ERROR;
         }
     }
 
@@ -2452,12 +2449,12 @@ worksheet_set_column(lxw_worksheet *self,
             self->col_formats_max = new_size;
         }
         else {
-            return -1;
+            return -LXW_ERROR_WORKSHEET_MEMORY_ERROR;
         }
     }
 
     copied_options = calloc(1, sizeof(lxw_col_options));
-    RETURN_ON_MEM_ERROR(copied_options, -1);
+    RETURN_ON_MEM_ERROR(copied_options, -LXW_ERROR_WORKSHEET_MEMORY_ERROR);
 
     /* Store the column option based on the first column. */
     copied_options->firstcol = firstcol;

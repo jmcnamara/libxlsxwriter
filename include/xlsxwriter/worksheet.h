@@ -57,6 +57,7 @@
 #define LXW_COL_MAX 16384
 #define LXW_COL_META_MAX 128
 #define LXW_HEADER_FOOTER_MAX 255
+#define LXW_MAX_NUMBER_URLS 65530
 
 /* The Excel 2007 specification says that the maximum number of page
  * breaks is 1026. However, in practice it is actually 1023. */
@@ -68,16 +69,28 @@
 /** Default row height in Excel */
 #define LXW_DEF_ROW_HEIGHT 15
 
-/** Error codes from `worksheet_write*()` functions. */
-enum lxw_write_error {
+/** Error codes from worksheet functions. */
+enum lxw_worksheet_error {
     /** No error. */
-    LXW_WRITE_ERROR_NONE = 0,
+    LXW_ERROR_WORKSHEET_NONE = 0,
+
     /** Row or column index out of range. */
-    LXW_RANGE_ERROR,
-    /** String exceeds Excel's LXW_STRING_LENGTH_ERROR limit. */
-    LXW_STRING_LENGTH_ERROR,
+    LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE,
+
+    /** String exceeds Excel's LXW_STR_MAX limit. */
+    LXW_ERROR_WORKSHEET_MAX_STRING_LENGTH_EXCEEDED,
+
+    /** NULL String ignored as function parameter. */
+    LXW_ERROR_WORKSHEET_NULL_STRING_IGNORED,
+
+    /** Maximum number of worksheet URLs (65530) exceeded. */
+    LXW_ERROR_WORKSHEET_MAX_NUMBER_URLS_EXCEEDED,
+
     /** Error finding string index. */
-    LXW_STRING_HASH_ERROR
+    LXW_ERROR_WORKSHEET_STRING_HASH_NOT_FOUND,
+
+    /** Memory error. */
+    LXW_ERROR_WORKSHEET_MEMORY_ERROR
 };
 
 /** Gridline options using in `worksheet_gridlines()`. */
