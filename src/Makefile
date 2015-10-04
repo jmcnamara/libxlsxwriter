@@ -19,7 +19,7 @@ INC_DIR     = ../include
 MINIZIP_DIR = ../third_party/minizip
 
 # Flags passed to compiler.
-CFLAGS   += -g -O3 -Wall -Wextra -pedantic -ansi
+CFLAGS   += -g -O3 -Wall -Wextra -pedantic
 
 # Library names.
 LIBXLSXWRITER_A  = libxlsxwriter.a

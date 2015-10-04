@@ -12,6 +12,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include "xlsxwriter/utility.h"
 
 /*
@@ -411,5 +412,15 @@ lxw_quote_sheetname(char *str)
 FILE *
 lxw_tmpfile(void)
 {
-    return tmpfile();
+    char template[] = "/tmp/libxlsxwriter.XXXXXX";
+    FILE *tempfile;
+    int fd;
+
+    fd = mkstemp(template);
+    tempfile = fdopen(fd, "w+");
+    unlink(template);
+
+    return tempfile;
+
+    /* return tmpfile(); */
 }
