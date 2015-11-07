@@ -9,7 +9,7 @@ ifdef V
 Q=
 endif
 
-CFLAGS = -O3
+CFLAGS = -O3 -DNOCRYPT -DNOUNCRYPT
 
 all: ioapi.o zip.o  ioapi.so zip.so
 
