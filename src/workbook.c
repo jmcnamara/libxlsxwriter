@@ -1074,15 +1074,27 @@ workbook_add_format(lxw_workbook *self)
     return format;
 }
 
+
 /*
  * Call finalisation code and close file.
  */
 uint8_t
 workbook_close(lxw_workbook *self)
 {
-    lxw_worksheet *worksheet;
-    lxw_packager *packager;
-    uint8_t error = 0;
+    lxw_worksheet *worksheet = NULL;
+    lxw_packager *packager = NULL;
+    uint8_t error = LXW_ERROR_WORKBOOK_CLOSE_NONE;
+    FILE *file = fopen(self->filename, "w");
+
+    if (file == NULL) {
+        error = LXW_ERROR_WORKBOOK_ACCESS;
+        fprintf(stderr, "[ERROR] Error creating '%s': %s\n", self->filename,
+                strerror(errno));
+        goto mem_error;
+    }
+    else {
+        fclose(file);
+    }
 
     /* Add a default worksheet if non have been added. */
     if (!self->num_sheets)
@@ -1105,19 +1117,19 @@ workbook_close(lxw_workbook *self)
     _prepare_defined_names(self);
 
     packager = _new_packager(self->filename);
+    error = LXW_ERROR_WORKBOOK_PACKAGER;
     GOTO_LABEL_ON_MEM_ERROR(packager, mem_error);
+    error = LXW_ERROR_WORKBOOK_CLOSE_NONE;
 
+    /* Set the workbook object in the packager. */
     packager->workbook = self;
 
     error = _create_package(packager);
 
+mem_error:
     _free_packager(packager);
     _free_workbook(self);
-
     return error;
-
-mem_error:
-    return 1;
 }
 
 /*

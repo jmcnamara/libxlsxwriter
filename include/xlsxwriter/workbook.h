@@ -56,6 +56,8 @@ TAILQ_HEAD(lxw_defined_names, lxw_defined_name);
 
 #define LXW_DEFINED_NAME_LENGTH 128
 
+extern int errno;
+
 /**
  * @brief Macro to loop over all the worksheets in a workbook.
  *
@@ -97,15 +99,23 @@ typedef struct lxw_defined_name {
 } lxw_defined_name;
 
 /**
- * @brief Errors conditions encountered when closing the Workbook and writing
- * the Excel file to disk.
+ * @brief Error codes from workbook functions.
  */
-enum lxw_close_error {
+enum lxw_workbook_error {
     /** No error */
-    LXW_CLOSE_ERROR_NONE,
+    LXW_ERROR_WORKBOOK_CLOSE_NONE = 0,
+
+    /** Error encountered when creating file */
+    LXW_ERROR_WORKBOOK_ACCESS,
+
+    /** Error encountered when creating a packager object */
+    LXW_ERROR_WORKBOOK_PACKAGER,
+
     /** Error encountered when creating file zip container */
-    LXW_CLOSE_ERROR_ZIP
-        /* TODO. Need to add/document more. */
+    LXW_ERROR_WORKBOOK_ZIP,
+
+    /** Memory error. */
+    LXW_ERROR_WORKBOOK_MEMORY_ERROR
 };
 
 /**
@@ -284,7 +294,7 @@ lxw_format *workbook_add_format(lxw_workbook *workbook);
  *
  * @param workbook Pointer to a lxw_workbook instance.
  *
- * @return A #lxw_close_error.
+ * @return A #lxw_workbook_error.
  *
  * The `%workbook_close()` function closes a Workbook object, writes the Excel
  * file to disk, frees any memory allocated internally to the Workbook and
@@ -294,7 +304,7 @@ lxw_format *workbook_add_format(lxw_workbook *workbook);
  *     workbook_close(workbook);
  * @endcode
  *
- * The `%workbook_close()` function returns any #lxw_close_error error codes
+ * The `%workbook_close()` function returns any #lxw_workbook_error error codes
  * encountered when creating the Excel file. The error code can be returned
  * from the program main or the calling function:
  *
