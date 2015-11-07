@@ -28,21 +28,21 @@ enum lxw_boolean {
 
 #define LXW_IGNORE 1
 
-#define ERROR(message)                          \
+#define LXW_ERROR(message)                      \
     fprintf(stderr, "[ERROR][%s:%d]: " message "\n", __FILE__, __LINE__)
 
-#define MEM_ERROR()                             \
-    ERROR("Memory allocation failed.")
+#define LXW_MEM_ERROR()                         \
+    LXW_ERROR("Memory allocation failed.")
 
 #define GOTO_LABEL_ON_MEM_ERROR(pointer, label) \
     if (!pointer) {                             \
-        MEM_ERROR();                            \
+        LXW_MEM_ERROR();                        \
         goto label;                             \
     }
 
 #define RETURN_ON_MEM_ERROR(pointer, error)     \
     if (!pointer) {                             \
-        MEM_ERROR();                            \
+        LXW_MEM_ERROR();                        \
         return error;                           \
     }
 

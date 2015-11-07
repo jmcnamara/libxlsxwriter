@@ -1074,7 +1074,6 @@ workbook_add_format(lxw_workbook *self)
     return format;
 }
 
-
 /*
  * Call finalisation code and close file.
  */

@@ -59,7 +59,7 @@ _new_packager(const char *filename)
     /* Create a zip container for the xlsx file. */
     packager->zipfile = zipOpen(packager->filename, 0);
     if (packager->zipfile == NULL) {
-        ERROR("Error opening zip file for xlsx");
+        LXW_ERROR("Error opening zip file for xlsx");
         goto mem_error;
     }
 
@@ -457,7 +457,7 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
                                     Z_DEFAULT_STRATEGY, NULL, 0, 0, 0, 0);
 
     if (error != ZIP_OK) {
-        ERROR("Error adding member to zipfile");
+        LXW_ERROR("Error adding member to zipfile");
         return error;
     }
 
@@ -470,7 +470,7 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
 
         if (size_read < self->buffer_size) {
             if (feof(file) == 0) {
-                ERROR("Error reading member file data");
+                LXW_ERROR("Error reading member file data");
                 return ZIP_ERRNO;
             }
         }
@@ -479,7 +479,7 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
                                     self->buffer, (unsigned int) size_read);
 
         if (error < 0) {
-            ERROR("Error in writing member in the zipfile");
+            LXW_ERROR("Error in writing member in the zipfile");
             return error;
         }
 
@@ -492,7 +492,7 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
     else {
         error = zipCloseFileInZip(self->zipfile);
         if (error != ZIP_OK) {
-            ERROR("Error in closing member in the zipfile");
+            LXW_ERROR("Error in closing member in the zipfile");
             return error;
         }
     }

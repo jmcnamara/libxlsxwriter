@@ -265,10 +265,10 @@ _new_row(lxw_row_t row_num)
         if (row->cells)
             TAILQ_INIT(row->cells);
         else
-            MEM_ERROR();
+            LXW_MEM_ERROR();
     }
     else {
-        MEM_ERROR();
+        LXW_MEM_ERROR();
     }
 
     return row;
