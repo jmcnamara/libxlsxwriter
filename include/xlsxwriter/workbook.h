@@ -43,6 +43,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
+#include <errno.h>
 #include "xlsxwriter/third_party/queue.h"
 
 #include "worksheet.h"
@@ -55,8 +56,6 @@ STAILQ_HEAD(lxw_worksheets, lxw_worksheet);
 TAILQ_HEAD(lxw_defined_names, lxw_defined_name);
 
 #define LXW_DEFINED_NAME_LENGTH 128
-
-extern int errno;
 
 /**
  * @brief Macro to loop over all the worksheets in a workbook.
