@@ -57,6 +57,14 @@ extern "C" {
 #include "ioapi.h"
 #endif
 
+/* Encryption not required by libxlsxwriter. */
+#ifndef NOCRYPT
+#define NOCRYPT
+#endif
+#ifndef NOUNCRYPT
+#define NOUNCRYPT
+#endif
+
 #ifdef HAVE_BZIP2
 #include "bzlib.h"
 #endif
