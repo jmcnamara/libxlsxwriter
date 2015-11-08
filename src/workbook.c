@@ -50,6 +50,8 @@ _free_workbook(lxw_workbook *workbook)
 
     free(workbook->properties);
 
+    free(workbook->filename);
+
     /* Free the worksheets in the workbook. */
     while (!STAILQ_EMPTY(workbook->worksheets)) {
         worksheet = STAILQ_FIRST(workbook->worksheets);
@@ -959,7 +961,7 @@ new_workbook_opt(const char *filename, lxw_workbook_options *options)
     /* Create the workbook object. */
     workbook = calloc(1, sizeof(lxw_workbook));
     GOTO_LABEL_ON_MEM_ERROR(workbook, mem_error);
-    workbook->filename = filename;
+    workbook->filename = lxw_strdup(filename);
 
     /* Add the worksheets list. */
     workbook->worksheets = calloc(1, sizeof(struct lxw_worksheets));

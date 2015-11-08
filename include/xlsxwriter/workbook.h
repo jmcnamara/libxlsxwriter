@@ -147,7 +147,7 @@ typedef struct lxw_workbook {
     struct lxw_defined_names *defined_names;
     lxw_sst *sst;
     lxw_doc_properties *properties;
-    const char *filename;
+    char *filename;
     lxw_workbook_options options;
 
     uint16_t num_sheets;
