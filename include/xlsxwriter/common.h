@@ -49,6 +49,17 @@ enum lxw_boolean {
 #define LXW_WARN(message)                       \
     fprintf(stderr, "[WARN]: " message "\n")
 
+/* Compilers that have a native snprintf() can use it directly. */
+#ifdef _MSC_VER
+#define HAS_SNPRINTF
+#endif
+
+#ifdef HAS_SNPRINTF
+#define lxw_snprintf snprintf
+#else
+#define lxw_snprintf __builtin_snprintf
+#endif
+
 /* Define the queue.h structs for the formats list. */
 STAILQ_HEAD(lxw_formats, lxw_format);
 

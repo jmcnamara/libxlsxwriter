@@ -93,7 +93,7 @@ _write_relationship(lxw_relationships *self, const char *type,
     char r_id[MAX_ATTRIBUTE_LENGTH] = { 0 };
 
     self->rel_id++;
-    __builtin_snprintf(r_id, ATTR_32, "rId%d", self->rel_id);
+    lxw_snprintf(r_id, ATTR_32, "rId%d", self->rel_id);
 
     _INIT_ATTRIBUTES();
     _PUSH_ATTRIBUTES_STR("Id", r_id);
@@ -171,8 +171,8 @@ _add_relationship(lxw_relationships *self, const char *schema,
     GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
 
     /* Add the schema to the relationship type. */
-    __builtin_snprintf(relationship->type, MAX_ATTRIBUTE_LENGTH, "%s%s",
-                       schema, type);
+    lxw_snprintf(relationship->type, MAX_ATTRIBUTE_LENGTH, "%s%s",
+                 schema, type);
 
     relationship->target = lxw_strdup(target);
     GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);

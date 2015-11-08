@@ -1045,7 +1045,7 @@ _write_number_cell(lxw_worksheet *self, lxw_cell *cell)
 {
     char data[ATTR_32];
 
-    __builtin_snprintf(data, ATTR_32, "%.16g", cell->u.number);
+    lxw_snprintf(data, ATTR_32, "%.16g", cell->u.number);
 
     _xml_data_element(self->file, "v", data, NULL);
 
@@ -1059,7 +1059,7 @@ _write_string_cell(lxw_worksheet *self, lxw_cell *cell)
 {
     char data[ATTR_32];
 
-    __builtin_snprintf(data, ATTR_32, "%d", cell->u.string_id);
+    lxw_snprintf(data, ATTR_32, "%d", cell->u.string_id);
 
     _xml_data_element(self->file, "v", data, NULL);
 }
@@ -1072,7 +1072,7 @@ _write_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 {
     char data[ATTR_32];
 
-    __builtin_snprintf(data, ATTR_32, "%.16g", cell->formula_result);
+    lxw_snprintf(data, ATTR_32, "%.16g", cell->formula_result);
 
     _xml_data_element(self->file, "f", cell->u.string, NULL);
     _xml_data_element(self->file, "v", data, NULL);
@@ -1092,7 +1092,7 @@ _write_array_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
     _PUSH_ATTRIBUTES_STR("t", "array");
     _PUSH_ATTRIBUTES_STR("ref", cell->user_data1);
 
-    __builtin_snprintf(data, ATTR_32, "%.16g", cell->formula_result);
+    lxw_snprintf(data, ATTR_32, "%.16g", cell->formula_result);
 
     _xml_data_element(self->file, "f", cell->u.string, &attributes);
     _xml_data_element(self->file, "v", data, NULL);
@@ -1158,8 +1158,8 @@ _calculate_spans(struct lxw_row *row, char *span, int32_t *block_num)
         row = TAILQ_NEXT(row, list_pointers);
     }
 
-    __builtin_snprintf(span, MAX_CELL_RANGE_LENGTH,
-                       "%d:%d", span_col_min + 1, span_col_max + 1);
+    lxw_snprintf(span, MAX_CELL_RANGE_LENGTH,
+                 "%d:%d", span_col_min + 1, span_col_max + 1);
 }
 
 /*
@@ -1673,7 +1673,7 @@ _worksheet_write_hyperlink_external(lxw_worksheet *self, lxw_row_t row_num,
 
     lxw_rowcol_to_cell(ref, row_num, col_num);
 
-    __builtin_snprintf(r_id, ATTR_32, "rId%d", id);
+    lxw_snprintf(r_id, ATTR_32, "rId%d", id);
 
     _INIT_ATTRIBUTES();
     _PUSH_ATTRIBUTES_STR("ref", ref);
@@ -2306,8 +2306,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
             url_external = calloc(1, string_size);
             GOTO_LABEL_ON_MEM_ERROR(url_external, mem_error);
 
-            __builtin_snprintf(url_external, string_size, "file:///%s",
-                               url_copy);
+            lxw_snprintf(url_external, string_size, "file:///%s", url_copy);
 
         }
 

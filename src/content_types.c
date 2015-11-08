@@ -287,8 +287,7 @@ void
 _ct_add_worksheet_name(lxw_content_types *self, const char *str)
 {
     char name[MAX_ATTRIBUTE_LENGTH];
-    __builtin_snprintf(name, MAX_ATTRIBUTE_LENGTH, "/xl/worksheets/%s.xml",
-                       str);
+    lxw_snprintf(name, MAX_ATTRIBUTE_LENGTH, "/xl/worksheets/%s.xml", str);
 
     _ct_add_override(self, name,
                      LXW_APP_DOCUMENT "spreadsheetml.worksheet+xml");

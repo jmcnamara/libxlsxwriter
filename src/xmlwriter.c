@@ -275,7 +275,7 @@ _new_attribute_int(const char *key, uint32_t value)
     struct xml_attribute *attribute = malloc(sizeof(struct xml_attribute));
 
     LXW_ATTRIBUTE_COPY(attribute->key, key);
-    __builtin_snprintf(attribute->value, MAX_ATTRIBUTE_LENGTH, "%d", value);
+    lxw_snprintf(attribute->value, MAX_ATTRIBUTE_LENGTH, "%d", value);
 
     return attribute;
 }
@@ -287,8 +287,7 @@ _new_attribute_dbl(const char *key, double value)
     struct xml_attribute *attribute = malloc(sizeof(struct xml_attribute));
 
     LXW_ATTRIBUTE_COPY(attribute->key, key);
-    __builtin_snprintf(attribute->value, MAX_ATTRIBUTE_LENGTH, "%.16g",
-                       value);
+    lxw_snprintf(attribute->value, MAX_ATTRIBUTE_LENGTH, "%.16g", value);
 
     return attribute;
 }

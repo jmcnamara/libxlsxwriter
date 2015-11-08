@@ -191,7 +191,7 @@ _write_font_color_rgb(lxw_styles *self, int32_t rgb)
     struct xml_attribute *attribute;
     char rgb_str[ATTR_32];
 
-    __builtin_snprintf(rgb_str, ATTR_32, "FF%06X", rgb & LXW_COLOR_MASK);
+    lxw_snprintf(rgb_str, ATTR_32, "FF%06X", rgb & LXW_COLOR_MASK);
 
     _INIT_ATTRIBUTES();
     _PUSH_ATTRIBUTES_STR("rgb", rgb_str);
@@ -415,7 +415,7 @@ _write_fg_color(lxw_styles *self, lxw_color_t color)
 
     _INIT_ATTRIBUTES();
 
-    __builtin_snprintf(rgb_str, ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
+    lxw_snprintf(rgb_str, ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
     _PUSH_ATTRIBUTES_STR("rgb", rgb_str);
 
     _xml_empty_tag(self->file, "fgColor", &attributes);
@@ -439,8 +439,7 @@ _write_bg_color(lxw_styles *self, lxw_color_t color)
         _PUSH_ATTRIBUTES_STR("indexed", "64");
     }
     else {
-        __builtin_snprintf(rgb_str, ATTR_32, "FF%06X",
-                           color & LXW_COLOR_MASK);
+        lxw_snprintf(rgb_str, ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
         _PUSH_ATTRIBUTES_STR("rgb", rgb_str);
     }
 
@@ -546,8 +545,7 @@ _write_border_color(lxw_styles *self, lxw_color_t color)
     _INIT_ATTRIBUTES();
 
     if (color != LXW_COLOR_UNSET) {
-        __builtin_snprintf(rgb_str, ATTR_32, "FF%06X",
-                           color & LXW_COLOR_MASK);
+        lxw_snprintf(rgb_str, ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
         _PUSH_ATTRIBUTES_STR("rgb", rgb_str);
     }
     else {

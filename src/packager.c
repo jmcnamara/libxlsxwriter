@@ -120,8 +120,8 @@ _write_worksheet_files(lxw_packager *self)
     uint16_t index = 1;
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
-        __builtin_snprintf(sheetname, FILENAME_LEN,
-                           "xl/worksheets/sheet%d.xml", index++);
+        lxw_snprintf(sheetname, FILENAME_LEN,
+                     "xl/worksheets/sheet%d.xml", index++);
 
         if (worksheet->optimize_row)
             _worksheet_write_single_row(worksheet);
@@ -178,7 +178,7 @@ _write_app_file(lxw_packager *self)
 
     app->file = lxw_tmpfile();
 
-    __builtin_snprintf(number, ATTR_32, "%d", self->workbook->num_sheets);
+    lxw_snprintf(number, ATTR_32, "%d", self->workbook->num_sheets);
 
     _add_heading_pair(app, "Worksheets", number);
 
@@ -201,7 +201,7 @@ _write_app_file(lxw_packager *self)
 
     /* Add the Named Range heading pairs. */
     if (named_range_count) {
-        __builtin_snprintf(number, ATTR_32, "%d", named_range_count);
+        lxw_snprintf(number, ATTR_32, "%d", named_range_count);
         _add_heading_pair(app, "Named Ranges", number);
     }
 
@@ -312,7 +312,7 @@ _write_content_types_file(lxw_packager *self)
     content_types->file = lxw_tmpfile();
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
-        __builtin_snprintf(sheetname, FILENAME_LEN, "sheet%d", index++);
+        lxw_snprintf(sheetname, FILENAME_LEN, "sheet%d", index++);
         _ct_add_worksheet_name(content_types, sheetname);
     }
 
@@ -345,8 +345,8 @@ _write_workbook_rels_file(lxw_packager *self)
     rels->file = lxw_tmpfile();
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
-        __builtin_snprintf(sheetname, FILENAME_LEN, "worksheets/sheet%d.xml",
-                           index++);
+        lxw_snprintf(sheetname, FILENAME_LEN, "worksheets/sheet%d.xml",
+                     index++);
         _add_document_relationship(rels, "/worksheet", sheetname);
     }
 
@@ -395,8 +395,8 @@ _write_worksheet_rels_file(lxw_packager *self)
 
         }
 
-        __builtin_snprintf(sheetname, FILENAME_LEN,
-                           "xl/worksheets/_rels/sheet%d.xml.rels", index++);
+        lxw_snprintf(sheetname, FILENAME_LEN,
+                     "xl/worksheets/_rels/sheet%d.xml.rels", index++);
 
         _relationships_assemble_xml_file(rels);
 
