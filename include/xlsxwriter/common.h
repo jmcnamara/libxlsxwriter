@@ -11,6 +11,7 @@
 
 #include <time.h>
 #include "xlsxwriter/third_party/queue.h"
+#include "xlsxwriter/third_party/tree.h"
 
 #ifndef TESTING
 #define STATIC static

@@ -131,7 +131,7 @@ enum cell_types {
 
 /* Define the queue.h TAILQ structs for the list head types. */
 TAILQ_HEAD(lxw_table_cells, lxw_cell);
-TAILQ_HEAD(lxw_table_rows, lxw_row);
+RB_HEAD(lxw_table_rows, lxw_row);
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
 
 /**
@@ -335,8 +335,8 @@ typedef struct lxw_row {
     uint8_t data_changed;
     struct lxw_table_cells *cells;
 
-    /* List pointers for queue.h. */
-    TAILQ_ENTRY (lxw_row) list_pointers;
+    /* tree management pointers for tree.h. */
+    RB_ENTRY (lxw_row) tree_pointers;
 } lxw_row;
 
 /* Struct to represent a worksheet cell. */
