@@ -1,6 +1,6 @@
 /*
  * libxlsxwriter
- * 
+ *
  * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  *
  * shared_strings - A libxlsxwriter library for creating Excel XLSX
@@ -16,7 +16,8 @@
 
 #include "common.h"
 
-#define NUM_SST_BUCKETS 8
+#define NUM_SST_BUCKETS 1024
+
 /* STAILQ_HEAD() declaration. */
 struct sst_order_list {
     struct sst_element *stqh_first;
