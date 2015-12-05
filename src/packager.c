@@ -27,6 +27,7 @@ int16_t _add_file_to_zip(lxw_packager *self, FILE * file,
 #ifdef _WIN32
 
 #include <windows.h>
+#include "../third_party/minizip/iowin32.h"
 
 zipFile
 _open_zipfile_win32(const char *filename)
@@ -35,8 +36,8 @@ _open_zipfile_win32(const char *filename)
     wchar_t wide_filename[_MAX_PATH + 1] = L"";
 
     /* Build a UTF-16 filename for Win32. */
-    MultiByteToWideChar(CP_UTF8, 0, filename, strlen(filename), wide_filename,
-                        _MAX_PATH);
+    n = MultiByteToWideChar(CP_UTF8, 0, filename, strlen(filename),
+                            wide_filename, _MAX_PATH);
 
     if (n == 0) {
         LXW_ERROR("MultiByteToWideChar error");
@@ -90,10 +91,8 @@ _new_packager(const char *filename)
     packager->zipfile = zipOpen(packager->filename, 0);
 #endif
 
-    if (packager->zipfile == NULL) {
-        LXW_ERROR("Error opening zip file for xlsx");
+    if (packager->zipfile == NULL)
         goto mem_error;
-    }
 
     return packager;
 

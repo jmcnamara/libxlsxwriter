@@ -102,10 +102,10 @@ typedef struct lxw_defined_name {
  */
 enum lxw_workbook_error {
     /** No error */
-    LXW_ERROR_WORKBOOK_CLOSE_NONE = 0,
+    LXW_ERROR_WORKBOOK_NONE = 0,
 
     /** Error encountered when creating file */
-    LXW_ERROR_WORKBOOK_ACCESS,
+    LXW_ERROR_WORKBOOK_FILE_CREATE,
 
     /** Error encountered when creating a packager object */
     LXW_ERROR_WORKBOOK_PACKAGER,

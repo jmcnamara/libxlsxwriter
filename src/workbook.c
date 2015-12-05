@@ -1084,18 +1084,7 @@ workbook_close(lxw_workbook *self)
 {
     lxw_worksheet *worksheet = NULL;
     lxw_packager *packager = NULL;
-    uint8_t error = LXW_ERROR_WORKBOOK_CLOSE_NONE;
-    FILE *file = fopen(self->filename, "w");
-
-    if (file == NULL) {
-        error = LXW_ERROR_WORKBOOK_ACCESS;
-        fprintf(stderr, "[ERROR] Error creating '%s': %s\n", self->filename,
-                strerror(errno));
-        goto mem_error;
-    }
-    else {
-        fclose(file);
-    }
+    uint8_t error = LXW_ERROR_WORKBOOK_NONE;
 
     /* Add a default worksheet if non have been added. */
     if (!self->num_sheets)
@@ -1117,10 +1106,17 @@ workbook_close(lxw_workbook *self)
     /* Set the defined names for the worksheets such as Print Titles. */
     _prepare_defined_names(self);
 
+    /* Create a packager object to assemble sub-elements into a zip file. */
     packager = _new_packager(self->filename);
-    error = LXW_ERROR_WORKBOOK_PACKAGER;
-    GOTO_LABEL_ON_MEM_ERROR(packager, mem_error);
-    error = LXW_ERROR_WORKBOOK_CLOSE_NONE;
+
+    /* If the packager fails it is generally due to a zip permission error. */
+    if (packager == NULL) {
+        fprintf(stderr, "[ERROR] Error creating '%s': %s\n", self->filename,
+                strerror(errno));
+
+        error = LXW_ERROR_WORKBOOK_FILE_CREATE;
+        goto mem_error;
+    }
 
     /* Set the workbook object in the packager. */
     packager->workbook = self;
