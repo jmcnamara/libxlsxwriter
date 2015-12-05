@@ -25,22 +25,17 @@
  * Forward declarations.
  */
 STATIC void _worksheet_write_rows(lxw_worksheet *self);
+STATIC int _row_cmp(lxw_row *row1, lxw_row *row2);
 
-STATIC int lxw_row_cmp(lxw_row *r1, lxw_row *r2)
-{
-	if (r1->row_num < r2->row_num) return -1;
-	if (r1->row_num > r2->row_num) return  1;
-	return 0;
-}
-
-RB_GENERATE_STATIC(lxw_table_rows, lxw_row, tree_pointers, lxw_row_cmp)
+/* *INDENT-OFF* */
+RB_GENERATE_STATIC(lxw_table_rows, lxw_row, tree_pointers, _row_cmp)
+/* *INDENT-ON* */
 
 /*****************************************************************************
  *
  * Private functions.
  *
  ****************************************************************************/
-
 /*
  * Create a new worksheet object.
  */
@@ -174,6 +169,7 @@ _free_row(lxw_row *row)
         TAILQ_REMOVE(row->cells, cell, list_pointers);
         _free_cell(cell);
     }
+
     free(row->cells);
     free(row);
 }
@@ -184,7 +180,8 @@ _free_row(lxw_row *row)
 void
 _free_worksheet(lxw_worksheet *worksheet)
 {
-    lxw_row *row, *next_row;
+    lxw_row *row;
+    lxw_row *next_row;
     lxw_col_t col;
     lxw_merged_range *merged_range;
     lxw_rel_tuple *external_hyperlink;
@@ -204,9 +201,8 @@ _free_worksheet(lxw_worksheet *worksheet)
     free(worksheet->col_formats);
 
     if (worksheet->table) {
-        for (row=RB_MIN(lxw_table_rows, worksheet->table); row;
-            row = next_row) {
-
+        for (row = RB_MIN(lxw_table_rows, worksheet->table); row;
+             row = next_row) {
             next_row = RB_NEXT(lxw_table_rows, worksheet->table, row);
             RB_REMOVE(lxw_table_rows, worksheet->table, row);
             _free_row(row);
@@ -217,8 +213,8 @@ _free_worksheet(lxw_worksheet *worksheet)
 
     if (worksheet->hyperlinks) {
 
-        for (row=RB_MIN(lxw_table_rows, worksheet->hyperlinks); row;
-            row = next_row) {
+        for (row = RB_MIN(lxw_table_rows, worksheet->hyperlinks); row;
+             row = next_row) {
 
             next_row = RB_NEXT(lxw_table_rows, worksheet->hyperlinks, row);
             RB_REMOVE(lxw_table_rows, worksheet->hyperlinks, row);
@@ -431,14 +427,15 @@ _new_hyperlink_cell(lxw_row_t row_num, lxw_col_t col_num,
 STATIC lxw_row *
 _get_row_list(struct lxw_table_rows *table, lxw_row_t row_num)
 {
-    lxw_row *row, *existing_row;
+    lxw_row *row;
+    lxw_row *existing_row;
 
-    /* Create a new row and try and insert it */
+    /* Create a new row and try and insert it. */
     row = _new_row(row_num);
     existing_row = RB_INSERT(lxw_table_rows, table, row);
 
     /* If existing_row is not NULL, then it already existed. Free new row */
-    /* and return existing_row */
+    /* and return existing_row. */
     if (existing_row) {
         _free_row(row);
         row = existing_row;
@@ -636,6 +633,19 @@ _check_dimensions(lxw_worksheet *self,
             self->dim_colmax = col_num;
     }
 
+    return 0;
+}
+
+/*
+ * Comparator for the row structure red/black tree.
+ */
+STATIC int
+_row_cmp(lxw_row *row1, lxw_row *row2)
+{
+    if (row1->row_num > row2->row_num)
+        return 1;
+    if (row1->row_num < row2->row_num)
+        return -1;
     return 0;
 }
 
@@ -1106,8 +1116,7 @@ _write_inline_string_cell(lxw_worksheet *self, lxw_cell *cell)
  * The span is the same for each block of 16 rows.
  */
 STATIC void
-_calculate_spans(struct lxw_row *row, UNUSED struct lxw_table_rows *root,
-    char *span, int32_t *block_num)
+_calculate_spans(struct lxw_row *row, char *span, int32_t *block_num)
 {
     lxw_col_t span_col_min = TAILQ_FIRST(row->cells)->col_num;
     lxw_col_t span_col_max = TAILQ_LAST(row->cells, lxw_table_cells)->col_num;
@@ -1222,7 +1231,7 @@ _worksheet_write_rows(lxw_worksheet *self)
         else {
             /* Row and cell data. */
             if ((int32_t) row->row_num / 16 > block_num)
-                _calculate_spans(row, self->table, spans, &block_num);
+                _calculate_spans(row, spans, &block_num);
 
             _write_row(self, row, spans);
 
