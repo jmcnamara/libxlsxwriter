@@ -27,9 +27,7 @@
 STATIC void _worksheet_write_rows(lxw_worksheet *self);
 STATIC int _row_cmp(lxw_row *row1, lxw_row *row2);
 
-/* *INDENT-OFF* */
-RB_GENERATE_STATIC(lxw_table_rows, lxw_row, tree_pointers, _row_cmp)
-/* *INDENT-ON* */
+LXW_RB_GENERATE_ROW(lxw_table_rows, lxw_row, tree_pointers, _row_cmp);
 
 /*****************************************************************************
  *
@@ -51,7 +49,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->hyperlinks = calloc(1, sizeof(struct lxw_table_rows));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->hyperlinks, mem_error);
 
-    /* Initialise the cached rows.*/
+    /* Initialise the cached rows. */
     worksheet->table->cached_row_num = LXW_ROW_MAX + 1;
     worksheet->hyperlinks->cached_row_num = LXW_ROW_MAX + 1;
 

@@ -139,6 +139,18 @@ struct lxw_table_rows {
     lxw_row_t cached_row_num;
 };
 
+/* Wrapper around RB_GENERATE_STATIC from tree.h to avoid unused function
+ * warnings and to avoid portability issues with the _unused attribute. */
+#define LXW_RB_GENERATE_ROW(name, type, field, cmp)     \
+    RB_GENERATE_INSERT_COLOR(name, type, field, static) \
+    RB_GENERATE_REMOVE_COLOR(name, type, field, static) \
+    RB_GENERATE_INSERT(name, type, field, cmp, static)  \
+    RB_GENERATE_REMOVE(name, type, field, static)       \
+    RB_GENERATE_NEXT(name, type, field, static)         \
+    RB_GENERATE_MINMAX(name, type, field, static)       \
+    /* Add unused struct to allow adding a semicolon */ \
+    struct lxw_rb_generate_row{int unused;}
+
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
 
 /**
