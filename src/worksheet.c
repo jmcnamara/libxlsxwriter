@@ -51,6 +51,10 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->hyperlinks = calloc(1, sizeof(struct lxw_table_rows));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->hyperlinks, mem_error);
 
+    /* Initialise the cached rows.*/
+    worksheet->table->cached_row_num = LXW_ROW_MAX + 1;
+    worksheet->hyperlinks->cached_row_num = LXW_ROW_MAX + 1;
+
     if (init_data && init_data->optimize) {
         worksheet->array = calloc(LXW_COL_MAX, sizeof(struct lxw_cell *));
         GOTO_LABEL_ON_MEM_ERROR(worksheet->array, mem_error);
@@ -445,6 +449,9 @@ _get_row_list(struct lxw_table_rows *table, lxw_row_t row_num)
     lxw_row *row;
     lxw_row *existing_row;
 
+    if (table->cached_row_num == row_num)
+        return table->cached_row;
+
     /* Create a new row and try and insert it. */
     row = _new_row(row_num);
     existing_row = RB_INSERT(lxw_table_rows, table, row);
@@ -455,6 +462,10 @@ _get_row_list(struct lxw_table_rows *table, lxw_row_t row_num)
         _free_row(row);
         row = existing_row;
     }
+
+    table->cached_row = row;
+    table->cached_row_num = row_num;
+
     return row;
 }
 

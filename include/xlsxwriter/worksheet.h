@@ -139,7 +139,14 @@ enum pane_types {
 
 /* Define the queue.h TAILQ structs for the list head types. */
 TAILQ_HEAD(lxw_table_cells, lxw_cell);
-RB_HEAD(lxw_table_rows, lxw_row);
+
+/* Define a RB_TREE struct manually to add extra members. */
+struct lxw_table_rows {
+    struct lxw_row *rbh_root;
+    struct lxw_row *cached_row;
+    lxw_row_t cached_row_num;
+};
+
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
 STAILQ_HEAD(lxw_selections, lxw_selection);
 
