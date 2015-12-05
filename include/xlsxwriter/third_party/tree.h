@@ -30,9 +30,9 @@
 #ifndef	_SYS_TREE_H_
 #define	_SYS_TREE_H_
 
-#include <sys/cdefs.h>
+/* #include <sys/cdefs.h> */
 
-/* Define a portable way of marking parameters unused */
+/* Added by libxlsxwriter to define a portable unused attribute. */
 #if defined(__GNUC__)
 #define UNUSED __attribute__((unused))
 #elif defined(__clang__)
@@ -97,7 +97,7 @@ struct {								\
 	SPLAY_RIGHT(tmp, field) = (head)->sph_root;			\
 	(head)->sph_root = tmp;						\
 } while (/*CONSTCOND*/ 0)
-	
+
 #define SPLAY_ROTATE_LEFT(head, tmp, field) do {			\
 	SPLAY_RIGHT((head)->sph_root, field) = SPLAY_LEFT(tmp, field);	\
 	SPLAY_LEFT(tmp, field) = (head)->sph_root;			\
