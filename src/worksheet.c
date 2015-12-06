@@ -68,12 +68,16 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->merged_ranges = calloc(1, sizeof(struct lxw_merged_ranges));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->merged_ranges, mem_error);
 
+    worksheet->selections = calloc(1, sizeof(struct lxw_selections));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->selections, mem_error);
+
     worksheet->external_hyperlinks = calloc(1, sizeof(struct lxw_rel_tuples));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->external_hyperlinks, mem_error);
 
     TAILQ_INIT(worksheet->table);
     TAILQ_INIT(worksheet->hyperlinks);
     STAILQ_INIT(worksheet->merged_ranges);
+    STAILQ_INIT(worksheet->selections);
     STAILQ_INIT(worksheet->external_hyperlinks);
 
     if (init_data && init_data->optimize) {
@@ -159,6 +163,7 @@ _free_worksheet(lxw_worksheet *worksheet)
     lxw_cell *cell;
     lxw_col_t col;
     lxw_merged_range *merged_range;
+    lxw_selection *selection;
     lxw_rel_tuple *external_hyperlink;
 
     if (!worksheet)
@@ -219,6 +224,16 @@ _free_worksheet(lxw_worksheet *worksheet)
         }
 
         free(worksheet->merged_ranges);
+    }
+
+    if (worksheet->selections) {
+        while (!STAILQ_EMPTY(worksheet->selections)) {
+            selection = STAILQ_FIRST(worksheet->selections);
+            STAILQ_REMOVE_HEAD(worksheet->selections, list_pointers);
+            free(selection);
+        }
+
+        free(worksheet->selections);
     }
 
     while (!STAILQ_EMPTY(worksheet->external_hyperlinks)) {
@@ -737,6 +752,164 @@ _worksheet_write_dimension(lxw_worksheet *self)
 }
 
 /*
+ * Write the <pane> element for freeze panes.
+ */
+STATIC void
+_worksheet_write_freeze_panes(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    lxw_selection *selection;
+    lxw_selection *user_selection;
+    lxw_row_t row = self->panes.first_row;
+    lxw_col_t col = self->panes.first_col;
+
+    char row_cell[MAX_CELL_NAME_LENGTH];
+    char col_cell[MAX_CELL_NAME_LENGTH];
+    char top_left_cell[MAX_CELL_NAME_LENGTH];
+    char active_pane[LXW_PANE_NAME_LENGTH];
+
+    user_selection = calloc(1, sizeof(lxw_selection));
+    if (!user_selection)
+        return;
+
+    _INIT_ATTRIBUTES();
+
+    lxw_rowcol_to_cell(top_left_cell, self->panes.top_row,
+                       self->panes.left_col);
+
+    /* Set the active pane. */
+    if (row && col) {
+        strcpy(active_pane, "bottomRight");
+
+        lxw_rowcol_to_cell(row_cell, row, 0);
+        lxw_rowcol_to_cell(col_cell, 0, col);
+
+        selection = calloc(1, sizeof(lxw_selection));
+        if (selection) {
+            strcpy(selection->pane, "topRight");
+            strcpy(selection->active_cell, col_cell);
+            strcpy(selection->sqref, col_cell);
+
+            STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
+        }
+
+        selection = calloc(1, sizeof(lxw_selection));
+        if (selection) {
+            strcpy(selection->pane, "bottomLeft");
+            strcpy(selection->active_cell, row_cell);
+            strcpy(selection->sqref, row_cell);
+
+            STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
+        }
+
+        selection = calloc(1, sizeof(lxw_selection));
+        if (selection) {
+            strcpy(selection->pane, "bottomRight");
+            strcpy(selection->active_cell, user_selection->active_cell);
+            strcpy(selection->sqref, user_selection->sqref);
+
+            STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
+        }
+    }
+    else if (col) {
+        strcpy(active_pane, "topRight");
+
+        selection = calloc(1, sizeof(lxw_selection));
+        if (selection) {
+            strcpy(selection->pane, "topRight");
+            strcpy(selection->active_cell, user_selection->active_cell);
+            strcpy(selection->sqref, user_selection->sqref);
+
+            STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
+        }
+    }
+    else {
+        strcpy(active_pane, "bottomLeft");
+
+        selection = calloc(1, sizeof(lxw_selection));
+        if (selection) {
+            strcpy(selection->pane, "bottomLeft");
+            strcpy(selection->active_cell, user_selection->active_cell);
+            strcpy(selection->sqref, user_selection->sqref);
+
+            STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
+        }
+    }
+
+    if (col)
+        _PUSH_ATTRIBUTES_INT("xSplit", col);
+
+    if (row)
+        _PUSH_ATTRIBUTES_INT("ySplit", row);
+
+    _PUSH_ATTRIBUTES_STR("topLeftCell", top_left_cell);
+    _PUSH_ATTRIBUTES_STR("activePane", active_pane);
+
+    if (self->panes.type == FREEZE_PANES)
+        _PUSH_ATTRIBUTES_STR("state", "frozen");
+    else if (self->panes.type == FREEZE_SPLIT_PANES)
+        _PUSH_ATTRIBUTES_STR("state", "frozenSplit");
+
+    _xml_empty_tag(self->file, "pane", &attributes);
+
+    free(user_selection);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <selection> element.
+ */
+STATIC void
+_worksheet_write_selection(lxw_worksheet *self, lxw_selection * selection)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    _INIT_ATTRIBUTES();
+
+    if (*selection->pane)
+        _PUSH_ATTRIBUTES_STR("pane", selection->pane);
+
+    if (*selection->active_cell)
+        _PUSH_ATTRIBUTES_STR("activeCell", selection->active_cell);
+
+    if (*selection->sqref)
+        _PUSH_ATTRIBUTES_STR("sqref", selection->sqref);
+
+    _xml_empty_tag(self->file, "selection", &attributes);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <selection> elements.
+ */
+STATIC void
+_worksheet_write_selections(lxw_worksheet *self)
+{
+    lxw_selection *selection;
+
+    STAILQ_FOREACH(selection, self->selections, list_pointers) {
+        _worksheet_write_selection(self, selection);
+    }
+}
+
+/*
+ * Write the frozen or split <pane> elements.
+ */
+STATIC void
+_worksheet_write_panes(lxw_worksheet *self)
+{
+    if (self->panes.type == NO_PANES)
+        return;
+
+    _worksheet_write_freeze_panes(self);
+}
+
+/*
  * Write the <sheetView> element.
  */
 STATIC void
@@ -759,7 +932,15 @@ _worksheet_write_sheet_view(lxw_worksheet *self)
 
     _PUSH_ATTRIBUTES_STR("workbookViewId", "0");
 
-    _xml_empty_tag(self->file, "sheetView", &attributes);
+    if (self->panes.type != NO_PANES || !STAILQ_EMPTY(self->selections)) {
+        _xml_start_tag(self->file, "sheetView", &attributes);
+        _worksheet_write_panes(self);
+        _worksheet_write_selections(self);
+        _xml_end_tag(self->file, "sheetView");
+    }
+    else {
+        _xml_empty_tag(self->file, "sheetView", &attributes);
+    }
 
     _FREE_ATTRIBUTES();
 }
@@ -2665,6 +2846,20 @@ worksheet_activate(lxw_worksheet *self)
     self->hidden = LXW_FALSE;
 
     *self->active_sheet = self->index;
+}
+
+/*
+ * Set panes and mark them as frozen.
+ */
+void
+worksheet_freeze_panes(lxw_worksheet *self, lxw_row_t first_row,
+                       lxw_col_t first_col)
+{
+    self->panes.first_row = first_row;
+    self->panes.first_col = first_col;
+    self->panes.top_row = first_row;
+    self->panes.left_col = first_col;
+    self->panes.type = FREEZE_PANES;
 }
 
 /*

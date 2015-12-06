@@ -58,6 +58,7 @@
 #define LXW_COL_META_MAX 128
 #define LXW_HEADER_FOOTER_MAX 255
 #define LXW_MAX_NUMBER_URLS 65530
+#define LXW_PANE_NAME_LENGTH 12 /* bottomRight + 1 */
 
 /* The Excel 2007 specification says that the maximum number of page
  * breaks is 1026. However, in practice it is actually 1023. */
@@ -129,10 +130,18 @@ enum cell_types {
     HYPERLINK_EXTERNAL
 };
 
+enum pane_types {
+    NO_PANES = 0,
+    FREEZE_PANES,
+    SPLIT_PANES,
+    FREEZE_SPLIT_PANES
+};
+
 /* Define the queue.h TAILQ structs for the list head types. */
 TAILQ_HEAD(lxw_table_cells, lxw_cell);
 TAILQ_HEAD(lxw_table_rows, lxw_row);
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
+STAILQ_HEAD(lxw_selections, lxw_selection);
 
 /**
  * @brief Options for rows and columns.
@@ -201,6 +210,23 @@ typedef struct lxw_autofilter {
     lxw_col_t last_col;
 } lxw_autofilter;
 
+typedef struct lxw_panes {
+    uint8_t type;
+    lxw_row_t first_row;
+    lxw_col_t first_col;
+    lxw_row_t top_row;
+    lxw_col_t left_col;
+} lxw_panes;
+
+typedef struct lxw_selection {
+    char pane[LXW_PANE_NAME_LENGTH];
+    char active_cell[MAX_CELL_RANGE_LENGTH];
+    char sqref[MAX_CELL_RANGE_LENGTH];
+
+    STAILQ_ENTRY (lxw_selection) list_pointers;
+
+} lxw_selection;
+
 /**
  * @brief Header and footer options.
  *
@@ -228,6 +254,7 @@ typedef struct lxw_worksheet {
     struct lxw_table_rows *hyperlinks;
     struct lxw_cell **array;
     struct lxw_merged_ranges *merged_ranges;
+    struct lxw_selections *selections;
 
     lxw_row_t dim_rowmin;
     lxw_row_t dim_rowmax;
@@ -304,6 +331,8 @@ typedef struct lxw_worksheet {
     lxw_col_t *vbreaks;
 
     struct lxw_rel_tuples *external_hyperlinks;
+
+    struct lxw_panes panes;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -1149,6 +1178,10 @@ void worksheet_activate(lxw_worksheet *worksheet);
   *
   */
 void worksheet_select(lxw_worksheet *worksheet);
+
+/* TODO */
+void worksheet_freeze_panes(lxw_worksheet *worksheet, lxw_row_t first_row,
+                            lxw_col_t first_col);
 
 /**
  * @brief Set the page orientation as landscape.
