@@ -1181,20 +1181,79 @@ void worksheet_activate(lxw_worksheet *worksheet);
   */
 void worksheet_select(lxw_worksheet *worksheet);
 
-/* TODO */
+/**
+ * @brief Split and freeze a worksheet into panes.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The cell row (zero indexed).
+ * @param col       The cell column (zero indexed).
+ *
+ * The `%worksheet_freeze_panes()` method can be used to divide a worksheet
+ * into horizontal or vertical regions known as panes and to "freeze" these
+ * panes so that the splitter bars are not visible.
+ *
+ * The parameters `row` and `col` are used to specify the location of the
+ * split. It should be noted that the split is specified at the top or left of
+ * a cell and that the method uses zero based indexing. Therefore to freeze
+ * the first row of a worksheet it is necessary to specify the split at row 2
+ * (which is 1 as the zero-based index).
+ *
+ * You can set one of the `row` and `col` parameters as zero if you do not
+ * want either a vertical or horizontal split.
+ *
+ * Examples:
+ *
+ * @code
+ *     worksheet_freeze_panes(worksheet1, 1, 0); // Freeze the first row.
+ *     worksheet_freeze_panes(worksheet2, 0, 1); // Freeze the first column.
+ *     worksheet_freeze_panes(worksheet3, 1, 1); // Freeze first row/column.
+ *
+ * @endcode
+ *
+ */
 void worksheet_freeze_panes(lxw_worksheet *worksheet,
-                            lxw_row_t first_row, lxw_col_t first_col);
-/* TODO */
+                            lxw_row_t row, lxw_col_t col);
+/**
+ * @brief Split a worksheet into panes.
+ *
+ * @param worksheet  Pointer to a lxw_worksheet instance to be updated.
+ * @param vertical   The position for the vertical split.
+ * @param horizontal The position for the horizontal split.
+ *
+ * The `%worksheet_split_panes()` method can be used to divide a worksheet
+ * into horizontal or vertical regions known as panes. This method is
+ * different from the `worksheet_freeze_panes()` method in that the splits
+ * between the panes will be visible to the user and each pane will have its
+ * own scroll bars.
+ *
+ * The parameters `vertical` and `horizontal` are used to specify the vertical
+ * and horizontal position of the split. The units for `vertical` and
+ * `horizontal` are the same as those used by Excel to specify row height and
+ * column width. However, the vertical and horizontal units are different from
+ * each other. Therefore you must specify the `vertical` and `horizontal`
+ * parameters in terms of the row heights and column widths that you have set
+ * or the default values which are 15 for a row and 8.43 for a column.
+ *
+ * Examples:
+ *
+ * @code
+ *     worksheet_split_panes(worksheet1, 15, 0);    // First row.
+ *     worksheet_split_panes(worksheet2, 0,  8.43); // First column.
+ *     worksheet_split_panes(worksheet3, 15, 8.43); // First row and column.
+ *
+ * @endcode
+ *
+ */
 void worksheet_split_panes(lxw_worksheet *worksheet,
                            double vertical, double horizontal);
 
-/* Infrequent options. Undocumented for now. */
+/* worksheet_freeze_panes() with infrequent options. Undocumented for now. */
 void worksheet_freeze_panes_opt(lxw_worksheet *worksheet,
                                 lxw_row_t first_row, lxw_col_t first_col,
                                 lxw_row_t top_row, lxw_col_t left_col,
                                 uint8_t type);
 
-/* Infrequent options. Undocumented for now. */
+/* worksheet_split_panes() with infrequent options. Undocumented for now. */
 void worksheet_split_panes_opt(lxw_worksheet *worksheet,
                                double vertical, double horizontal,
                                lxw_row_t top_row, lxw_col_t left_col);

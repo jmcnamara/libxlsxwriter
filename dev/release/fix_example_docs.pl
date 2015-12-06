@@ -30,6 +30,7 @@ my @examples = (
     [ 'autofilter.c',        'An example of a worksheet autofilter' ],
     [ 'headers_footers.c',   'Example of adding worksheet headers/footers' ],
     [ 'defined_name.c',      'Example of how to create defined names' ],
+    [ 'panes.c',             'Example of how to create worksheet panes' ],
 );
 
 # Convert the array refs to a hash for lookups.
@@ -56,7 +57,7 @@ while ( my $line = <> ) {
 
         # Warn if there are any new/unkown items.
         if ( !exists $examples{$example} ) {
-            warn "Unknown example: $example\n";
+            warn "$0 Unknown example: $example\n";
         }
         next;
     }
