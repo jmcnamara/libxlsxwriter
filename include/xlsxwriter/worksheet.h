@@ -216,6 +216,8 @@ typedef struct lxw_panes {
     lxw_col_t first_col;
     lxw_row_t top_row;
     lxw_col_t left_col;
+    double x_split;
+    double y_split;
 } lxw_panes;
 
 typedef struct lxw_selection {
@@ -1180,8 +1182,22 @@ void worksheet_activate(lxw_worksheet *worksheet);
 void worksheet_select(lxw_worksheet *worksheet);
 
 /* TODO */
-void worksheet_freeze_panes(lxw_worksheet *worksheet, lxw_row_t first_row,
-                            lxw_col_t first_col);
+void worksheet_freeze_panes(lxw_worksheet *worksheet,
+                            lxw_row_t first_row, lxw_col_t first_col);
+/* TODO */
+void worksheet_split_panes(lxw_worksheet *worksheet,
+                           double vertical, double horizontal);
+
+/* Infrequent options. Undocumented for now. */
+void worksheet_freeze_panes_opt(lxw_worksheet *worksheet,
+                                lxw_row_t first_row, lxw_col_t first_col,
+                                lxw_row_t top_row, lxw_col_t left_col,
+                                uint8_t type);
+
+/* Infrequent options. Undocumented for now. */
+void worksheet_split_panes_opt(lxw_worksheet *worksheet,
+                               double vertical, double horizontal,
+                               lxw_row_t top_row, lxw_col_t left_col);
 
 /**
  * @brief Set the page orientation as landscape.

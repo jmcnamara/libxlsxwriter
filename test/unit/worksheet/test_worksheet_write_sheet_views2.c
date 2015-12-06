@@ -96,11 +96,7 @@ CTEST(worksheet, write_freeze_panes05) {
     worksheet->file = testfile;
 
     worksheet_select(worksheet);
-    worksheet_freeze_panes(worksheet, 3, 6);
-
-    /*Manually set pane type for testing. */
-    worksheet->panes.type = FREEZE_SPLIT_PANES;
-
+    worksheet_freeze_panes_opt(worksheet, 3, 6, 3, 6, 1);
     _worksheet_write_sheet_views(worksheet);
 
     RUN_XLSX_STREQ(exp, got);

@@ -764,6 +764,8 @@ _worksheet_write_freeze_panes(lxw_worksheet *self)
     lxw_selection *user_selection;
     lxw_row_t row = self->panes.first_row;
     lxw_col_t col = self->panes.first_col;
+    lxw_row_t top_row = self->panes.top_row;
+    lxw_col_t left_col = self->panes.left_col;
 
     char row_cell[MAX_CELL_NAME_LENGTH];
     char col_cell[MAX_CELL_NAME_LENGTH];
@@ -771,13 +773,11 @@ _worksheet_write_freeze_panes(lxw_worksheet *self)
     char active_pane[LXW_PANE_NAME_LENGTH];
 
     user_selection = calloc(1, sizeof(lxw_selection));
-    if (!user_selection)
-        return;
+    RETURN_VOID_ON_MEM_ERROR(user_selection);
 
     _INIT_ATTRIBUTES();
 
-    lxw_rowcol_to_cell(top_left_cell, self->panes.top_row,
-                       self->panes.left_col);
+    lxw_rowcol_to_cell(top_left_cell, top_row, left_col);
 
     /* Set the active pane. */
     if (row && col) {
@@ -860,6 +860,169 @@ _worksheet_write_freeze_panes(lxw_worksheet *self)
 }
 
 /*
+ * Convert column width from user units to pane split width.
+ */
+STATIC uint32_t
+_worksheet_calculate_x_split_width(double x_split)
+{
+    uint32_t width;
+    uint32_t pixels;
+    uint32_t points;
+    uint32_t twips;
+    double max_digit_width = 7.0;       /* For Calabri 11. */
+    double padding = 5.0;
+
+    /* Convert to pixels. */
+    if (x_split < 1.0) {
+        pixels = (uint32_t) (x_split * (max_digit_width + padding) + 0.5);
+    }
+    else {
+        pixels = (uint32_t) (x_split * max_digit_width + 0.5) + 5;
+    }
+
+    /* Convert to points. */
+    points = (pixels * 3) / 4;
+
+    /* Convert to twips (twentieths of a point). */
+    twips = points * 20;
+
+    /* Add offset/padding. */
+    width = twips + 390;
+
+    return width;
+}
+
+/*
+ * Write the <pane> element for split panes.
+ */
+STATIC void
+_worksheet_write_split_panes(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    lxw_selection *selection;
+    lxw_selection *user_selection;
+    lxw_row_t row = self->panes.first_row;
+    lxw_col_t col = self->panes.first_col;
+    lxw_row_t top_row = self->panes.top_row;
+    lxw_col_t left_col = self->panes.left_col;
+    double x_split = self->panes.x_split;
+    double y_split = self->panes.y_split;
+    uint8_t has_selection = LXW_FALSE;
+
+    char row_cell[MAX_CELL_NAME_LENGTH];
+    char col_cell[MAX_CELL_NAME_LENGTH];
+    char top_left_cell[MAX_CELL_NAME_LENGTH];
+    char active_pane[LXW_PANE_NAME_LENGTH];
+
+    user_selection = calloc(1, sizeof(lxw_selection));
+    RETURN_VOID_ON_MEM_ERROR(user_selection);
+
+    _INIT_ATTRIBUTES();
+
+    /* Convert the row and col to 1/20 twip units with padding. */
+    if (y_split > 0.0)
+        y_split = (uint32_t) (20 * y_split + 300);
+
+    if (x_split > 0.0)
+        x_split = _worksheet_calculate_x_split_width(x_split);
+
+    /* For non-explicit topLeft definitions, estimate the cell offset based on
+     * the pixels dimensions. This is only a workaround and doesn"t take
+     * adjusted cell dimensions into account.
+     */
+    if (top_row == row && left_col == col) {
+        top_row = (lxw_row_t) (0.5 + (y_split - 300.0) / 20.0 / 15.0);
+        left_col = (lxw_col_t) (0.5 + (x_split - 390.0) / 20.0 / 3.0 / 16.0);
+    }
+
+    lxw_rowcol_to_cell(top_left_cell, top_row, left_col);
+
+    /* If there is no selection set the active cell to the top left cell. */
+    if (!has_selection) {
+        strcpy(user_selection->active_cell, top_left_cell);
+        strcpy(user_selection->sqref, top_left_cell);
+    }
+
+    /* Set the active pane. */
+    if (y_split > 0.0 && x_split > 0.0) {
+        strcpy(active_pane, "bottomRight");
+
+        lxw_rowcol_to_cell(row_cell, top_row, 0);
+        lxw_rowcol_to_cell(col_cell, 0, left_col);
+
+        selection = calloc(1, sizeof(lxw_selection));
+        if (selection) {
+            strcpy(selection->pane, "topRight");
+            strcpy(selection->active_cell, col_cell);
+            strcpy(selection->sqref, col_cell);
+
+            STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
+        }
+
+        selection = calloc(1, sizeof(lxw_selection));
+        if (selection) {
+            strcpy(selection->pane, "bottomLeft");
+            strcpy(selection->active_cell, row_cell);
+            strcpy(selection->sqref, row_cell);
+
+            STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
+        }
+
+        selection = calloc(1, sizeof(lxw_selection));
+        if (selection) {
+            strcpy(selection->pane, "bottomRight");
+            strcpy(selection->active_cell, user_selection->active_cell);
+            strcpy(selection->sqref, user_selection->sqref);
+
+            STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
+        }
+    }
+    else if (x_split > 0.0) {
+        strcpy(active_pane, "topRight");
+
+        selection = calloc(1, sizeof(lxw_selection));
+        if (selection) {
+            strcpy(selection->pane, "topRight");
+            strcpy(selection->active_cell, user_selection->active_cell);
+            strcpy(selection->sqref, user_selection->sqref);
+
+            STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
+        }
+    }
+    else {
+        strcpy(active_pane, "bottomLeft");
+
+        selection = calloc(1, sizeof(lxw_selection));
+        if (selection) {
+            strcpy(selection->pane, "bottomLeft");
+            strcpy(selection->active_cell, user_selection->active_cell);
+            strcpy(selection->sqref, user_selection->sqref);
+
+            STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
+        }
+    }
+
+    if (x_split > 0.0)
+        _PUSH_ATTRIBUTES_DBL("xSplit", x_split);
+
+    if (y_split > 0.0)
+        _PUSH_ATTRIBUTES_DBL("ySplit", y_split);
+
+    _PUSH_ATTRIBUTES_STR("topLeftCell", top_left_cell);
+
+    if (has_selection)
+        _PUSH_ATTRIBUTES_STR("activePane", active_pane);
+
+    _xml_empty_tag(self->file, "pane", &attributes);
+
+    free(user_selection);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <selection> element.
  */
 STATIC void
@@ -906,7 +1069,14 @@ _worksheet_write_panes(lxw_worksheet *self)
     if (self->panes.type == NO_PANES)
         return;
 
-    _worksheet_write_freeze_panes(self);
+    else if (self->panes.type == FREEZE_PANES)
+        _worksheet_write_freeze_panes(self);
+
+    else if (self->panes.type == FREEZE_SPLIT_PANES)
+        _worksheet_write_freeze_panes(self);
+
+    else if (self->panes.type == SPLIT_PANES)
+        _worksheet_write_split_panes(self);
 }
 
 /*
@@ -2849,17 +3019,62 @@ worksheet_activate(lxw_worksheet *self)
 }
 
 /*
- * Set panes and mark them as frozen.
+ * Set panes and mark them as frozen. With extra options.
  */
 void
-worksheet_freeze_panes(lxw_worksheet *self, lxw_row_t first_row,
-                       lxw_col_t first_col)
+worksheet_freeze_panes_opt(lxw_worksheet *self,
+                           lxw_row_t first_row, lxw_col_t first_col,
+                           lxw_row_t top_row, lxw_col_t left_col,
+                           uint8_t type)
 {
     self->panes.first_row = first_row;
     self->panes.first_col = first_col;
-    self->panes.top_row = first_row;
-    self->panes.left_col = first_col;
-    self->panes.type = FREEZE_PANES;
+    self->panes.top_row = top_row;
+    self->panes.left_col = left_col;
+    self->panes.x_split = 0.0;
+    self->panes.y_split = 0.0;
+
+    if (type)
+        self->panes.type = FREEZE_SPLIT_PANES;
+    else
+        self->panes.type = FREEZE_PANES;
+}
+
+/*
+ * Set panes and mark them as frozen.
+ */
+void
+worksheet_freeze_panes(lxw_worksheet *self,
+                       lxw_row_t first_row, lxw_col_t first_col)
+{
+    worksheet_freeze_panes_opt(self, first_row, first_col,
+                               first_row, first_col, 0);
+}
+
+/*
+ * Set panes and mark them as split.With extra options.
+ */
+void
+worksheet_split_panes_opt(lxw_worksheet *self,
+                          double y_split, double x_split,
+                          lxw_row_t top_row, lxw_col_t left_col)
+{
+    self->panes.first_row = 0;
+    self->panes.first_col = 0;
+    self->panes.top_row = top_row;
+    self->panes.left_col = left_col;
+    self->panes.x_split = x_split;
+    self->panes.y_split = y_split;
+    self->panes.type = SPLIT_PANES;
+}
+
+/*
+ * Set panes and mark them as split.
+ */
+void
+worksheet_split_panes(lxw_worksheet *self, double y_split, double x_split)
+{
+    worksheet_split_panes_opt(self, y_split, x_split, 0, 0);
 }
 
 /*

@@ -46,6 +46,12 @@ enum lxw_boolean {
         return error;                           \
     }
 
+#define RETURN_VOID_ON_MEM_ERROR(pointer)       \
+    if (!pointer) {                             \
+        LXW_MEM_ERROR();                        \
+        return;                                 \
+    }
+
 #define LXW_WARN(message)                       \
     fprintf(stderr, "[WARN]: " message "\n")
 
