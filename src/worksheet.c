@@ -173,8 +173,7 @@ _free_row(lxw_row *row)
     if (!row)
         return;
 
-    for (cell = RB_MIN(lxw_table_cells, row->cells); cell;
-        cell = next_cell) {
+    for (cell = RB_MIN(lxw_table_cells, row->cells); cell; cell = next_cell) {
         next_cell = RB_NEXT(lxw_table_cells, row->cells, cell);
         RB_REMOVE(lxw_table_cells, row->cells, cell);
         _free_cell(cell);
