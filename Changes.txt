@@ -1,17 +1,27 @@
 /**
 @page changes Changes
 
+## 0.1.9 December 7 2015
+
+- Replaced main worksheet data structure with a Red/Black tree implementation
+  for better performance when data isn't added in linear row-column order.
+  Thanks to Martin Renters. Pull Request [#14][gh_14] and [#16][gh_16].
+
+  [gh_14]: https://github.com/jmcnamara/libxlsxwriter/issues/14
+  [gh_16]: https://github.com/jmcnamara/libxlsxwriter/issues/16
+
+
 ## 0.1.8 December 7 2015
 
 - Added `worksheet_freeze_panes()` and `worksheet_split_panes()` to allow
   setting worksheet panes. See @ref panes.c example.
 
-- Added [link to Xcode
-  project](https://github.com/lrossi/libxlsxwriterCocoaExamples) for iOS and
-  OS X with Objective-C and Swift, provided by Ludovico Rossi.
+- Added link to [Xcode project][libxlsxwriterCocoaExamples] for iOS and OS X
+  with Objective-C and Swift, provided by Ludovico Rossi.
 
 - Added improved support for Windows.
 
+  [libxlsxwriterCocoaExamples]: https://github.com/lrossi/libxlsxwriterCocoaExamples
 
 ## 0.1.7 September 27 2015
 

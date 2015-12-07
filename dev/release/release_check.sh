@@ -19,7 +19,7 @@ function check_test_status {
 
     if [ "$RESPONSE" != "y" ]; then
 
-        echo -n "    Run all tests now?                 [y/N]: "
+        echo -n "    Run all tests now?                     [y/N]: "
         read RESPONSE
 
         if [ "$RESPONSE" != "y" ]; then
@@ -74,7 +74,7 @@ function check_versions {
     read RESPONSE
 
     if [ "$RESPONSE" != "y" ]; then
-        echo -n "    Update versions?                   [y/N]: "
+        echo -n "    Update versions?                       [y/N]: "
         read RESPONSE
 
         if [ "$RESPONSE" != "y" ]; then
