@@ -35,4 +35,9 @@ Pod::Spec.new do |s|
   s.header_dir            = "xlsxwriter"
   s.header_mappings_dir   = "include/xlsxwriter"
   s.library               = "z"
+  
+  s.prepare_command = <<-CMD
+                        sed -i '' 's#xlsxwriter/third_party/queue.h#queue.h#g' ./include/xlsxwriter/*.h
+                        sed -i '' 's#xlsxwriter/third_party/minizip/##g' ./include/xlsxwriter/*.h
+                   CMD
 end
