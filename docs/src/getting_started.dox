@@ -65,11 +65,20 @@ To see a verbose summary of the compilation steps use `V=1`:
     make V=1
 
 
-### Install using Cocoa Pods
+### Install using Cocoa Pods for Xcode
 
-For iOS and OS X progects in Xcode you can install libxlsxwriter using
+For iOS and OS X projects in Xcode you can install libxlsxwriter using
 [CocoaPods](https://cocoapods.org).
 
+For a sample Xcode project that uses the libxlsxwriter cocoapod for iOS and OS
+X with Objective-C and Swift see [libxlsxwriter Cocoa
+Examples](https://github.com/lrossi/libxlsxwriterCocoaExamples), provided by
+Ludovico Rossi.
+
+Note: if you are using the `"use_frameworks!"` directive in your Podfile then
+see the following
+[discussion](https://github.com/jmcnamara/libxlsxwriter/pull/13) for a
+workaround.
 
 ### Try an example
 

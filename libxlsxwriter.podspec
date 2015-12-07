@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = "libxlsxwriter"
-  s.version               = "0.1.7"
+  s.version               = "0.1.8"
   s.summary               = "A C library for creating Excel XLSX files."
   s.ios.deployment_target = "6.0"
   s.osx.deployment_target = "10.8"
@@ -10,18 +10,18 @@ Pod::Spec.new do |s|
 
                             It supports features such as:
 
-                            * 100% compatible Excel XLSX files
-                            * Full Excel formatting
-                            * Merged cells
-                            * Autofilters
-                            * Defined names
-                            * Memory optimisation mode for writing large files
-                            * Source code available on GitHub
-                            * FreeBSD license
-                            * ANSI C
-                            * Works with GCC 4.4, 4.6, 4.7, 4.8, 4.9, Clang, ICC and TCC.
-                            * Works on Linux, FreeBSD, OS X and iOS.
-                            * The only dependency is on zlib
+                            * 100% compatible Excel XLSX files.
+                            * Full Excel formatting.
+                            * Merged cells.
+                            * Defined names.
+                            * Autofilters.
+                            * Memory optimisation mode for writing large files.
+                            * Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter).
+                            * FreeBSD @ref license.
+                            * ANSI C.
+                            * Works with GCC 4.x, GCC 5.x, Clang, Xcode, MSVS 2015, ICC and TCC.
+                            * Works on Linux, FreeBSD, OS X, iOS and Windows.
+                            * The only dependency is on `zlib`.
                             DESC
 
   s.homepage              = "http://libxlsxwriter.github.io"

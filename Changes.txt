@@ -1,6 +1,18 @@
 /**
 @page changes Changes
 
+## 0.1.8 December 7 2015
+
+- Added `worksheet_freeze_panes()` and `worksheet_split_panes()` to allow
+  setting worksheet panes. See @ref panes.c example.
+
+- Added [link to Xcode
+  project](https://github.com/lrossi/libxlsxwriterCocoaExamples) for iOS and
+  OS X with Objective-C and Swift see , provided by Ludovico Rossi.
+
+- Added improved support for Windows.
+
+
 ## 0.1.7 September 27 2015
 
 - Fixed CocoaPod spec file for iOS and OS X.
