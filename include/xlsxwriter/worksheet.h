@@ -700,10 +700,10 @@ int8_t worksheet_write_url_opt(lxw_worksheet *worksheet,
  * and `mailto:` :
  *
  * @code
- *     worksheet_write_url(worksheet, 0, 0, "ftp://www.python.org/",    url_format);
- *     worksheet_write_url(worksheet, 1, 0, "http://www.python.org/",   url_format);
- *     worksheet_write_url(worksheet, 2, 0, "https://www.python.org/",  url_format);
- *     worksheet_write_url(worksheet, 3, 0, "mailto:jmcnamaracpan.org", url_format);
+ *     worksheet_write_url(worksheet, 0, 0, "ftp://www.python.org/",     url_format);
+ *     worksheet_write_url(worksheet, 1, 0, "http://www.python.org/",    url_format);
+ *     worksheet_write_url(worksheet, 2, 0, "https://www.python.org/",   url_format);
+ *     worksheet_write_url(worksheet, 3, 0, "mailto:jmcnamara@cpan.org", url_format);
  *
  * @endcode
  *
@@ -1080,7 +1080,7 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
  * so that they act as a single area.
  *
  * Excel generally merges and centers cells at same time. To get similar
- * behaviour with libxlsxwriter you need to apply a @ref format.h "Format"
+ * behavior with libxlsxwriter you need to apply a @ref format.h "Format"
  * object with the appropriate alignment:
  *
  * @code
@@ -1488,7 +1488,7 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  * @endcode
  *
  * For simple text, if you do not specify any justification the text will be
- * centred. However, you must prefix the text with `&C` if you specify a font
+ * centered. However, you must prefix the text with `&C` if you specify a font
  * name or any other formatting:
  *
  * @code

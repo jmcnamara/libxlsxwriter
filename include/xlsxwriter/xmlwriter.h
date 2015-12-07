@@ -10,7 +10,7 @@
  * in the Excel XLSX file format.
  *
  * This library is used in preference to a more generic XML library to allow
- * for customisation and optimisation for the XLSX file format.
+ * for customization and optimisation for the XLSX file format.
  *
  * The xmlwriter functions are only used internally and do not need to be
  * called directly by the end user.
@@ -58,7 +58,7 @@ struct xml_attribute *_new_attribute_str(const char *key, const char *value);
 struct xml_attribute *_new_attribute_int(const char *key, uint32_t value);
 struct xml_attribute *_new_attribute_dbl(const char *key, double value);
 
-/* Macro to initialise the xml_attribute_list pointers. */
+/* Macro to initialize the xml_attribute_list pointers. */
 #define _INIT_ATTRIBUTES()                                    \
     STAILQ_INIT(&attributes)
 

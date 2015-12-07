@@ -39,7 +39,7 @@ The first step is to include the header for the library:
 @skipline include
 
 Then we need some data to add to the spreadsheet. For the sake of this example
-we create and initialise some simple data structures. In a real application
+we create and initialize some simple data structures. In a real application
 the input data might come from a database or a file.
 
 @dontinclude tutorial1.c

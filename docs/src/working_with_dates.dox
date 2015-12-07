@@ -38,7 +38,7 @@ The members of the lxw_datetime struct and the range of their values are:
 Dates in Excel do not support timezones and the maximum resolution of times is
 milliseconds.
 
-If dates or times are required without the other you should initialise the
+If dates or times are required without the other you should initialize the
 unrequired values to `0`:
 
 @code

@@ -28,7 +28,7 @@ If required, this memory usage can be reduced even more by setting
 maximum column that is likely to be encountered.
 
 The trade-off when using `constant_memory` mode is that data must be added
-sequentiallly in row order and you won't be able to take advantage of any new
+sequentially in row order and you won't be able to take advantage of any new
 features that manipulate cell data after it is written. Currently the only
 such feature is worksheet_set_row() which in `constant_memory` mode can only
 be used when writing data to the current row.
@@ -64,7 +64,7 @@ Apple Numbers for Mac where the string data isn't displayed.
 Performance
 -----------
 
-Currently the library isn't optimised. There are some known bottlenecks that
+Currently the library isn't optimized. There are some known bottlenecks that
 will be reduced in upcoming versions. Also, the library is currently single
 threaded.
 

@@ -13,19 +13,18 @@ Libxlsxwriter is a C library that can be used to write text, numbers, formulas a
 
 It supports features such as:
 
-- 100% compatible Excel XLSX files
-- Full Excel formatting
-- Merged cells
-- Autofilters
-- Defined names
-- Memory optimisation mode for writing large files
-- Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter)
-- FreeBSD license
-- ANSI C
-- Works with GCC 4.4, 4.6, 4.7, 4.8, 4.9, Clang, ICC and TCC.
-- Works on Linux, FreeBSD, OS X and iOS.
-- The only dependency is on `zlib`
-
+- 100% compatible Excel XLSX files.
+- Full Excel formatting.
+- Merged cells.
+- Defined names.
+- Autofilters.
+- Memory optimisation mode for writing large files.
+- Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter).
+- FreeBSD @ref license.
+- ANSI C.
+- Works with GCC 4.x, GCC 5.x, Clang, Xcode, MSVC 2015, ICC and TCC.
+- Works on Linux, FreeBSD, OS X, iOS and Windows.
+- The only dependency is on `zlib`.
 
 Here is an example that was used to create the spreadsheet shown above:
 

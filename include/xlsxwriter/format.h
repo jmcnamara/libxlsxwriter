@@ -25,7 +25,7 @@
  *
  * @image html formats_intro.png
  *
- * Formats in `libxlswriter` are accessed via the lxw_format
+ * Formats in `libxlsxwriter` are accessed via the lxw_format
  * struct. Throughout this document these will be referred to simply as
  * *Formats*.
  *
@@ -37,7 +37,7 @@
  * @endcode
  *
  * The members of the lxw_format struct aren't modified directly. Instead the
- * format properties are set by calling the function shown in this section.
+ * format properties are set by calling the functions shown in this section.
  * For example:
  *
  * @code
@@ -54,7 +54,7 @@
  * @endcode
  *
  * The full range of formatting options that can be applied using
- * `libxlswriter` are shown below.
+ * `libxlsxwriter` are shown below.
  *
  */
 #ifndef __LXW_FORMAT_H__
@@ -68,9 +68,9 @@
 #include "common.h"
 
 /**
- * @brief The type for RGB colors in libxlswriter.
+ * @brief The type for RGB colors in libxlsxwriter.
  *
- * The type for RGB colors in libxlswriter. The valid range is `0x000000`
+ * The type for RGB colors in libxlsxwriter. The valid range is `0x000000`
  * (black) to `0xFFFFFF` (white). See @ref working_with_colors.
  */
 typedef int32_t lxw_color_t;
@@ -323,7 +323,7 @@ enum lxw_format_borders {
 /**
  * @brief Struct to represent the formatting properties of an Excel format.
  *
- * Formats in `libxlswriter` are accessed via this struct.
+ * Formats in `libxlsxwriter` are accessed via this struct.
  *
  * The members of the lxw_format struct aren't modified directly. Instead the
  * format properties are set by calling the functions shown in format.h.

@@ -128,7 +128,7 @@ enum lxw_workbook_error {
  * * `constant_memory`
  */
 typedef struct lxw_workbook_options {
-    /** Optimise the workbook to use constant memory for worksheets */
+    /** Optimize the workbook to use constant memory for worksheets */
     uint8_t constant_memory;
 } lxw_workbook_options;
 

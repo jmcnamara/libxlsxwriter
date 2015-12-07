@@ -13,7 +13,7 @@
 #include "xlsxwriter/third_party/queue.h"
 #include "common.h"
 
-/* Macro to loop over hash table elements in insertion orfder. */
+/* Macro to loop over hash table elements in insertion order. */
 #define LXW_FOREACH_ORDERED(elem, hash_table) \
     STAILQ_FOREACH((elem), (hash_table)->order_list, lxw_hash_order_pointers)
 
