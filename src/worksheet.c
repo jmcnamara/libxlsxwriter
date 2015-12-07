@@ -26,8 +26,10 @@
  */
 STATIC void _worksheet_write_rows(lxw_worksheet *self);
 STATIC int _row_cmp(lxw_row *row1, lxw_row *row2);
+STATIC int _cell_cmp(lxw_cell *cell1, lxw_cell *cell2);
 
 LXW_RB_GENERATE_ROW(lxw_table_rows, lxw_row, tree_pointers, _row_cmp);
+LXW_RB_GENERATE_CELL(lxw_table_cells, lxw_cell, tree_pointers, _cell_cmp);
 
 /*****************************************************************************
  *
@@ -162,13 +164,15 @@ void
 _free_row(lxw_row *row)
 {
     lxw_cell *cell;
+    lxw_cell *next_cell;
 
     if (!row)
         return;
 
-    while (!TAILQ_EMPTY(row->cells)) {
-        cell = TAILQ_FIRST(row->cells);
-        TAILQ_REMOVE(row->cells, cell, list_pointers);
+    for (cell = RB_MIN(lxw_table_cells, row->cells); cell;
+        cell = next_cell) {
+        next_cell = RB_NEXT(lxw_table_cells, row->cells, cell);
+        RB_REMOVE(lxw_table_cells, row->cells, cell);
         _free_cell(cell);
     }
 
@@ -278,7 +282,7 @@ _new_row(lxw_row_t row_num)
         row->height = LXW_DEF_ROW_HEIGHT;
 
         if (row->cells)
-            TAILQ_INIT(row->cells);
+            RB_INIT(row->cells);
         else
             LXW_MEM_ERROR();
     }
@@ -488,61 +492,20 @@ STATIC void
 _insert_cell_list(struct lxw_table_cells *cell_list,
                   lxw_cell *cell, lxw_col_t col_num)
 {
-    lxw_cell *first_cell = TAILQ_FIRST(cell_list);
-    lxw_cell *last_cell = TAILQ_LAST(cell_list, lxw_table_cells);
-    lxw_cell *current_cell;
+    lxw_cell *existing_cell;
 
-    /* If the row has no cells add the new at the start of the cell list. */
-    if (!first_cell) {
-        TAILQ_INSERT_HEAD(cell_list, cell, list_pointers);
-        return;
-    }
+    cell->col_num = col_num;
 
-    /* If it is the last cell then replace it and free existing cell. */
-    if (col_num == last_cell->col_num) {
-        TAILQ_INSERT_TAIL(cell_list, cell, list_pointers);
-        TAILQ_REMOVE(cell_list, last_cell, list_pointers);
-        free(last_cell);
-        return;
-    }
+    existing_cell = RB_INSERT(lxw_table_cells, cell_list, cell);
 
-    /* Append the cell if the col number is after the last cell. */
-    if (col_num > last_cell->col_num) {
-        TAILQ_INSERT_TAIL(cell_list, cell, list_pointers);
-        return;
-    }
+    /* If existing_cell is not NULL, then that cell already existed. */
+    /* Remove existing_cell and add new one in again. */
+    if (existing_cell) {
+        RB_REMOVE(lxw_table_cells, cell_list, existing_cell);
 
-    /* If it is the first cell then replace it and free existing cell. */
-    if (col_num == first_cell->col_num) {
-        TAILQ_INSERT_HEAD(cell_list, cell, list_pointers);
-        TAILQ_REMOVE(cell_list, first_cell, list_pointers);
-        free(first_cell);
-        return;
-    }
-
-    /* Prepend the cell if the col number is before the first cell. */
-    if (col_num < first_cell->col_num) {
-        TAILQ_INSERT_HEAD(cell_list, cell, list_pointers);
-        return;
-    }
-
-    /* Otherwise we iterate through the list of cells and either replace */
-    /* an existing cell or insert an new one in sorted order. */
-    TAILQ_FOREACH(current_cell, cell_list, list_pointers) {
-
-        if (col_num == current_cell->col_num) {
-            TAILQ_INSERT_AFTER(cell_list, current_cell, cell, list_pointers);
-            TAILQ_REMOVE(cell_list, current_cell, list_pointers);
-            free(current_cell);
-            return;
-        }
-
-        if (col_num < TAILQ_NEXT(current_cell, list_pointers)->col_num) {
-            /* Note: there is always a non-NULL _NEXT() since we already */
-            /* checked above that the col_num is less than _LAST(). */
-            TAILQ_INSERT_AFTER(cell_list, current_cell, cell, list_pointers);
-            return;
-        }
+        /* Add it in again. */
+        RB_INSERT(lxw_table_cells, cell_list, cell);
+        _free_cell(existing_cell);
     }
 
     return;
@@ -654,6 +617,19 @@ _row_cmp(lxw_row *row1, lxw_row *row2)
     if (row1->row_num > row2->row_num)
         return 1;
     if (row1->row_num < row2->row_num)
+        return -1;
+    return 0;
+}
+
+/*
+ * Comparator for the cell structure red/black tree.
+ */
+STATIC int
+_cell_cmp(lxw_cell *cell1, lxw_cell *cell2)
+{
+    if (cell1->col_num > cell2->col_num)
+        return 1;
+    if (cell1->col_num < cell2->col_num)
         return -1;
     return 0;
 }
@@ -1127,8 +1103,8 @@ _write_inline_string_cell(lxw_worksheet *self, lxw_cell *cell)
 STATIC void
 _calculate_spans(struct lxw_row *row, char *span, int32_t *block_num)
 {
-    lxw_col_t span_col_min = TAILQ_FIRST(row->cells)->col_num;
-    lxw_col_t span_col_max = TAILQ_LAST(row->cells, lxw_table_cells)->col_num;
+    lxw_col_t span_col_min = RB_MIN(lxw_table_cells, row->cells)->col_num;
+    lxw_col_t span_col_max = RB_MAX(lxw_table_cells, row->cells)->col_num;
     lxw_col_t col_min;
     lxw_col_t col_max;
     *block_num = row->row_num / 16;
@@ -1137,9 +1113,9 @@ _calculate_spans(struct lxw_row *row, char *span, int32_t *block_num)
 
     while (row && (int32_t) (row->row_num / 16) == *block_num) {
 
-        if (!TAILQ_EMPTY(row->cells)) {
-            col_min = TAILQ_FIRST(row->cells)->col_num;
-            col_max = TAILQ_LAST(row->cells, lxw_table_cells)->col_num;
+        if (!RB_EMPTY(row->cells)) {
+            col_min = RB_MIN(lxw_table_cells, row->cells)->col_num;
+            col_max = RB_MAX(lxw_table_cells, row->cells)->col_num;
 
             if (col_min < span_col_min)
                 span_col_min = col_min;
@@ -1233,7 +1209,7 @@ _worksheet_write_rows(lxw_worksheet *self)
 
     RB_FOREACH(row, lxw_table_rows, self->table) {
 
-        if (TAILQ_EMPTY(row->cells)) {
+        if (RB_EMPTY(row->cells)) {
             /* Row data only. No cells. */
             _write_row(self, row, NULL);
         }
@@ -1244,7 +1220,7 @@ _worksheet_write_rows(lxw_worksheet *self)
 
             _write_row(self, row, spans);
 
-            TAILQ_FOREACH(cell, row->cells, list_pointers) {
+            RB_FOREACH(cell, lxw_table_cells, row->cells) {
                 _write_cell(self, cell, row->format);
             }
             _xml_end_tag(self->file, "row");
@@ -1734,7 +1710,7 @@ _worksheet_write_hyperlinks(lxw_worksheet *self)
 
     RB_FOREACH(row, lxw_table_rows, self->hyperlinks) {
 
-        TAILQ_FOREACH(link, row->cells, list_pointers) {
+        RB_FOREACH(link, lxw_table_cells, row->cells) {
 
             if (link->type == HYPERLINK_URL
                 || link->type == HYPERLINK_EXTERNAL) {

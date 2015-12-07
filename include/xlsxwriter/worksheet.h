@@ -129,8 +129,8 @@ enum cell_types {
     HYPERLINK_EXTERNAL
 };
 
-/* Define the queue.h TAILQ structs for the list head types. */
-TAILQ_HEAD(lxw_table_cells, lxw_cell);
+/* Define the tree.h RB structs for the red-black head types. */
+RB_HEAD(lxw_table_cells, lxw_cell);
 
 /* Define a RB_TREE struct manually to add extra members. */
 struct lxw_table_rows {
@@ -150,6 +150,16 @@ struct lxw_table_rows {
     RB_GENERATE_MINMAX(name, type, field, static)       \
     /* Add unused struct to allow adding a semicolon */ \
     struct lxw_rb_generate_row{int unused;}
+
+#define LXW_RB_GENERATE_CELL(name, type, field, cmp)     \
+    RB_GENERATE_INSERT_COLOR(name, type, field, static) \
+    RB_GENERATE_REMOVE_COLOR(name, type, field, static) \
+    RB_GENERATE_INSERT(name, type, field, cmp, static)  \
+    RB_GENERATE_REMOVE(name, type, field, static)       \
+    RB_GENERATE_NEXT(name, type, field, static)         \
+    RB_GENERATE_MINMAX(name, type, field, static)       \
+    /* Add unused struct to allow adding a semicolon */ \
+    struct lxw_rb_generate_cell{int unused;}
 
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
 
@@ -375,8 +385,8 @@ typedef struct lxw_cell {
     char *user_data1;
     char *user_data2;
 
-    /* List pointers for queue.h. */
-    TAILQ_ENTRY (lxw_cell) list_pointers;
+    /* List pointers for tree.h. */
+    RB_ENTRY (lxw_cell) tree_pointers;
 } lxw_cell;
 
 /* *INDENT-OFF* */
