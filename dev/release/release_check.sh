@@ -121,6 +121,35 @@ function check_docs {
 
 #############################################################
 #
+# Check the cocoapods spec file.
+#
+function check_pod_spec {
+
+    echo
+    echo -n     "Is the coacoapod file ok?              [y/N]: "
+    read RESPONSE
+
+
+    if [ "$RESPONSE" != "y" ]; then
+
+        echo -n "    Run lint now?                      [y/N]: "
+        read RESPONSE
+
+        if [ "$RESPONSE" != "y" ]; then
+            echo
+            echo -e "Please run: pod spec lint libxlsxwriter.podspec\n";
+            exit 1
+        else
+            echo "    Running lint...";
+            pod spec lint libxlsxwriter.podspec
+            check_pod_spec
+         fi
+    fi
+}
+
+
+#############################################################
+#
 # Run release checks.
 #
 function check_git_status {
@@ -154,6 +183,8 @@ clear
 check_docs
 check_changefile
 check_versions
+clear
+check_pod_spec
 check_git_status
 
 
@@ -162,10 +193,6 @@ check_git_status
 # All checks complete.
 #
 clear
-echo
-echo "Interface configured [OK]"
-echo "Versions updated     [OK]"
-echo "Git status           [OK]"
 echo
 echo "Everything is configured.";
 echo

@@ -96,12 +96,22 @@ releasecheck:
 	$(Q)dev/release/release_check.sh
 
 release: releasecheck
+	@echo
 	@echo "Pushing to git master ..."
 	$(Q)git push origin master
 	$(Q)git push --tags
 
+	@echo
 	@echo "Pushing updated docs ..."
 	$(Q)make -C ../libxlsxwriter.github.io release
 
+	@echo
 	@echo "Pushing the cocoapod ..."
 	$(Q)pod trunk push libxlsxwriter.podspec
+
+	@echo
+	@echo "Finished. Opening files."
+	$(Q)open http://libxlsxwriter.github.io/changes.html
+	$(Q)open http://cocoadocs.org/docsets/libxlsxwriter
+	$(Q)open https://github.com/jmcnamara/libxlsxwriter
+	$(Q)open https://github.com/jmcnamara/libxlsxwriter/releases
