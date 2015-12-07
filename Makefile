@@ -67,6 +67,7 @@ tags:
 	$(Q)etags src/*.c include/*.h include/xlsxwriter/*.h
 
 # Build the doxygen docs.
+doc: docs
 docs:
 	$(Q)$(MAKE) -C docs
 
@@ -86,3 +87,21 @@ coverity:
 	$(Q)tar -czf libxlsxwriter-coverity.tgz cov-int
 	$(Q)$(MAKE) -C src clean
 	$(Q)rm -f  lib/*
+
+spellcheck:
+	$(Q)for f in docs/src/*.dox;         do aspell --lang=en_US --check $$f; done
+	$(Q)for f in include/xlsxwriter/*.h; do aspell --lang=en_US --check $$f; done
+
+releasecheck:
+	$(Q)dev/release/release_check.sh
+
+release: releasecheck
+	@echo "Pushing to git master ..."
+	$(Q)git push origin master
+	$(Q)git push --tags
+
+	@echo "Pushing updated docs ..."
+	$(Q)make -C ../libxlsxwriter.github.io release
+
+	@echo "Pushing the cocoapod ..."
+	$(Q)pod trunk push libxlsxwriter.podspec

@@ -16,6 +16,7 @@ TAGS
 *#
 ~*xlsx
 *.xlsx
+*.bak
 !test/functional/xlsx_files/*.xlsx
 *.pyc
 .cproject
