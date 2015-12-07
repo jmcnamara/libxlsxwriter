@@ -35,4 +35,5 @@ Pod::Spec.new do |s|
   s.header_dir            = "xlsxwriter"
   s.header_mappings_dir   = "include/xlsxwriter"
   s.library               = "z"
+  s.compiler_flags        = "-DNOCRYPT=1", "-DNOUNCRYPT=1"
 end
