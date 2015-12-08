@@ -14,12 +14,12 @@ echo
 function check_test_status {
 
     echo
-    echo -n "Are all tests passing?                     [y/N]: "
+    echo -n     "Are all tests passing?                 [y/N]: "
     read RESPONSE
 
     if [ "$RESPONSE" != "y" ]; then
 
-        echo -n "    Run all tests now?                     [y/N]: "
+        echo -n "    Run all tests now?                 [y/N]: "
         read RESPONSE
 
         if [ "$RESPONSE" != "y" ]; then
@@ -70,11 +70,11 @@ function check_versions {
     grep -He "[0-9]\.[0-9]\.[0-9]" include/xlsxwriter.h libxlsxwriter.podspec | sed 's/:/ : /g' | awk '{printf "    | %-24s %s\n", $1, $5}'
 
     echo
-    echo -n "Are the versions up to date?               [y/N]: "
+    echo -n     "Are the versions up to date?           [y/N]: "
     read RESPONSE
 
     if [ "$RESPONSE" != "y" ]; then
-        echo -n "    Update versions?                       [y/N]: "
+        echo -n "    Update versions?                   [y/N]: "
         read RESPONSE
 
         if [ "$RESPONSE" != "y" ]; then
@@ -148,6 +148,38 @@ function check_pod_spec {
 }
 
 
+
+#############################################################
+#
+# Update the pod repo. This can take some time.
+#
+function update_pod_repo {
+
+    echo
+    echo -n     "Is the pod repo updated?               [y/N]: "
+    read RESPONSE
+
+
+    if [ "$RESPONSE" != "y" ]; then
+
+        echo -n "    Update now?                        [y/N]: "
+        read RESPONSE
+
+        if [ "$RESPONSE" != "y" ]; then
+            echo
+            echo -e "Please run: pod spec lint libxlsxwriter.podspec\n";
+            exit 1
+        else
+            echo "    Running update...";
+            cd ~/.cocoapods/repos/master
+            git pull --ff-only
+            cd -
+            update_pod_repo
+         fi
+    fi
+}
+
+
 #############################################################
 #
 # Run release checks.
@@ -185,6 +217,8 @@ check_changefile
 check_versions
 clear
 check_pod_spec
+clear
+update_pod_repo
 check_git_status
 
 
@@ -197,7 +231,7 @@ echo
 echo "Everything is configured.";
 echo
 
-echo -n "Confirm release:                               [y/N]: ";
+echo -n         "Confirm release:                       [y/N]: ";
 read RESPONSE
 
 if [ "$RESPONSE" == "y" ]; then
