@@ -16,6 +16,12 @@
  * Forward declarations.
  */
 
+STATIC int _element_cmp(struct sst_element *element1,
+    struct sst_element *element2);
+
+LXW_RB_GENERATE_ELEMENT(sst_rb_tree, sst_element, sst_tree_pointers,
+    _element_cmp);
+
 /*****************************************************************************
  *
  * Private functions.
@@ -23,18 +29,18 @@
  ****************************************************************************/
 
 /*
- * Create a new SST SharedString hash table object.
+ * Create a new SST SharedString object.
  */
 lxw_sst *
 _new_sst()
 {
-    /* Create the new hash table. */
+    /* Create the new shared string table. */
     lxw_sst *sst = calloc(1, sizeof(lxw_sst));
     RETURN_ON_MEM_ERROR(sst, NULL);
 
-    /* Add the sst element buckets. */
-    sst->buckets = calloc(NUM_SST_BUCKETS, sizeof(struct sst_bucket_list *));
-    GOTO_LABEL_ON_MEM_ERROR(sst->buckets, mem_error1);
+    /* Add the sst RB tree. */
+    sst->rb_tree = calloc(1, sizeof(struct sst_rb_tree));
+    GOTO_LABEL_ON_MEM_ERROR(sst->rb_tree, mem_error1);
 
     /* Add a list for tracking the insertion order. */
     sst->order_list = calloc(1, sizeof(struct sst_order_list));
@@ -43,13 +49,13 @@ _new_sst()
     /* Initialise the order list. */
     STAILQ_INIT(sst->order_list);
 
-    /* Store the number of buckets to calculate the load factor. */
-    sst->num_buckets = NUM_SST_BUCKETS;
+    /* Initialize the RB tree. */
+    RB_INIT(sst->rb_tree);
 
     return sst;
 
 mem_error2:
-    free(sst->order_list);
+    free(sst->rb_tree);
 
 mem_error1:
     free(sst);
@@ -58,12 +64,11 @@ mem_error1:
 }
 
 /*
- * Free a SST SharedString hash table object.
+ * Free a SST SharedString table object.
  */
 void
 _free_sst(lxw_sst *sst)
 {
-    size_t i;
     struct sst_element *sst_element;
     struct sst_element *sst_element_temp;
 
@@ -79,32 +84,18 @@ _free_sst(lxw_sst *sst)
             free(sst_element);
     }
 
-    /* Free the buckets from the hash table. */
-    for (i = 0; i < sst->num_buckets; i++) {
-        if (sst->buckets[i])
-            free(sst->buckets[i]);
-    }
-
     free(sst->order_list);
-    free(sst->buckets);
+    free(sst->rb_tree);
     free(sst);
 }
 
 /*
- * FNV hash function for SST table string keys. See:
- * http://en.wikipedia.org/wiki/Fowler-Noll-Vo_hash_function
+ * Comparator for the element structure
  */
-size_t
-_generate_sst_hash_key(const char *string)
+STATIC int
+_element_cmp(struct sst_element *element1, struct sst_element *element2)
 {
-    size_t string_len = strlen(string);
-    size_t hash = 2166136261;
-    size_t i;
-
-    for (i = 0; i < string_len; i++)
-        hash = (hash * 16777619) ^ (unsigned char) string[i];
-
-    return hash % NUM_SST_BUCKETS;
+    return strcmp(element1->string, element2->string);
 }
 
 /*****************************************************************************
@@ -227,84 +218,35 @@ _sst_assemble_xml_file(lxw_sst *self)
 int32_t
 _get_sst_index(lxw_sst *sst, const char *string)
 {
-    size_t hash_key = _generate_sst_hash_key(string);
-    struct sst_bucket_list *list = NULL;
-    struct sst_element *element = NULL;
+    struct sst_element *element;
+    struct sst_element *existing_element;
 
-    if (!sst->buckets[hash_key]) {
-        /* The string isn't in the SST SharedString hash table. */
+    /* Create an sst element to potentially add to the table. */
+    element = calloc(1, sizeof(struct sst_element));
+    if (!element)
+        return -1;
 
-        /* Create a linked list in the bucket to hold the sst strings. */
-        list = calloc(1, sizeof(struct sst_bucket_list));
-        GOTO_LABEL_ON_MEM_ERROR(list, mem_error1);
+    /* Create potential new element with the string and its index. */
+    element->index = sst->unique_count;
+    element->string = lxw_strdup(string);
 
-        /* Initialise the bucket linked list. */
-        SLIST_INIT(list);
+    /* Try to insert it and see whether we already have that string. */
+    existing_element = RB_INSERT(sst_rb_tree, sst->rb_tree, element);
 
-        /* Create an sst element to add to the linked list. */
-        element = calloc(1, sizeof(struct sst_element));
-        GOTO_LABEL_ON_MEM_ERROR(element, mem_error1);
-
-        /* Store the string and its index. */
-        element->index = sst->unique_count;
-        element->string = lxw_strdup(string);
-
-        /* Add the sst element to the bucket linked list. */
-        SLIST_INSERT_HEAD(list, element, sst_list_pointers);
-
-        /* Also add it to the insertion order linked list. */
-        STAILQ_INSERT_TAIL(sst->order_list, element, sst_order_pointers);
-
-        /* Store the bucket list at the hash index. */
-        sst->buckets[hash_key] = list;
-
-        /* Update the bucket and SST string counts. */
-        sst->used_buckets++;
+    /* If existing_element is not NULL, then it already existed. */
+    /* Free new created element. */
+    if (existing_element) {
+        free(element->string);
+        free(element);
         sst->string_count++;
-        sst->unique_count++;
-
-        return element->index;
-    }
-    else {
-        /* The sting is already in the table or there is a hash collision. */
-        list = sst->buckets[hash_key];
-
-        /* Iterate over the strings in the bucket's linked list. */
-        SLIST_FOREACH(element, list, sst_list_pointers) {
-            if (strcmp(element->string, string) == 0) {
-                /* The string already exists in the table. Update the
-                 * non-unique string count and return the index. */
-                sst->string_count++;
-                return element->index;
-            }
-        }
-
-        /* String doesn't exist in the list so this is a hash collision.
-         * Create an sst element to add to the linked list. */
-        element = calloc(1, sizeof(struct sst_element));
-        GOTO_LABEL_ON_MEM_ERROR(element, mem_error2);
-
-        /* Store the string and its index. */
-        element->index = sst->unique_count;
-        element->string = lxw_strdup(string);
-
-        /* Add the sst element to the bucket linked list. */
-        SLIST_INSERT_HEAD(list, element, sst_list_pointers);
-
-        /* Also add it to the insertion order linked list. */
-        STAILQ_INSERT_TAIL(sst->order_list, element, sst_order_pointers);
-
-        /* Update the SST string counts. */
-        sst->string_count++;
-        sst->unique_count++;
-
-        return element->index;
+        return existing_element->index;
     }
 
-mem_error1:
-    free(list);
+    /* If it didn't exist, also add it to the insertion order linked list. */
+    STAILQ_INSERT_TAIL(sst->order_list, element, sst_order_pointers);
 
-mem_error2:
-    free(element);
-    return -1;
+    /* Update SST string counts. */
+    sst->string_count++;
+    sst->unique_count++;
+    return element->index;
 }
