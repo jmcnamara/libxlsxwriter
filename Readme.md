@@ -1,7 +1,7 @@
 # libxlsxwriter
 
 
-A C library for creating Excel XLSX files.
+Libxlsxwriter: A C library for creating Excel XLSX files.
 
 
 ![demo image](http://libxlsxwriter.github.io/demo.png)
@@ -20,7 +20,7 @@ It supports features such as:
 - Autofilters.
 - Memory optimisation mode for writing large files.
 - Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter).
-- FreeBSD @ref license.
+- FreeBSD ref license.
 - ANSI C.
 - Works with GCC 4.x, GCC 5.x, Clang, Xcode, MSVC 2015, ICC and TCC.
 - Works on Linux, FreeBSD, OS X, iOS and Windows.
