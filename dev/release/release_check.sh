@@ -214,11 +214,11 @@ check_test_status
 clear
 check_docs
 check_changefile
-check_versions
 clear
 check_pod_spec
 clear
 update_pod_repo
+check_versions
 check_git_status
 
 
