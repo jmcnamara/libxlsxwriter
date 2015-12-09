@@ -1286,6 +1286,10 @@ void worksheet_freeze_panes_opt(lxw_worksheet *worksheet,
 void worksheet_split_panes_opt(lxw_worksheet *worksheet,
                                double vertical, double horizontal,
                                lxw_row_t top_row, lxw_col_t left_col);
+/* TODO */
+void worksheet_set_selection(lxw_worksheet *worksheet,
+                             lxw_row_t first_row, lxw_col_t first_col,
+                             lxw_row_t last_row, lxw_col_t last_col);
 
 /**
  * @brief Set the page orientation as landscape.

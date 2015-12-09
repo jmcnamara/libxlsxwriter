@@ -740,8 +740,16 @@ _worksheet_write_freeze_panes(lxw_worksheet *self)
     char top_left_cell[MAX_CELL_NAME_LENGTH];
     char active_pane[LXW_PANE_NAME_LENGTH];
 
-    user_selection = calloc(1, sizeof(lxw_selection));
-    RETURN_VOID_ON_MEM_ERROR(user_selection);
+    /* If there is a user selection we remove it from the list and use it. */
+    if (!STAILQ_EMPTY(self->selections)) {
+        user_selection = STAILQ_FIRST(self->selections);
+        STAILQ_REMOVE_HEAD(self->selections, list_pointers);
+    }
+    else {
+        /* or else create a new blank selection. */
+        user_selection = calloc(1, sizeof(lxw_selection));
+        RETURN_VOID_ON_MEM_ERROR(user_selection);
+    }
 
     _INIT_ATTRIBUTES();
 
@@ -884,8 +892,17 @@ _worksheet_write_split_panes(lxw_worksheet *self)
     char top_left_cell[MAX_CELL_NAME_LENGTH];
     char active_pane[LXW_PANE_NAME_LENGTH];
 
-    user_selection = calloc(1, sizeof(lxw_selection));
-    RETURN_VOID_ON_MEM_ERROR(user_selection);
+    /* If there is a user selection we remove it from the list and use it. */
+    if (!STAILQ_EMPTY(self->selections)) {
+        user_selection = STAILQ_FIRST(self->selections);
+        STAILQ_REMOVE_HEAD(self->selections, list_pointers);
+        has_selection = LXW_TRUE;
+    }
+    else {
+        /* or else create a new blank selection. */
+        user_selection = calloc(1, sizeof(lxw_selection));
+        RETURN_VOID_ON_MEM_ERROR(user_selection);
+    }
 
     _INIT_ATTRIBUTES();
 
@@ -2984,6 +3001,61 @@ worksheet_activate(lxw_worksheet *self)
     self->hidden = LXW_FALSE;
 
     *self->active_sheet = self->index;
+}
+
+/*
+ * Set which cell or cells are selected in a worksheet.
+ */
+void
+worksheet_set_selection(lxw_worksheet *self,
+                        lxw_row_t first_row, lxw_col_t first_col,
+                        lxw_row_t last_row, lxw_col_t last_col)
+{
+    lxw_selection *selection;
+    lxw_row_t tmp_row;
+    lxw_col_t tmp_col;
+    char active_cell[MAX_CELL_RANGE_LENGTH];
+    char sqref[MAX_CELL_RANGE_LENGTH];
+
+    /* Only allow selection to be set once to avoid freeing/re-creating it. */
+    if (!STAILQ_EMPTY(self->selections))
+        return;
+
+    /* Excel doesn't set a selection for cell A1 since it is the default. */
+    if (first_row == 0 && first_col == 0 && last_row == 0 && last_col == 0)
+        return;
+
+    selection = calloc(1, sizeof(lxw_selection));
+    RETURN_VOID_ON_MEM_ERROR(selection);
+
+    /* Set the cell range selection. Do this before swapping max/min to  */
+    /* allow the selection direction to be reversed. */
+    lxw_rowcol_to_cell(active_cell, first_row, first_col);
+
+    /* Swap last row/col for first row/col if necessary. */
+    if (first_row > last_row) {
+        tmp_row = first_row;
+        first_row = last_row;
+        last_row = tmp_row;
+    }
+
+    if (first_col > last_col) {
+        tmp_col = first_col;
+        first_col = last_col;
+        last_col = tmp_col;
+    }
+
+    /* If the first and last cell are the same write a single cell. */
+    if ((first_row == last_row) && (first_col == last_col))
+        lxw_rowcol_to_cell(sqref, first_row, first_col);
+    else
+        lxw_range(sqref, first_row, first_col, last_row, last_col);
+
+    strcpy(selection->pane, "");
+    strcpy(selection->active_cell, active_cell);
+    strcpy(selection->sqref, sqref);
+
+    STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
 }
 
 /*
