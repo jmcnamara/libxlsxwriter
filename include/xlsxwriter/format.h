@@ -1,6 +1,6 @@
 /*
  * libxlsxwriter
- * 
+ *
  * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  */
 
@@ -12,7 +12,7 @@
  * borders, alignment and number formatting.
  *
  * See @ref format.h for full details of the functionality.
- * 
+ *
  * @file format.h
  *
  * @brief Functions and properties for adding formatting to cells in Excel.
@@ -522,6 +522,8 @@ void format_set_font_name(lxw_format *format, const char *font_name);
  *     format_set_font_size(format, 30);
  * @endcode
  *
+ * @image html format_font_size.png
+ *
  * Excel adjusts the height of a row to accommodate the largest font
  * size in the row. You can also explicitly specify the height of a
  * row using the worksheet_set_row() function.
@@ -539,11 +541,12 @@ void format_set_font_size(lxw_format *format, uint16_t size);
  *
  * @code
  *     format = workbook_add_format(workbook);
+ *     format_set_font_color(format, LXW_COLOR_RED);
  *
- *     format_set_font_color(format, "red");
- *
- *     worksheet_write_string(worksheet, 0, 0, "wheelbarrow", format);
+ *     worksheet_write_string(worksheet, 0, 0, "Wheelbarrow", format);
  * @endcode
+ *
+ * @image html format_font_color.png
  *
  * The color should be an RGB integer value, see @ref working_with_colors.
  *
@@ -562,8 +565,13 @@ void format_set_font_color(lxw_format *format, lxw_color_t color);
  * Set the bold property of the font:
  *
  * @code
+ *     format = workbook_add_format(workbook);
  *     format_set_bold(format);
+ *
+ *     worksheet_write_string(worksheet, 0, 0, "Bold Text", format);
  * @endcode
+ *
+ * @image html format_font_bold.png
  */
 void format_set_bold(lxw_format *format);
 
@@ -575,8 +583,13 @@ void format_set_bold(lxw_format *format);
  * Set the italic property of the font:
  *
  * @code
+ *     format = workbook_add_format(workbook);
  *     format_set_italic(format);
+ *
+ *     worksheet_write_string(worksheet, 0, 0, "Italic Text", format);
  * @endcode
+ *
+ * @image html format_font_italic.png
  */
 void format_set_italic(lxw_format *format);
 
@@ -592,6 +605,8 @@ void format_set_italic(lxw_format *format);
  *     format_set_underline(format, LXW_UNDERLINE_SINGLE);
  * @endcode
  *
+ * @image html format_font_underlined.png
+ *
  * The available underline styles are:
  *
  * - #LXW_UNDERLINE_SINGLE
@@ -606,6 +621,9 @@ void format_set_underline(lxw_format *format, uint8_t style);
  * @brief Set the strikeout property of the font.
  *
  * @param format Pointer to a Format instance.
+ *
+ * @image html format_font_strikeout.png
+ *
  */
 void format_set_font_strikeout(lxw_format *format);
 
@@ -616,6 +634,8 @@ void format_set_font_strikeout(lxw_format *format);
  * @param style  Superscript or subscript style.
  *
  * Set the superscript o subscript property of the font.
+ *
+ * @image html format_font_script.png
  *
  * The available script styles are:
  *
@@ -648,7 +668,7 @@ void format_set_font_script(lxw_format *format, uint8_t style);
  * @dontinclude format_num_format.c
  * @skipline set_num_format
  * @until 1209
- * 
+ *
  * @image html format_set_num_format.png
  *
  * The number system used for dates is described in @ref working_with_dates.
@@ -821,6 +841,8 @@ void format_set_hidden(lxw_format *format);
  *     worksheet_write_string(worksheet, 0, 0, "Some Text", format);
  * @endcode
  *
+ * @image html format_font_align.png
+ *
  * Text can be aligned across two or more adjacent cells using the
  * center_across property. However, for genuine merged cells it is better to
  * use the worksheet_merge_range() worksheet method.
@@ -854,6 +876,8 @@ void format_set_align(lxw_format *format, uint8_t alignment);
  *     worksheet_write_string(worksheet, 0, 0, "It's\na bum\nwrap", format);
  * @endcode
  *
+ * @image html format_font_text_wrap.png
+ *
  * Excel will adjust the height of the row to accommodate the wrapped text. A
  * similar effect can be obtained without newlines using the
  * format_set_align() function with #LXW_ALIGN_VERTICAL_JUSTIFY.
@@ -875,6 +899,8 @@ void format_set_text_wrap(lxw_format *format);
  *
  *     worksheet_write_string(worksheet, 0, 0, "This text is rotated", format);
  * @endcode
+ *
+ * @image html format_font_text_rotated.png
  *
  * The angle 270 is also supported. This indicates text where the letters run from
  * top to bottom.
@@ -1022,7 +1048,7 @@ void format_set_fg_color(lxw_format *format, lxw_color_t color);
  *
  * @code
  *     format_set_border(format, LXW_BORDER_THIN);
- * @endcode 
+ * @endcode
  *
  * Individual border elements can be configured using the following functions with
  * the same parameters:
