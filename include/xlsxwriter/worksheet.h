@@ -429,7 +429,7 @@ extern "C" {
 /**
  * @brief Write a number to a worksheet cell.
  *
- * @param worksheet Pointer to the lxw_worksheet instance to be updated.
+ * @param worksheet pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param number    The number to write to the cell.
@@ -472,7 +472,7 @@ int8_t worksheet_write_number(lxw_worksheet *worksheet,
 /**
  * @brief Write a string to a worksheet cell.
  *
- * @param worksheet Pointer to the lxw_worksheet instance to be updated.
+ * @param worksheet pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param string    String to write to cell.
@@ -520,7 +520,7 @@ int8_t worksheet_write_string(lxw_worksheet *worksheet,
 /**
  * @brief Write a formula to a worksheet cell.
  *
- * @param worksheet Pointer to the lxw_worksheet instance to be updated.
+ * @param worksheet pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param formula   Formula string to write to cell.
@@ -629,7 +629,7 @@ int8_t worksheet_write_array_formula_num(lxw_worksheet *worksheet,
 /**
  * @brief Write a date or time to a worksheet cell.
  *
- * @param worksheet Pointer to the lxw_worksheet instance to be updated.
+ * @param worksheet pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param datetime  The datetime to write to the cell.
@@ -665,7 +665,7 @@ int8_t worksheet_write_url_opt(lxw_worksheet *worksheet,
                                const char *tooltip);
 /**
  *
- * @param worksheet Pointer to the lxw_worksheet instance to be updated.
+ * @param worksheet pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param url       The url to write to the cell.
@@ -801,7 +801,7 @@ int8_t worksheet_write_url(lxw_worksheet *worksheet,
 /**
  * @brief Write a formatted blank worksheet cell.
  *
- * @param worksheet Pointer to the lxw_worksheet instance to be updated.
+ * @param worksheet pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param format    A pointer to a Format instance or NULL.
@@ -832,7 +832,7 @@ int8_t worksheet_write_blank(lxw_worksheet *worksheet,
 /**
  * @brief Write a formula to a worksheet cell with a user defined result.
  *
- * @param worksheet Pointer to the lxw_worksheet instance to be updated.
+ * @param worksheet pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param formula   Formula string to write to cell.
@@ -1286,7 +1286,35 @@ void worksheet_freeze_panes_opt(lxw_worksheet *worksheet,
 void worksheet_split_panes_opt(lxw_worksheet *worksheet,
                                double vertical, double horizontal,
                                lxw_row_t top_row, lxw_col_t left_col);
-/* TODO */
+/**
+ * @brief Set the selected cell or cells in a worksheet:
+ *
+ * @param worksheet   Pointer to a lxw_worksheet instance to be updated.
+ * @param first_row   The first row of the range. (All zero indexed.)
+ * @param first_col   The first column of the range.
+ * @param last_row    The last row of the range.
+ * @param last_col    The last col of the range.
+ *
+ *
+ * The `%worksheet_set_selection()` method can be used to specify which cell
+ * or range of cells is selected in a worksheet: The most common requirement
+ * is to select a single cell, in which case the `first_` and `last_`
+ * parameters should be the same.
+ *
+ * The active cell within a selected range is determined by the order in which
+ * `first_` and `last_` are specified.
+ *
+ * Examples:
+ *
+ * @code
+ *     worksheet_set_selection(worksheet1, 3, 3, 3, 3);     // Cell D4.
+ *     worksheet_set_selection(worksheet2, 3, 3, 6, 6);     // Cells D4 to G7.
+ *     worksheet_set_selection(worksheet3, 6, 6, 3, 3);     // Cells G7 to D4.
+ *     worksheet_set_selection(worksheet5, RANGE("D4:G7")); // Using the RANGE macro.
+ *
+ * @endcode
+ *
+ */
 void worksheet_set_selection(lxw_worksheet *worksheet,
                              lxw_row_t first_row, lxw_col_t first_col,
                              lxw_row_t last_row, lxw_col_t last_col);

@@ -42,6 +42,7 @@ int main() {
     /* Some sheet formatting. */
     worksheet_set_column(worksheet1, 0, 8, 16, NULL, NULL);
     worksheet_set_row(worksheet1, 0, 20, NULL, NULL);
+    worksheet_set_selection(worksheet1, 4, 3, 4, 3);
 
     /* Some worksheet text to demonstrate scrolling. */
     for (col = 0; col < 9; col++) {
@@ -62,6 +63,7 @@ int main() {
 
     /* Some sheet formatting. */
     worksheet_set_column(worksheet2, 0, 0, 16, NULL, NULL);
+    worksheet_set_selection(worksheet2, 4, 3, 4, 3);
 
     /* Some worksheet text to demonstrate scrolling. */
     for (row = 0; row < 50; row++) {
@@ -83,6 +85,7 @@ int main() {
     worksheet_set_column(worksheet3, 0, 25, 16, NULL, NULL);
     worksheet_set_row(worksheet3, 0, 20, NULL, NULL);
     worksheet_write_string(worksheet3, 0, 0, "", header);
+    worksheet_set_selection(worksheet3, 4, 3, 4, 3);
 
 
     /* Some worksheet text to demonstrate scrolling. */
@@ -106,6 +109,7 @@ int main() {
      * The default row height is 15 and the default column width is 8.43
      */
     worksheet_split_panes(worksheet4, 15, 8.43);
+
 
     /* Some sheet formatting. */
 
