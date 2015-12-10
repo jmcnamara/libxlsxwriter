@@ -3491,3 +3491,12 @@ worksheet_set_zoom(lxw_worksheet *self, uint16_t scale)
 
     self->zoom = scale;
 }
+
+/*
+ * Hide cell zero values.
+ */
+void
+worksheet_hide_zero(lxw_worksheet *self)
+{
+    self->show_zeros = LXW_FALSE;
+}

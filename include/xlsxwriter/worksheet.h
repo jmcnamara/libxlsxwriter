@@ -2059,6 +2059,20 @@ void worksheet_set_start_page(lxw_worksheet *worksheet, uint16_t start_page);
  */
 void worksheet_set_print_scale(lxw_worksheet *worksheet, uint16_t scale);
 
+/**
+ * @brief Hide zero values in worksheet cells.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ *
+ * The `%worksheet_hide_zero()` method is used to hide any zero values that
+ * appear in cells:
+ *
+ * @code
+ *     worksheet_hide_zero(worksheet1);
+ * @endcode
+ */
+void worksheet_hide_zero(lxw_worksheet *worksheet);
+
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);
 void _worksheet_assemble_xml_file(lxw_worksheet *worksheet);

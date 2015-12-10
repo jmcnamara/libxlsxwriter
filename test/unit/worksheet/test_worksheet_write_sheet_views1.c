@@ -87,22 +87,22 @@ CTEST(worksheet, write_sheet_views03) {
 
 
 /* 5. Test the _write_sheet_views() method. Hide zeroes. */
-//CTEST(worksheet, write_sheet_views05) {
-//    char* got;
-//    char exp[] = "<sheetViews><sheetView showZeros=\"0\" tabSelected=\"1\" workbookViewId=\"0\"/></sheetViews>";
-//    FILE* testfile = tmpfile();
-//
-//    lxw_worksheet *worksheet = _new_worksheet(NULL);
-//    worksheet->file = testfile;
-//
-//    worksheet_select(worksheet);
-//    worksheet_hide_zero(worksheet);
-//    _worksheet_write_sheet_views(worksheet);
-//
-//    RUN_XLSX_STREQ(exp, got);
-//
-//    _free_worksheet(worksheet);
-//}
+CTEST(worksheet, write_sheet_views05) {
+    char* got;
+    char exp[] = "<sheetViews><sheetView showZeros=\"0\" tabSelected=\"1\" workbookViewId=\"0\"/></sheetViews>";
+    FILE* testfile = tmpfile();
+
+    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    worksheet->file = testfile;
+
+    worksheet_select(worksheet);
+    worksheet_hide_zero(worksheet);
+    _worksheet_write_sheet_views(worksheet);
+
+    RUN_XLSX_STREQ(exp, got);
+
+    _free_worksheet(worksheet);
+}
 
 
 /* 6. Test the _write_sheet_views() method. Set page view mode. */
