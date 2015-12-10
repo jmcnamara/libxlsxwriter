@@ -323,11 +323,13 @@ typedef struct lxw_worksheet {
     uint16_t print_scale;
     uint16_t rel_count;
     uint16_t vertical_dpi;
+    uint16_t zoom;
     uint8_t filter_on;
     uint8_t fit_page;
     uint8_t hcenter;
     uint8_t orientation;
     uint8_t outline_changed;
+    uint8_t outline_on;
     uint8_t page_order;
     uint8_t page_setup_changed;
     uint8_t page_view;
@@ -336,9 +338,11 @@ typedef struct lxw_worksheet {
     uint8_t print_headers;
     uint8_t print_options_changed;
     uint8_t screen_gridlines;
+    uint8_t show_zeros;
     uint8_t tab_color;
     uint8_t vba_codename;
     uint8_t vcenter;
+    uint8_t zoom_scale_normal;
 
     double margin_left;
     double margin_right;
@@ -1792,6 +1796,29 @@ void worksheet_set_v_pagebreaks(lxw_worksheet *worksheet, lxw_col_t breaks[]);
  *
  */
 void worksheet_print_across(lxw_worksheet *worksheet);
+
+/**
+ * @brief Set the worksheet zoom factor.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param scale     Worksheet zoom factor.
+ *
+ * Set the worksheet zoom factor in the range `10 <= zoom <= 400`:
+ *
+ * @code
+ *     worksheet_set_zoom(worksheet1, 50);
+ *     worksheet_set_zoom(worksheet2, 75);
+ *     worksheet_set_zoom(worksheet3, 300);
+ *     worksheet_set_zoom(worksheet4, 400);
+ * @endcode
+ *
+ * The default zoom factor is 100. It isn't possible to set the zoom to
+ * "Selection" because it is calculated by Excel at run-time.
+ *
+ * Note, `%worksheet_zoom()` does not affect the scale of the printed
+ * page. For that you should use `worksheet_set_print_scale()`.
+ */
+void worksheet_set_zoom(lxw_worksheet *worksheet, uint16_t scale);
 
 /**
  * @brief Set the option to display or hide gridlines on the screen and

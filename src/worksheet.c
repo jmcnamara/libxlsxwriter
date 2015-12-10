@@ -121,6 +121,10 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->print_gridlines = 0;
     worksheet->screen_gridlines = 1;
     worksheet->print_options_changed = 0;
+    worksheet->zoom = 100;
+    worksheet->zoom_scale_normal = LXW_TRUE;
+    worksheet->show_zeros = LXW_TRUE;
+    worksheet->outline_on = LXW_TRUE;
 
     if (init_data) {
         worksheet->name = init_data->name;
@@ -1075,15 +1079,37 @@ _worksheet_write_sheet_view(lxw_worksheet *self)
 
     _INIT_ATTRIBUTES();
 
+    /* Hide screen gridlines if required */
     if (!self->screen_gridlines)
         _PUSH_ATTRIBUTES_STR("showGridLines", "0");
 
+    /* Hide zeroes in cells. */
+    if (!self->show_zeros) {
+        _PUSH_ATTRIBUTES_STR("showZeros", "0");
+    }
+
+    /* Show that the sheet tab is selected. */
     if (self->selected)
         _PUSH_ATTRIBUTES_STR("tabSelected", "1");
+
+    /* Turn outlines off. Also required in the outlinePr element. */
+    if (!self->outline_on) {
+        _PUSH_ATTRIBUTES_STR("showOutlineSymbols", "0");
+    }
 
     /* Set the page view/layout mode if required. */
     if (self->page_view)
         _PUSH_ATTRIBUTES_STR("view", "pageLayout");
+
+    /* Set the zoom level. */
+    if (self->zoom != 100) {
+        if (!self->page_view) {
+            _PUSH_ATTRIBUTES_INT("zoomScale", self->zoom);
+
+            if (self->zoom_scale_normal)
+                _PUSH_ATTRIBUTES_INT("zoomScaleNormal", self->zoom);
+        }
+    }
 
     _PUSH_ATTRIBUTES_STR("workbookViewId", "0");
 
@@ -3449,4 +3475,19 @@ void
 worksheet_set_v_pagebreaks(lxw_worksheet *self, lxw_col_t vbreaks[])
 {
     self->vbreaks = vbreaks;
+}
+
+/*
+ * Set the worksheet zoom factor.
+ */
+void
+worksheet_set_zoom(lxw_worksheet *self, uint16_t scale)
+{
+    /* Confine the scale to Excel"s range */
+    if (scale < 10 || scale > 400) {
+        LXW_WARN("Zoom factor scale outside range: 10 <= zoom <= 400");
+        return;
+    }
+
+    self->zoom = scale;
 }
