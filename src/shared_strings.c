@@ -17,10 +17,10 @@
  */
 
 STATIC int _element_cmp(struct sst_element *element1,
-    struct sst_element *element2);
+                        struct sst_element *element2);
 
 LXW_RB_GENERATE_ELEMENT(sst_rb_tree, sst_element, sst_tree_pointers,
-    _element_cmp);
+                        _element_cmp);
 
 /*****************************************************************************
  *
@@ -40,11 +40,11 @@ _new_sst()
 
     /* Add the sst RB tree. */
     sst->rb_tree = calloc(1, sizeof(struct sst_rb_tree));
-    GOTO_LABEL_ON_MEM_ERROR(sst->rb_tree, mem_error1);
+    GOTO_LABEL_ON_MEM_ERROR(sst->rb_tree, mem_error);
 
     /* Add a list for tracking the insertion order. */
     sst->order_list = calloc(1, sizeof(struct sst_order_list));
-    GOTO_LABEL_ON_MEM_ERROR(sst->order_list, mem_error2);
+    GOTO_LABEL_ON_MEM_ERROR(sst->order_list, mem_error);
 
     /* Initialise the order list. */
     STAILQ_INIT(sst->order_list);
@@ -54,10 +54,7 @@ _new_sst()
 
     return sst;
 
-mem_error2:
-    free(sst->rb_tree);
-
-mem_error1:
+mem_error:
     free(sst);
 
     return NULL;

@@ -26,7 +26,7 @@ RB_HEAD(sst_rb_tree, sst_element);
 
 /* Wrapper around RB_GENERATE_STATIC from tree.h to avoid unused function
  * warnings and to avoid portability issues with the _unused attribute. */
-#define LXW_RB_GENERATE_ELEMENT(name, type, field, cmp)     \
+#define LXW_RB_GENERATE_ELEMENT(name, type, field, cmp) \
     RB_GENERATE_INSERT_COLOR(name, type, field, static) \
     RB_GENERATE_INSERT(name, type, field, cmp, static)  \
     /* Add unused struct to allow adding a semicolon */ \
