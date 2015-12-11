@@ -2,6 +2,15 @@
 @page changes Changes
 
 
+## 0.2.2 December 11 2015
+
+- Replaced shated strings hash table with a Red/Black tree implementation for
+  better performance.
+  Thanks to Martin Renters. Pull Request [#41][gh_41].
+
+  [gh_41]: https://github.com/jmcnamara/libxlsxwriter/issues/41
+
+
 ## 0.2.1 December 11 2015
 
 - Added `worksheet_right_to_left()` function. This can be used to change the
