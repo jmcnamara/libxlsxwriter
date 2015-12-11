@@ -337,6 +337,7 @@ typedef struct lxw_worksheet {
     uint8_t print_gridlines;
     uint8_t print_headers;
     uint8_t print_options_changed;
+    uint8_t right_to_left;
     uint8_t screen_gridlines;
     uint8_t show_zeros;
     uint8_t tab_color;
@@ -1140,8 +1141,8 @@ uint8_t worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
  *
  * @return 0 for success, non-zero on error.
  *
- * The `%worksheet_autofilter()` method allows an autofilter to be added to a
- * worksheet.
+ * The `%worksheet_autofilter()` function allows an autofilter to be added to
+ * a worksheet.
  *
  * An autofilter is a way of adding drop down lists to the headers of a 2D
  * range of worksheet data. This allows users to filter the data based on
@@ -1221,13 +1222,13 @@ void worksheet_select(lxw_worksheet *worksheet);
  * @param row       The cell row (zero indexed).
  * @param col       The cell column (zero indexed).
  *
- * The `%worksheet_freeze_panes()` method can be used to divide a worksheet
+ * The `%worksheet_freeze_panes()` function can be used to divide a worksheet
  * into horizontal or vertical regions known as panes and to "freeze" these
  * panes so that the splitter bars are not visible.
  *
  * The parameters `row` and `col` are used to specify the location of the
  * split. It should be noted that the split is specified at the top or left of
- * a cell and that the method uses zero based indexing. Therefore to freeze
+ * a cell and that the function uses zero based indexing. Therefore to freeze
  * the first row of a worksheet it is necessary to specify the split at row 2
  * (which is 1 as the zero-based index).
  *
@@ -1253,9 +1254,9 @@ void worksheet_freeze_panes(lxw_worksheet *worksheet,
  * @param vertical   The position for the vertical split.
  * @param horizontal The position for the horizontal split.
  *
- * The `%worksheet_split_panes()` method can be used to divide a worksheet
- * into horizontal or vertical regions known as panes. This method is
- * different from the `worksheet_freeze_panes()` method in that the splits
+ * The `%worksheet_split_panes()` function can be used to divide a worksheet
+ * into horizontal or vertical regions known as panes. This function is
+ * different from the `worksheet_freeze_panes()` function in that the splits
  * between the panes will be visible to the user and each pane will have its
  * own scroll bars.
  *
@@ -1300,7 +1301,7 @@ void worksheet_split_panes_opt(lxw_worksheet *worksheet,
  * @param last_col    The last col of the range.
  *
  *
- * The `%worksheet_set_selection()` method can be used to specify which cell
+ * The `%worksheet_set_selection()` function can be used to specify which cell
  * or range of cells is selected in a worksheet: The most common requirement
  * is to select a single cell, in which case the `first_` and `last_`
  * parameters should be the same.
@@ -2060,11 +2061,30 @@ void worksheet_set_start_page(lxw_worksheet *worksheet, uint16_t start_page);
 void worksheet_set_print_scale(lxw_worksheet *worksheet, uint16_t scale);
 
 /**
+ * @brief Display the worksheet cells from right to left for some versions of
+ *        Excel.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ *
+  * The `%worksheet_right_to_left()` function is used to change the default
+ * direction of the worksheet from left-to-right, with the `A1` cell in the
+ * top left, to right-to-left, with the `A1` cell in the top right.
+ *
+ * @code
+ *     worksheet_right_to_left(worksheet1);
+ * @endcode
+ *
+ * This is useful when creating Arabic, Hebrew or other near or far eastern
+ * worksheets that use right-to-left as the default direction.
+ */
+void worksheet_right_to_left(lxw_worksheet *worksheet);
+
+/**
  * @brief Hide zero values in worksheet cells.
  *
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  *
- * The `%worksheet_hide_zero()` method is used to hide any zero values that
+ * The `%worksheet_hide_zero()` function is used to hide any zero values that
  * appear in cells:
  *
  * @code

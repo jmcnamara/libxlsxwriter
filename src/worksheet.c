@@ -1088,6 +1088,11 @@ _worksheet_write_sheet_view(lxw_worksheet *self)
         _PUSH_ATTRIBUTES_STR("showZeros", "0");
     }
 
+    /* Display worksheet right to left for Hebrew, Arabic and others. */
+    if (self->right_to_left) {
+        _PUSH_ATTRIBUTES_STR("rightToLeft", "1");
+    }
+
     /* Show that the sheet tab is selected. */
     if (self->selected)
         _PUSH_ATTRIBUTES_STR("tabSelected", "1");
@@ -3499,4 +3504,13 @@ void
 worksheet_hide_zero(lxw_worksheet *self)
 {
     self->show_zeros = LXW_FALSE;
+}
+
+/*
+ * Display the worksheet right to left for some eastern versions of Excel.
+ */
+void
+worksheet_right_to_left(lxw_worksheet *self)
+{
+    self->right_to_left = LXW_TRUE;
 }
