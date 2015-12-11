@@ -2,6 +2,18 @@
 @page changes Changes
 
 
+## 0.2.1 December 11 2015
+
+- Added `worksheet_right_to_left()` function. This can be used to change the
+  default direction of the worksheet from left-to-right when creating Arabic,
+  Hebrew or other near or far eastern worksheets that use right-to-left as the
+  default direction.
+
+- Added `worksheet_hide_zero()` function to hide zero cell values.
+
+- Added `worksheet_set_zoom()` method to set the worksheet zoom factor.
+
+
 ## 0.2.0 December 9 2015
 
 - Added `worksheet_set_selection()` function to set the cell selected range on
