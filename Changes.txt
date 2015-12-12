@@ -2,6 +2,13 @@
 @page changes Changes
 
 
+
+## 0.2.3 December 12 2015
+
+- Added `worksheet_set_tab_color()` function to set the worksheet tab
+  color. See @ref tab_colors.c.
+
+
 ## 0.2.2 December 11 2015
 
 - Replaced shared strings hash table with a Red/Black tree implementation for
