@@ -125,6 +125,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->zoom_scale_normal = LXW_TRUE;
     worksheet->show_zeros = LXW_TRUE;
     worksheet->outline_on = LXW_TRUE;
+    worksheet->tab_color = LXW_COLOR_UNSET;
 
     if (init_data) {
         worksheet->name = init_data->name;
@@ -1874,6 +1875,30 @@ _worksheet_write_page_set_up_pr(lxw_worksheet *self)
 }
 
 /*
+ * Write the <tabColor> element.
+ */
+STATIC void
+_worksheet_write_tab_color(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char rgb_str[ATTR_32];
+
+    if (self->tab_color == LXW_COLOR_UNSET)
+        return;
+
+    lxw_snprintf(rgb_str, ATTR_32, "FF%06X",
+                 self->tab_color & LXW_COLOR_MASK);
+
+    _INIT_ATTRIBUTES();
+    _PUSH_ATTRIBUTES_STR("rgb", rgb_str);
+
+    _xml_empty_tag(self->file, "tabColor", &attributes);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <sheetPr> element for Sheet level properties.
  */
 STATIC void
@@ -1884,7 +1909,7 @@ _worksheet_write_sheet_pr(lxw_worksheet *self)
 
     if (!self->fit_page
         && !self->filter_on
-        && !self->tab_color
+        && self->tab_color == LXW_COLOR_UNSET
         && !self->outline_changed && !self->vba_codename) {
         return;
     }
@@ -1897,9 +1922,10 @@ _worksheet_write_sheet_pr(lxw_worksheet *self)
     if (self->filter_on)
         _PUSH_ATTRIBUTES_STR("filterMode", "1");
 
-    if (self->fit_page || self->tab_color || self->outline_changed) {
+    if (self->fit_page || self->tab_color != LXW_COLOR_UNSET
+        || self->outline_changed) {
         _xml_start_tag(self->file, "sheetPr", &attributes);
-        /* _worksheet_write_tab_color(self); */
+        _worksheet_write_tab_color(self);
         /* _worksheet_write_outline_pr(self); */
         _worksheet_write_page_set_up_pr(self);
         _xml_end_tag(self->file, "sheetPr");
@@ -3513,4 +3539,13 @@ void
 worksheet_right_to_left(lxw_worksheet *self)
 {
     self->right_to_left = LXW_TRUE;
+}
+
+/*
+ * Set the colour of the worksheet tab.
+ */
+void
+worksheet_set_tab_color(lxw_worksheet *self, lxw_color_t color)
+{
+    self->tab_color = color;
 }

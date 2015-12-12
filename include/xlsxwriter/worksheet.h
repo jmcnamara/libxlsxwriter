@@ -340,10 +340,11 @@ typedef struct lxw_worksheet {
     uint8_t right_to_left;
     uint8_t screen_gridlines;
     uint8_t show_zeros;
-    uint8_t tab_color;
     uint8_t vba_codename;
     uint8_t vcenter;
     uint8_t zoom_scale_normal;
+
+    lxw_color_t tab_color;
 
     double margin_left;
     double margin_right;
@@ -2093,6 +2094,9 @@ void worksheet_right_to_left(lxw_worksheet *worksheet);
  */
 void worksheet_hide_zero(lxw_worksheet *worksheet);
 
+/* TODO. */
+void worksheet_set_tab_color(lxw_worksheet *worksheet, lxw_color_t color);
+
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);
 void _worksheet_assemble_xml_file(lxw_worksheet *worksheet);
@@ -2125,6 +2129,8 @@ STATIC void _worksheet_write_odd_footer(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_header_footer(lxw_worksheet *worksheet);
 
 STATIC void _worksheet_write_print_options(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_sheet_pr(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_tab_color(lxw_worksheet *worksheet);
 #endif /* TESTING */
 
 /* *INDENT-OFF* */
