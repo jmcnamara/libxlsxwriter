@@ -183,11 +183,7 @@ _new_lxw_hash(uint32_t num_buckets, uint8_t free_key, uint8_t free_value)
     return lxw_hash;
 
 mem_error:
-    if (lxw_hash)
-        free(lxw_hash->order_list);
-
-    free(lxw_hash);
-
+    _free_lxw_hash(lxw_hash);
     return NULL;
 }
 
@@ -204,14 +200,16 @@ _free_lxw_hash(lxw_hash_table *lxw_hash)
     if (!lxw_hash)
         return;
 
-    /* Free the lxw_hash_elements and their data using the ordered linked list. */
-    STAILQ_FOREACH_SAFE(element, lxw_hash->order_list,
-                        lxw_hash_order_pointers, element_temp) {
-        if (lxw_hash->free_key)
-            free(element->key);
-        if (lxw_hash->free_value)
-            free(element->value);
-        free(element);
+    /* Free the lxw_hash_elements and data using the ordered linked list. */
+    if (lxw_hash->order_list) {
+        STAILQ_FOREACH_SAFE(element, lxw_hash->order_list,
+                            lxw_hash_order_pointers, element_temp) {
+            if (lxw_hash->free_key)
+                free(element->key);
+            if (lxw_hash->free_value)
+                free(element->value);
+            free(element);
+        }
     }
 
     /* Free the buckets from the hash table. */

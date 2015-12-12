@@ -55,8 +55,7 @@ _new_sst()
     return sst;
 
 mem_error:
-    free(sst);
-
+    _free_sst(sst);
     return NULL;
 }
 
@@ -73,12 +72,15 @@ _free_sst(lxw_sst *sst)
         return;
 
     /* Free the sst_elements and their data using the ordered linked list. */
-    STAILQ_FOREACH_SAFE(sst_element, sst->order_list, sst_order_pointers,
-                        sst_element_temp) {
-        if (sst_element && sst_element->string)
-            free(sst_element->string);
-        if (sst_element)
-            free(sst_element);
+    if (sst->order_list) {
+        STAILQ_FOREACH_SAFE(sst_element, sst->order_list, sst_order_pointers,
+                            sst_element_temp) {
+
+            if (sst_element && sst_element->string)
+                free(sst_element->string);
+            if (sst_element)
+                free(sst_element);
+        }
     }
 
     free(sst->order_list);
