@@ -30,7 +30,6 @@ CTEST(worksheet, write_write_sheet_pr01) {
 
 
 /* 2. Test the _write_sheet_pr() method. */
-/* Mock up the color palette. */
 CTEST(worksheet, write_write_sheet_pr02) {
     char* got;
     char exp[] = "<sheetPr><tabColor rgb=\"FFFF0000\"/></sheetPr>";
@@ -49,7 +48,6 @@ CTEST(worksheet, write_write_sheet_pr02) {
 
 
 /* 3. Test the _write_sheet_pr() method. */
-/* Mock up the color palette. */
 CTEST(worksheet, write_write_sheet_pr03) {
     char* got;
     char exp[] = "<sheetPr><tabColor rgb=\"FFFF0000\"/><pageSetUpPr fitToPage=\"1\"/></sheetPr>";

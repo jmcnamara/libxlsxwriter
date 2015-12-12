@@ -143,8 +143,15 @@ Example of how to create defined names (named ranges) using libxlsxwriter.
 Defined names are used to define descriptive names to represent a value, a
 single cell or a range of cells in a workbook or worksheet.
 
-Next example: @ref panes.c
+Next example: @ref tab_colors.c
 @image html defined_name.png
+
+
+@example tab_colors.c
+Example of how to set Excel worksheet tab colors.
+
+Next example: @ref panes.c
+@image html tab_colors.png
 
 
 @example panes.c

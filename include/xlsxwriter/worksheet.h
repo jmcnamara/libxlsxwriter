@@ -2094,7 +2094,23 @@ void worksheet_right_to_left(lxw_worksheet *worksheet);
  */
 void worksheet_hide_zero(lxw_worksheet *worksheet);
 
-/* TODO. */
+/**
+ * @brief Set the color of the worksheet tab.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param color     The tab color.
+ *
+ * The `%worksheet_set_tab_color()` method is used to change the color of the worksheet
+ * tab:
+ *
+ * @code
+ *      worksheet_set_tab_color(worksheet1, LXW_COLOR_RED);
+ *      worksheet_set_tab_color(worksheet2, LXW_COLOR_GREEN);
+ *      worksheet_set_tab_color(worksheet3, 0xFF9900); // Orange.
+ * @endcode
+ *
+ * The color should be an RGB integer value, see @ref working_with_colors.
+ */
 void worksheet_set_tab_color(lxw_worksheet *worksheet, lxw_color_t color);
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);

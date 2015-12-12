@@ -30,6 +30,7 @@ my @examples = (
     [ 'autofilter.c',        'An example of a worksheet autofilter' ],
     [ 'headers_footers.c',   'Example of adding worksheet headers/footers' ],
     [ 'defined_name.c',      'Example of how to create defined names' ],
+    [ 'tab_colors.c',        'Example of how to set worksheet tab colors' ],
     [ 'panes.c',             'Example of how to create worksheet panes' ],
 );
 
