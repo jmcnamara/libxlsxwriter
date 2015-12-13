@@ -1043,6 +1043,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     init_data.sst = self->sst;
     init_data.optimize = self->options.constant_memory;
     init_data.active_sheet = &self->active_sheet;
+    init_data.first_sheet = &self->first_sheet;
 
     /* Create a new worksheet object. */
     worksheet = _new_worksheet(&init_data);

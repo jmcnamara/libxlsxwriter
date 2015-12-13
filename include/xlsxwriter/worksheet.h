@@ -300,7 +300,8 @@ typedef struct lxw_worksheet {
     uint8_t active;
     uint8_t selected;
     uint8_t hidden;
-    uint32_t *active_sheet;
+    uint16_t *active_sheet;
+    uint16_t *first_sheet;
 
     lxw_col_options **col_options;
     uint16_t col_options_max;
@@ -382,7 +383,8 @@ typedef struct lxw_worksheet_init_data {
     uint32_t index;
     uint8_t hidden;
     uint8_t optimize;
-    uint32_t *active_sheet;
+    uint16_t *active_sheet;
+    uint16_t *first_sheet;
     lxw_sst *sst;
     char *name;
     char *quoted_name;
@@ -1215,6 +1217,26 @@ void worksheet_activate(lxw_worksheet *worksheet);
   *
   */
 void worksheet_select(lxw_worksheet *worksheet);
+
+/**
+ * @brief Set current worksheet as the first visible sheet tab.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ *
+ * The `worksheet_activate()` function determines which worksheet is initially
+ * selected.  However, if there are a large number of worksheets the selected
+ * worksheet may not appear on the screen. To avoid this you can select the
+ * leftmost visible worksheet tab using `%worksheet_set_first_sheet()`:
+ *
+ * @code
+ *     worksheet_set_first_sheet(worksheet19); // First visible worksheet tab.
+ *     worksheet_activate(worksheet20);        // First visible worksheet.
+ * @endcode
+ *
+ * This method is not required very often. The default value is the first
+ * worksheet.
+ */
+void worksheet_set_first_sheet(lxw_worksheet *worksheet);
 
 /**
  * @brief Split and freeze a worksheet into panes.

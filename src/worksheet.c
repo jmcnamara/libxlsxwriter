@@ -135,7 +135,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
         worksheet->sst = init_data->sst;
         worksheet->optimize = init_data->optimize;
         worksheet->active_sheet = init_data->active_sheet;
-
+        worksheet->first_sheet = init_data->first_sheet;
     }
 
     return worksheet;
@@ -3058,6 +3058,20 @@ worksheet_activate(lxw_worksheet *self)
     self->hidden = LXW_FALSE;
 
     *self->active_sheet = self->index;
+}
+
+/*
+ * Set this worksheet as the first visible sheet. This is necessary
+ * when there are a large number of worksheets and the activated
+ * worksheet is not visible on the screen.
+ */
+void
+worksheet_set_first_sheet(lxw_worksheet *self)
+{
+    /* Active worksheet can"t be hidden. */
+    self->hidden = LXW_FALSE;
+
+    *self->first_sheet = self->index;
 }
 
 /*
