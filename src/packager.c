@@ -236,6 +236,9 @@ _write_app_file(lxw_packager *self)
         _add_heading_pair(app, "Named Ranges", number);
     }
 
+    /* Set the app/doc properties. */
+    app->properties = workbook->properties;
+
     _app_assemble_xml_file(app);
 
     _add_file_to_zip(self, app->file, "docProps/app.xml");

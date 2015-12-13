@@ -63,7 +63,6 @@
 #include <stdint.h>
 #include <string.h>
 #include "hash_table.h"
-#include "xlsxwriter/third_party/queue.h"
 
 #include "common.h"
 

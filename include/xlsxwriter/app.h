@@ -1,6 +1,6 @@
 /*
  * libxlsxwriter
- * 
+ *
  * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  *
  * app - A libxlsxwriter library for creating Excel XLSX app files.
@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "xlsxwriter/third_party/queue.h"
+#include "xlsxwriter/workbook.h"
 
 #include "common.h"
 

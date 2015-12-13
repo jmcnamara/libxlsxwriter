@@ -1,6 +1,6 @@
 /*
  * libxlsxwriter
- * 
+ *
  * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  *
  * styles - A libxlsxwriter library for creating Excel XLSX styles files.
@@ -10,7 +10,6 @@
 #define __LXW_STYLES_H__
 
 #include <stdint.h>
-#include "xlsxwriter/third_party/queue.h"
 
 #include "format.h"
 

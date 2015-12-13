@@ -80,19 +80,6 @@ typedef struct lxw_tuple {
     STAILQ_ENTRY (lxw_tuple) list_pointers;
 } lxw_tuple;
 
-typedef struct lxw_doc_properties {
-    char *title;
-    char *subject;
-    char *author;
-    char *manager;
-    char *company;
-    char *category;
-    char *keywords;
-    char *comments;
-    char *status;
-    time_t created;
-} lxw_doc_properties;
-
 
  /* *INDENT-OFF* */
 #ifdef __cplusplus

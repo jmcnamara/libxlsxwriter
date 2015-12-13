@@ -10,7 +10,6 @@
 #define __LXW_THEME_H__
 
 #include <stdint.h>
-#include "xlsxwriter/third_party/queue.h"
 
 #include "common.h"
 

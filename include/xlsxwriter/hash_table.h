@@ -10,7 +10,6 @@
 #ifndef __LXW_HASH_TABLE_H__
 #define __LXW_HASH_TABLE_H__
 
-#include "xlsxwriter/third_party/queue.h"
 #include "common.h"
 
 /* Macro to loop over hash table elements in insertion order. */

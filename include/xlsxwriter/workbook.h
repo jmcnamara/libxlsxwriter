@@ -44,7 +44,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <errno.h>
-#include "xlsxwriter/third_party/queue.h"
 
 #include "worksheet.h"
 #include "shared_strings.h"
@@ -116,6 +115,44 @@ enum lxw_workbook_error {
     /** Memory error. */
     LXW_ERROR_WORKBOOK_MEMORY_ERROR
 };
+
+/**
+ * Workbook document properties.
+ */
+typedef struct lxw_doc_properties {
+    /** The title of the Excel Document. */
+    char *title;
+
+    /** The subject of the Excel Document. */
+    char *subject;
+
+    /** The author of the Excel Document. */
+    char *author;
+
+    /** The manager field of the Excel Document. */
+    char *manager;
+
+    /** The company field of the Excel Document. */
+    char *company;
+
+    /** The category of the Excel Document. */
+    char *category;
+
+    /** The keywords of the Excel Document. */
+    char *keywords;
+
+    /** The comment field of the Excel Document. */
+    char *comments;
+
+    /** The status of the Excel Document. */
+    char *status;
+
+    /** The hyperlink base url of the Excel Document. */
+    char *hyperlink_base;
+
+    time_t created;
+
+} lxw_doc_properties;
 
 /**
  * @brief Workbook options.
@@ -313,6 +350,59 @@ lxw_format *workbook_add_format(lxw_workbook *workbook);
  *
  */
 uint8_t workbook_close(lxw_workbook *workbook);
+
+/**
+ * @brief Set the document properties such as Title, Author etc.
+ *
+ * @param workbook   Pointer to a lxw_workbook instance.
+ * @param properties Document properties to set.
+ *
+ * The `%workbook_set_properties` method can be used to set the document
+ * properties of the Excel file created by `libxlsxwriter`. These properties
+ * are visible when you use the `Office Button -> Prepare -> Properties`
+ * option in Excel and are also available to external applications that read
+ * or index windows files.
+ *
+ * The properties that can be set are:
+ *
+ * - `title`
+ * - `subject`
+ * - `author`
+ * - `manager`
+ * - `company`
+ * - `category`
+ * - `keywords`
+ * - `comments`
+ * - `hyperlink_base`
+ *
+ * The properties are specified via a `lxw_doc_properties` struct. All the
+ * members are `char *` and they are all optional. An example of how to create
+ * and pass the properties is:
+ *
+ * @code
+ *    // Create a properties structure and set some of the fields.
+ *    lxw_doc_properties *properties = calloc(1, sizeof(lxw_doc_properties));
+ *
+ *    properties->title    = strdup("This is an example spreadsheet");
+ *    properties->subject  = strdup("With document properties");
+ *    properties->author   = strdup("John McNamara");
+ *    properties->manager  = strdup("Dr. Heinz Doofenshmirtz");
+ *    properties->company  = strdup("of Wolves");
+ *    properties->category = strdup("Example spreadsheets");
+ *    properties->keywords = strdup("Sample, Example, Properties");
+ *    properties->comments = strdup("Created with libxlsxwriter");
+ *    properties->status   = strdup("Quo");
+ *
+ *    // Set the properties in the workbook.
+ *    workbook_set_properties(workbook, properties);
+ * @endcode
+ *
+ * @image html doc_properties.png
+ *
+ * @return 0 for success, non-zero on error.
+ */
+uint8_t workbook_set_properties(lxw_workbook *workbook,
+                                lxw_doc_properties *properties);
 
 /**
  * @brief Create a defined name in the workbook to use as a variable.

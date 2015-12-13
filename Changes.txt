@@ -4,8 +4,8 @@
 
 ## 0.2.4 December 13 2015
 
-- Added `worksheet_hide()` function to hide a worksheet. See @ref
-  hide_sheet.c.
+- Added `worksheet_hide()` function to hide a worksheet. See the @ref
+  hide_sheet.c example.
 
 - Added `worksheet_set_first_sheet()` function to set the first visible
   worksheet in a workbook with a large number of worksheets.
@@ -14,7 +14,7 @@
 ## 0.2.3 December 12 2015
 
 - Added `worksheet_set_tab_color()` function to set the worksheet tab
-  color. See @ref tab_colors.c.
+  color. See the @ref tab_colors.c example.
 
 
 ## 0.2.2 December 11 2015

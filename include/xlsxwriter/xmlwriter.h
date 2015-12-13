@@ -23,7 +23,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "common.h"
-#include "xlsxwriter/third_party/queue.h"
 
 #define MAX_ATTRIBUTE_LENGTH 256
 #define ATTR_32              32

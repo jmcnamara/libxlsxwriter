@@ -32,6 +32,7 @@ my @examples = (
     [ 'defined_name.c',      'Example of how to create defined names' ],
     [ 'tab_colors.c',        'Example of how to set worksheet tab colors' ],
     [ 'hide_sheet.c',        'Example of hiding a worksheet' ],
+    [ 'doc_properties.c',    'Example of setting workbook doc properties' ],
     [ 'panes.c',             'Example of how to create worksheet panes' ],
 );
 
@@ -73,7 +74,7 @@ while ( my $line = <> ) {
             my $filename = $aref->[0];
             my $desc     = $aref->[1];
 
-            $example =~ s/.c/_8c-example.html/;
+            $example =~ s/\.c/_8c-example.html/;
 
             printf qq(<li><a class="el" href="%s">%s</a> %s</li>\n\n),
               $example, $filename, $desc;

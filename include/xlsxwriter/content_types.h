@@ -1,6 +1,6 @@
 /*
  * libxlsxwriter
- * 
+ *
  * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  *
  * content_types - A libxlsxwriter library for creating Excel XLSX
@@ -12,7 +12,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "xlsxwriter/third_party/queue.h"
 
 #include "common.h"
 

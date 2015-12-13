@@ -303,6 +303,22 @@ _write_shared_doc(lxw_app *self)
 }
 
 /*
+ * Write the <HyperlinkBase> element.
+ */
+STATIC void
+_write_hyperlink_base(lxw_app *self)
+{
+    lxw_doc_properties *properties = self->properties;
+
+    if (!properties)
+        return;
+
+    if (properties->hyperlink_base)
+        _xml_data_element(self->file, "HyperlinkBase",
+                          properties->hyperlink_base, NULL);
+}
+
+/*
  * Write the <HyperlinksChanged> element.
  */
 STATIC void
@@ -346,6 +362,7 @@ _app_assemble_xml_file(lxw_app *self)
     _write_company(self);
     _write_links_up_to_date(self);
     _write_shared_doc(self);
+    _write_hyperlink_base(self);
     _write_hyperlinks_changed(self);
     _write_app_version(self);
 

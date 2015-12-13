@@ -24,6 +24,28 @@
  ****************************************************************************/
 
 /*
+ * Free workbook properties.
+ */
+void
+_free_doc_properties(lxw_doc_properties *properties)
+{
+    if (properties) {
+        free(properties->title);
+        free(properties->subject);
+        free(properties->author);
+        free(properties->manager);
+        free(properties->company);
+        free(properties->category);
+        free(properties->keywords);
+        free(properties->comments);
+        free(properties->status);
+        free(properties->hyperlink_base);
+    }
+
+    free(properties);
+}
+
+/*
  * Free a workbook object.
  */
 void
@@ -36,19 +58,7 @@ _free_workbook(lxw_workbook *workbook)
     if (!workbook)
         return;
 
-    if (workbook->properties) {
-        free(workbook->properties->title);
-        free(workbook->properties->subject);
-        free(workbook->properties->author);
-        free(workbook->properties->manager);
-        free(workbook->properties->company);
-        free(workbook->properties->category);
-        free(workbook->properties->keywords);
-        free(workbook->properties->comments);
-        free(workbook->properties->status);
-    }
-
-    free(workbook->properties);
+    _free_doc_properties(workbook->properties);
 
     free(workbook->filename);
 
@@ -1139,4 +1149,78 @@ workbook_define_name(lxw_workbook *self, const char *name,
                      const char *formula)
 {
     return _store_defined_name(self, name, NULL, formula, -1, LXW_FALSE);
+}
+
+/*
+ * Set the document properties such as Title, Author etc.
+ */
+uint8_t
+workbook_set_properties(lxw_workbook *self, lxw_doc_properties *user_props)
+{
+    lxw_doc_properties *doc_props;
+
+    /* Free any existing properties. */
+    _free_doc_properties(self->properties);
+
+    doc_props = calloc(1, sizeof(lxw_doc_properties));
+    GOTO_LABEL_ON_MEM_ERROR(doc_props, mem_error);
+
+    /* Copy the user properties to an internal structure. */
+    if (user_props->title) {
+        doc_props->title = strdup(user_props->title);
+        GOTO_LABEL_ON_MEM_ERROR(doc_props->title, mem_error);
+    }
+
+    if (user_props->subject) {
+        doc_props->subject = strdup(user_props->subject);
+        GOTO_LABEL_ON_MEM_ERROR(doc_props->subject, mem_error);
+    }
+
+    if (user_props->author) {
+        doc_props->author = strdup(user_props->author);
+        GOTO_LABEL_ON_MEM_ERROR(doc_props->author, mem_error);
+    }
+
+    if (user_props->manager) {
+        doc_props->manager = strdup(user_props->manager);
+        GOTO_LABEL_ON_MEM_ERROR(doc_props->manager, mem_error);
+    }
+
+    if (user_props->company) {
+        doc_props->company = strdup(user_props->company);
+        GOTO_LABEL_ON_MEM_ERROR(doc_props->company, mem_error);
+    }
+
+    if (user_props->category) {
+        doc_props->category = strdup(user_props->category);
+        GOTO_LABEL_ON_MEM_ERROR(doc_props->category, mem_error);
+    }
+
+    if (user_props->keywords) {
+        doc_props->keywords = strdup(user_props->keywords);
+        GOTO_LABEL_ON_MEM_ERROR(doc_props->keywords, mem_error);
+    }
+
+    if (user_props->comments) {
+        doc_props->comments = strdup(user_props->comments);
+        GOTO_LABEL_ON_MEM_ERROR(doc_props->comments, mem_error);
+    }
+
+    if (user_props->status) {
+        doc_props->status = strdup(user_props->status);
+        GOTO_LABEL_ON_MEM_ERROR(doc_props->status, mem_error);
+    }
+
+    if (user_props->hyperlink_base) {
+        doc_props->hyperlink_base = strdup(user_props->hyperlink_base);
+        GOTO_LABEL_ON_MEM_ERROR(doc_props->hyperlink_base, mem_error);
+    }
+
+    self->properties = doc_props;
+
+    return 0;
+
+mem_error:
+    _free_doc_properties(doc_props);
+    return -1;
 }

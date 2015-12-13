@@ -157,8 +157,15 @@ Next example: @ref hide_sheet.c
 @example hide_sheet.c
 Example of how to hide an Excel worksheet.
 
-Next example: @ref panes.c
+Next example: @ref doc_properties.c
 @image html hide_sheet.png
+
+
+@example doc_properties.c
+Example of setting Excel document properties.
+
+Next example: @ref panes.c
+@image html doc_properties.png
 
 
 @example panes.c
