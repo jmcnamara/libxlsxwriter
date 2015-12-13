@@ -20,3 +20,6 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_firstsheet01(self):
         self.run_exe_test('test_firstsheet01')
+
+    def test_hide01(self):
+        self.run_exe_test('test_hide01')

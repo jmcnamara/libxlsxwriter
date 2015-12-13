@@ -1219,6 +1219,35 @@ void worksheet_activate(lxw_worksheet *worksheet);
 void worksheet_select(lxw_worksheet *worksheet);
 
 /**
+ * @brief Hide the current worksheet.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ *
+ * The `%worksheet_hide()` method is used to hide a worksheet:
+ *
+ * @code
+ *     worksheet_hide(worksheet2);
+ * @endcode
+ *
+ * You may wish to hide a worksheet in order to avoid confusing a user with
+ * intermediate data or calculations.
+ *
+ * @image html hide_sheet.png
+ *
+ * A hidden worksheet can not be activated or selected so this method is
+ * mutually exclusive with the `worksheet_activate()` and `worksheet_select()`
+ * methods. In addition, since the first worksheet will default to being the
+ * active worksheet, you cannot hide the first worksheet without activating
+ * another sheet:
+ *
+ * @code
+ *     worksheet_activate(worksheet2);
+ *     worksheet_hide(worksheet1);
+ * @endcode
+ */
+void worksheet_hide(lxw_worksheet *worksheet);
+
+/**
  * @brief Set current worksheet as the first visible sheet tab.
  *
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.

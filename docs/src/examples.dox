@@ -150,8 +150,15 @@ Next example: @ref tab_colors.c
 @example tab_colors.c
 Example of how to set Excel worksheet tab colors.
 
-Next example: @ref panes.c
+Next example: @ref hide_sheet.c
 @image html tab_colors.png
+
+
+@example hide_sheet.c
+Example of how to hide an Excel worksheet.
+
+Next example: @ref panes.c
+@image html hide_sheet.png
 
 
 @example panes.c

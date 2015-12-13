@@ -3075,6 +3075,25 @@ worksheet_set_first_sheet(lxw_worksheet *self)
 }
 
 /*
+ * Hide this worksheet.
+ */
+void
+worksheet_hide(lxw_worksheet *self)
+{
+    self->hidden = LXW_TRUE;
+
+    /* A hidden worksheet shouldn't be active or selected. */
+    self->selected = LXW_FALSE;
+
+    /* If this is active_sheet or first_sheet reset the workbook value. */
+    if (*self->first_sheet == self->index)
+        *self->first_sheet = 0;
+
+    if (*self->active_sheet == self->index)
+        *self->active_sheet = 0;
+}
+
+/*
  * Set which cell or cells are selected in a worksheet.
  */
 void
