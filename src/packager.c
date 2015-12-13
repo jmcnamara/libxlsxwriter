@@ -72,7 +72,7 @@ _new_packager(const char *filename)
 
     packager->buffer_size = LXW_ZIP_BUFFER_SIZE;
 
-    /* Initialise the zip_fileinfo struct. */
+    /* Initialize the zip_fileinfo struct. */
     file_date = localtime(&now);
     packager->zipfile_info.tmz_date.tm_sec = file_date->tm_sec;
     packager->zipfile_info.tmz_date.tm_min = file_date->tm_min;

@@ -51,7 +51,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->hyperlinks = calloc(1, sizeof(struct lxw_table_rows));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->hyperlinks, mem_error);
 
-    /* Initialise the cached rows. */
+    /* Initialize the cached rows. */
     worksheet->table->cached_row_num = LXW_ROW_MAX + 1;
     worksheet->hyperlinks->cached_row_num = LXW_ROW_MAX + 1;
 
@@ -93,13 +93,13 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
         worksheet->file = worksheet->optimize_tmpfile;
     }
 
-    /* Initialise the worksheet dimensions. */
+    /* Initialize the worksheet dimensions. */
     worksheet->dim_rowmax = 0;
     worksheet->dim_colmax = 0;
     worksheet->dim_rowmin = LXW_ROW_MAX;
     worksheet->dim_colmin = LXW_COL_MAX;
 
-    /* Initialise the page setup properties. */
+    /* Initialize the page setup properties. */
     worksheet->fit_height = 0;
     worksheet->fit_width = 0;
     worksheet->page_start = 0;
@@ -919,7 +919,7 @@ _worksheet_write_split_panes(lxw_worksheet *self)
         x_split = _worksheet_calculate_x_split_width(x_split);
 
     /* For non-explicit topLeft definitions, estimate the cell offset based on
-     * the pixels dimensions. This is only a workaround and doesn"t take
+     * the pixels dimensions. This is only a workaround and doesn't take
      * adjusted cell dimensions into account.
      */
     if (top_row == row && left_col == col) {
@@ -1192,7 +1192,7 @@ _worksheet_write_optimized_sheet_data(lxw_worksheet *self)
     char buffer[BUFFER_SIZE];
 
     if (self->dim_rowmin == LXW_ROW_MAX) {
-        /* If the dimensions aren"t defined then there is no data to write. */
+        /* If the dimensions aren't defined then there is no data to write. */
         _xml_empty_tag(self->file, "sheetData", NULL);
     }
     else {
@@ -1631,7 +1631,7 @@ _worksheet_write_rows(lxw_worksheet *self)
  * Write out the worksheet data as a single row with cells. This method is
  * used when memory optimisation is on. A single row is written and the data
  * array is reset. That way only one row of data is kept in memory at any one
- * time. We don't write span data in the optimised case since it is optional.
+ * time. We don't write span data in the optimized case since it is optional.
  */
 void
 _worksheet_write_single_row(lxw_worksheet *self)
@@ -1639,7 +1639,7 @@ _worksheet_write_single_row(lxw_worksheet *self)
     lxw_row *row = self->optimize_row;
     lxw_col_t col;
 
-    /* skip row if it doesn"t contain row formatting, cell data or a comment. */
+    /* skip row if it doesn't contain row formatting, cell data or a comment. */
     if (!(row->row_changed || row->data_changed))
         return;
 
@@ -2863,7 +2863,7 @@ worksheet_set_column(lxw_worksheet *self,
         self->col_formats[col] = format;
     }
 
-    /* Store the column change to allow optimisations. */
+    /* Store the column change to allow optimizations. */
     self->col_size_changed = LXW_TRUE;
 
     return 0;
@@ -3040,7 +3040,7 @@ worksheet_select(lxw_worksheet *self)
 {
     self->selected = LXW_TRUE;
 
-    /* Selected worksheet can"t be hidden. */
+    /* Selected worksheet can't be hidden. */
     self->hidden = LXW_FALSE;
 }
 
@@ -3054,7 +3054,7 @@ worksheet_activate(lxw_worksheet *self)
     self->selected = LXW_TRUE;
     self->active = LXW_TRUE;
 
-    /* Active worksheet can"t be hidden. */
+    /* Active worksheet can't be hidden. */
     self->hidden = LXW_FALSE;
 
     *self->active_sheet = self->index;
@@ -3068,7 +3068,7 @@ worksheet_activate(lxw_worksheet *self)
 void
 worksheet_set_first_sheet(lxw_worksheet *self)
 {
-    /* Active worksheet can"t be hidden. */
+    /* Active worksheet can't be hidden. */
     self->hidden = LXW_FALSE;
 
     *self->first_sheet = self->index;
@@ -3575,7 +3575,7 @@ worksheet_right_to_left(lxw_worksheet *self)
 }
 
 /*
- * Set the colour of the worksheet tab.
+ * Set the color of the worksheet tab.
  */
 void
 worksheet_set_tab_color(lxw_worksheet *self, lxw_color_t color)

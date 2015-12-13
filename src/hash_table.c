@@ -81,7 +81,7 @@ _insert_hash_element(lxw_hash_table *lxw_hash, void *key, void *value,
         list = calloc(1, sizeof(struct lxw_hash_bucket_list));
         GOTO_LABEL_ON_MEM_ERROR(list, mem_error1);
 
-        /* Initialise the bucket linked list. */
+        /* Initialize the bucket linked list. */
         SLIST_INIT(list);
 
         /* Create an lxw_hash element to add to the linked list. */
@@ -174,7 +174,7 @@ _new_lxw_hash(uint32_t num_buckets, uint8_t free_key, uint8_t free_value)
     lxw_hash->order_list = calloc(1, sizeof(struct lxw_hash_order_list));
     GOTO_LABEL_ON_MEM_ERROR(lxw_hash->order_list, mem_error);
 
-    /* Initialise the order list. */
+    /* Initialize the order list. */
     STAILQ_INIT(lxw_hash->order_list);
 
     /* Store the number of buckets to calculate the load factor. */

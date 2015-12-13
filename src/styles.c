@@ -182,7 +182,7 @@ _write_font_color_theme(lxw_styles *self, uint8_t theme)
 }
 
 /*
- * Write the <color> element for RGB colours.
+ * Write the <color> element for RGB colors.
  */
 STATIC void
 _write_font_color_rgb(lxw_styles *self, int32_t rgb)

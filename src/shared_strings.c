@@ -46,7 +46,7 @@ _new_sst()
     sst->order_list = calloc(1, sizeof(struct sst_order_list));
     GOTO_LABEL_ON_MEM_ERROR(sst->order_list, mem_error);
 
-    /* Initialise the order list. */
+    /* Initialize the order list. */
     STAILQ_INIT(sst->order_list);
 
     /* Initialize the RB tree. */

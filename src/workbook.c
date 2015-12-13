@@ -243,11 +243,11 @@ _prepare_fills(lxw_workbook *self)
         lxw_fill *key = _get_fill_key(format);
 
         /* The following logical statements jointly take care of special */
-        /* cases in relation to cell colours and patterns:               */
+        /* cases in relation to cell colors and patterns:                */
         /* 1. For a solid fill (pattern == 1) Excel reverses the role of */
-        /*    foreground and background colours, and                     */
-        /* 2. If the user specifies a foreground or background colour    */
-        /*    withouth a pattern they probably wanted a solid fill, so   */
+        /*    foreground and background colors, and                      */
+        /* 2. If the user specifies a foreground or background color     */
+        /*    without a pattern they probably wanted a solid fill, so    */
         /*    we fill in the defaults.                                   */
         if (format->pattern == LXW_PATTERN_SOLID
             && format->bg_color != LXW_COLOR_UNSET
@@ -404,7 +404,7 @@ _compare_defined_names(lxw_defined_name *a, lxw_defined_name *b)
  * Process and store the defined names. The defined names are stored with
  * the Workbook.xml but also with the App.xml if they refer to a sheet
  * range like "Sheet1!:A1". The defined names are store in sorted
- * order for consistency with Excel. The names need to be normalised before
+ * order for consistency with Excel. The names need to be normalized before
  * sorting.
  */
 STATIC uint8_t
@@ -485,7 +485,7 @@ _store_defined_name(lxw_workbook *self, const char *name,
         strcpy(defined_name->app_name, name);
     }
 
-    /* We need to normalise the defined names for sorting. This involves
+    /* We need to normalize the defined names for sorting. This involves
      * removing any _xlnm namespace  and converting it to lowercase. */
     tmp_str = strstr(name_copy, "_xlnm.");
 
@@ -1004,7 +1004,7 @@ new_workbook_opt(const char *filename, lxw_workbook_options *options)
     format = workbook_add_format(workbook);
     GOTO_LABEL_ON_MEM_ERROR(format, mem_error);
 
-    /* Initialise its index. */
+    /* Initialize its index. */
     _get_xf_index(format);
 
     if (options)
@@ -1088,7 +1088,7 @@ workbook_add_format(lxw_workbook *self)
 }
 
 /*
- * Call finalisation code and close file.
+ * Call finalization code and close file.
  */
 uint8_t
 workbook_close(lxw_workbook *self)
