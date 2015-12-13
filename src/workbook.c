@@ -1167,52 +1167,52 @@ workbook_set_properties(lxw_workbook *self, lxw_doc_properties *user_props)
 
     /* Copy the user properties to an internal structure. */
     if (user_props->title) {
-        doc_props->title = strdup(user_props->title);
+        doc_props->title = lxw_strdup(user_props->title);
         GOTO_LABEL_ON_MEM_ERROR(doc_props->title, mem_error);
     }
 
     if (user_props->subject) {
-        doc_props->subject = strdup(user_props->subject);
+        doc_props->subject = lxw_strdup(user_props->subject);
         GOTO_LABEL_ON_MEM_ERROR(doc_props->subject, mem_error);
     }
 
     if (user_props->author) {
-        doc_props->author = strdup(user_props->author);
+        doc_props->author = lxw_strdup(user_props->author);
         GOTO_LABEL_ON_MEM_ERROR(doc_props->author, mem_error);
     }
 
     if (user_props->manager) {
-        doc_props->manager = strdup(user_props->manager);
+        doc_props->manager = lxw_strdup(user_props->manager);
         GOTO_LABEL_ON_MEM_ERROR(doc_props->manager, mem_error);
     }
 
     if (user_props->company) {
-        doc_props->company = strdup(user_props->company);
+        doc_props->company = lxw_strdup(user_props->company);
         GOTO_LABEL_ON_MEM_ERROR(doc_props->company, mem_error);
     }
 
     if (user_props->category) {
-        doc_props->category = strdup(user_props->category);
+        doc_props->category = lxw_strdup(user_props->category);
         GOTO_LABEL_ON_MEM_ERROR(doc_props->category, mem_error);
     }
 
     if (user_props->keywords) {
-        doc_props->keywords = strdup(user_props->keywords);
+        doc_props->keywords = lxw_strdup(user_props->keywords);
         GOTO_LABEL_ON_MEM_ERROR(doc_props->keywords, mem_error);
     }
 
     if (user_props->comments) {
-        doc_props->comments = strdup(user_props->comments);
+        doc_props->comments = lxw_strdup(user_props->comments);
         GOTO_LABEL_ON_MEM_ERROR(doc_props->comments, mem_error);
     }
 
     if (user_props->status) {
-        doc_props->status = strdup(user_props->status);
+        doc_props->status = lxw_strdup(user_props->status);
         GOTO_LABEL_ON_MEM_ERROR(doc_props->status, mem_error);
     }
 
     if (user_props->hyperlink_base) {
-        doc_props->hyperlink_base = strdup(user_props->hyperlink_base);
+        doc_props->hyperlink_base = lxw_strdup(user_props->hyperlink_base);
         GOTO_LABEL_ON_MEM_ERROR(doc_props->hyperlink_base, mem_error);
     }
 
