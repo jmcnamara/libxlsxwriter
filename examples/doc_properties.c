@@ -34,8 +34,20 @@ int main() {
     worksheet_write_string(worksheet, 0, 0,
         "Select 'Workbook Properties' to see properties." , NULL);
 
-     workbook_close(workbook);
+    workbook_close(workbook);
 
+    /* Clean up memory used for properties. */
+    free(properties->title);
+    free(properties->subject);
+    free(properties->author);
+    free(properties->manager);
+    free(properties->company);
+    free(properties->category);
+    free(properties->keywords);
+    free(properties->comments);
+    free(properties->status);
     free(properties);
+
+
     return 0;
 }
