@@ -2,6 +2,14 @@
 @page changes Changes
 
 
+## 0.2.4 December 13 2015
+
+- Added `worksheet_hide()` function to hide a worksheet. See @ref
+  hide_sheet.c.
+
+- Added `worksheet_set_first_sheet()` function to set the first visible
+  worksheet in a workbook with a large number of worksheets.
+
 
 ## 0.2.3 December 12 2015
 
@@ -60,12 +68,12 @@
 
 ## 0.1.7 September 27 2015
 
-- Fixed CocoaPod spec file for iOS and OS X.
+- Fixed Cocoapod spec file for iOS and OS X.
 
 
 ## 0.1.6 September 27 2015
 
-- Added CocoaPod spec file to allow the library to be installed using
+- Added Cocoapod spec file to allow the library to be installed using
   [CocoaPods](https://cocoapods.org).
   Pull Request [#7](https://github.com/jmcnamara/libxlsxwriter/issues/7).
 
