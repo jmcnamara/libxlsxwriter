@@ -2,6 +2,12 @@
 @page changes Changes
 
 
+## 0.2.5 December 14 2015
+
+- Added `workbook_set_properties()` function to set Excel document properties
+  such as Author and Title. See the @ref doc_properties.c example.
+
+
 ## 0.2.4 December 13 2015
 
 - Added `worksheet_hide()` function to hide a worksheet. See the @ref
