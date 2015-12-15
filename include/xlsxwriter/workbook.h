@@ -380,21 +380,21 @@ uint8_t workbook_close(lxw_workbook *workbook);
  * and pass the properties is:
  *
  * @code
- *    // Create a properties structure and set some of the fields.
- *    lxw_doc_properties *properties = calloc(1, sizeof(lxw_doc_properties));
+ *     // Create a properties structure and set some of the fields.
+ *     lxw_doc_properties properties = {
+ *         .title    = "This is an example spreadsheet",
+ *         .subject  = "With document properties",
+ *         .author   = "John McNamara",
+ *         .manager  = "Dr. Heinz Doofenshmirtz",
+ *         .company  = "of Wolves",
+ *         .category = "Example spreadsheets",
+ *         .keywords = "Sample, Example, Properties",
+ *         .comments = "Created with libxlsxwriter",
+ *         .status   = "Quo",
+ *     };
  *
- *    properties->title    = strdup("This is an example spreadsheet");
- *    properties->subject  = strdup("With document properties");
- *    properties->author   = strdup("John McNamara");
- *    properties->manager  = strdup("Dr. Heinz Doofenshmirtz");
- *    properties->company  = strdup("of Wolves");
- *    properties->category = strdup("Example spreadsheets");
- *    properties->keywords = strdup("Sample, Example, Properties");
- *    properties->comments = strdup("Created with libxlsxwriter");
- *    properties->status   = strdup("Quo");
- *
- *    // Set the properties in the workbook.
- *    workbook_set_properties(workbook, properties);
+ *     // Set the properties in the workbook.
+ *     workbook_set_properties(workbook, &properties);
  * @endcode
  *
  * @image html doc_properties.png
