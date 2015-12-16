@@ -270,6 +270,28 @@ typedef struct lxw_header_footer_options {
     double margin;
 } lxw_header_footer_options;
 
+typedef struct lxw_protection {
+    uint8_t no_sheet;
+    uint8_t content;
+    uint8_t format_cells;
+    uint8_t format_columns;
+    uint8_t format_rows;
+    uint8_t insert_columns;
+    uint8_t insert_rows;
+    uint8_t insert_hyperlinks;
+    uint8_t delete_columns;
+    uint8_t delete_rows;
+    uint8_t sort;
+    uint8_t autofilter;
+    uint8_t pivot_tables;
+    uint8_t objects;
+    uint8_t scenarios;
+    uint8_t no_select_locked_cells;
+    uint8_t no_select_unlocked_cells;
+    uint8_t is_configured;
+    char hash[5];
+} lxw_protection;
+
 /**
  * @brief Struct to represent an Excel worksheet.
  *
@@ -371,6 +393,8 @@ typedef struct lxw_worksheet {
     struct lxw_rel_tuples *external_hyperlinks;
 
     struct lxw_panes panes;
+
+    struct lxw_protection protection;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -2198,6 +2222,7 @@ STATIC void _worksheet_write_header_footer(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_print_options(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_pr(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_tab_color(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_sheet_protection(lxw_worksheet *worksheet);
 #endif /* TESTING */
 
 /* *INDENT-OFF* */

@@ -83,7 +83,7 @@ coverity:
 	$(Q)rm -f  lib/*
 	$(Q)rm -rf  cov-int
 	$(Q)rm -f libxlsxwriter-coverity.tgz
-	$(Q)../cov-analysis-macosx-7.6.0/bin/cov-build --dir cov-int make -C src libxlsxwriter.a
+	$(Q)../cov-analysis-macosx-7.7.0.4/bin/cov-build --dir cov-int make -C src libxlsxwriter.a
 	$(Q)tar -czf libxlsxwriter-coverity.tgz cov-int
 	$(Q)$(MAKE) -C src clean
 	$(Q)rm -f  lib/*

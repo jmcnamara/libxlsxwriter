@@ -2190,6 +2190,81 @@ mem_error:
 }
 
 /*
+ * Write the <sheetProtection> element.
+ */
+STATIC void
+_worksheet_write_sheet_protection(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    struct lxw_protection *protect = &self->protection;
+
+    if (!protect->is_configured)
+        return;
+
+    _INIT_ATTRIBUTES();
+
+    if (*protect->hash)
+        _PUSH_ATTRIBUTES_STR("password", protect->hash);
+
+    if (!protect->no_sheet)
+        _PUSH_ATTRIBUTES_INT("sheet", 1);
+
+    if (protect->content)
+        _PUSH_ATTRIBUTES_INT("content", 1);
+
+    if (!protect->objects)
+        _PUSH_ATTRIBUTES_INT("objects", 1);
+
+    if (!protect->scenarios)
+        _PUSH_ATTRIBUTES_INT("scenarios", 1);
+
+    if (protect->format_cells)
+        _PUSH_ATTRIBUTES_INT("formatCells", 0);
+
+    if (protect->format_columns)
+        _PUSH_ATTRIBUTES_INT("formatColumns", 0);
+
+    if (protect->format_rows)
+        _PUSH_ATTRIBUTES_INT("formatRows", 0);
+
+    if (protect->insert_columns)
+        _PUSH_ATTRIBUTES_INT("insertColumns", 0);
+
+    if (protect->insert_rows)
+        _PUSH_ATTRIBUTES_INT("insertRows", 0);
+
+    if (protect->insert_hyperlinks)
+        _PUSH_ATTRIBUTES_INT("insertHyperlinks", 0);
+
+    if (protect->delete_columns)
+        _PUSH_ATTRIBUTES_INT("deleteColumns", 0);
+
+    if (protect->delete_rows)
+        _PUSH_ATTRIBUTES_INT("deleteRows", 0);
+
+    if (protect->no_select_locked_cells)
+        _PUSH_ATTRIBUTES_INT("selectLockedCells", 1);
+
+    if (protect->sort)
+        _PUSH_ATTRIBUTES_INT("sort", 0);
+
+    if (protect->autofilter)
+        _PUSH_ATTRIBUTES_INT("autoFilter", 0);
+
+    if (protect->pivot_tables)
+        _PUSH_ATTRIBUTES_INT("pivotTables", 0);
+
+    if (protect->no_select_unlocked_cells)
+        _PUSH_ATTRIBUTES_INT("selectUnlockedCells", 1);
+
+    _xml_empty_tag(self->file, "sheetProtection", &attributes);
+
+    _FREE_ATTRIBUTES();
+}
+
+/*
  * Assemble and write the XML file.
  */
 void
@@ -2221,6 +2296,9 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
         _worksheet_write_sheet_data(self);
     else
         _worksheet_write_optimized_sheet_data(self);
+
+    /* Write the sheetProtection element. */
+    _worksheet_write_sheet_protection(self);
 
     /* Write the autoFilter element. */
     _worksheet_write_auto_filter(self);
