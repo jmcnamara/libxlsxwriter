@@ -2188,6 +2188,9 @@ void worksheet_hide_zero(lxw_worksheet *worksheet);
  */
 void worksheet_set_tab_color(lxw_worksheet *worksheet, lxw_color_t color);
 
+void worksheet_protect(lxw_worksheet *worksheet, char *password,
+                       lxw_protection *options);
+
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);
 void _worksheet_assemble_xml_file(lxw_worksheet *worksheet);

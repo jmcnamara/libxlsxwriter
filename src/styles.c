@@ -212,7 +212,7 @@ _write_font_name(lxw_styles *self, const char *font_name)
 
     _INIT_ATTRIBUTES();
 
-    if (strlen(font_name))
+    if (*font_name)
         _PUSH_ATTRIBUTES_STR("val", font_name);
     else
         _PUSH_ATTRIBUTES_STR("val", LXW_DEFAULT_FONT_NAME);
@@ -250,7 +250,7 @@ _write_font_scheme(lxw_styles *self, const char *font_scheme)
 
     _INIT_ATTRIBUTES();
 
-    if (strlen(font_scheme))
+    if (*font_scheme)
         _PUSH_ATTRIBUTES_STR("val", font_scheme);
     else
         _PUSH_ATTRIBUTES_STR("val", "minor");
@@ -350,7 +350,7 @@ _write_font(lxw_styles *self, lxw_format *format)
 
     /* Only write the scheme element for the default font type if it
      * is a hyperlink. */
-    if ((!strlen(format->font_name)
+    if ((!*format->font_name
          || strcmp(LXW_DEFAULT_FONT_NAME, format->font_name) == 0)
         && !format->hyperlink) {
         _write_font_scheme(self, format->font_scheme);

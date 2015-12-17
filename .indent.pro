@@ -64,8 +64,10 @@
 -T lxw_heading_pair
 -T lxw_merged_range
 -T lxw_packager
+-T lxw_panes
 -T lxw_part_name
 -T lxw_print_area
+-T lxw_protection
 -T lxw_rel_tuple
 -T lxw_relationships
 -T lxw_repeat_cols
@@ -73,6 +75,7 @@
 -T lxw_row
 -T lxw_row_col_options
 -T lxw_row_t
+-T lxw_selection
 -T lxw_sst
 -T lxw_styles
 -T lxw_theme

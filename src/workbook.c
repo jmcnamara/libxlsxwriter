@@ -335,7 +335,7 @@ _prepare_num_formats(lxw_workbook *self)
         /* Check if there is a user defined number format string. */
         num_format = format->num_format;
 
-        if (strlen(num_format)) {
+        if (*num_format) {
             /* Look up the num_format in the hash table. */
             hash_element = _hash_key_exists(num_formats, num_format,
                                             strlen(num_format));

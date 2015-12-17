@@ -653,6 +653,38 @@ _cell_cmp(lxw_cell *cell1, lxw_cell *cell2)
     return 0;
 }
 
+/*
+ * Hash a worksheet password. Based on the algorithm provided by Daniel Rentz
+ * of OpenOffice.
+ */
+uint16_t
+_hash_password(char *password)
+{
+    uint8_t count;
+    uint8_t i;
+    uint16_t hash = 0x0000;
+
+    count = strlen(password);
+
+    for (i = 0; i < count; i++) {
+        uint32_t low_15;
+        uint32_t high_15;
+        uint32_t letter = password[i] << (i + 1);
+
+        low_15 = letter & 0x7fff;
+        high_15 = letter & (0x7fff << 15);
+        high_15 = high_15 >> 15;
+        letter = low_15 | high_15;
+
+        hash ^= letter;
+    }
+
+    hash ^= count;
+    hash ^= 0xCE4B;
+
+    return hash;
+}
+
 /*****************************************************************************
  *
  * XML functions.
@@ -1016,7 +1048,7 @@ _worksheet_write_split_panes(lxw_worksheet *self)
  * Write the <selection> element.
  */
 STATIC void
-_worksheet_write_selection(lxw_worksheet *self, lxw_selection * selection)
+_worksheet_write_selection(lxw_worksheet *self, lxw_selection *selection)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -2374,7 +2406,7 @@ worksheet_write_string(lxw_worksheet *self,
     char *string_copy;
     int8_t err;
 
-    if (!string || !strlen(string)) {
+    if (!string || !*string) {
         /* Treat a NULL or empty string with formatting as a blank cell. */
         /* Null strings without formats should be ignored.      */
         if (format)
@@ -2633,7 +2665,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
     size_t i;
     enum cell_types link_type = HYPERLINK_URL;
 
-    if (!url || !strlen(url))
+    if (!url || !*url)
         return -LXW_ERROR_WORKSHEET_NULL_STRING_IGNORED;
 
     /* Check the Excel limit of URLS per worksheet. */
@@ -3659,4 +3691,29 @@ void
 worksheet_set_tab_color(lxw_worksheet *self, lxw_color_t color)
 {
     self->tab_color = color;
+}
+
+/*
+ * Set the worksheet protection flags to prevent modification of worksheet
+ * objects.
+ */
+void
+worksheet_protect(lxw_worksheet *self, char *password,
+                  lxw_protection *options)
+{
+    struct lxw_protection *protect = &self->protection;
+
+    /* Copy any user parameters to the internal structure. */
+    if (options)
+        memcpy(protect, options, sizeof(lxw_protection));
+
+    /* Zero the hash storage in case of copied initialization data. */
+    protect->hash[0] = '\0';
+
+    if (password) {
+        uint16_t hash = _hash_password(password);
+        lxw_snprintf(protect->hash, 5, "%X", hash);
+    }
+
+    protect->is_configured = LXW_TRUE;
 }
