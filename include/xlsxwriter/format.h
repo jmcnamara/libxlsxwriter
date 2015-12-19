@@ -762,14 +762,14 @@ void format_set_num_format_index(lxw_format *format, uint8_t index);
  * This property can be used to allow modification of a cell in a protected
  * worksheet. In Excel, cell locking is turned on by default for all
  * cells. However, it only has an effect if the worksheet has been protected
- * using the worksheet worksheet_protect() method:
+ * using the worksheet worksheet_protect() function:
  *
  * @code
  *     format = workbook_add_format(workbook);
  *     format_set_unlocked(format);
  *
- *     // Enable worksheet protection.
- *     worksheet_protect(worksheet);
+ *     // Enable worksheet protection, without password or options.
+ *     worksheet_protect(worksheet, NULL, NULL);
  *
  *     // This cell cannot be edited.
  *     worksheet_write_formula(worksheet, 0, 0, "=1+2", NULL);
@@ -785,17 +785,18 @@ void format_set_unlocked(lxw_format *format);
  *
  * @param format Pointer to a Format instance.
  *
- * This property is used to hide a formula while still displaying its result. This
- * is generally used to hide complex calculations from end users who are only
- * interested in the result. It only has an effect if the worksheet has been
- * protected using the worksheet write_protect() method:
+ * This property is used to hide a formula while still displaying its
+ * result. This is generally used to hide complex calculations from end users
+ * who are only interested in the result. It only has an effect if the
+ * worksheet has been protected using the worksheet worksheet_protect()
+ * function:
  *
  * @code
  *     format = workbook_add_format(workbook);
  *     format_set_hidden(format);
  *
- *     // Enable worksheet protection.
- *     worksheet_protect(worksheet);
+ *     // Enable worksheet protection, without password or options.
+ *     worksheet_protect(worksheet, NULL, NULL);
  *
  *     // The formula in this cell isn't visible.
  *     worksheet_write_formula(worksheet, 0, 0, "=1+2", format);

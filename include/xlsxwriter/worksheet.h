@@ -270,24 +270,57 @@ typedef struct lxw_header_footer_options {
     double margin;
 } lxw_header_footer_options;
 
+/**
+ * @brief Worksheet protection options.
+ */
 typedef struct lxw_protection {
+    /** Turn off selection of locked cells. This in on in Excel by default.*/
+    uint8_t no_select_locked_cells;
+
+    /** Turn off selection of unlocked cells. This in on in Excel by default.*/
+    uint8_t no_select_unlocked_cells;
+
+    /** Prevent formatting of cells. */
+    uint8_t format_cells;
+
+    /** Prevent formatting of columns. */
+    uint8_t format_columns;
+
+    /** Prevent formatting of rows. */
+    uint8_t format_rows;
+
+    /** Prevent insertion of columns. */
+    uint8_t insert_columns;
+
+    /** Prevent insertion of rows. */
+    uint8_t insert_rows;
+
+    /** Prevent insertion of hyperlinks. */
+    uint8_t insert_hyperlinks;
+
+    /** Prevent deletion of columns. */
+    uint8_t delete_columns;
+
+    /** Prevent deletion of rows. */
+    uint8_t delete_rows;
+
+    /** Prevent sorting data. */
+    uint8_t sort;
+
+    /** Prevent filtering data. */
+    uint8_t autofilter;
+
+    /** Prevent insertion of pivot tables. */
+    uint8_t pivot_tables;
+
+    /** Protect scenarios. */
+    uint8_t scenarios;
+
+    /** Protect drawing objects. */
+    uint8_t objects;
+
     uint8_t no_sheet;
     uint8_t content;
-    uint8_t format_cells;
-    uint8_t format_columns;
-    uint8_t format_rows;
-    uint8_t insert_columns;
-    uint8_t insert_rows;
-    uint8_t insert_hyperlinks;
-    uint8_t delete_columns;
-    uint8_t delete_rows;
-    uint8_t sort;
-    uint8_t autofilter;
-    uint8_t pivot_tables;
-    uint8_t objects;
-    uint8_t scenarios;
-    uint8_t no_select_locked_cells;
-    uint8_t no_select_unlocked_cells;
     uint8_t is_configured;
     char hash[5];
 } lxw_protection;
@@ -1247,7 +1280,7 @@ void worksheet_select(lxw_worksheet *worksheet);
  *
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  *
- * The `%worksheet_hide()` method is used to hide a worksheet:
+ * The `%worksheet_hide()` function is used to hide a worksheet:
  *
  * @code
  *     worksheet_hide(worksheet2);
@@ -1258,9 +1291,9 @@ void worksheet_select(lxw_worksheet *worksheet);
  *
  * @image html hide_sheet.png
  *
- * A hidden worksheet can not be activated or selected so this method is
+ * A hidden worksheet can not be activated or selected so this function is
  * mutually exclusive with the `worksheet_activate()` and `worksheet_select()`
- * methods. In addition, since the first worksheet will default to being the
+ * functions. In addition, since the first worksheet will default to being the
  * active worksheet, you cannot hide the first worksheet without activating
  * another sheet:
  *
@@ -1286,7 +1319,7 @@ void worksheet_hide(lxw_worksheet *worksheet);
  *     worksheet_activate(worksheet20);        // First visible worksheet.
  * @endcode
  *
- * This method is not required very often. The default value is the first
+ * This function is not required very often. The default value is the first
  * worksheet.
  */
 void worksheet_set_first_sheet(lxw_worksheet *worksheet);
@@ -2175,7 +2208,7 @@ void worksheet_hide_zero(lxw_worksheet *worksheet);
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param color     The tab color.
  *
- * The `%worksheet_set_tab_color()` method is used to change the color of the worksheet
+ * The `%worksheet_set_tab_color()` function is used to change the color of the worksheet
  * tab:
  *
  * @code
@@ -2188,6 +2221,83 @@ void worksheet_hide_zero(lxw_worksheet *worksheet);
  */
 void worksheet_set_tab_color(lxw_worksheet *worksheet, lxw_color_t color);
 
+/**
+ * @brief Protect elements of a worksheet from modification.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param password  A worksheet password.
+ * @param options   Worksheet elements to protect.
+ *
+ * The `%worksheet_protect()` function protects worksheet elements from modification:
+ *
+ * @code
+ *     worksheet_protect(worksheet, "Some Password", options);
+ * @endcode
+ *
+ * The `password` and lxw_protection pointer are both optional:
+ *
+ * @code
+ *     worksheet_protect(worksheet1, NULL,       NULL);
+ *     worksheet_protect(worksheet2, NULL,       my_options);
+ *     worksheet_protect(worksheet3, "password", NULL);
+ *     worksheet_protect(worksheet4, "password", my_options);
+ * @endcode
+ *
+ * Passing a `NULL` password is the same as turning on protection without a
+ * password. Passing a `NULL` password and `NULL` options, or any other
+ * combination has the effect of enabling a cell's `locked` and `hidden`
+ * properties if they have been set.
+ *
+ * A *locked* cell cannot be edited and this property is on by default for all
+ * cells. A *hidden* cell will display the results of a formula but not the
+ * formula itself. These properties can be set using the format_set_unlocked()
+ * and format_set_hidden() format functions.
+ *
+ * You can specify which worksheet elements you wish to protect by passing a
+ * lxw_protection pointer in the `options` argument with any or all of the
+ * following members set:
+ *
+ *     no_select_locked_cells
+ *     no_select_unlocked_cells
+ *     format_cells
+ *     format_columns
+ *     format_rows
+ *     insert_columns
+ *     insert_rows
+ *     insert_hyperlinks
+ *     delete_columns
+ *     delete_rows
+ *     sort
+ *     autofilter
+ *     pivot_tables
+ *     scenarios
+ *     objects
+ *
+ * All parameters are off by default. Individual elements can be protected as
+ * follows:
+ *
+ * @code
+ *     lxw_protection options = {
+ *         .format_cells             = 1,
+ *         .insert_hyperlinks        = 1,
+ *         .insert_rows              = 1,
+ *         .delete_rows              = 1,
+ *         .insert_columns           = 1,
+ *         .delete_columns           = 1,
+ *     };
+ *
+ *     worksheet_protect(worksheet, NULL, &options);
+ *
+ * @endcode
+ *
+ * See also the format_set_unlocked() and format_set_hidden() format functions.
+ *
+ * **Note:** Worksheet level passwords in Excel offer **very** weak
+ * protection. They don't encrypt your data and are very easy to
+ * deactivate. Full workbook encryption is not supported by `libxlsxwriter`
+ * since it requires a completely different file format and would take several
+ * man months to implement.
+ */
 void worksheet_protect(lxw_worksheet *worksheet, char *password,
                        lxw_protection *options);
 
