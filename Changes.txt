@@ -2,6 +2,12 @@
 @page changes Changes
 
 
+## 0.2.6 December 19 2015
+
+- Added `worksheet_protect()` function to protecdt Excel worksheet elements
+  from modification. See the @ref worksheet_protection.c example.
+
+
 ## 0.2.5 December 14 2015
 
 - Added `workbook_set_properties()` function to set Excel document properties
