@@ -162,6 +162,8 @@ void _xml_data_element(FILE * xmlfile,
                        const char *data,
                        struct xml_attribute_list *attributes);
 
+char *_escape_control_characters(const char *string);
+
 /* *INDENT-OFF* */
 #ifdef __cplusplus
 }

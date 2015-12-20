@@ -96,7 +96,7 @@ _xml_empty_tag(FILE * xmlfile,
 
 /*
  * Write an XML start tag with optional, unencoded, attributes.
- * This is a minor speed optimisation for elements that don't need encoding.
+ * This is a minor speed optimization for elements that don't need encoding.
  */
 void
 _xml_empty_tag_unencoded(FILE * xmlfile,
@@ -212,7 +212,64 @@ _escape_data(const char *data)
     return encoded;
 }
 
-/* TODO */
+/*
+ * Escape control characters in strings with with _xHHHH_.
+ */
+char *
+_escape_control_characters(const char *string)
+{
+    size_t escape_len = sizeof("_xHHHH_") - 1;
+    size_t encoded_len = (strlen(string) * escape_len + 1);
+
+    char *encoded = (char *) calloc(encoded_len, 1);
+    char *p_encoded = encoded;
+
+    while (*string) {
+        switch (*string) {
+            case '\x01':
+            case '\x02':
+            case '\x03':
+            case '\x04':
+            case '\x05':
+            case '\x06':
+            case '\x07':
+            case '\x08':
+            case '\x0B':
+            case '\x0C':
+            case '\x0D':
+            case '\x0E':
+            case '\x0F':
+            case '\x10':
+            case '\x11':
+            case '\x12':
+            case '\x13':
+            case '\x14':
+            case '\x15':
+            case '\x16':
+            case '\x17':
+            case '\x18':
+            case '\x19':
+            case '\x1A':
+            case '\x1B':
+            case '\x1C':
+            case '\x1D':
+            case '\x1E':
+            case '\x1F':
+                lxw_snprintf(p_encoded, escape_len + 1, "_x%04X_", *string);
+                p_encoded += escape_len;
+                break;
+            default:
+                *p_encoded = *string;
+                p_encoded++;
+                break;
+        }
+        string++;
+    }
+
+    return encoded;
+}
+
+/* Write out escaped attributes. */
 void
 _fprint_escaped_attributes(FILE * xmlfile,
                            struct xml_attribute_list *attributes)
@@ -239,7 +296,7 @@ _fprint_escaped_attributes(FILE * xmlfile,
     }
 }
 
-/* TODO */
+/* Write out escaped XML data. */
 void
 _fprint_escaped_data(FILE * xmlfile, const char *data)
 {
@@ -256,7 +313,7 @@ _fprint_escaped_data(FILE * xmlfile, const char *data)
     }
 }
 
-/* TODO */
+/* Create a new string XML attribute. */
 struct xml_attribute *
 _new_attribute_str(const char *key, const char *value)
 {
@@ -268,7 +325,7 @@ _new_attribute_str(const char *key, const char *value)
     return attribute;
 }
 
-/* TODO */
+/* Create a new integer XML attribute. */
 struct xml_attribute *
 _new_attribute_int(const char *key, uint32_t value)
 {
@@ -280,7 +337,7 @@ _new_attribute_int(const char *key, uint32_t value)
     return attribute;
 }
 
-/* TODO */
+/* Create a new double XML attribute. */
 struct xml_attribute *
 _new_attribute_dbl(const char *key, double value)
 {
