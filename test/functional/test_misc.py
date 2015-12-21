@@ -26,3 +26,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_shared_strings01(self):
         self.run_exe_test('test_shared_strings01')
+
+    def test_gh42_01(self):
+        self.run_exe_test('test_gh42_01')
+
+    def test_gh42_02(self):
+        self.run_exe_test('test_gh42_02')
