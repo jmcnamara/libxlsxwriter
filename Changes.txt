@@ -2,9 +2,19 @@
 @page changes Changes
 
 
+
+## 0.2.7 December 21 2015
+
+- Added support for escaping control characters in strings. This prevents
+  unreadable files if string data contains control characters.
+  Issue [#42][gh_42].
+
+  [gh_42]: https://github.com/jmcnamara/libxlsxwriter/issues/42
+
+
 ## 0.2.6 December 19 2015
 
-- Added `worksheet_protect()` function to protecdt Excel worksheet elements
+- Added `worksheet_protect()` function to protect Excel worksheet elements
   from modification. See the @ref worksheet_protection.c example.
 
 
