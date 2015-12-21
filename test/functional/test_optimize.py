@@ -19,6 +19,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_optimize02(self):
         self.run_exe_test('test_optimize02')
 
+    def test_optimize06(self):
+        self.run_exe_test('test_optimize06')
+
     # Skip some of the XlsxWriter tests until the required functionality is ported.
 
     def test_optimize21(self):
