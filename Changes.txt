@@ -2,6 +2,11 @@
 @page changes Changes
 
 
+## 0.2.8 December 22 2015
+
+- Added `worksheet_set_default_row()` function to allow setting of default row
+  height and hiding unused rows. See the @ref hide_row_col.c example.
+
 
 ## 0.2.7 December 21 2015
 
