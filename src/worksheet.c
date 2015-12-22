@@ -99,6 +99,10 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->dim_rowmin = LXW_ROW_MAX;
     worksheet->dim_colmin = LXW_COL_MAX;
 
+    worksheet->default_row_height = LXW_DEF_ROW_HEIGHT;
+    worksheet->default_row_pixels = 20;
+    worksheet->default_col_pixels = 64;
+
     /* Initialize the page setup properties. */
     worksheet->fit_height = 0;
     worksheet->fit_width = 0;
@@ -1186,10 +1190,15 @@ _worksheet_write_sheet_format_pr(lxw_worksheet *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char default_row_height[] = "15";
 
     _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("defaultRowHeight", default_row_height);
+    _PUSH_ATTRIBUTES_DBL("defaultRowHeight", self->default_row_height);
+
+    if (self->default_row_height != LXW_DEF_ROW_HEIGHT)
+        _PUSH_ATTRIBUTES_STR("customHeight", "1");
+
+    if (self->default_row_zeroed)
+        _PUSH_ATTRIBUTES_STR("zeroHeight", "1");
 
     _xml_empty_tag(self->file, "sheetFormatPr", &attributes);
 
@@ -1394,10 +1403,16 @@ _write_row(lxw_worksheet *self, lxw_row *row, char *spans)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
     int32_t xf_index = 0;
+    double height;
 
     if (row->format) {
         xf_index = _get_xf_index(row->format);
     }
+
+    if (row->height_changed)
+        height = row->height;
+    else
+        height = self->default_row_height;
 
     _INIT_ATTRIBUTES();
     _PUSH_ATTRIBUTES_INT("r", row->row_num + 1);
@@ -1411,13 +1426,13 @@ _write_row(lxw_worksheet *self, lxw_row *row, char *spans)
     if (row->format)
         _PUSH_ATTRIBUTES_STR("customFormat", "1");
 
-    if (row->height != LXW_DEF_ROW_HEIGHT)
-        _PUSH_ATTRIBUTES_INT("ht", row->height);
+    if (height != LXW_DEF_ROW_HEIGHT)
+        _PUSH_ATTRIBUTES_INT("ht", height);
 
     if (row->hidden)
         _PUSH_ATTRIBUTES_STR("hidden", "1");
 
-    if (row->height != LXW_DEF_ROW_HEIGHT)
+    if (height != LXW_DEF_ROW_HEIGHT)
         _PUSH_ATTRIBUTES_STR("customHeight", "1");
 
     if (row->collapsed)
@@ -1641,8 +1656,13 @@ _worksheet_write_rows(lxw_worksheet *self)
     RB_FOREACH(row, lxw_table_rows, self->table) {
 
         if (RB_EMPTY(row->cells)) {
-            /* Row data only. No cells. */
-            _write_row(self, row, NULL);
+            /* Row contains no cells but has height, format or other data. */
+
+            /* Write a default span for default rows. */
+            if (self->default_row_set)
+                _write_row(self, row, "1:1");
+            else
+                _write_row(self, row, NULL);
         }
         else {
             /* Row and cell data. */
@@ -3024,8 +3044,7 @@ worksheet_set_row(lxw_worksheet *self,
     /* If the height is 0 the row is hidden and the height is the default. */
     if (height == 0) {
         hidden = LXW_TRUE;
-        height = LXW_DEF_ROW_HEIGHT;
-
+        height = self->default_row_height;
     }
 
     row = _get_row(self, row_num);
@@ -3037,8 +3056,10 @@ worksheet_set_row(lxw_worksheet *self,
     row->collapsed = collapsed;
     row->row_changed = LXW_TRUE;
 
-    return 0;
+    if (height != self->default_row_height)
+        row->height_changed = LXW_TRUE;
 
+    return 0;
 }
 
 /*
@@ -3724,4 +3745,25 @@ worksheet_protect(lxw_worksheet *self, char *password,
     }
 
     protect->is_configured = LXW_TRUE;
+}
+
+/*
+ * Set the default row properties
+ */
+void
+worksheet_set_default_row(lxw_worksheet *self, double height,
+                          uint8_t hide_unused_rows)
+{
+    if (height < 0)
+        height = self->default_row_height;
+
+    if (height != self->default_row_height) {
+        self->default_row_height = height;
+        self->row_size_changed = LXW_TRUE;
+    }
+
+    if (hide_unused_rows)
+        self->default_row_zeroed = LXW_TRUE;
+
+    self->default_row_set = LXW_TRUE;
 }

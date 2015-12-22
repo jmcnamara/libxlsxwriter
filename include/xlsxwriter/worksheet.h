@@ -68,7 +68,7 @@
 #define LXW_DEF_COL_WIDTH 8.43
 
 /** Default row height in Excel */
-#define LXW_DEF_ROW_HEIGHT 15
+#define LXW_DEF_ROW_HEIGHT 15.0
 
 /** Error codes from worksheet functions. */
 enum lxw_worksheet_error {
@@ -368,6 +368,7 @@ typedef struct lxw_worksheet {
     uint16_t col_formats_max;
 
     uint8_t col_size_changed;
+    uint8_t row_size_changed;
     uint8_t optimize;
     struct lxw_row *optimize_row;
 
@@ -408,6 +409,12 @@ typedef struct lxw_worksheet {
     double margin_bottom;
     double margin_header;
     double margin_footer;
+
+    double default_row_height;
+    uint32_t default_row_pixels;
+    uint32_t default_col_pixels;
+    uint8_t default_row_zeroed;
+    uint8_t default_row_set;
 
     uint8_t header_footer_changed;
     char header[LXW_HEADER_FOOTER_MAX];
@@ -458,6 +465,7 @@ typedef struct lxw_row {
     uint8_t collapsed;
     uint8_t row_changed;
     uint8_t data_changed;
+    uint8_t height_changed;
     struct lxw_table_cells *cells;
 
     /* tree management pointers for tree.h. */
@@ -2300,6 +2308,37 @@ void worksheet_set_tab_color(lxw_worksheet *worksheet, lxw_color_t color);
  */
 void worksheet_protect(lxw_worksheet *worksheet, char *password,
                        lxw_protection *options);
+
+/**
+ * @brief Set the default row properties.
+ *
+ * @param worksheet        Pointer to a lxw_worksheet instance to be updated.
+ * @param height           Default row height.
+ * @param hide_unused_rows Hide unused cells.
+ *
+ * The `%worksheet_set_default_row()` function is used to set Excel default
+ * row properties such as the default height and the option to hide unused
+ * rows. These parameters are an optimization used by Excel to set row
+ * properties without generating a very large file with an entry for each row.
+ *
+ * To set the default row height:
+ *
+ * @code
+ *     worksheet_set_default_row(worksheet, 24, LXW_FALSE);
+ *
+ * @endcode
+ *
+ * To hide unused rows:
+ *
+ * @code
+ *     worksheet_set_default_row(worksheet, 15, LXW_TRUE);
+ * @endcode
+ *
+ * Note, in the previous case we use the default height #LXW_DEF_ROW_HEIGHT =
+ * 15 so the the height remains unchanged.
+ */
+void worksheet_set_default_row(lxw_worksheet *worksheet, double height,
+                               uint8_t hide_unused_rows);
 
 lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);

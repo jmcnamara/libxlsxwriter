@@ -171,12 +171,19 @@ Next example: @ref worksheet_protection.c
 @example worksheet_protection.c
 Example of setting Excel worksheet protection.
 
-Next example: @ref panes.c
+Next example: @ref hide_row_col.c
 @image html worksheet_protection.png
 
 
+@example hide_row_col.c
+Example of hiding rows and columns in an Excel worksheet.
+
+Next example: @ref panes.c
+@image html hide_row_col.png
+
+
 @example panes.c
-An example of how to create panes in a worksheet, both “freeze” panes and “split” panes.
+An example of how to create panes in a worksheet, both "freeze" panes and "split" panes.
 
 Back to @ref examples
 @image html panes.png
