@@ -51,7 +51,7 @@ _xml_start_tag(FILE * xmlfile,
 
 /*
  * Write an XML start tag with optional, unencoded, attributes.
- * This is a minor speed optimisation for elements that don't need encoding.
+ * This is a minor speed optimization for elements that don't need encoding.
  */
 void
 _xml_start_tag_unencoded(FILE * xmlfile,

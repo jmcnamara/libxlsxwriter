@@ -441,7 +441,7 @@ typedef struct lxw_worksheet {
 } lxw_worksheet;
 
 /*
- * Worksheet initialisation data.
+ * Worksheet initialization data.
  */
 typedef struct lxw_worksheet_init_data {
     uint32_t index;

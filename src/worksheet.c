@@ -1222,7 +1222,7 @@ _worksheet_write_sheet_data(lxw_worksheet *self)
 }
 
 /*
- * Write the <sheetData> element when the memory optimisation is on. In which
+ * Write the <sheetData> element when the memory optimization is on. In which
  * case we read the data stored in the temp file and rewrite it to the XML
  * sheet file.
  */
@@ -1541,7 +1541,7 @@ _write_inline_string_cell(lxw_worksheet *self, lxw_cell *cell)
 
 /*
  * Calculate the "spans" attribute of the <row> tag. This is an XLSX
- * optimisation and isn't strictly required. However, it makes comparing
+ * optimization and isn't strictly required. However, it makes comparing
  * files easier.
  *
  * The span is the same for each block of 16 rows.
@@ -1681,7 +1681,7 @@ _worksheet_write_rows(lxw_worksheet *self)
 
 /*
  * Write out the worksheet data as a single row with cells. This method is
- * used when memory optimisation is on. A single row is written and the data
+ * used when memory optimization is on. A single row is written and the data
  * array is reset. That way only one row of data is kept in memory at any one
  * time. We don't write span data in the optimized case since it is optional.
  */

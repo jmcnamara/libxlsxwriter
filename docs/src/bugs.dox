@@ -57,7 +57,7 @@ formula using the worksheet_write_formula_num() function.
 
 ## Strings aren't displayed in Apple Numbers in 'constant_memory' mode
 
-In new_workbook_opt `constant_memory` mode libxlsxwriter uses an optimisation
+In new_workbook_opt `constant_memory` mode libxlsxwriter uses an optimization
 where cell strings aren't stored in an Excel structure call "shared strings"
 and instead are written "in-line".
 

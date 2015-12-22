@@ -19,7 +19,7 @@ new_workbook_opt() and the lxw_workbook_options `constant_memory` property:
 @until    return
 @skipline }
 
-This optimisation works by flushing each row after a subsequent row is written.
+This optimization works by flushing each row after a subsequent row is written.
 In this way the largest amount of data held in memory for a worksheet is the
 amount of data required to hold a single row of data.
 
@@ -55,7 +55,7 @@ row order when `constant_memory` mode is on:
 Inline strings
 --------------
 
-Another optimisation that is used to reduce memory usage in `constant_memory`
+Another optimization that is used to reduce memory usage in `constant_memory`
 mode is that cell strings aren't stored in an Excel structure call "shared
 strings" and instead are written "in-line". This is a documented Excel feature
 that is supported by most spreadsheet applications. One known exception is

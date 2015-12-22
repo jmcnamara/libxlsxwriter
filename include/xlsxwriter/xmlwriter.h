@@ -10,7 +10,7 @@
  * in the Excel XLSX file format.
  *
  * This library is used in preference to a more generic XML library to allow
- * for customization and optimisation for the XLSX file format.
+ * for customization and optimization for the XLSX file format.
  *
  * The xmlwriter functions are only used internally and do not need to be
  * called directly by the end user.
@@ -109,7 +109,7 @@ void _xml_start_tag(FILE * xmlfile,
 
 /**
  * Write an XML start tag with optional un-encoded attributes.
- * This is a minor optimisation for attributes that don't need encoding.
+ * This is a minor optimization for attributes that don't need encoding.
  *
  * @param xmlfile    A FILE pointer to the output XML file.
  * @param tag        The XML tag to write.
@@ -139,7 +139,7 @@ void _xml_empty_tag(FILE * xmlfile,
 
 /**
  * Write an XML empty tag with optional un-encoded attributes.
- * This is a minor optimisation for attributes that don't need encoding.
+ * This is a minor optimization for attributes that don't need encoding.
  *
  * @param xmlfile    A FILE pointer to the output XML file.
  * @param tag        The XML tag to write.

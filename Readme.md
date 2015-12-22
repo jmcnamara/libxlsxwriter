@@ -18,7 +18,7 @@ It supports features such as:
 - Merged cells.
 - Defined names.
 - Autofilters.
-- Memory optimisation mode for writing large files.
+- Memory optimization mode for writing large files.
 - Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter).
 - FreeBSD ref license.
 - ANSI C.
