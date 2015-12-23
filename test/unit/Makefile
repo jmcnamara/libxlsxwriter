@@ -34,6 +34,7 @@ SRCS += $(wildcard core/test*.c)
 SRCS += $(wildcard relationships/test*.c)
 SRCS += $(wildcard format/test*.c)
 SRCS += $(wildcard styles/test*.c)
+SRCS += $(wildcard drawing/test*.c)
 # End of SRCS
 
 OBJS  = $(patsubst %.c,%.o,$(SRCS))
@@ -55,6 +56,7 @@ all :
 	$(Q)$(MAKE) -C core
 	$(Q)$(MAKE) -C relationships
 	$(Q)$(MAKE) -C styles
+	$(Q)$(MAKE) -C drawing
 # END make all
 
 clean :
@@ -69,6 +71,7 @@ clean :
 	$(Q)$(MAKE) clean -C core
 	$(Q)$(MAKE) clean -C relationships
 	$(Q)$(MAKE) clean -C styles
+	$(Q)$(MAKE) clean -C drawing
 # END make clean
 
 
