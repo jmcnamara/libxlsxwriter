@@ -56,6 +56,8 @@
 -T lxw_defined_name
 -T lxw_doc_properties
 -T lxw_drawing
+-T lxw_drawing_coords
+-T lxw_drawing_object
 -T lxw_fill
 -T lxw_font
 -T lxw_format

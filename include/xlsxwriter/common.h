@@ -21,6 +21,7 @@
 
 #define LXW_SHEETNAME_MAX  32
 #define LXW_SHEETNAME_LEN  65
+#define LXW_UINT32_T_LEN   11   /* Length of 4294967296. */
 
 enum lxw_boolean {
     LXW_FALSE,
