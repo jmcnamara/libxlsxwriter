@@ -76,6 +76,9 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->merged_ranges = calloc(1, sizeof(struct lxw_merged_ranges));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->merged_ranges, mem_error);
 
+    worksheet->images = calloc(1, sizeof(struct lxw_images));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->images, mem_error);
+
     worksheet->selections = calloc(1, sizeof(struct lxw_selections));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->selections, mem_error);
 
@@ -85,6 +88,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     RB_INIT(worksheet->table);
     RB_INIT(worksheet->hyperlinks);
     STAILQ_INIT(worksheet->merged_ranges);
+    STAILQ_INIT(worksheet->images);
     STAILQ_INIT(worksheet->selections);
     STAILQ_INIT(worksheet->external_hyperlinks);
 
@@ -193,6 +197,21 @@ _free_row(lxw_row *row)
 }
 
 /*
+ * Free a worksheet image_options.
+ */
+void
+_free_image_options(lxw_image_options *image)
+{
+    if (!image)
+        return;
+
+    free(image->filename);
+    free(image->url);
+    free(image->tip);
+    free(image);
+}
+
+/*
  * Free a worksheet object.
  */
 void
@@ -202,6 +221,7 @@ _free_worksheet(lxw_worksheet *worksheet)
     lxw_row *next_row;
     lxw_col_t col;
     lxw_merged_range *merged_range;
+    lxw_image_options *image;
     lxw_selection *selection;
     lxw_rel_tuple *external_hyperlink;
 
@@ -251,6 +271,16 @@ _free_worksheet(lxw_worksheet *worksheet)
         }
 
         free(worksheet->merged_ranges);
+    }
+
+    if (worksheet->images) {
+        while (!STAILQ_EMPTY(worksheet->images)) {
+            image = STAILQ_FIRST(worksheet->images);
+            STAILQ_REMOVE_HEAD(worksheet->images, list_pointers);
+            _free_image_options(image);
+        }
+
+        free(worksheet->images);
     }
 
     if (worksheet->selections) {
@@ -3766,4 +3796,88 @@ worksheet_set_default_row(lxw_worksheet *self, double height,
         self->default_row_zeroed = LXW_TRUE;
 
     self->default_row_set = LXW_TRUE;
+}
+
+/*
+ * Insert an image into the worksheet.
+ */
+int
+worksheet_insert_image_opt(lxw_worksheet *self,
+                           lxw_row_t row_num, lxw_col_t col_num,
+                           const char *filename,
+                           lxw_image_options *user_options)
+{
+    FILE *file;
+    lxw_image_options *options;
+
+    if (!filename) {
+        LXW_WARN("filename must be specified");
+        return -1;
+    }
+
+    /* Check that the image file exists and can be opened. */
+    file = fopen(filename, "rb");
+    if (!file) {
+        LXW_WARN_FORMAT("file doesn't exist or can't be opened: %s",
+                        filename);
+        return -1;
+    }
+    else {
+        fclose(file);
+    }
+
+    /* Create a new object to hold the image options. */
+    options = calloc(1, sizeof(lxw_image_options));
+    RETURN_ON_MEM_ERROR(options, -1);
+
+    if (user_options) {
+        memcpy(options, user_options, sizeof(lxw_image_options));
+        options->url = lxw_strdup(user_options->url);
+        options->tip = lxw_strdup(user_options->tip);
+    }
+
+    /* Copy other options or set defaults. */
+    options->filename = lxw_strdup(filename);
+
+    if (!options->x_scale)
+        options->x_scale = 1;
+
+    if (!options->y_scale)
+        options->y_scale = 1;
+
+    options->row = row_num;
+    options->col = col_num;
+
+    STAILQ_INSERT_TAIL(self->images, options, list_pointers);
+
+    return 0;
+}
+
+/*
+ * Insert an image into the worksheet.
+ */
+int
+worksheet_insert_image(lxw_worksheet *self,
+                       lxw_row_t row_num, lxw_col_t col_num,
+                       const char *filename)
+{
+    FILE *file;
+
+    if (!filename) {
+        LXW_WARN("filename must be specified");
+        return -1;
+    }
+
+    /* Check that the image file exists and can be opened. */
+    file = fopen(filename, "rb");
+    if (!file) {
+        LXW_WARN_FORMAT("file doesn't exist or can't be opened: %s",
+                        filename);
+        return -1;
+    }
+    else {
+        fclose(file);
+    }
+
+    return worksheet_insert_image_opt(self, row_num, col_num, filename, NULL);
 }

@@ -55,7 +55,10 @@ enum lxw_boolean {
     }
 
 #define LXW_WARN(message)                       \
-    fprintf(stderr, "[WARN]: " message "\n")
+    fprintf(stderr, "[WARN] %s(): " message "\n", __func__)
+
+#define LXW_WARN_FORMAT(message, var)           \
+    fprintf(stderr, "[WARN] %s(): " message "\n", __func__, var)
 
 /* Compilers that have a native snprintf() can use it directly. */
 #ifdef _MSC_VER

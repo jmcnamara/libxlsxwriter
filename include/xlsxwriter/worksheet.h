@@ -171,6 +171,7 @@ struct lxw_table_rows {
 
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
 STAILQ_HEAD(lxw_selections, lxw_selection);
+STAILQ_HEAD(lxw_images, lxw_image_options);
 
 /**
  * @brief Options for rows and columns.
@@ -258,6 +259,22 @@ typedef struct lxw_selection {
 
 } lxw_selection;
 
+typedef struct lxw_image_options {
+    lxw_row_t row;
+    lxw_col_t col;
+    uint32_t x_offset;
+    uint32_t y_offset;
+    double x_scale;
+    double y_scale;
+    char *filename;
+    char *url;
+    char *tip;
+    uint8_t anchor;
+
+    STAILQ_ENTRY (lxw_image_options) list_pointers;
+
+} lxw_image_options;
+
 /**
  * @brief Header and footer options.
  *
@@ -341,6 +358,7 @@ typedef struct lxw_worksheet {
     struct lxw_cell **array;
     struct lxw_merged_ranges *merged_ranges;
     struct lxw_selections *selections;
+    struct lxw_images *images;
 
     lxw_row_t dim_rowmin;
     lxw_row_t dim_rowmax;
@@ -1135,6 +1153,16 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
 int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
                             lxw_col_t last_col, double width,
                             lxw_format *format, lxw_row_col_options *options);
+
+/* TODO */
+int worksheet_insert_image(lxw_worksheet *worksheet,
+                           lxw_row_t row_num, lxw_col_t col_num,
+                           const char *filename);
+
+int worksheet_insert_image_opt(lxw_worksheet *worksheet,
+                               lxw_row_t row_num, lxw_col_t col_num,
+                               const char *filename,
+                               lxw_image_options *options);
 
 /**
  * @brief Merge a range of cells.

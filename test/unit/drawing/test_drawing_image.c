@@ -5,6 +5,7 @@
  *
  */
 
+#include <string.h>;
 #include "../ctest.h"
 #include "../helper.h"
 

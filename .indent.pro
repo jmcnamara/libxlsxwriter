@@ -65,6 +65,7 @@
 -T lxw_hash_table
 -T lxw_header_footer_options
 -T lxw_heading_pair
+-T lxw_image_options
 -T lxw_merged_range
 -T lxw_packager
 -T lxw_panes
