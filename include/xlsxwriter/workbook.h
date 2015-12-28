@@ -44,6 +44,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <errno.h>
+#include <libgen.h>
 
 #include "worksheet.h"
 #include "shared_strings.h"
@@ -192,6 +193,7 @@ typedef struct lxw_workbook {
     uint16_t active_sheet;
     uint16_t num_xf_formats;
     uint16_t num_format_count;
+    uint16_t drawing_count;
 
     uint16_t font_count;
     uint16_t border_count;

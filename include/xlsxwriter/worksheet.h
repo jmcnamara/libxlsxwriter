@@ -137,6 +137,13 @@ enum pane_types {
     FREEZE_SPLIT_PANES
 };
 
+enum image_types {
+    IMAGE_UNKNOWN = 0,
+    IMAGE_PNG,
+    IMAGE_JPG,
+    IMAGE_BMP
+};
+
 /* Define the tree.h RB structs for the red-black head types. */
 RB_HEAD(lxw_table_cells, lxw_cell);
 
@@ -270,6 +277,15 @@ typedef struct lxw_image_options {
     char *url;
     char *tip;
     uint8_t anchor;
+
+    /* Internal metadata. */
+    FILE *stream;
+    uint8_t image_type;
+    uint32_t width;
+    uint32_t height;
+    char *short_name;
+    double x_dpi;
+    double y_dpi;
 
     STAILQ_ENTRY (lxw_image_options) list_pointers;
 

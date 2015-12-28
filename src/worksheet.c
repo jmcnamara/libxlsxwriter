@@ -206,6 +206,7 @@ _free_image_options(lxw_image_options *image)
         return;
 
     free(image->filename);
+    free(image->short_name);
     free(image->url);
     free(image->tip);
     free(image);
@@ -3718,7 +3719,8 @@ worksheet_set_zoom(lxw_worksheet *self, uint16_t scale)
 {
     /* Confine the scale to Excel"s range */
     if (scale < 10 || scale > 400) {
-        LXW_WARN("Zoom factor scale outside range: 10 <= zoom <= 400");
+        LXW_WARN("worksheet_set_zoom(): "
+                 "Zoom factor scale outside range: 10 <= zoom <= 400");
         return;
     }
 
@@ -3807,23 +3809,22 @@ worksheet_insert_image_opt(lxw_worksheet *self,
                            const char *filename,
                            lxw_image_options *user_options)
 {
-    FILE *file;
+    FILE *image_stream;
     lxw_image_options *options;
 
     if (!filename) {
-        LXW_WARN("filename must be specified");
+        LXW_WARN("worksheet_insert_image()/_opts(): "
+                 "filename must be specified");
         return -1;
     }
 
     /* Check that the image file exists and can be opened. */
-    file = fopen(filename, "rb");
-    if (!file) {
-        LXW_WARN_FORMAT("file doesn't exist or can't be opened: %s",
+    image_stream = fopen(filename, "rb");
+    if (!image_stream) {
+        LXW_WARN_FORMAT("worksheet_insert_image()/_opts(): "
+                        "file doesn't exist or can't be opened: %s",
                         filename);
         return -1;
-    }
-    else {
-        fclose(file);
     }
 
     /* Create a new object to hold the image options. */
@@ -3838,6 +3839,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
 
     /* Copy other options or set defaults. */
     options->filename = lxw_strdup(filename);
+    options->stream = image_stream;
 
     if (!options->x_scale)
         options->x_scale = 1;
@@ -3861,23 +3863,5 @@ worksheet_insert_image(lxw_worksheet *self,
                        lxw_row_t row_num, lxw_col_t col_num,
                        const char *filename)
 {
-    FILE *file;
-
-    if (!filename) {
-        LXW_WARN("filename must be specified");
-        return -1;
-    }
-
-    /* Check that the image file exists and can be opened. */
-    file = fopen(filename, "rb");
-    if (!file) {
-        LXW_WARN_FORMAT("file doesn't exist or can't be opened: %s",
-                        filename);
-        return -1;
-    }
-    else {
-        fclose(file);
-    }
-
     return worksheet_insert_image_opt(self, row_num, col_num, filename, NULL);
 }

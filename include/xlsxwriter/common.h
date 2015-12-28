@@ -19,16 +19,15 @@
 #define STATIC
 #endif
 
-#define LXW_SHEETNAME_MAX  32
-#define LXW_SHEETNAME_LEN  65
-#define LXW_UINT32_T_LEN   11   /* Length of 4294967296. */
-
 enum lxw_boolean {
     LXW_FALSE,
     LXW_TRUE
 };
 
-#define LXW_IGNORE 1
+#define LXW_SHEETNAME_MAX  32
+#define LXW_SHEETNAME_LEN  65
+#define LXW_UINT32_T_LEN   11   /* Length of 4294967296\0. */
+#define LXW_IGNORE          1
 
 #define LXW_ERROR(message)                      \
     fprintf(stderr, "[ERROR][%s:%d]: " message "\n", __FILE__, __LINE__)
@@ -55,10 +54,19 @@ enum lxw_boolean {
     }
 
 #define LXW_WARN(message)                       \
-    fprintf(stderr, "[WARN] %s(): " message "\n", __func__)
+    fprintf(stderr, "[WARN]: " message "\n")
 
 #define LXW_WARN_FORMAT(message, var)           \
-    fprintf(stderr, "[WARN] %s(): " message "\n", __func__, var)
+    fprintf(stderr, "[WARN]: " message "\n", var)
+
+#ifndef LXW_BIG_ENDIAN
+#define LXW_UINT32_NETWORK(n) ((((n) & 0xFF)       << 24) | \
+                               (((n) & 0xFF00)     <<  8) | \
+                               (((n) & 0xFF0000)   >>  8) | \
+                               (((n) & 0xFF000000) >> 24))
+#else
+#define LXW_UINT32_NETWORK(n) (n)
+#endif
 
 /* Compilers that have a native snprintf() can use it directly. */
 #ifdef _MSC_VER

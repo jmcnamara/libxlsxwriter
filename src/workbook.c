@@ -539,6 +539,171 @@ mem_error:
 }
 
 /*
+ * Extract width and height information from a PNG file.
+ */
+STATIC int
+_process_png(lxw_image_options *image_options)
+{
+    uint32_t length;
+    uint32_t offset;
+    char type[4];
+    uint32_t width = 0;
+    uint32_t height = 0;
+    double x_dpi = 96;
+    double y_dpi = 96;
+
+    FILE *stream = image_options->stream;
+
+    /* Skip another 4 bytes to the end of the PNG header. */
+    fseek(stream, 4, SEEK_CUR);
+
+    while (!feof(stream)) {
+
+        /* Read the PNG length and type fields for the sub-section. */
+        if (fread(&length, sizeof(length), 1, stream) < 1)
+            break;
+
+        if (fread(&type, 1, 4, stream) < 4)
+            break;
+
+        /* Convert the length to network order. */
+        length = LXW_UINT32_NETWORK(length);
+
+        /* The offset for next fseek() is the field length + type length. */
+        offset = length + 4;
+
+        if (memcmp(type, "IHDR", 4) == 0) {
+            if (fread(&width, sizeof(width), 1, stream) < 1)
+                break;
+
+            if (fread(&height, sizeof(height), 1, stream) < 1)
+                break;
+
+            width = LXW_UINT32_NETWORK(width);
+            height = LXW_UINT32_NETWORK(height);
+
+            /* Reduce the offset by the length of previous freads(). */
+            offset -= 8;
+        }
+
+        if (memcmp(type, "pHYs", 4) == 0) {
+            uint32_t x_ppu = 0;
+            uint32_t y_ppu = 0;
+            uint8_t units = 1;
+
+            if (fread(&x_ppu, sizeof(x_ppu), 1, stream) < 1)
+                break;
+
+            if (fread(&y_ppu, sizeof(y_ppu), 1, stream) < 1)
+                break;
+
+            if (fread(&units, sizeof(units), 1, stream) < 1)
+                break;
+
+            if (units == 1) {
+                x_dpi = (double) x_ppu *0.0254;
+                y_dpi = (double) y_ppu *0.0254;
+            }
+
+            /* Reduce the offset by the length of previous freads(). */
+            offset -= 9;
+        }
+
+        if (memcmp(type, "IEND", 4) == 0)
+            break;
+
+        if (!feof(stream))
+            fseek(stream, offset, SEEK_CUR);
+    }
+
+    /* Ensure that we read some valid data from the file. */
+    if (width == 0) {
+        LXW_WARN_FORMAT("worksheet_insert_image()/_opts(): "
+                        "no size data found in file: %s\n",
+                        image_options->filename);
+        return -1;
+    }
+
+    /* Set the image metadata. */
+    image_options->image_type = IMAGE_PNG;
+    image_options->width = width;
+    image_options->height = height;
+    image_options->x_dpi = x_dpi;
+    image_options->y_dpi = y_dpi;
+
+    return 0;
+}
+
+/*
+ * Extract information from the image file such as dimension, type, filename,
+ * and extension.
+ */
+STATIC int
+_get_image_properties(lxw_image_options *image_options)
+{
+    char *short_name;
+    char signature[4];
+
+    /* Read 4 bytes to look for the file header/signature. */
+    if (fread(signature, 1, 4, image_options->stream) < 4)
+        return -1;
+
+    if (memcmp(&signature[1], "PNG", 3) == 0) {
+        _process_png(image_options);
+    }
+    else {
+        LXW_WARN_FORMAT("worksheet_insert_image()/_opts(): "
+                        "unsupported image format for file: %s\n",
+                        image_options->filename);
+        return -1;
+    }
+
+    /* Get the filename from the full path to add to the Drawing object. */
+    short_name = basename(image_options->filename);
+    if (short_name)
+        image_options->short_name = lxw_strdup(short_name);
+    else
+        return -1;
+
+    return 0;
+}
+
+/*
+ * Iterate through the worksheets and set up any chart or image drawings.
+ */
+STATIC void
+_prepare_drawings(lxw_workbook *self)
+{
+    lxw_worksheet *worksheet;
+    lxw_image_options *image_options;
+    uint16_t image_ref_id = 0;
+    uint16_t drawing_id = 0;
+
+    STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
+
+        if (STAILQ_EMPTY(worksheet->images))
+            continue;
+
+        drawing_id++;
+
+        STAILQ_FOREACH(image_options, worksheet->images, list_pointers) {
+
+            if (_get_image_properties(image_options) != 0)
+                continue;
+
+            image_ref_id++;
+
+            /*sheet->_prepare_image(index, image_ref_id, drawing_id, width,
+               height, name, type);
+             */
+        }
+
+    }
+
+    self->drawing_count = drawing_id;
+}
+
+/*
  * Iterate through the worksheets and store any defined names used for print
  * ranges or repeat rows/columns.
  */
@@ -1116,6 +1281,9 @@ workbook_close(lxw_workbook *self)
 
     /* Set the defined names for the worksheets such as Print Titles. */
     _prepare_defined_names(self);
+
+    /* Prepare the drawings, charts and images. */
+    _prepare_drawings(self);
 
     /* Create a packager object to assemble sub-elements into a zip file. */
     packager = _new_packager(self->filename);
