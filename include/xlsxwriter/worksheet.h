@@ -269,8 +269,8 @@ typedef struct lxw_selection {
 typedef struct lxw_image_options {
     lxw_row_t row;
     lxw_col_t col;
-    uint32_t x_offset;
-    uint32_t y_offset;
+    int32_t x_offset;
+    int32_t y_offset;
     double x_scale;
     double y_scale;
     char *filename;
@@ -2388,6 +2388,10 @@ lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
 void _free_worksheet(lxw_worksheet *worksheet);
 void _worksheet_assemble_xml_file(lxw_worksheet *worksheet);
 void _worksheet_write_single_row(lxw_worksheet *worksheet);
+
+void _worksheet_prepare_image(lxw_worksheet *worksheet,
+                              uint16_t image_ref_id, uint16_t drawing_id,
+                              lxw_image_options *image);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

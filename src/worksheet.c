@@ -12,6 +12,7 @@
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/worksheet.h"
 #include "xlsxwriter/format.h"
+#include "xlsxwriter/drawing.h"
 #include "xlsxwriter/utility.h"
 #include "xlsxwriter/relationships.h"
 
@@ -1475,6 +1476,257 @@ _write_row(lxw_worksheet *self, lxw_row *row, char *spans)
         _xml_start_tag(self->file, "row", &attributes);
 
     _FREE_ATTRIBUTES();
+}
+
+/*
+ * Convert the width of a cell from user's units to pixels. Excel rounds the
+ * column width to the nearest pixel. If the width hasn't been set by the user
+ * we use the default value. If the column is hidden it has a value of zero.
+ */
+STATIC int32_t
+_worksheet_size_col(lxw_worksheet *self, uint32_t col)
+{
+    col++;
+
+    return self->default_col_pixels;
+}
+
+/*
+ * Convert the height of a cell from user's units to pixels. If the height
+ * hasn't been set by the user we use the default value. If the row is hidden
+ * it has a value of zero.
+ */
+STATIC int32_t
+_worksheet_size_row(lxw_worksheet *self, uint32_t row)
+{
+    uint32_t pixels;
+
+    row++;
+
+    pixels = (uint32_t) (4.0 / 3.0 * self->default_row_height);
+
+    return pixels;
+}
+
+/*
+ * Calculate the vertices that define the position of a graphical object
+ * within the worksheet in pixels.
+ *         +------------+------------+
+ *         |     A      |      B     |
+ *   +-----+------------+------------+
+ *   |     |(x1,y1)     |            |
+ *   |  1  |(A1)._______|______      |
+ *   |     |    |              |     |
+ *   |     |    |              |     |
+ *   +-----+----|    BITMAP    |-----+
+ *   |     |    |              |     |
+ *   |  2  |    |______________.     |
+ *   |     |            |        (B2)|
+ *   |     |            |     (x2,y2)|
+ *   +---- +------------+------------+
+ *
+ * Example of an object that covers some of the area from cell A1 to cell B2.
+ * Based on the width and height of the object we need to calculate 8 vars:
+ *
+ *     col_start, row_start, col_end, row_end, x1, y1, x2, y2.
+ *
+ * We also calculate the absolute x and y position of the top left vertex of
+ * the object. This is required for images:
+ *
+ *    x_abs, y_abs
+ *
+ * The width and height of the cells that the object occupies can be variable
+ * and have to be taken into account.
+ *
+ * The values of col_start and row_start are passed in from the calling
+ * function. The values of col_end and row_end are calculated by subtracting
+ * the width and height of the object from the width and height of the
+ * underlying cells.
+ */
+STATIC void
+_worksheet_position_object_pixels(lxw_worksheet *self,
+                                  lxw_image_options *image,
+                                  lxw_drawing_object *drawing_object)
+{
+    uint32_t col_start;         /* Column containing upper left corner.  */
+    int32_t x1;                 /* Distance to left side of object.      */
+
+    uint32_t row_start;         /* Row containing top left corner.       */
+    int32_t y1;                 /* Distance to top of object.            */
+
+    uint32_t col_end;           /* Column containing lower right corner. */
+    uint32_t x2;                /* Distance to right side of object.     */
+
+    uint32_t row_end;           /* Row containing bottom right corner.   */
+    uint32_t y2;                /* Distance to bottom of object.         */
+
+    int32_t width;              /* Width of object frame.                */
+    int32_t height;             /* Height of object frame.               */
+
+    uint32_t x_abs = 0;         /* Abs. distance to left side of object. */
+    uint32_t y_abs = 0;         /* Abs. distance to top  side of object. */
+
+    uint32_t i;
+
+    col_start = image->col;
+    row_start = image->row;
+    x1 = image->x_offset;
+    y1 = image->y_offset;
+    width = image->width;
+    height = image->height;
+
+    /* Adjust start column for negative offsets. */
+    while (x1 < 0 && col_start > 0) {
+        x1 += _worksheet_size_col(self, col_start - 1);
+        col_start--;
+    }
+
+    /* Adjust start row for negative offsets. */
+    while (y1 < 0 && row_start > 0) {
+        y1 += _worksheet_size_row(self, row_start - 1);
+        row_start--;
+    }
+
+    /* Ensure that the image isn't shifted off the page at top left. */
+    if (x1 < 0)
+        x1 = 0;
+
+    if (y1 < 0)
+        y1 = 0;
+
+    /* Calculate the absolute x offset of the top-left vertex. */
+    if (self->col_size_changed) {
+        for (i = 0; i < col_start; i++)
+            x_abs += _worksheet_size_col(self, i);
+    }
+    else {
+        /* Optimization for when the column widths haven't changed. */
+        x_abs += self->default_col_pixels * col_start;
+    }
+
+    x_abs += x1;
+
+    /* Calculate the absolute y offset of the top-left vertex. */
+    /* Store the column change to allow optimizations. */
+    if (self->row_size_changed) {
+        for (i = 0; i < row_start; i++)
+            y_abs += _worksheet_size_row(self, i);
+    }
+    else {
+        /* Optimization for when the row heights haven"t changed. */
+        y_abs += self->default_row_pixels * row_start;
+    }
+
+    y_abs += y1;
+
+    /* Adjust start col for offsets that are greater than the col width. */
+    while (x1 >= _worksheet_size_col(self, col_start)) {
+        x1 -= _worksheet_size_col(self, col_start);
+        col_start++;
+    }
+
+    /* Adjust start row for offsets that are greater than the row height. */
+    while (y1 >= _worksheet_size_row(self, row_start)) {
+        y1 -= _worksheet_size_row(self, row_start);
+        row_start++;
+    }
+
+    /* Initialize end cell to the same as the start cell. */
+    col_end = col_start;
+    row_end = row_start;
+
+    width = width + x1;
+    height = height + y1;
+
+    /* Subtract the underlying cell widths to find the end cell. */
+    while (width >= _worksheet_size_col(self, col_end)) {
+        width -= _worksheet_size_col(self, col_end);
+        col_end++;
+    }
+
+    /* Subtract the underlying cell heights to find the end cell. */
+    while (height >= _worksheet_size_row(self, row_end)) {
+        height -= _worksheet_size_row(self, row_end);
+        row_end++;
+    }
+
+    /* The end vertices are whatever is left from the width and height. */
+    x2 = width;
+    y2 = height;
+
+    /* Add the dimensions to the drawing object. */
+    drawing_object->from.col = col_start;
+    drawing_object->from.row = row_start;
+    drawing_object->from.col_offset = x1;
+    drawing_object->from.row_offset = y1;
+    drawing_object->to.col = col_end;
+    drawing_object->to.row = row_end;
+    drawing_object->to.col_offset = x2;
+    drawing_object->to.row_offset = y2;
+    drawing_object->col_absolute = x_abs;
+    drawing_object->row_absolute = y_abs;
+
+}
+
+/*
+ * Calculate the vertices that define the position of a graphical object
+ * within the worksheet in EMUs. The vertices are expressed as English
+ * Metric Units (EMUs). There are 12,700 EMUs per point.
+ * Therefore, 12,700 * 3 /4 = 9,525 EMUs per pixel.
+ */
+STATIC void
+_worksheet_position_object_emus(lxw_worksheet *self,
+                                lxw_image_options *image,
+                                lxw_drawing_object *drawing_object)
+{
+
+    _worksheet_position_object_pixels(self, image, drawing_object);
+
+    /* Convert the pixel values to EMUs. See above. */
+    drawing_object->from.col_offset *= 9525;
+    drawing_object->from.row_offset *= 9525;
+    drawing_object->to.col_offset *= 9525;
+    drawing_object->to.row_offset *= 9525;
+    drawing_object->col_absolute *= 9525;
+    drawing_object->row_absolute *= 9525;
+}
+
+/*
+ * Set up image/drawings.
+ */
+void
+_worksheet_prepare_image(lxw_worksheet *self,
+                         uint16_t image_ref_id, uint16_t drawing_id,
+                         lxw_image_options *image)
+{
+    lxw_drawing_object *drawing_object;
+    double width;
+    double height;
+
+    drawing_object = calloc(1, sizeof(lxw_drawing_object));
+    RETURN_VOID_ON_MEM_ERROR(drawing_object);
+
+    /* Scale to user scale. */
+    width = image->width * image->x_scale;
+    height = image->height * image->y_scale;
+
+    /* Scale by non 96dpi resolutions. */
+    width *= 96.0 / image->x_dpi;
+    height *= 96.0 / image->y_dpi;
+
+    /* Convert to the nearest pixel. */
+    image->width = (uint32_t) (0.5 + width);
+    image->height = (uint32_t) (0.5 + height);
+
+    _worksheet_position_object_emus(self, image, drawing_object);
+
+    /* Convert from pixels to emus. */
+    image->width *= 9525;
+    image->height *= 9525;
+
+    image_ref_id++;
+    drawing_id++;
+
 }
 
 /*****************************************************************************

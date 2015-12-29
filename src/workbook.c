@@ -697,7 +697,6 @@ _prepare_drawings(lxw_workbook *self)
                height, name, type);
              */
         }
-
     }
 
     self->drawing_count = drawing_id;
