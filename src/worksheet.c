@@ -12,7 +12,6 @@
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/worksheet.h"
 #include "xlsxwriter/format.h"
-#include "xlsxwriter/drawing.h"
 #include "xlsxwriter/utility.h"
 #include "xlsxwriter/relationships.h"
 
@@ -86,12 +85,21 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     worksheet->external_hyperlinks = calloc(1, sizeof(struct lxw_rel_tuples));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->external_hyperlinks, mem_error);
 
+    worksheet->external_drawing_links =
+        calloc(1, sizeof(struct lxw_rel_tuples));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->external_drawing_links, mem_error);
+
+    worksheet->drawing_links = calloc(1, sizeof(struct lxw_rel_tuples));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->drawing_links, mem_error);
+
     RB_INIT(worksheet->table);
     RB_INIT(worksheet->hyperlinks);
     STAILQ_INIT(worksheet->merged_ranges);
     STAILQ_INIT(worksheet->images);
     STAILQ_INIT(worksheet->selections);
     STAILQ_INIT(worksheet->external_hyperlinks);
+    STAILQ_INIT(worksheet->external_drawing_links);
+    STAILQ_INIT(worksheet->drawing_links);
 
     if (init_data && init_data->optimize) {
         worksheet->optimize_tmpfile = lxw_tmpfile();
@@ -225,7 +233,7 @@ _free_worksheet(lxw_worksheet *worksheet)
     lxw_merged_range *merged_range;
     lxw_image_options *image;
     lxw_selection *selection;
-    lxw_rel_tuple *external_hyperlink;
+    lxw_rel_tuple *relationship;
 
     if (!worksheet)
         return;
@@ -295,16 +303,36 @@ _free_worksheet(lxw_worksheet *worksheet)
         free(worksheet->selections);
     }
 
+    /* TODO. Add function for freeing the relationship lists. */
     while (!STAILQ_EMPTY(worksheet->external_hyperlinks)) {
-        external_hyperlink = STAILQ_FIRST(worksheet->external_hyperlinks);
+        relationship = STAILQ_FIRST(worksheet->external_hyperlinks);
         STAILQ_REMOVE_HEAD(worksheet->external_hyperlinks, list_pointers);
-        free(external_hyperlink->type);
-        free(external_hyperlink->target);
-        free(external_hyperlink->target_mode);
-        free(external_hyperlink);
+        free(relationship->type);
+        free(relationship->target);
+        free(relationship->target_mode);
+        free(relationship);
     }
-
     free(worksheet->external_hyperlinks);
+
+    while (!STAILQ_EMPTY(worksheet->external_drawing_links)) {
+        relationship = STAILQ_FIRST(worksheet->external_drawing_links);
+        STAILQ_REMOVE_HEAD(worksheet->external_drawing_links, list_pointers);
+        free(relationship->type);
+        free(relationship->target);
+        free(relationship->target_mode);
+        free(relationship);
+    }
+    free(worksheet->external_drawing_links);
+
+    while (!STAILQ_EMPTY(worksheet->drawing_links)) {
+        relationship = STAILQ_FIRST(worksheet->drawing_links);
+        STAILQ_REMOVE_HEAD(worksheet->drawing_links, list_pointers);
+        free(relationship->type);
+        free(relationship->target);
+        free(relationship->target_mode);
+        free(relationship);
+    }
+    free(worksheet->drawing_links);
 
     if (worksheet->array) {
         for (col = 0; col < LXW_COL_MAX; col++) {
@@ -315,6 +343,9 @@ _free_worksheet(lxw_worksheet *worksheet)
 
     if (worksheet->optimize_row)
         free(worksheet->optimize_row);
+
+    if (worksheet->drawing)
+        _free_drawing(worksheet->drawing);
 
     free(worksheet->name);
     free(worksheet->quoted_name);
@@ -1700,11 +1731,38 @@ _worksheet_prepare_image(lxw_worksheet *self,
                          lxw_image_options *image)
 {
     lxw_drawing_object *drawing_object;
+    lxw_rel_tuple *relationship;
     double width;
     double height;
+    char filename[FILENAME_LEN];
+
+    if (!self->drawing) {
+        self->drawing = _new_drawing();
+        self->drawing->embedded = LXW_TRUE;
+        RETURN_VOID_ON_MEM_ERROR(self->drawing);
+
+        relationship = calloc(1, sizeof(lxw_rel_tuple));
+        GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
+
+        relationship->type = lxw_strdup("/drawing");
+        GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
+
+        lxw_snprintf(filename, FILENAME_LEN, "../drawings/drawing%d.xml",
+                     drawing_id);
+
+        relationship->target = lxw_strdup(filename);
+        GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+
+        STAILQ_INSERT_TAIL(self->external_drawing_links, relationship,
+                           list_pointers);
+    }
 
     drawing_object = calloc(1, sizeof(lxw_drawing_object));
     RETURN_VOID_ON_MEM_ERROR(drawing_object);
+
+    drawing_object->anchor_type = LXW_ANCHOR_TYPE_IMAGE;
+    drawing_object->edit_as = LXW_ANCHOR_EDIT_AS_ONE_CELL;
+    drawing_object->description = lxw_strdup(image->short_name);
 
     /* Scale to user scale. */
     width = image->width * image->x_scale;
@@ -1721,12 +1779,33 @@ _worksheet_prepare_image(lxw_worksheet *self,
     _worksheet_position_object_emus(self, image, drawing_object);
 
     /* Convert from pixels to emus. */
-    image->width *= 9525;
-    image->height *= 9525;
+    drawing_object->width = image->width * 9525;
+    drawing_object->height = image->height * 9525;
 
-    image_ref_id++;
-    drawing_id++;
+    _add_drawing_object(self->drawing, drawing_object);
 
+    relationship = calloc(1, sizeof(lxw_rel_tuple));
+    GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
+
+    relationship->type = lxw_strdup("/image");
+    GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
+
+    lxw_snprintf(filename, 32, "../media/image%d.png", image_ref_id);
+
+    relationship->target = lxw_strdup(filename);
+    GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+
+    STAILQ_INSERT_TAIL(self->drawing_links, relationship, list_pointers);
+
+    return;
+
+mem_error:
+    if (relationship) {
+        free(relationship->type);
+        free(relationship->target);
+        free(relationship->target_mode);
+        free(relationship);
+    }
 }
 
 /*****************************************************************************

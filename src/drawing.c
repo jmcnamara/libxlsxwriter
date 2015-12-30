@@ -86,6 +86,16 @@ _free_drawing(lxw_drawing *drawing)
     free(drawing);
 }
 
+/*
+ * Add a drawing object to the drawing collection.
+ */
+void
+_add_drawing_object(lxw_drawing *drawing, lxw_drawing_object *drawing_object)
+{
+    STAILQ_INSERT_TAIL(drawing->drawing_objects, drawing_object,
+                       list_pointers);
+}
+
 /*****************************************************************************
  *
  * XML functions.

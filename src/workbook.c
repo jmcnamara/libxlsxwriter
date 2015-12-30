@@ -691,11 +691,13 @@ _prepare_drawings(lxw_workbook *self)
             if (_get_image_properties(image_options) != 0)
                 continue;
 
+            if (image_options->image_type == IMAGE_PNG)
+                self->has_png = LXW_TRUE;
+
             image_ref_id++;
 
-            /*sheet->_prepare_image(index, image_ref_id, drawing_id, width,
-               height, name, type);
-             */
+            _worksheet_prepare_image(worksheet, image_ref_id, drawing_id,
+                                     image_options);
         }
     }
 

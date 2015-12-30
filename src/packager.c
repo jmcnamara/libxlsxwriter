@@ -170,6 +170,71 @@ _write_worksheet_files(lxw_packager *self)
 }
 
 /*
+ * Write the /xl/media/image?.xml files.
+ */
+STATIC uint8_t
+_write_image_files(lxw_packager *self)
+{
+    lxw_workbook *workbook = self->workbook;
+    lxw_worksheet *worksheet;
+    lxw_image_options *image;
+
+    char filename[FILENAME_LEN] = { 0 };
+    uint16_t index = 1;
+
+    STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+
+        if (STAILQ_EMPTY(worksheet->images))
+            continue;
+
+        STAILQ_FOREACH(image, worksheet->images, list_pointers) {
+
+            lxw_snprintf(filename, FILENAME_LEN,
+                         "xl/media/image%d.png", index++);
+
+            rewind(image->stream);
+
+            _add_file_to_zip(self, image->stream, filename);
+
+            fclose(image->stream);
+        }
+    }
+
+    return 0;
+}
+
+/*
+ * Write the drawing files.
+ */
+STATIC uint8_t
+_write_drawing_files(lxw_packager *self)
+{
+    lxw_workbook *workbook = self->workbook;
+    lxw_worksheet *worksheet;
+    lxw_drawing *drawing;
+    char filename[FILENAME_LEN] = { 0 };
+    uint16_t index = 1;
+
+    STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+        drawing = worksheet->drawing;
+
+        if (drawing) {
+            lxw_snprintf(filename, FILENAME_LEN,
+                         "xl/drawings/drawing%d.xml", index++);
+
+            drawing->file = lxw_tmpfile();
+            _drawing_assemble_xml_file(drawing);
+            _add_file_to_zip(self, drawing->file, filename);
+            fclose(drawing->file);
+
+            self->drawing_count++;
+        }
+    }
+
+    return 0;
+}
+
+/*
  * Write the sharedStrings.xml file.
  */
 STATIC uint8_t
@@ -340,14 +405,24 @@ _write_content_types_file(lxw_packager *self)
     lxw_content_types *content_types = _new_content_types();
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
-    char sheetname[FILENAME_LEN] = { 0 };
+    char filename[MAX_ATTRIBUTE_LENGTH] = { 0 };
     uint16_t index = 1;
 
     content_types->file = lxw_tmpfile();
 
+    if (workbook->has_png)
+        _ct_add_default(content_types, "png", "image/png");
+
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
-        lxw_snprintf(sheetname, FILENAME_LEN, "sheet%d", index++);
-        _ct_add_worksheet_name(content_types, sheetname);
+        lxw_snprintf(filename, FILENAME_LEN,
+                     "/xl/worksheets/sheet%d.xml", index++);
+        _ct_add_worksheet_name(content_types, filename);
+    }
+
+    for (index = 1; index <= self->drawing_count; index++) {
+        lxw_snprintf(filename, FILENAME_LEN,
+                     "/xl/drawings/drawing%d.xml", index++);
+        _ct_add_drawing_name(content_types, filename);
     }
 
     if (workbook->sst->string_count)
@@ -409,7 +484,7 @@ STATIC uint8_t
 _write_worksheet_rels_file(lxw_packager *self)
 {
     lxw_relationships *rels;
-    lxw_rel_tuple *hlink;
+    lxw_rel_tuple *rel;
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
     char sheetname[FILENAME_LEN] = { 0 };
@@ -417,20 +492,67 @@ _write_worksheet_rels_file(lxw_packager *self)
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
 
-        if (STAILQ_EMPTY(worksheet->external_hyperlinks))
+        if (STAILQ_EMPTY(worksheet->external_hyperlinks) &&
+            STAILQ_EMPTY(worksheet->external_drawing_links))
             continue;
 
         rels = _new_relationships();
         rels->file = lxw_tmpfile();
 
-        STAILQ_FOREACH(hlink, worksheet->external_hyperlinks, list_pointers) {
-            _add_worksheet_relationship(rels, hlink->type, hlink->target,
-                                        hlink->target_mode);
+        STAILQ_FOREACH(rel, worksheet->external_hyperlinks, list_pointers) {
+            _add_worksheet_relationship(rels, rel->type, rel->target,
+                                        rel->target_mode);
+        }
 
+        STAILQ_FOREACH(rel, worksheet->external_drawing_links, list_pointers) {
+            _add_worksheet_relationship(rels, rel->type, rel->target,
+                                        rel->target_mode);
         }
 
         lxw_snprintf(sheetname, FILENAME_LEN,
                      "xl/worksheets/_rels/sheet%d.xml.rels", index++);
+
+        _relationships_assemble_xml_file(rels);
+
+        _add_file_to_zip(self, rels->file, sheetname);
+
+        fclose(rels->file);
+        _free_relationships(rels);
+    }
+
+    return 0;
+}
+
+/*
+ * Write the drawing .rels files for worksheets that contain charts or
+ * drawings.
+ */
+STATIC uint8_t
+_write_drawing_rels_file(lxw_packager *self)
+{
+    lxw_relationships *rels;
+    lxw_rel_tuple *rel;
+    lxw_workbook *workbook = self->workbook;
+    lxw_worksheet *worksheet;
+    char sheetname[FILENAME_LEN] = { 0 };
+    uint16_t index = 1;
+
+    STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+
+        if (STAILQ_EMPTY(worksheet->drawing_links))
+            continue;
+
+        rels = _new_relationships();
+        rels->file = lxw_tmpfile();
+
+        STAILQ_FOREACH(rel, worksheet->drawing_links, list_pointers) {
+            _add_worksheet_relationship(rels, rel->type, rel->target,
+                                        rel->target_mode);
+
+        }
+
+        lxw_snprintf(sheetname, FILENAME_LEN,
+                     "xl/drawings/_rels/drawing%d.xml.rels", index++);
 
         _relationships_assemble_xml_file(rels);
 
@@ -543,6 +665,7 @@ _create_package(lxw_packager *self)
 
     _write_worksheet_files(self);
     _write_workbook_file(self);
+    _write_drawing_files(self);
     _write_shared_strings_file(self);
     _write_app_file(self);
     _write_core_file(self);
@@ -551,6 +674,8 @@ _create_package(lxw_packager *self)
     _write_content_types_file(self);
     _write_workbook_rels_file(self);
     _write_worksheet_rels_file(self);
+    _write_drawing_rels_file(self);
+    _write_image_files(self);
     _write_root_rels_file(self);
 
     zipClose(self->zipfile, NULL);

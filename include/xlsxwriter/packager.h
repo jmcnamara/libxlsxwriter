@@ -24,7 +24,6 @@
 #include "content_types.h"
 #include "relationships.h"
 
-#define FILENAME_LEN 128
 #define LXW_ZIP_BUFFER_SIZE (16384)
 
 /*
@@ -40,6 +39,8 @@ typedef struct lxw_packager {
     zip_fileinfo zipfile_info;
     char *filename;
     char *buffer;
+
+    uint16_t drawing_count;
 
 } lxw_packager;
 

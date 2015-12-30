@@ -200,6 +200,10 @@ typedef struct lxw_workbook {
     uint16_t fill_count;
     uint8_t optimize;
 
+    uint8_t has_png;
+    uint8_t has_jpg;
+    uint8_t has_bmp;
+
     lxw_hash_table *used_xf_formats;
 
 } lxw_workbook;

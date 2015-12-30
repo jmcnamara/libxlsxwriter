@@ -284,13 +284,19 @@ mem_error:
  * Add the name of a worksheet to the ContentTypes overrides.
  */
 void
-_ct_add_worksheet_name(lxw_content_types *self, const char *str)
+_ct_add_worksheet_name(lxw_content_types *self, const char *name)
 {
-    char name[MAX_ATTRIBUTE_LENGTH];
-    lxw_snprintf(name, MAX_ATTRIBUTE_LENGTH, "/xl/worksheets/%s.xml", str);
-
     _ct_add_override(self, name,
                      LXW_APP_DOCUMENT "spreadsheetml.worksheet+xml");
+}
+
+/*
+ * Add the name of a drawing to the ContentTypes overrides.
+ */
+void
+_ct_add_drawing_name(lxw_content_types *self, const char *name)
+{
+    _ct_add_override(self, name, LXW_APP_DOCUMENT "drawing+xml");
 }
 
 /*

@@ -49,6 +49,7 @@
 #include <string.h>
 
 #include "shared_strings.h"
+#include "drawing.h"
 #include "common.h"
 #include "format.h"
 #include "utility.h"
@@ -465,10 +466,14 @@ typedef struct lxw_worksheet {
     lxw_col_t *vbreaks;
 
     struct lxw_rel_tuples *external_hyperlinks;
+    struct lxw_rel_tuples *external_drawing_links;
+    struct lxw_rel_tuples *drawing_links;
 
     struct lxw_panes panes;
 
     struct lxw_protection protection;
+
+    lxw_drawing *drawing;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 

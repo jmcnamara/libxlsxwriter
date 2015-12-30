@@ -5,7 +5,7 @@
  *
  */
 
-#include <string.h>;
+#include <string.h>
 #include "../ctest.h"
 #include "../helper.h"
 
@@ -88,7 +88,7 @@ CTEST(drawing, drawing_image01) {
     drawing_object->width  = 1142857;
     drawing_object->height = 1142857;
 
-    STAILQ_INSERT_TAIL(drawing->drawing_objects, drawing_object, list_pointers);
+    _add_drawing_object(drawing, drawing_object);
 
     _drawing_assemble_xml_file(drawing);
 

@@ -37,7 +37,7 @@ CTEST(content_types, content_types01) {
     lxw_content_types *content_types = _new_content_types();
     content_types->file = testfile;
 
-    _ct_add_worksheet_name(content_types, "sheet1");
+    _ct_add_worksheet_name(content_types, "/xl/worksheets/sheet1.xml");
     _ct_add_default(content_types, "jpeg", "image/jpeg");
     _ct_add_shared_strings(content_types);
     _ct_add_calc_chain(content_types);

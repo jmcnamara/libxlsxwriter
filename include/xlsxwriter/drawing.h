@@ -86,6 +86,8 @@ lxw_drawing *_new_drawing();
 void _free_drawing(lxw_drawing *drawing);
 void _drawing_assemble_xml_file(lxw_drawing *self);
 void _free_drawing_object(struct lxw_drawing_object *drawing_object);
+void _add_drawing_object(lxw_drawing *drawing,
+                         lxw_drawing_object *drawing_object);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING
