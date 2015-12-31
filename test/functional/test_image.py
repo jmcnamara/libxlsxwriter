@@ -16,3 +16,17 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_image01(self):
         self.run_exe_test('test_image01')
 
+    def test_image02(self):
+        self.run_exe_test('test_image02')
+
+    def test_image03(self):
+        self.run_exe_test('test_image03')
+
+    def test_image04(self):
+        self.run_exe_test('test_image04')
+
+    def test_image05(self):
+        self.run_exe_test('test_image05')
+
+    def test_image07(self):
+        self.run_exe_test('test_image07')

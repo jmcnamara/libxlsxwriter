@@ -35,6 +35,13 @@ enum lxw_anchor_edit_types {
     LXW_ANCHOR_EDIT_AS_ABSOLUTE
 };
 
+enum image_types {
+    LXW_IMAGE_UNKNOWN = 0,
+    LXW_IMAGE_PNG,
+    LXW_IMAGE_JPEG,
+    LXW_IMAGE_BMP
+};
+
 /* Coordinates used in a drawing object. */
 typedef struct lxw_drawing_coords {
     uint32_t col;

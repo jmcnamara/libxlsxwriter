@@ -216,6 +216,7 @@ _free_image_options(lxw_image_options *image)
 
     free(image->filename);
     free(image->short_name);
+    free(image->extension);
     free(image->url);
     free(image->tip);
     free(image);
@@ -1790,7 +1791,8 @@ _worksheet_prepare_image(lxw_worksheet *self,
     relationship->type = lxw_strdup("/image");
     GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
 
-    lxw_snprintf(filename, 32, "../media/image%d.png", image_ref_id);
+    lxw_snprintf(filename, 32, "../media/image%d.%s", image_ref_id,
+                 image->extension);
 
     relationship->target = lxw_strdup(filename);
     GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
@@ -2679,6 +2681,42 @@ _worksheet_write_sheet_protection(lxw_worksheet *self)
 }
 
 /*
+ * Write the <drawing> element.
+ */
+STATIC void
+_write_drawing(lxw_worksheet *self, uint16_t id)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char r_id[MAX_ATTRIBUTE_LENGTH];
+
+    lxw_snprintf(r_id, ATTR_32, "rId%d", id);
+
+    _INIT_ATTRIBUTES();
+
+    _PUSH_ATTRIBUTES_STR("r:id", r_id);
+
+    _xml_empty_tag(self->file, "drawing", &attributes);
+
+    _FREE_ATTRIBUTES();
+
+}
+
+/*
+ * Write the <drawing> elements.
+ */
+STATIC void
+_write_drawings(lxw_worksheet *self)
+{
+    if (!self->drawing)
+        return;
+
+    self->rel_count++;
+
+    _write_drawing(self, self->rel_count);
+}
+
+/*
  * Assemble and write the XML file.
  */
 void
@@ -2740,6 +2778,9 @@ _worksheet_assemble_xml_file(lxw_worksheet *self)
 
     /* Write the colBreaks element. */
     _worksheet_write_col_breaks(self);
+
+    /* Write the drawing element. */
+    _write_drawings(self);
 
     /* Close the worksheet tag. */
     _xml_end_tag(self->file, "worksheet");
@@ -4144,7 +4185,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     lxw_image_options *options;
 
     if (!filename) {
-        LXW_WARN("worksheet_insert_image()/_opts(): "
+        LXW_WARN("worksheet_insert_image()/_opt(): "
                  "filename must be specified");
         return -1;
     }
@@ -4152,7 +4193,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     /* Check that the image file exists and can be opened. */
     image_stream = fopen(filename, "rb");
     if (!image_stream) {
-        LXW_WARN_FORMAT("worksheet_insert_image()/_opts(): "
+        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
                         "file doesn't exist or can't be opened: %s",
                         filename);
         return -1;

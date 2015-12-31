@@ -190,7 +190,7 @@ _write_image_files(lxw_packager *self)
         STAILQ_FOREACH(image, worksheet->images, list_pointers) {
 
             lxw_snprintf(filename, FILENAME_LEN,
-                         "xl/media/image%d.png", index++);
+                         "xl/media/image%d.%s", index++, image->extension);
 
             rewind(image->stream);
 
@@ -413,6 +413,12 @@ _write_content_types_file(lxw_packager *self)
     if (workbook->has_png)
         _ct_add_default(content_types, "png", "image/png");
 
+    if (workbook->has_jpeg)
+        _ct_add_default(content_types, "jpeg", "image/jpeg");
+
+    if (workbook->has_bmp)
+        _ct_add_default(content_types, "bmp", "image/bmp");
+
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
         lxw_snprintf(filename, FILENAME_LEN,
                      "/xl/worksheets/sheet%d.xml", index++);
@@ -421,7 +427,7 @@ _write_content_types_file(lxw_packager *self)
 
     for (index = 1; index <= self->drawing_count; index++) {
         lxw_snprintf(filename, FILENAME_LEN,
-                     "/xl/drawings/drawing%d.xml", index++);
+                     "/xl/drawings/drawing%d.xml", index);
         _ct_add_drawing_name(content_types, filename);
     }
 
