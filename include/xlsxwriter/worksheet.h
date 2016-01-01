@@ -150,24 +150,25 @@ struct lxw_table_rows {
 
 /* Wrapper around RB_GENERATE_STATIC from tree.h to avoid unused function
  * warnings and to avoid portability issues with the _unused attribute. */
-#define LXW_RB_GENERATE_ROW(name, type, field, cmp)     \
-    RB_GENERATE_INSERT_COLOR(name, type, field, static) \
-    RB_GENERATE_REMOVE_COLOR(name, type, field, static) \
-    RB_GENERATE_INSERT(name, type, field, cmp, static)  \
-    RB_GENERATE_REMOVE(name, type, field, static)       \
-    RB_GENERATE_NEXT(name, type, field, static)         \
-    RB_GENERATE_MINMAX(name, type, field, static)       \
-    /* Add unused struct to allow adding a semicolon */ \
+#define LXW_RB_GENERATE_ROW(name, type, field, cmp)       \
+    RB_GENERATE_INSERT_COLOR(name, type, field, static)   \
+    RB_GENERATE_REMOVE_COLOR(name, type, field, static)   \
+    RB_GENERATE_INSERT(name, type, field, cmp, static)    \
+    RB_GENERATE_REMOVE(name, type, field, static)         \
+    RB_GENERATE_FIND(name, type, field, cmp, static)      \
+    RB_GENERATE_NEXT(name, type, field, static)           \
+    RB_GENERATE_MINMAX(name, type, field, static)         \
+    /* Add unused struct to allow adding a semicolon */   \
     struct lxw_rb_generate_row{int unused;}
 
-#define LXW_RB_GENERATE_CELL(name, type, field, cmp)    \
-    RB_GENERATE_INSERT_COLOR(name, type, field, static) \
-    RB_GENERATE_REMOVE_COLOR(name, type, field, static) \
-    RB_GENERATE_INSERT(name, type, field, cmp, static)  \
-    RB_GENERATE_REMOVE(name, type, field, static)       \
-    RB_GENERATE_NEXT(name, type, field, static)         \
-    RB_GENERATE_MINMAX(name, type, field, static)       \
-    /* Add unused struct to allow adding a semicolon */ \
+#define LXW_RB_GENERATE_CELL(name, type, field, cmp)      \
+    RB_GENERATE_INSERT_COLOR(name, type, field, static)   \
+    RB_GENERATE_REMOVE_COLOR(name, type, field, static)   \
+    RB_GENERATE_INSERT(name, type, field, cmp, static)    \
+    RB_GENERATE_REMOVE(name, type, field, static)         \
+    RB_GENERATE_NEXT(name, type, field, static)           \
+    RB_GENERATE_MINMAX(name, type, field, static)         \
+    /* Add unused struct to allow adding a semicolon */   \
     struct lxw_rb_generate_cell{int unused;}
 
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
@@ -202,6 +203,7 @@ typedef struct lxw_col_options {
     uint8_t hidden;
     uint8_t level;
     uint8_t collapsed;
+    uint8_t is_first;
 } lxw_col_options;
 
 typedef struct lxw_merged_range {
@@ -275,8 +277,8 @@ typedef struct lxw_image_options {
     /* Internal metadata. */
     FILE *stream;
     uint8_t image_type;
-    uint32_t width;
-    uint32_t height;
+    double width;
+    double height;
     char *short_name;
     char *extension;
     double x_dpi;

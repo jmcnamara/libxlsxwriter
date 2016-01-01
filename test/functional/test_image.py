@@ -12,6 +12,7 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     Test file created with libxlsxwriter against a file created by Excel.
 
     """
+    # self.ignore_files = ['xl/drawings/drawing1.xml']
 
     def test_image01(self):
         self.run_exe_test('test_image01')
@@ -30,3 +31,45 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_image07(self):
         self.run_exe_test('test_image07')
+
+    def test_image08(self):
+        self.run_exe_test('test_image08')
+
+    def test_image09(self):
+        self.run_exe_test('test_image09')
+
+    def test_image10(self):
+        self.run_exe_test('test_image10')
+
+    def test_image11(self):
+        self.run_exe_test('test_image11')
+
+    def test_image12(self):
+        self.run_exe_test('test_image12')
+
+    def test_image13(self):
+        self.run_exe_test('test_image13')
+
+    def test_image14(self):
+        self.run_exe_test('test_image14')
+
+    def test_image15(self):
+        self.run_exe_test('test_image15')
+
+    def test_image16(self):
+        self.run_exe_test('test_image16')
+
+    def test_image17(self):
+        self.run_exe_test('test_image17')
+
+    def test_image18(self):
+        self.run_exe_test('test_image18')
+
+    def test_image19(self):
+        self.run_exe_test('test_image19')
+
+    def test_image22(self):
+        self.run_exe_test('test_image22')
+
+    def test_image23(self):
+        self.run_exe_test('test_image23')

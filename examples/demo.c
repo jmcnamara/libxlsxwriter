@@ -33,7 +33,7 @@ int main() {
     worksheet_write_number(worksheet, 3, 0, 123.456, NULL);
 
     /* Insert an image. */
-    worksheet_insert_image(worksheet, 4, 1, "logo.png");
+    worksheet_insert_image(worksheet, 1, 2, "logo.png");
 
     workbook_close(workbook);
 

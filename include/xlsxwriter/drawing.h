@@ -46,8 +46,8 @@ enum image_types {
 typedef struct lxw_drawing_coords {
     uint32_t col;
     uint32_t row;
-    uint32_t col_offset;
-    uint32_t row_offset;
+    double col_offset;
+    double row_offset;
 } lxw_drawing_coords;
 
 /* Object to represent the properties of a drawing. */

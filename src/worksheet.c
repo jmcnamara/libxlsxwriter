@@ -253,6 +253,7 @@ _free_worksheet(lxw_worksheet *worksheet)
     if (worksheet->table) {
         for (row = RB_MIN(lxw_table_rows, worksheet->table); row;
              row = next_row) {
+
             next_row = RB_NEXT(lxw_table_rows, worksheet->table, row);
             RB_REMOVE(lxw_table_rows, worksheet->table, row);
             _free_row(row);
@@ -541,6 +542,19 @@ _get_row_list(struct lxw_table_rows *table, lxw_row_t row_num)
     table->cached_row_num = row_num;
 
     return row;
+}
+
+/*
+ * Find but don't create a row object for a given row number.
+ */
+STATIC lxw_row *
+_find_row(lxw_worksheet *self, lxw_row_t row_num)
+{
+    lxw_row row;
+
+    row.row_num = row_num;
+
+    return RB_FIND(lxw_table_rows, self->table, &row);
 }
 
 /*
@@ -1491,7 +1505,7 @@ _write_row(lxw_worksheet *self, lxw_row *row, char *spans)
         _PUSH_ATTRIBUTES_STR("customFormat", "1");
 
     if (height != LXW_DEF_ROW_HEIGHT)
-        _PUSH_ATTRIBUTES_INT("ht", height);
+        _PUSH_ATTRIBUTES_DBL("ht", height);
 
     if (row->hidden)
         _PUSH_ATTRIBUTES_STR("hidden", "1");
@@ -1516,11 +1530,36 @@ _write_row(lxw_worksheet *self, lxw_row *row, char *spans)
  * we use the default value. If the column is hidden it has a value of zero.
  */
 STATIC int32_t
-_worksheet_size_col(lxw_worksheet *self, uint32_t col)
+_worksheet_size_col(lxw_worksheet *self, lxw_col_t col_num)
 {
-    col++;
+    lxw_col_options *col_option = NULL;
+    uint32_t pixels;
+    double width;
+    double max_digit_width = 7.0;       /* For Calabri 11. */
+    double padding = 5.0;
 
-    return self->default_col_pixels;
+    if (col_num < self->col_options_max)
+        col_option = self->col_options[col_num];
+
+    if (col_option) {
+        width = col_option->width;
+
+        /* Convert to pixels. */
+        if (width == 0) {
+            pixels = 0;
+        }
+        else if (width < 1.0) {
+            pixels = (uint32_t) (width * (max_digit_width + padding) + 0.5);
+        }
+        else {
+            pixels = (uint32_t) (width * max_digit_width + 0.5) + 5;
+        }
+    }
+    else {
+        pixels = self->default_col_pixels;
+    }
+
+    return pixels;
 }
 
 /*
@@ -1529,13 +1568,25 @@ _worksheet_size_col(lxw_worksheet *self, uint32_t col)
  * it has a value of zero.
  */
 STATIC int32_t
-_worksheet_size_row(lxw_worksheet *self, uint32_t row)
+_worksheet_size_row(lxw_worksheet *self, lxw_row_t row_num)
 {
+    lxw_row *row;
     uint32_t pixels;
+    double height;
 
-    row++;
+    row = _find_row(self, row_num);
 
-    pixels = (uint32_t) (4.0 / 3.0 * self->default_row_height);
+    if (row) {
+        height = row->height;
+
+        if (height == 0)
+            pixels = 0;
+        else
+            pixels = (uint32_t) (4.0 / 3.0 * height);
+    }
+    else {
+        pixels = (uint32_t) (4.0 / 3.0 * self->default_row_height);
+    }
 
     return pixels;
 }
@@ -1580,20 +1631,20 @@ _worksheet_position_object_pixels(lxw_worksheet *self,
                                   lxw_image_options *image,
                                   lxw_drawing_object *drawing_object)
 {
-    uint32_t col_start;         /* Column containing upper left corner.  */
+    lxw_col_t col_start;        /* Column containing upper left corner.  */
     int32_t x1;                 /* Distance to left side of object.      */
 
-    uint32_t row_start;         /* Row containing top left corner.       */
+    lxw_row_t row_start;        /* Row containing top left corner.       */
     int32_t y1;                 /* Distance to top of object.            */
 
-    uint32_t col_end;           /* Column containing lower right corner. */
-    uint32_t x2;                /* Distance to right side of object.     */
+    lxw_col_t col_end;          /* Column containing lower right corner. */
+    double x2;                  /* Distance to right side of object.     */
 
-    uint32_t row_end;           /* Row containing bottom right corner.   */
-    uint32_t y2;                /* Distance to bottom of object.         */
+    lxw_row_t row_end;          /* Row containing bottom right corner.   */
+    double y2;                  /* Distance to bottom of object.         */
 
-    int32_t width;              /* Width of object frame.                */
-    int32_t height;             /* Height of object frame.               */
+    double width;               /* Width of object frame.                */
+    double height;              /* Height of object frame.               */
 
     uint32_t x_abs = 0;         /* Abs. distance to left side of object. */
     uint32_t y_abs = 0;         /* Abs. distance to top  side of object. */
@@ -1719,6 +1770,8 @@ _worksheet_position_object_emus(lxw_worksheet *self,
     drawing_object->from.row_offset *= 9525;
     drawing_object->to.col_offset *= 9525;
     drawing_object->to.row_offset *= 9525;
+    drawing_object->to.col_offset += 0.5;
+    drawing_object->to.row_offset += 0.5;
     drawing_object->col_absolute *= 9525;
     drawing_object->row_absolute *= 9525;
 }
@@ -1774,14 +1827,14 @@ _worksheet_prepare_image(lxw_worksheet *self,
     height *= 96.0 / image->y_dpi;
 
     /* Convert to the nearest pixel. */
-    image->width = (uint32_t) (0.5 + width);
-    image->height = (uint32_t) (0.5 + height);
+    image->width = width;
+    image->height = height;
 
     _worksheet_position_object_emus(self, image, drawing_object);
 
     /* Convert from pixels to emus. */
-    drawing_object->width = image->width * 9525;
-    drawing_object->height = image->height * 9525;
+    drawing_object->width = 0.5 + width * 9525;
+    drawing_object->height = 0.5 + height * 9525;
 
     _add_drawing_object(self->drawing, drawing_object);
 
@@ -2173,7 +2226,7 @@ _worksheet_write_cols(lxw_worksheet *self)
     _xml_start_tag(self->file, "cols", NULL);
 
     for (col = 0; col < self->col_options_max; col++) {
-        if (self->col_options[col])
+        if (self->col_options[col] && self->col_options[col]->is_first)
             _worksheet_write_col_info(self, self->col_options[col]);
     }
 
@@ -3386,18 +3439,26 @@ worksheet_set_column(lxw_worksheet *self,
         }
     }
 
-    copied_options = calloc(1, sizeof(lxw_col_options));
-    RETURN_ON_MEM_ERROR(copied_options, -LXW_ERROR_WORKSHEET_MEMORY_ERROR);
+    /* Store the column options. */
+    for (col = firstcol; col <= lastcol; col++) {
 
-    /* Store the column option based on the first column. */
-    copied_options->firstcol = firstcol;
-    copied_options->lastcol = lastcol;
-    copied_options->width = width;
-    copied_options->format = format;
-    copied_options->hidden = hidden;
-    copied_options->level = level;
-    copied_options->collapsed = collapsed;
-    self->col_options[firstcol] = copied_options;
+        copied_options = calloc(1, sizeof(lxw_col_options));
+        RETURN_ON_MEM_ERROR(copied_options,
+                            -LXW_ERROR_WORKSHEET_MEMORY_ERROR);
+
+        copied_options->firstcol = firstcol;
+        copied_options->lastcol = lastcol;
+        copied_options->width = width;
+        copied_options->format = format;
+        copied_options->hidden = hidden;
+        copied_options->level = level;
+        copied_options->collapsed = collapsed;
+
+        if (col == firstcol)
+            copied_options->is_first = LXW_TRUE;
+
+        self->col_options[col] = copied_options;
+    }
 
     /* Store the column formats for use when writing cell data. */
     for (col = firstcol; col <= lastcol; col++) {
