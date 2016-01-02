@@ -3,6 +3,10 @@
  *
  * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org
  *
+ * Logo image is from Wikimedia Commons:
+ *
+ * http://en.wikipedia.org/wiki/File:The_C_Programming_Language_logo.svg
+ *
  */
 
 #include "xlsxwriter.h"
@@ -33,7 +37,7 @@ int main() {
     worksheet_write_number(worksheet, 3, 0, 123.456, NULL);
 
     /* Insert an image. */
-    worksheet_insert_image(worksheet, 1, 2, "logo.png");
+    worksheet_insert_image(worksheet, 0, 1, "logo.png");
 
     workbook_close(workbook);
 
