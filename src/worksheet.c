@@ -1875,6 +1875,297 @@ mem_error:
     }
 }
 
+/*
+ * Extract width and height information from a PNG file.
+ */
+STATIC int
+_process_png(lxw_image_options *image_options)
+{
+    uint32_t length;
+    uint32_t offset;
+    char type[4];
+    uint32_t width = 0;
+    uint32_t height = 0;
+    double x_dpi = 96;
+    double y_dpi = 96;
+
+    FILE *stream = image_options->stream;
+
+    /* Skip another 4 bytes to the end of the PNG header. */
+    fseek(stream, 4, SEEK_CUR);
+
+    while (!feof(stream)) {
+
+        /* Read the PNG length and type fields for the sub-section. */
+        if (fread(&length, sizeof(length), 1, stream) < 1)
+            break;
+
+        if (fread(&type, 1, 4, stream) < 4)
+            break;
+
+        /* Convert the length to network order. */
+        length = LXW_UINT32_NETWORK(length);
+
+        /* The offset for next fseek() is the field length + type length. */
+        offset = length + 4;
+
+        if (memcmp(type, "IHDR", 4) == 0) {
+            if (fread(&width, sizeof(width), 1, stream) < 1)
+                break;
+
+            if (fread(&height, sizeof(height), 1, stream) < 1)
+                break;
+
+            width = LXW_UINT32_NETWORK(width);
+            height = LXW_UINT32_NETWORK(height);
+
+            /* Reduce the offset by the length of previous freads(). */
+            offset -= 8;
+        }
+
+        if (memcmp(type, "pHYs", 4) == 0) {
+            uint32_t x_ppu = 0;
+            uint32_t y_ppu = 0;
+            uint8_t units = 1;
+
+            if (fread(&x_ppu, sizeof(x_ppu), 1, stream) < 1)
+                break;
+
+            if (fread(&y_ppu, sizeof(y_ppu), 1, stream) < 1)
+                break;
+
+            if (fread(&units, sizeof(units), 1, stream) < 1)
+                break;
+
+            if (units == 1) {
+                x_ppu = LXW_UINT32_NETWORK(x_ppu);
+                y_ppu = LXW_UINT32_NETWORK(y_ppu);
+
+                x_dpi = (double) x_ppu *0.0254;
+                y_dpi = (double) y_ppu *0.0254;
+            }
+
+            /* Reduce the offset by the length of previous freads(). */
+            offset -= 9;
+        }
+
+        if (memcmp(type, "IEND", 4) == 0)
+            break;
+
+        if (!feof(stream))
+            fseek(stream, offset, SEEK_CUR);
+    }
+
+    /* Ensure that we read some valid data from the file. */
+    if (width == 0) {
+        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
+                        "no size data found in file: %s\n",
+                        image_options->filename);
+        return -1;
+    }
+
+    /* Set the image metadata. */
+    image_options->image_type = LXW_IMAGE_PNG;
+    image_options->width = width;
+    image_options->height = height;
+    image_options->x_dpi = x_dpi;
+    image_options->y_dpi = y_dpi;
+    image_options->extension = lxw_strdup("png");
+
+    return 0;
+}
+
+/*
+ * Extract width and height information from a JPEG file.
+ */
+STATIC int
+_process_jpeg(lxw_image_options *image_options)
+{
+    uint16_t length;
+    uint16_t marker;
+    uint32_t offset;
+    uint16_t width = 0;
+    uint16_t height = 0;
+    double x_dpi = 96;
+    double y_dpi = 96;
+
+    FILE *stream = image_options->stream;
+
+    /* Read back 2 bytes to the end of the initial 0xFFD8 marker. */
+    fseek(stream, -2, SEEK_CUR);
+
+    /* Search through the image data to read the height and width in the */
+    /* 0xFFC0/C2 element. Also read the DPI in the 0xFFE0 element. */
+    while (!feof(stream)) {
+
+        /* Read the JPEG marker and length fields for the sub-section. */
+        if (fread(&marker, sizeof(marker), 1, stream) < 1)
+            break;
+
+        if (fread(&length, sizeof(length), 1, stream) < 1)
+            break;
+
+        /* Convert the marker and length to network order. */
+        marker = LXW_UINT16_NETWORK(marker);
+        length = LXW_UINT16_NETWORK(length);
+
+        /* The offset for next fseek() is the field length + type length. */
+        offset = length - 2;
+
+        if (marker == 0xFFC0 || marker == 0xFFC2) {
+            /* Skip 1 byte to height and width. */
+            fseek(stream, 1, SEEK_CUR);
+
+            if (fread(&height, sizeof(height), 1, stream) < 1)
+                break;
+
+            if (fread(&width, sizeof(width), 1, stream) < 1)
+                break;
+
+            height = LXW_UINT16_NETWORK(height);
+            width = LXW_UINT16_NETWORK(width);
+
+            offset -= 9;
+        }
+
+        if (marker == 0xFFE0) {
+            uint16_t x_density = 0;
+            uint16_t y_density = 0;
+            uint8_t units = 1;
+
+            fseek(stream, 7, SEEK_CUR);
+
+            if (fread(&units, sizeof(units), 1, stream) < 1)
+                break;
+
+            if (fread(&x_density, sizeof(x_density), 1, stream) < 1)
+                break;
+
+            if (fread(&y_density, sizeof(y_density), 1, stream) < 1)
+                break;
+
+            x_density = LXW_UINT16_NETWORK(x_density);
+            y_density = LXW_UINT16_NETWORK(y_density);
+
+            if (units == 1) {
+                x_dpi = x_density;
+                y_dpi = y_density;
+            }
+
+            if (units == 2) {
+                x_dpi = x_density * 2.54;
+                y_dpi = y_density * 2.54;
+            }
+
+            offset -= 12;
+        }
+
+        if (marker == 0xFFDA)
+            break;
+
+        if (!feof(stream))
+            fseek(stream, offset, SEEK_CUR);
+    }
+
+    /* Ensure that we read some valid data from the file. */
+    if (width == 0) {
+        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
+                        "no size data found in file: %s\n",
+                        image_options->filename);
+        return -1;
+    }
+
+    /* Set the image metadata. */
+    image_options->image_type = LXW_IMAGE_JPEG;
+    image_options->width = width;
+    image_options->height = height;
+    image_options->x_dpi = x_dpi;
+    image_options->y_dpi = y_dpi;
+    image_options->extension = lxw_strdup("jpeg");
+
+    return 0;
+}
+
+/*
+ * Extract width and height information from a BMP file.
+ */
+STATIC int
+_process_bmp(lxw_image_options *image_options)
+{
+    uint32_t width = 0;
+    uint32_t height = 0;
+    double x_dpi = 96;
+    double y_dpi = 96;
+
+    FILE *stream = image_options->stream;
+
+    /* Skip another 14 bytes to the start of the BMP height/width. */
+    fseek(stream, 14, SEEK_CUR);
+
+    if (fread(&width, sizeof(width), 1, stream) < 1)
+        width = 0;
+
+    if (fread(&height, sizeof(height), 1, stream) < 1)
+        height = 0;
+
+    /* Ensure that we read some valid data from the file. */
+    if (width == 0) {
+        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
+                        "no size data found in file: %s\n",
+                        image_options->filename);
+        return -1;
+    }
+
+    /* Set the image metadata. */
+    image_options->image_type = LXW_IMAGE_BMP;
+    image_options->width = width;
+    image_options->height = height;
+    image_options->x_dpi = x_dpi;
+    image_options->y_dpi = y_dpi;
+    image_options->extension = lxw_strdup("bmp");
+
+    return 0;
+}
+
+/*
+ * Extract information from the image file such as dimension, type, filename,
+ * and extension.
+ */
+STATIC int
+_get_image_properties(lxw_image_options *image_options)
+{
+    unsigned char signature[4];
+
+    /* Read 4 bytes to look for the file header/signature. */
+    if (fread(signature, 1, 4, image_options->stream) < 4) {
+        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
+                        "couldn't read file type for file: %s\n",
+                        image_options->filename);
+        return -1;
+    }
+
+    if (memcmp(&signature[1], "PNG", 3) == 0) {
+        if (_process_png(image_options) != LXW_NO_ERROR)
+            return -1;
+    }
+    else if (signature[0] == 0xFF && signature[1] == 0xD8) {
+        if (_process_jpeg(image_options) != LXW_NO_ERROR)
+            return -1;
+    }
+    else if (memcmp(signature, "BM", 2) == 0) {
+        if (_process_bmp(image_options) != LXW_NO_ERROR)
+            return -1;
+    }
+    else {
+        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
+                        "unsupported image format for file: %s\n",
+                        image_options->filename);
+        return -1;
+    }
+
+    return 0;
+}
+
 /*****************************************************************************
  *
  * XML file assembly functions.
@@ -4248,6 +4539,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
                            lxw_image_options *user_options)
 {
     FILE *image_stream;
+    char *short_name;
     lxw_image_options *options;
 
     if (!filename) {
@@ -4265,6 +4557,14 @@ worksheet_insert_image_opt(lxw_worksheet *self,
         return -1;
     }
 
+    /* Get the filename from the full path to add to the Drawing object. */
+    short_name = basename((char *) filename);
+    if (!short_name) {
+        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
+                        "couldn't get basename for file: %s", filename);
+        return -1;
+    }
+
     /* Create a new object to hold the image options. */
     options = calloc(1, sizeof(lxw_image_options));
     RETURN_ON_MEM_ERROR(options, -1);
@@ -4277,7 +4577,10 @@ worksheet_insert_image_opt(lxw_worksheet *self,
 
     /* Copy other options or set defaults. */
     options->filename = lxw_strdup(filename);
+    options->short_name = lxw_strdup(short_name);
     options->stream = image_stream;
+    options->row = row_num;
+    options->col = col_num;
 
     if (!options->x_scale)
         options->x_scale = 1;
@@ -4285,10 +4588,10 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     if (!options->y_scale)
         options->y_scale = 1;
 
-    options->row = row_num;
-    options->col = col_num;
-
-    STAILQ_INSERT_TAIL(self->images, options, list_pointers);
+    if (_get_image_properties(options) == LXW_NO_ERROR)
+        STAILQ_INSERT_TAIL(self->images, options, list_pointers);
+    else
+        free(options);
 
     return 0;
 }

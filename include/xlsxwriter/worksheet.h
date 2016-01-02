@@ -47,6 +47,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <libgen.h>
 
 #include "shared_strings.h"
 #include "drawing.h"

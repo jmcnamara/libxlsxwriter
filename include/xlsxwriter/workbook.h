@@ -44,7 +44,6 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <errno.h>
-#include <libgen.h>
 
 #include "worksheet.h"
 #include "shared_strings.h"

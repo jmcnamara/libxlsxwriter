@@ -29,6 +29,7 @@ enum lxw_boolean {
 #define LXW_UINT32_T_LEN   11   /* Length of 4294967296\0. */
 #define LXW_IGNORE          1
 #define FILENAME_LEN      128
+#define LXW_NO_ERROR        0
 
 #define LXW_ERROR(message)                      \
     fprintf(stderr, "[ERROR][%s:%d]: " message "\n", __FILE__, __LINE__)
