@@ -758,8 +758,8 @@ _process_png(lxw_image_options *image_options)
                 x_ppu = LXW_UINT32_NETWORK(x_ppu);
                 y_ppu = LXW_UINT32_NETWORK(y_ppu);
 
-                x_dpi = (double) x_ppu * 0.0254;
-                y_dpi = (double) y_ppu * 0.0254;
+                x_dpi = (double) x_ppu *0.0254;
+                y_dpi = (double) y_ppu *0.0254;
             }
 
             /* Reduce the offset by the length of previous freads(). */

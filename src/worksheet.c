@@ -1532,17 +1532,29 @@ _write_row(lxw_worksheet *self, lxw_row *row, char *spans)
 STATIC int32_t
 _worksheet_size_col(lxw_worksheet *self, lxw_col_t col_num)
 {
-    lxw_col_options *col_option = NULL;
+    lxw_col_options *col_opt = NULL;
     uint32_t pixels;
     double width;
     double max_digit_width = 7.0;       /* For Calabri 11. */
     double padding = 5.0;
+    lxw_col_t col_index;
 
-    if (col_num < self->col_options_max)
-        col_option = self->col_options[col_num];
+    /* Search for the col number in the array of col_options. Each col_option
+     * entry contains the start and end column for a range.
+     */
+    for (col_index = 0; col_index < self->col_options_max; col_index++) {
+        col_opt = self->col_options[col_index];
 
-    if (col_option) {
-        width = col_option->width;
+        if (col_opt) {
+            if (col_num >= col_opt->firstcol && col_num <= col_opt->lastcol)
+                break;
+            else
+                col_opt = NULL;
+        }
+    }
+
+    if (col_opt) {
+        width = col_opt->width;
 
         /* Convert to pixels. */
         if (width == 0) {
@@ -2226,7 +2238,7 @@ _worksheet_write_cols(lxw_worksheet *self)
     _xml_start_tag(self->file, "cols", NULL);
 
     for (col = 0; col < self->col_options_max; col++) {
-        if (self->col_options[col] && self->col_options[col]->is_first)
+        if (self->col_options[col])
             _worksheet_write_col_info(self, self->col_options[col]);
     }
 
@@ -3440,25 +3452,18 @@ worksheet_set_column(lxw_worksheet *self,
     }
 
     /* Store the column options. */
-    for (col = firstcol; col <= lastcol; col++) {
+    copied_options = calloc(1, sizeof(lxw_col_options));
+    RETURN_ON_MEM_ERROR(copied_options, -LXW_ERROR_WORKSHEET_MEMORY_ERROR);
 
-        copied_options = calloc(1, sizeof(lxw_col_options));
-        RETURN_ON_MEM_ERROR(copied_options,
-                            -LXW_ERROR_WORKSHEET_MEMORY_ERROR);
+    copied_options->firstcol = firstcol;
+    copied_options->lastcol = lastcol;
+    copied_options->width = width;
+    copied_options->format = format;
+    copied_options->hidden = hidden;
+    copied_options->level = level;
+    copied_options->collapsed = collapsed;
 
-        copied_options->firstcol = firstcol;
-        copied_options->lastcol = lastcol;
-        copied_options->width = width;
-        copied_options->format = format;
-        copied_options->hidden = hidden;
-        copied_options->level = level;
-        copied_options->collapsed = collapsed;
-
-        if (col == firstcol)
-            copied_options->is_first = LXW_TRUE;
-
-        self->col_options[col] = copied_options;
-    }
+    self->col_options[firstcol] = copied_options;
 
     /* Store the column formats for use when writing cell data. */
     for (col = firstcol; col <= lastcol; col++) {

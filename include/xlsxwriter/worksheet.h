@@ -203,7 +203,6 @@ typedef struct lxw_col_options {
     uint8_t hidden;
     uint8_t level;
     uint8_t collapsed;
-    uint8_t is_first;
 } lxw_col_options;
 
 typedef struct lxw_merged_range {

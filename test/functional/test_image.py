@@ -73,3 +73,33 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_image23(self):
         self.run_exe_test('test_image23')
+
+    def test_image24(self):
+        self.run_exe_test('test_image24')
+
+    def test_image25(self):
+        self.run_exe_test('test_image25')
+
+    def test_image26(self):
+        self.run_exe_test('test_image26')
+
+    def test_image27(self):
+        self.run_exe_test('test_image27')
+
+    def test_image28(self):
+        self.run_exe_test('test_image28')
+
+    def test_image29(self):
+        self.run_exe_test('test_image29')
+
+    def test_image30(self):
+        self.run_exe_test('test_image30')
+
+    def test_image31(self):
+        self.run_exe_test('test_image31')
+
+    def test_image32(self):
+        self.run_exe_test('test_image32')
+
+    def test_image33(self):
+        self.run_exe_test('test_image33')
