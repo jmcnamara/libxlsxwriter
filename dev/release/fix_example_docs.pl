@@ -28,6 +28,7 @@ my @examples = (
     [ 'constant_memory.c',      'Write a large file with constant memory usage' ],
     [ 'merge_range.c',          'Create a merged range of cells' ],
     [ 'autofilter.c',           'An example of a worksheet autofilter' ],
+    [ 'images.c',               'Example of adding images to a worksheet.' ],
     [ 'headers_footers.c',      'Example of adding worksheet headers/footers' ],
     [ 'defined_name.c',         'Example of how to create defined names' ],
     [ 'tab_colors.c',           'Example of how to set worksheet tab colors' ],

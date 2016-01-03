@@ -262,13 +262,28 @@ typedef struct lxw_selection {
 
 } lxw_selection;
 
+/**
+ * @brief Options for inserted images
+ *
+ * Options for modifying images inserted via `worksheet_insert_image_opt()`.
+ *
+ */
 typedef struct lxw_image_options {
+
+    /** Offset from the left of the cell in pixels. */
+    int32_t x_offset;
+
+    /** Offset from the top of the cell in pixels. */
+    int32_t y_offset;
+
+    /** X scale of the image as a decimal. */
+    double x_scale;
+
+    /** Y scale of the image as a decimal. */
+    double y_scale;
+
     lxw_row_t row;
     lxw_col_t col;
-    int32_t x_offset;
-    int32_t y_offset;
-    double x_scale;
-    double y_scale;
     char *filename;
     char *url;
     char *tip;
@@ -1171,13 +1186,73 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
                             lxw_col_t last_col, double width,
                             lxw_format *format, lxw_row_col_options *options);
 
-/* TODO */
+/**
+ * @brief Insert an image in a worksheet cell.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param filename  The image filename, with path if required.
+ *
+ * @return 0 for success, non-zero on error.
+ *
+ * This function can be used to insert a image into a worksheet. The image can
+ * be in PNG, JPEG or BMP format:
+ *
+ * @code
+ *     worksheet_insert_image(worksheet, 2, 1, "logo.png");
+ * @endcode
+ *
+ * @image html insert_image.png
+ *
+ * The `worksheet_insert_image_opt()` function takes additional optional
+ * parameters to position and scale the image, see below.
+ *
+ * **Note**:
+ * The scaling of a image may be affected if is crosses a row that has its
+ * default height changed due to a font that is larger than the default font
+ * size or that has text wrapping turned on. To avoid this you should
+ * explicitly set the height of the row using `worksheet_set_row()` if it
+ * crosses an inserted image.
+ *
+ * BMP images are only supported for backward compatibility. In general it is
+ * best to avoid BMP images since they aren't compressed. If used, BMP images
+ * must be 24 bit, true color, bitmaps.
+ */
 int worksheet_insert_image(lxw_worksheet *worksheet,
-                           lxw_row_t row_num, lxw_col_t col_num,
+                           lxw_row_t row, lxw_col_t col,
                            const char *filename);
 
+/**
+ * @brief Insert an image in a worksheet cell, with options.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param filename  The image filename, with path if required.
+ * @param options   Optional image parameters.
+ *
+ * @return 0 for success, non-zero on error.
+ *
+ * The `%worksheet_insert_image_opt()` function is like
+ * `worksheet_insert_image()` function except that it takes an optional
+ * #lxw_image_options struct to scale and position the image:
+ *
+ * @code
+ *    lxw_image_options options = {.x_offset = 30,   .y_offset = 10,
+ *                                 .x_scale  = 0.5, .y_scale  = 0.5};
+ *
+ *    worksheet_insert_image_opt(worksheet, 2, 1, "logo.png", &options);
+ *
+ * @endcode
+ *
+ * @image html insert_image_opt.png
+ *
+ * **Note**: See the notes about row scaling and BMP images in
+ * `worksheet_insert_image()` above.
+ */
 int worksheet_insert_image_opt(lxw_worksheet *worksheet,
-                               lxw_row_t row_num, lxw_col_t col_num,
+                               lxw_row_t row, lxw_col_t col,
                                const char *filename,
                                lxw_image_options *options);
 
