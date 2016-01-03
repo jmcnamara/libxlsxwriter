@@ -111,7 +111,7 @@ function check_docs {
             echo -e "Please run: make docs\n";
             exit 1
         else
-            echo "    Running tests...";
+            echo "    Building docs...";
             make docs
             check_docs
          fi
