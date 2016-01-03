@@ -45,7 +45,7 @@ int main() {
     /* Set the bold property for the format */
     format_set_bold(format);
 
-    /* Widen the columns to make the text clearer. */
+    /* Change the column widths for clarity. */
     worksheet_set_column(worksheet, 0, 0, 20, NULL, NULL);
     worksheet_set_column(worksheet, 1, 1,  2, NULL, NULL);
 
