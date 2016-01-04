@@ -93,7 +93,7 @@ CTEST(merged_range, array_formula01) {
     //worksheet->sst = _new_sst();
     worksheet_select(worksheet);
 
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
     format->xf_index = 1;
 
     worksheet_write_array_formula_num(worksheet, 0, 0, 0, 0, "{=SUM(B1:C1*B2:C2)}", NULL, 9500);

@@ -73,7 +73,7 @@ lxw_workbook_free(lxw_workbook *workbook)
     while (!STAILQ_EMPTY(workbook->formats)) {
         format = STAILQ_FIRST(workbook->formats);
         STAILQ_REMOVE_HEAD(workbook->formats, list_pointers);
-        _free_format(format);
+        lxw_format_free(format);
     }
 
     /* Free the defined_names in the workbook. */
@@ -100,7 +100,7 @@ lxw_workbook_set_default_xf_indices(lxw_workbook *self)
     lxw_format *format;
 
     STAILQ_FOREACH(format, self->formats, list_pointers) {
-        _get_xf_index(format);
+        lxw_format_get_xf_index(format);
     }
 }
 
@@ -119,7 +119,7 @@ _prepare_fonts(lxw_workbook *self)
 
     LXW_FOREACH_ORDERED(used_format_element, self->used_xf_formats) {
         lxw_format *format = (lxw_format *) used_format_element->value;
-        lxw_font *key = _get_font_key(format);
+        lxw_font *key = lxw_format_get_font_key(format);
 
         if (key) {
             /* Look up the format in the hash table. */
@@ -164,7 +164,7 @@ _prepare_borders(lxw_workbook *self)
 
     LXW_FOREACH_ORDERED(used_format_element, self->used_xf_formats) {
         lxw_format *format = (lxw_format *) used_format_element->value;
-        lxw_border *key = _get_border_key(format);
+        lxw_border *key = lxw_format_get_border_key(format);
 
         if (key) {
             /* Look up the format in the hash table. */
@@ -241,7 +241,7 @@ _prepare_fills(lxw_workbook *self)
 
     LXW_FOREACH_ORDERED(used_format_element, self->used_xf_formats) {
         lxw_format *format = (lxw_format *) used_format_element->value;
-        lxw_fill *key = _get_fill_key(format);
+        lxw_fill *key = lxw_format_get_fill_key(format);
 
         /* The following logical statements jointly take care of special */
         /* cases in relation to cell colors and patterns:                */
@@ -1059,7 +1059,7 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     GOTO_LABEL_ON_MEM_ERROR(format, mem_error);
 
     /* Initialize its index. */
-    _get_xf_index(format);
+    lxw_format_get_xf_index(format);
 
     if (options)
         workbook->options.constant_memory = options->constant_memory;
@@ -1130,7 +1130,7 @@ lxw_format *
 workbook_add_format(lxw_workbook *self)
 {
     /* Create a new format object. */
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
     RETURN_ON_MEM_ERROR(format, NULL);
 
     format->xf_format_indices = self->used_xf_formats;

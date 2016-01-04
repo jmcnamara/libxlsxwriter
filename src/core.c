@@ -25,7 +25,7 @@
  * Create a new core object.
  */
 lxw_core *
-_new_core()
+lxw_core_new()
 {
     lxw_core *core = calloc(1, sizeof(lxw_core));
     GOTO_LABEL_ON_MEM_ERROR(core, mem_error);
@@ -33,7 +33,7 @@ _new_core()
     return core;
 
 mem_error:
-    _free_core(core);
+    lxw_core_free(core);
     return NULL;
 }
 
@@ -41,7 +41,7 @@ mem_error:
  * Free a core object.
  */
 void
-_free_core(lxw_core *core)
+lxw_core_free(lxw_core *core)
 {
     if (!core)
         return;
@@ -261,7 +261,7 @@ _write_cp_content_status(lxw_core *self)
  * Assemble and write the XML file.
  */
 void
-_core_assemble_xml_file(lxw_core *self)
+lxw_core_assemble_xml_file(lxw_core *self)
 {
     /* Write the XML declaration. */
     _core_xml_declaration(self);

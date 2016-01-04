@@ -44,7 +44,7 @@ CTEST(merged_range, merged_range01) {
     worksheet->sst = lxw_sst_new();
     worksheet_select(worksheet);
 
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
     format->xf_index = 1;
 
     worksheet_merge_range(worksheet, 2, 1, 2, 2, "Foo", format);

@@ -34,17 +34,17 @@ CTEST(content_types, content_types01) {
 
     FILE* testfile = tmpfile();
 
-    lxw_content_types *content_types = _new_content_types();
+    lxw_content_types *content_types = lxw_content_types_new();
     content_types->file = testfile;
 
-    _ct_add_worksheet_name(content_types, "/xl/worksheets/sheet1.xml");
-    _ct_add_default(content_types, "jpeg", "image/jpeg");
-    _ct_add_shared_strings(content_types);
-    _ct_add_calc_chain(content_types);
+    lxw_ct_add_worksheet_name(content_types, "/xl/worksheets/sheet1.xml");
+    lxw_ct_add_default(content_types, "jpeg", "image/jpeg");
+    lxw_ct_add_shared_strings(content_types);
+    lxw_ct_add_calc_chain(content_types);
 
-    _content_types_assemble_xml_file(content_types);
+    lxw_content_types_assemble_xml_file(content_types);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_content_types(content_types);
+    lxw_content_types_free(content_types);
 }

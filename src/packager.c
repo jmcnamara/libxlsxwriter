@@ -223,7 +223,7 @@ _write_drawing_files(lxw_packager *self)
                          "xl/drawings/drawing%d.xml", index++);
 
             drawing->file = lxw_tmpfile();
-            _drawing_assemble_xml_file(drawing);
+            lxw_drawing_assemble_xml_file(drawing);
             _add_file_to_zip(self, drawing->file, filename);
             fclose(drawing->file);
 
@@ -266,7 +266,7 @@ _write_app_file(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
     lxw_defined_name *defined_name;
-    lxw_app *app = _new_app();
+    lxw_app *app = lxw_app_new();
     uint16_t named_range_count = 0;
     char *autofilter;
     char *has_range;
@@ -276,10 +276,10 @@ _write_app_file(lxw_packager *self)
 
     lxw_snprintf(number, ATTR_32, "%d", self->workbook->num_sheets);
 
-    _add_heading_pair(app, "Worksheets", number);
+    lxw_app_add_heading_pair(app, "Worksheets", number);
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
-        _add_part_name(app, worksheet->name);
+        lxw_app_add_part_name(app, worksheet->name);
     }
 
     /* Add the Named Ranges parts. */
@@ -290,7 +290,7 @@ _write_app_file(lxw_packager *self)
 
         /* Only store defined names with ranges (except for autofilters). */
         if (has_range && !autofilter) {
-            _add_part_name(app, defined_name->app_name);
+            lxw_app_add_part_name(app, defined_name->app_name);
             named_range_count++;
         }
     }
@@ -298,19 +298,19 @@ _write_app_file(lxw_packager *self)
     /* Add the Named Range heading pairs. */
     if (named_range_count) {
         lxw_snprintf(number, ATTR_32, "%d", named_range_count);
-        _add_heading_pair(app, "Named Ranges", number);
+        lxw_app_add_heading_pair(app, "Named Ranges", number);
     }
 
     /* Set the app/doc properties. */
     app->properties = workbook->properties;
 
-    _app_assemble_xml_file(app);
+    lxw_app_assemble_xml_file(app);
 
     _add_file_to_zip(self, app->file, "docProps/app.xml");
 
     fclose(app->file);
 
-    _free_app(app);
+    lxw_app_free(app);
 
     return 0;
 }
@@ -321,19 +321,19 @@ _write_app_file(lxw_packager *self)
 STATIC uint8_t
 _write_core_file(lxw_packager *self)
 {
-    lxw_core *core = _new_core();
+    lxw_core *core = lxw_core_new();
 
     core->file = lxw_tmpfile();
 
     core->properties = self->workbook->properties;
 
-    _core_assemble_xml_file(core);
+    lxw_core_assemble_xml_file(core);
 
     _add_file_to_zip(self, core->file, "docProps/core.xml");
 
     fclose(core->file);
 
-    _free_core(core);
+    lxw_core_free(core);
 
     return 0;
 }
@@ -372,7 +372,7 @@ _write_styles_file(lxw_packager *self)
      * xf_format list. */
     LXW_FOREACH_ORDERED(hash_element, self->workbook->used_xf_formats) {
         lxw_format *workbook_format = (lxw_format *) hash_element->value;
-        lxw_format *style_format = _new_format();
+        lxw_format *style_format = lxw_format_new();
         memcpy(style_format, workbook_format, sizeof(lxw_format));
         STAILQ_INSERT_TAIL(styles->xf_formats, style_format, list_pointers);
     }
@@ -402,7 +402,7 @@ _write_styles_file(lxw_packager *self)
 STATIC uint8_t
 _write_content_types_file(lxw_packager *self)
 {
-    lxw_content_types *content_types = _new_content_types();
+    lxw_content_types *content_types = lxw_content_types_new();
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
     char filename[MAX_ATTRIBUTE_LENGTH] = { 0 };
@@ -411,36 +411,36 @@ _write_content_types_file(lxw_packager *self)
     content_types->file = lxw_tmpfile();
 
     if (workbook->has_png)
-        _ct_add_default(content_types, "png", "image/png");
+        lxw_ct_add_default(content_types, "png", "image/png");
 
     if (workbook->has_jpeg)
-        _ct_add_default(content_types, "jpeg", "image/jpeg");
+        lxw_ct_add_default(content_types, "jpeg", "image/jpeg");
 
     if (workbook->has_bmp)
-        _ct_add_default(content_types, "bmp", "image/bmp");
+        lxw_ct_add_default(content_types, "bmp", "image/bmp");
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
         lxw_snprintf(filename, FILENAME_LEN,
                      "/xl/worksheets/sheet%d.xml", index++);
-        _ct_add_worksheet_name(content_types, filename);
+        lxw_ct_add_worksheet_name(content_types, filename);
     }
 
     for (index = 1; index <= self->drawing_count; index++) {
         lxw_snprintf(filename, FILENAME_LEN,
                      "/xl/drawings/drawing%d.xml", index);
-        _ct_add_drawing_name(content_types, filename);
+        lxw_ct_add_drawing_name(content_types, filename);
     }
 
     if (workbook->sst->string_count)
-        _ct_add_shared_strings(content_types);
+        lxw_ct_add_shared_strings(content_types);
 
-    _content_types_assemble_xml_file(content_types);
+    lxw_content_types_assemble_xml_file(content_types);
 
     _add_file_to_zip(self, content_types->file, "[Content_Types].xml");
 
     fclose(content_types->file);
 
-    _free_content_types(content_types);
+    lxw_content_types_free(content_types);
 
     return 0;
 }

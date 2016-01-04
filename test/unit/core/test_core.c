@@ -26,7 +26,7 @@ CTEST(core, core01) {
 
     FILE* testfile = tmpfile();
 
-    lxw_core *core = _new_core();
+    lxw_core *core = lxw_core_new();
     lxw_workbook *workbook = workbook_new(NULL);
 
     core->file = testfile;
@@ -45,12 +45,12 @@ CTEST(core, core01) {
     core->properties->created = mktime(&tmp_tm);
     core->properties->author  = strdup("A User");
 
-    _core_assemble_xml_file(core);
+    lxw_core_assemble_xml_file(core);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
     lxw_workbook_free(workbook);
-    _free_core(core);
+    lxw_core_free(core);
 }
 
 
@@ -75,7 +75,7 @@ CTEST(core, core02) {
 
     FILE* testfile = tmpfile();
 
-    lxw_core *core = _new_core();
+    lxw_core *core = lxw_core_new();
     lxw_workbook *workbook = workbook_new(NULL);
 
     core->file = testfile;
@@ -100,10 +100,10 @@ CTEST(core, core02) {
     core->properties->category = strdup("Example spreadsheets");
     core->properties->status   = strdup("Quo");
 
-    _core_assemble_xml_file(core);
+    lxw_core_assemble_xml_file(core);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
     lxw_workbook_free(workbook);
-    _free_core(core);
+    lxw_core_free(core);
 }

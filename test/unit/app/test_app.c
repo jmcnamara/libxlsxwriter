@@ -45,17 +45,17 @@ CTEST(app, app01) {
 
     FILE* testfile = tmpfile();
 
-    lxw_app *app = _new_app();
+    lxw_app *app = lxw_app_new();
     app->file = testfile;
 
-    _add_part_name(app,"Sheet1");
-    _add_heading_pair(app, "Worksheets", "1");
+    lxw_app_add_part_name(app,"Sheet1");
+    lxw_app_add_heading_pair(app, "Worksheets", "1");
 
-    _app_assemble_xml_file(app);
+    lxw_app_assemble_xml_file(app);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_app(app);
+    lxw_app_free(app);
 }
 
 // Test assembling a complete App file.
@@ -94,18 +94,18 @@ CTEST(app, app02) {
 
     FILE* testfile = tmpfile();
 
-    lxw_app *app = _new_app();
+    lxw_app *app = lxw_app_new();
     app->file = testfile;
 
-    _add_part_name(app,"Sheet1");
-    _add_part_name(app,"Sheet2");
-    _add_heading_pair(app, "Worksheets", "2");
+    lxw_app_add_part_name(app,"Sheet1");
+    lxw_app_add_part_name(app,"Sheet2");
+    lxw_app_add_heading_pair(app, "Worksheets", "2");
 
-    _app_assemble_xml_file(app);
+    lxw_app_assemble_xml_file(app);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_app(app);
+    lxw_app_free(app);
 }
 
 
@@ -151,18 +151,18 @@ CTEST(app, app03) {
 
     FILE* testfile = tmpfile();
 
-    lxw_app *app = _new_app();
+    lxw_app *app = lxw_app_new();
     app->file = testfile;
 
-    _add_part_name(app,"Sheet1");
-    _add_part_name(app,"Sheet1!Print_Titles");
-    _add_heading_pair(app, "Worksheets", "1");
-    _add_heading_pair(app, "Named Ranges", "1");
+    lxw_app_add_part_name(app,"Sheet1");
+    lxw_app_add_part_name(app,"Sheet1!Print_Titles");
+    lxw_app_add_heading_pair(app, "Worksheets", "1");
+    lxw_app_add_heading_pair(app, "Named Ranges", "1");
 
-    _app_assemble_xml_file(app);
+    lxw_app_assemble_xml_file(app);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_app(app);
+    lxw_app_free(app);
 }
 

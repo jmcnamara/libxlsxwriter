@@ -17,12 +17,12 @@ CTEST(core, xml_declaration) {
     char exp[] = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
     FILE* testfile = tmpfile();
 
-    lxw_core *core = _new_core();
+    lxw_core *core = lxw_core_new();
     core->file = testfile;
 
     _core_xml_declaration(core);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_core(core);
+    lxw_core_free(core);
 }

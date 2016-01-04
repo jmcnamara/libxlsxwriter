@@ -18,7 +18,7 @@ CTEST(styles, write_borders) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format->has_border = 1;
 

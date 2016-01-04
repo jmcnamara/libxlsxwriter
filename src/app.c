@@ -27,7 +27,7 @@
  * Create a new app object.
  */
 lxw_app *
-_new_app()
+lxw_app_new()
 {
     lxw_app *app = calloc(1, sizeof(lxw_app));
     GOTO_LABEL_ON_MEM_ERROR(app, mem_error);
@@ -43,7 +43,7 @@ _new_app()
     return app;
 
 mem_error:
-    _free_app(app);
+    lxw_app_free(app);
     return NULL;
 }
 
@@ -51,7 +51,7 @@ mem_error:
  * Free a app object.
  */
 void
-_free_app(lxw_app *app)
+lxw_app_free(lxw_app *app)
 {
     lxw_heading_pair *heading_pair;
     lxw_part_name *part_name;
@@ -346,7 +346,7 @@ _write_app_version(lxw_app *self)
  * Assemble and write the XML file.
  */
 void
-_app_assemble_xml_file(lxw_app *self)
+lxw_app_assemble_xml_file(lxw_app *self)
 {
 
     /* Write the XML declaration. */
@@ -379,7 +379,7 @@ _app_assemble_xml_file(lxw_app *self)
  * Add the name of a workbook Part such as 'Sheet1' or 'Print_Titles'.
  */
 void
-_add_part_name(lxw_app *self, const char *name)
+lxw_app_add_part_name(lxw_app *self, const char *name)
 {
     lxw_part_name *part_name;
 
@@ -409,7 +409,7 @@ mem_error:
  * 'Named Ranges'.
  */
 void
-_add_heading_pair(lxw_app *self, const char *key, const char *value)
+lxw_app_add_heading_pair(lxw_app *self, const char *key, const char *value)
 {
     lxw_heading_pair *heading_pair;
 

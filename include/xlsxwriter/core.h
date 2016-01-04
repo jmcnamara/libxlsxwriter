@@ -31,9 +31,9 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_core *_new_core();
-void _free_core(lxw_core *core);
-void _core_assemble_xml_file(lxw_core *self);
+lxw_core *lxw_core_new();
+void lxw_core_free(lxw_core *core);
+void lxw_core_assemble_xml_file(lxw_core *self);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

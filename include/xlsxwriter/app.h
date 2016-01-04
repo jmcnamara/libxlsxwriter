@@ -57,11 +57,12 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_app *_new_app();
-void _free_app(lxw_app *app);
-void _app_assemble_xml_file(lxw_app *self);
-void _add_part_name(lxw_app *self, const char *name);
-void _add_heading_pair(lxw_app *self, const char *key, const char *value);
+lxw_app *lxw_app_new();
+void lxw_app_free(lxw_app *app);
+void lxw_app_assemble_xml_file(lxw_app *self);
+void lxw_app_add_part_name(lxw_app *self, const char *name);
+void lxw_app_add_heading_pair(lxw_app *self, const char *key,
+                              const char *value);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

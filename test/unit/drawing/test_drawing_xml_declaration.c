@@ -17,12 +17,12 @@ CTEST(drawing, xml_declaration) {
     char exp[] = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
     FILE* testfile = tmpfile();
 
-    lxw_drawing *drawing = _new_drawing();
+    lxw_drawing *drawing = lxw_drawing_new();
     drawing->file = testfile;
 
     _drawing_xml_declaration(drawing);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_drawing(drawing);
+    lxw_drawing_free(drawing);
 }

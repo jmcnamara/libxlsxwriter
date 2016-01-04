@@ -19,7 +19,7 @@ CTEST(styles, write_font01) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     styles->file = testfile;
 
@@ -28,7 +28,7 @@ CTEST(styles, write_font01) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -40,7 +40,7 @@ CTEST(styles, write_font02) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_bold(format);
 
@@ -51,7 +51,7 @@ CTEST(styles, write_font02) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -63,7 +63,7 @@ CTEST(styles, write_font03) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_italic(format);
 
@@ -74,7 +74,7 @@ CTEST(styles, write_font03) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -86,7 +86,7 @@ CTEST(styles, write_font04) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_underline(format, LXW_UNDERLINE_SINGLE);
 
@@ -97,7 +97,7 @@ CTEST(styles, write_font04) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -109,7 +109,7 @@ CTEST(styles, write_font05) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_font_strikeout(format);
 
@@ -120,7 +120,7 @@ CTEST(styles, write_font05) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -132,7 +132,7 @@ CTEST(styles, write_font06) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_font_script(format, LXW_FONT_SUPERSCRIPT);
 
@@ -143,7 +143,7 @@ CTEST(styles, write_font06) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -155,7 +155,7 @@ CTEST(styles, write_font07) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_font_script(format, LXW_FONT_SUBSCRIPT);
 
@@ -166,7 +166,7 @@ CTEST(styles, write_font07) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -178,7 +178,7 @@ CTEST(styles, write_font08) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_font_name(format, "Arial");
 
@@ -189,7 +189,7 @@ CTEST(styles, write_font08) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -201,7 +201,7 @@ CTEST(styles, write_font09) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_font_size(format, 12);
 
@@ -212,7 +212,7 @@ CTEST(styles, write_font09) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -224,7 +224,7 @@ CTEST(styles, write_font10) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_font_outline(format);
 
@@ -235,7 +235,7 @@ CTEST(styles, write_font10) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -247,7 +247,7 @@ CTEST(styles, write_font11) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_font_shadow(format);
 
@@ -258,7 +258,7 @@ CTEST(styles, write_font11) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -270,7 +270,7 @@ CTEST(styles, write_font12) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_font_color(format, LXW_COLOR_RED);
 
@@ -281,7 +281,7 @@ CTEST(styles, write_font12) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -293,7 +293,7 @@ CTEST(styles, write_font13) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_bold(format);
     format_set_italic(format);
@@ -312,7 +312,7 @@ CTEST(styles, write_font13) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -324,7 +324,7 @@ CTEST(styles, write_font14) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_underline(format, LXW_UNDERLINE_DOUBLE);
 
@@ -335,7 +335,7 @@ CTEST(styles, write_font14) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -347,7 +347,7 @@ CTEST(styles, write_font15) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_underline(format, LXW_UNDERLINE_SINGLE_ACCOUNTING);
 
@@ -358,7 +358,7 @@ CTEST(styles, write_font15) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 // Test the _write_font() function.
@@ -370,7 +370,7 @@ CTEST(styles, write_font16) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_underline(format, LXW_UNDERLINE_DOUBLE_ACCOUNTING);
 
@@ -381,7 +381,7 @@ CTEST(styles, write_font16) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -395,7 +395,7 @@ CTEST(styles, write_font17) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_underline(format, LXW_UNDERLINE_SINGLE);
     format_set_theme(format, 10);
@@ -408,7 +408,7 @@ CTEST(styles, write_font17) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 

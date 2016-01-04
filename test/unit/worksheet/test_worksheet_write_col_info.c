@@ -54,7 +54,7 @@ CTEST(worksheet, write_col_info03) {
     char exp[] = "<col min=\"8\" max=\"8\" width=\"9.140625\" style=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
     format->xf_index = 1;
 
     lxw_col_options col_options = {7, 7, LXW_DEF_COL_WIDTH, format, 0, 0, 0};
@@ -76,7 +76,7 @@ CTEST(worksheet, write_col_info04) {
     char exp[] = "<col min=\"9\" max=\"9\" width=\"9.140625\" style=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
     format->xf_index = 1;
 
     lxw_col_options col_options = {8, 8, LXW_DEF_COL_WIDTH, format, 0, 0, 0};

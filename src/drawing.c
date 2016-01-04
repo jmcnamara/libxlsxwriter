@@ -29,7 +29,7 @@
  * Create a new drawing collection.
  */
 lxw_drawing *
-_new_drawing()
+lxw_drawing_new()
 {
     lxw_drawing *drawing = calloc(1, sizeof(lxw_drawing));
     GOTO_LABEL_ON_MEM_ERROR(drawing, mem_error);
@@ -42,7 +42,7 @@ _new_drawing()
     return drawing;
 
 mem_error:
-    _free_drawing(drawing);
+    lxw_drawing_free(drawing);
     return NULL;
 }
 
@@ -50,7 +50,7 @@ mem_error:
  * Free a drawing object.
  */
 void
-_free_drawing_object(lxw_drawing_object *drawing_object)
+lxw_free_drawing_object(lxw_drawing_object *drawing_object)
 {
     if (!drawing_object)
         return;
@@ -66,7 +66,7 @@ _free_drawing_object(lxw_drawing_object *drawing_object)
  * Free a drawing collection.
  */
 void
-_free_drawing(lxw_drawing *drawing)
+lxw_drawing_free(lxw_drawing *drawing)
 {
     lxw_drawing_object *drawing_object;
 
@@ -77,7 +77,7 @@ _free_drawing(lxw_drawing *drawing)
         while (!STAILQ_EMPTY(drawing->drawing_objects)) {
             drawing_object = STAILQ_FIRST(drawing->drawing_objects);
             STAILQ_REMOVE_HEAD(drawing->drawing_objects, list_pointers);
-            _free_drawing_object(drawing_object);
+            lxw_free_drawing_object(drawing_object);
         }
 
         free(drawing->drawing_objects);
@@ -90,7 +90,8 @@ _free_drawing(lxw_drawing *drawing)
  * Add a drawing object to the drawing collection.
  */
 void
-_add_drawing_object(lxw_drawing *drawing, lxw_drawing_object *drawing_object)
+lxw_add_drawing_object(lxw_drawing *drawing,
+                       lxw_drawing_object *drawing_object)
 {
     STAILQ_INSERT_TAIL(drawing->drawing_objects, drawing_object,
                        list_pointers);
@@ -542,7 +543,7 @@ _drawing_write_two_cell_anchor(lxw_drawing *self, uint16_t index,
  * Assemble and write the XML file.
  */
 void
-_drawing_assemble_xml_file(lxw_drawing *self)
+lxw_drawing_assemble_xml_file(lxw_drawing *self)
 {
     uint16_t index;
     lxw_drawing_object *drawing_object;

@@ -19,7 +19,7 @@ CTEST(styles, write_xf01) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     styles->file = testfile;
 
@@ -28,7 +28,7 @@ CTEST(styles, write_xf01) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -40,7 +40,7 @@ CTEST(styles, write_xf02) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format->has_font = 1;
 
@@ -51,7 +51,7 @@ CTEST(styles, write_xf02) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -63,7 +63,7 @@ CTEST(styles, write_xf03) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format->has_font = 1;
     format->font_index = 1;
@@ -75,7 +75,7 @@ CTEST(styles, write_xf03) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -87,7 +87,7 @@ CTEST(styles, write_xf04) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_num_format_index(format, 2);
 
@@ -98,7 +98,7 @@ CTEST(styles, write_xf04) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -110,7 +110,7 @@ CTEST(styles, write_xf05) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_num_format_index(format, 2);
     format->has_font = 1;
@@ -123,7 +123,7 @@ CTEST(styles, write_xf05) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -135,7 +135,7 @@ CTEST(styles, write_xf06) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_VERTICAL_TOP);
 
@@ -146,7 +146,7 @@ CTEST(styles, write_xf06) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -158,7 +158,7 @@ CTEST(styles, write_xf07) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_VERTICAL_CENTER);
 
@@ -169,7 +169,7 @@ CTEST(styles, write_xf07) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -181,7 +181,7 @@ CTEST(styles, write_xf08) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_VERTICAL_BOTTOM);
 
@@ -192,7 +192,7 @@ CTEST(styles, write_xf08) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -204,7 +204,7 @@ CTEST(styles, write_xf09) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_VERTICAL_JUSTIFY);
 
@@ -215,7 +215,7 @@ CTEST(styles, write_xf09) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -227,7 +227,7 @@ CTEST(styles, write_xf10) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_VERTICAL_DISTRIBUTED);
 
@@ -238,7 +238,7 @@ CTEST(styles, write_xf10) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -250,7 +250,7 @@ CTEST(styles, write_xf11) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_LEFT);
 
@@ -261,7 +261,7 @@ CTEST(styles, write_xf11) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -273,7 +273,7 @@ CTEST(styles, write_xf12) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_CENTER);
 
@@ -284,7 +284,7 @@ CTEST(styles, write_xf12) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -296,7 +296,7 @@ CTEST(styles, write_xf13) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_RIGHT);
 
@@ -307,7 +307,7 @@ CTEST(styles, write_xf13) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -319,7 +319,7 @@ CTEST(styles, write_xf14) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_LEFT);
     format->indent = 1;
@@ -331,7 +331,7 @@ CTEST(styles, write_xf14) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -343,7 +343,7 @@ CTEST(styles, write_xf15) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_RIGHT);
     format_set_indent(format, 1);
@@ -355,7 +355,7 @@ CTEST(styles, write_xf15) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -367,7 +367,7 @@ CTEST(styles, write_xf16) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_FILL);
 
@@ -378,7 +378,7 @@ CTEST(styles, write_xf16) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -390,7 +390,7 @@ CTEST(styles, write_xf17) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_JUSTIFY);
 
@@ -401,7 +401,7 @@ CTEST(styles, write_xf17) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -413,7 +413,7 @@ CTEST(styles, write_xf18) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_CENTER_ACROSS);
 
@@ -424,7 +424,7 @@ CTEST(styles, write_xf18) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -436,7 +436,7 @@ CTEST(styles, write_xf19) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_DISTRIBUTED);
 
@@ -447,7 +447,7 @@ CTEST(styles, write_xf19) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -459,7 +459,7 @@ CTEST(styles, write_xf20) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_DISTRIBUTED);
     format_set_indent(format, 1);
@@ -471,7 +471,7 @@ CTEST(styles, write_xf20) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -483,7 +483,7 @@ CTEST(styles, write_xf21) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_DISTRIBUTED);
     format->just_distrib = 1;
@@ -495,7 +495,7 @@ CTEST(styles, write_xf21) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -508,7 +508,7 @@ CTEST(styles, write_xf22) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_indent(format, 1);
 
@@ -519,7 +519,7 @@ CTEST(styles, write_xf22) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -533,7 +533,7 @@ CTEST(styles, write_xf23) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_DISTRIBUTED);
     format_set_indent(format, 1);
@@ -545,7 +545,7 @@ CTEST(styles, write_xf23) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -557,7 +557,7 @@ CTEST(styles, write_xf24) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_text_wrap(format);
 
@@ -568,7 +568,7 @@ CTEST(styles, write_xf24) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -580,7 +580,7 @@ CTEST(styles, write_xf25) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_shrink(format);
 
@@ -591,7 +591,7 @@ CTEST(styles, write_xf25) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -603,7 +603,7 @@ CTEST(styles, write_xf26) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_reading_order(format, 1);
 
@@ -614,7 +614,7 @@ CTEST(styles, write_xf26) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -626,7 +626,7 @@ CTEST(styles, write_xf27) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_reading_order(format, 2);
 
@@ -637,7 +637,7 @@ CTEST(styles, write_xf27) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -649,7 +649,7 @@ CTEST(styles, write_xf28) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_rotation(format, 45);
 
@@ -660,7 +660,7 @@ CTEST(styles, write_xf28) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -672,7 +672,7 @@ CTEST(styles, write_xf29) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_rotation(format, -45);
 
@@ -683,7 +683,7 @@ CTEST(styles, write_xf29) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -695,7 +695,7 @@ CTEST(styles, write_xf30) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_rotation(format, 270);
 
@@ -706,7 +706,7 @@ CTEST(styles, write_xf30) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -718,7 +718,7 @@ CTEST(styles, write_xf31) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_rotation(format, 90);
 
@@ -729,7 +729,7 @@ CTEST(styles, write_xf31) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -741,7 +741,7 @@ CTEST(styles, write_xf32) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_rotation(format, -90);
 
@@ -752,7 +752,7 @@ CTEST(styles, write_xf32) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -764,7 +764,7 @@ CTEST(styles, write_xf33) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_unlocked(format);
 
@@ -775,7 +775,7 @@ CTEST(styles, write_xf33) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -787,7 +787,7 @@ CTEST(styles, write_xf34) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_hidden(format);
 
@@ -798,7 +798,7 @@ CTEST(styles, write_xf34) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -810,7 +810,7 @@ CTEST(styles, write_xf35) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_unlocked(format);
     format_set_hidden(format);
@@ -822,7 +822,7 @@ CTEST(styles, write_xf35) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }
 
 
@@ -834,7 +834,7 @@ CTEST(styles, write_xf36) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format_set_align(format, LXW_ALIGN_RIGHT);
     format_set_unlocked(format);
@@ -847,5 +847,5 @@ CTEST(styles, write_xf36) {
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
-    _free_format(format);
+    lxw_format_free(format);
 }

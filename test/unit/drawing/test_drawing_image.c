@@ -60,7 +60,7 @@ CTEST(drawing, drawing_image01) {
 
     FILE* testfile = tmpfile();
 
-    lxw_drawing *drawing = _new_drawing();
+    lxw_drawing *drawing = lxw_drawing_new();
     drawing->file = testfile;
 
     drawing->embedded = LXW_TRUE;
@@ -88,12 +88,12 @@ CTEST(drawing, drawing_image01) {
     drawing_object->width  = 1142857;
     drawing_object->height = 1142857;
 
-    _add_drawing_object(drawing, drawing_object);
+    lxw_add_drawing_object(drawing, drawing_object);
 
-    _drawing_assemble_xml_file(drawing);
+    lxw_drawing_assemble_xml_file(drawing);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_drawing(drawing);
+    lxw_drawing_free(drawing);
 }
 

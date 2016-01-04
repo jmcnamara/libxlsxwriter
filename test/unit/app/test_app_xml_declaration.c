@@ -17,12 +17,12 @@ CTEST(app, xml_declaration) {
     char exp[] = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
     FILE* testfile = tmpfile();
 
-    lxw_app *app = _new_app();
+    lxw_app *app = lxw_app_new();
     app->file = testfile;
 
     _app_xml_declaration(app);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_app(app);
+    lxw_app_free(app);
 }

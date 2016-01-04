@@ -480,12 +480,12 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_format *_new_format();
-void _free_format(lxw_format *format);
-int32_t _get_xf_index(lxw_format *format);
-lxw_font *_get_font_key(lxw_format *format);
-lxw_border *_get_border_key(lxw_format *format);
-lxw_fill *_get_fill_key(lxw_format *format);
+lxw_format *lxw_format_new();
+void lxw_format_free(lxw_format *format);
+int32_t lxw_format_get_xf_index(lxw_format *format);
+lxw_font *lxw_format_get_font_key(lxw_format *format);
+lxw_border *lxw_format_get_border_key(lxw_format *format);
+lxw_fill *lxw_format_get_fill_key(lxw_format *format);
 
 /**
  * @brief Set the font used in the cell.

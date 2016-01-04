@@ -59,7 +59,7 @@ CTEST(styles, styles01) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     format->has_font   = 1;
     format->has_border = 1;
@@ -156,10 +156,10 @@ CTEST(styles, styles02) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format1 = _new_format();
-    lxw_format *format2 = _new_format();
-    lxw_format *format3 = _new_format();
-    lxw_format *format4 = _new_format();
+    lxw_format *format1 = lxw_format_new();
+    lxw_format *format2 = lxw_format_new();
+    lxw_format *format3 = lxw_format_new();
+    lxw_format *format4 = lxw_format_new();
 
 
     format1->has_font = 1;

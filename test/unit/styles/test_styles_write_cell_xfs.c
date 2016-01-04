@@ -18,7 +18,7 @@ CTEST(styles, write_cell_xfs) {
     FILE* testfile = tmpfile();
 
     lxw_styles *styles = lxw_styles_new();
-    lxw_format *format = _new_format();
+    lxw_format *format = lxw_format_new();
 
     STAILQ_INSERT_TAIL(styles->xf_formats, format, list_pointers);
 

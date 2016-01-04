@@ -347,7 +347,7 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
         free(worksheet->optimize_row);
 
     if (worksheet->drawing)
-        _free_drawing(worksheet->drawing);
+        lxw_drawing_free(worksheet->drawing);
 
     free(worksheet->name);
     free(worksheet->quoted_name);
@@ -1484,7 +1484,7 @@ _write_row(lxw_worksheet *self, lxw_row *row, char *spans)
     double height;
 
     if (row->format) {
-        xf_index = _get_xf_index(row->format);
+        xf_index = lxw_format_get_xf_index(row->format);
     }
 
     if (row->height_changed)
@@ -1803,7 +1803,7 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
     char filename[FILENAME_LEN];
 
     if (!self->drawing) {
-        self->drawing = _new_drawing();
+        self->drawing = lxw_drawing_new();
         self->drawing->embedded = LXW_TRUE;
         RETURN_VOID_ON_MEM_ERROR(self->drawing);
 
@@ -1848,7 +1848,7 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
     drawing_object->width = 0.5 + width * 9525;
     drawing_object->height = 0.5 + height * 9525;
 
-    _add_drawing_object(self->drawing, drawing_object);
+    lxw_add_drawing_object(self->drawing, drawing_object);
 
     relationship = calloc(1, sizeof(lxw_rel_tuple));
     GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
@@ -2316,13 +2316,13 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
     _PUSH_ATTRIBUTES_STR("r", range);
 
     if (cell->format) {
-        index = _get_xf_index(cell->format);
+        index = lxw_format_get_xf_index(cell->format);
     }
     else if (row_format) {
-        index = _get_xf_index(row_format);
+        index = lxw_format_get_xf_index(row_format);
     }
     else if (col_num < self->col_formats_max && self->col_formats[col_num]) {
-        index = _get_xf_index(self->col_formats[col_num]);
+        index = lxw_format_get_xf_index(self->col_formats[col_num]);
     }
 
     if (index)
@@ -2462,7 +2462,7 @@ _worksheet_write_col_info(lxw_worksheet *self, lxw_col_options *options)
 
     /* Get the format index. */
     if (options->format) {
-        xf_index = _get_xf_index(options->format);
+        xf_index = lxw_format_get_xf_index(options->format);
     }
 
     /* Check if width is the Excel default. */
