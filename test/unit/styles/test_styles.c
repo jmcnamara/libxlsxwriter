@@ -58,7 +58,7 @@ CTEST(styles, styles01) {
 
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format->has_font   = 1;
@@ -72,11 +72,11 @@ CTEST(styles, styles01) {
 
     STAILQ_INSERT_TAIL(styles->xf_formats, format, list_pointers);
 
-    _styles_assemble_xml_file(styles);
+    lxw_styles_assemble_xml_file(styles);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
 }
 
 // Test assembling a complete Styles file.
@@ -155,7 +155,7 @@ CTEST(styles, styles02) {
 
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format1 = _new_format();
     lxw_format *format2 = _new_format();
     lxw_format *format3 = _new_format();
@@ -189,9 +189,9 @@ CTEST(styles, styles02) {
     STAILQ_INSERT_TAIL(styles->xf_formats, format3, list_pointers);
     STAILQ_INSERT_TAIL(styles->xf_formats, format4, list_pointers);
 
-    _styles_assemble_xml_file(styles);
+    lxw_styles_assemble_xml_file(styles);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
 }

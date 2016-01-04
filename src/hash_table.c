@@ -35,7 +35,7 @@ _generate_hash_key(void *data, size_t data_len, size_t num_buckets)
  * to it if it does.
  */
 lxw_hash_element *
-_hash_key_exists(lxw_hash_table *lxw_hash, void *key, size_t key_len)
+lxw_hash_key_exists(lxw_hash_table *lxw_hash, void *key, size_t key_len)
 {
     size_t hash_key = _generate_hash_key(key, key_len, lxw_hash->num_buckets);
     struct lxw_hash_bucket_list *list;
@@ -67,8 +67,8 @@ _hash_key_exists(lxw_hash_table *lxw_hash, void *key, size_t key_len)
  * and return a pointer to the new or updated element.
  */
 lxw_hash_element *
-_insert_hash_element(lxw_hash_table *lxw_hash, void *key, void *value,
-                     size_t key_len)
+lxw_insert_hash_element(lxw_hash_table *lxw_hash, void *key, void *value,
+                        size_t key_len)
 {
     size_t hash_key = _generate_hash_key(key, key_len, lxw_hash->num_buckets);
     struct lxw_hash_bucket_list *list = NULL;
@@ -156,7 +156,7 @@ mem_error2:
  * Create a new LXW_HASH hash table object.
  */
 lxw_hash_table *
-_new_lxw_hash(uint32_t num_buckets, uint8_t free_key, uint8_t free_value)
+lxw_hash_new(uint32_t num_buckets, uint8_t free_key, uint8_t free_value)
 {
     /* Create the new hash table. */
     lxw_hash_table *lxw_hash = calloc(1, sizeof(lxw_hash_table));
@@ -183,7 +183,7 @@ _new_lxw_hash(uint32_t num_buckets, uint8_t free_key, uint8_t free_value)
     return lxw_hash;
 
 mem_error:
-    _free_lxw_hash(lxw_hash);
+    lxw_hash_free(lxw_hash);
     return NULL;
 }
 
@@ -191,7 +191,7 @@ mem_error:
  * Free the LXW_HASH hash table object.
  */
 void
-_free_lxw_hash(lxw_hash_table *lxw_hash)
+lxw_hash_free(lxw_hash_table *lxw_hash)
 {
     size_t i;
     lxw_hash_element *element;

@@ -18,13 +18,13 @@ CTEST(styles, write_sz) {
     char exp[] = "<sz val=\"11\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;
 
     _write_font_size(styles, 11);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
 }
 

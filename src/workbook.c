@@ -83,8 +83,8 @@ lxw_workbook_free(lxw_workbook *workbook)
         free(defined_name);
     }
 
-    _free_lxw_hash(workbook->used_xf_formats);
-    _free_sst(workbook->sst);
+    lxw_hash_free(workbook->used_xf_formats);
+    lxw_sst_free(workbook->sst);
     free(workbook->worksheets);
     free(workbook->formats);
     free(workbook->defined_names);
@@ -112,7 +112,7 @@ STATIC void
 _prepare_fonts(lxw_workbook *self)
 {
 
-    lxw_hash_table *fonts = _new_lxw_hash(128, 1, 1);
+    lxw_hash_table *fonts = lxw_hash_new(128, 1, 1);
     lxw_hash_element *hash_element;
     lxw_hash_element *used_format_element;
     uint16_t index = 0;
@@ -123,7 +123,7 @@ _prepare_fonts(lxw_workbook *self)
 
         if (key) {
             /* Look up the format in the hash table. */
-            hash_element = _hash_key_exists(fonts, key, sizeof(lxw_font));
+            hash_element = lxw_hash_key_exists(fonts, key, sizeof(lxw_font));
 
             if (hash_element) {
                 /* Font has already been used. */
@@ -137,14 +137,14 @@ _prepare_fonts(lxw_workbook *self)
                 *font_index = index;
                 format->font_index = index;
                 format->has_font = 1;
-                _insert_hash_element(fonts, key, font_index,
-                                     sizeof(lxw_font));
+                lxw_insert_hash_element(fonts, key, font_index,
+                                        sizeof(lxw_font));
                 index++;
             }
         }
     }
 
-    _free_lxw_hash(fonts);
+    lxw_hash_free(fonts);
 
     self->font_count = index;
 }
@@ -157,7 +157,7 @@ STATIC void
 _prepare_borders(lxw_workbook *self)
 {
 
-    lxw_hash_table *borders = _new_lxw_hash(128, 1, 1);
+    lxw_hash_table *borders = lxw_hash_new(128, 1, 1);
     lxw_hash_element *hash_element;
     lxw_hash_element *used_format_element;
     uint16_t index = 0;
@@ -168,7 +168,8 @@ _prepare_borders(lxw_workbook *self)
 
         if (key) {
             /* Look up the format in the hash table. */
-            hash_element = _hash_key_exists(borders, key, sizeof(lxw_border));
+            hash_element =
+                lxw_hash_key_exists(borders, key, sizeof(lxw_border));
 
             if (hash_element) {
                 /* Border has already been used. */
@@ -182,14 +183,14 @@ _prepare_borders(lxw_workbook *self)
                 *border_index = index;
                 format->border_index = index;
                 format->has_border = 1;
-                _insert_hash_element(borders, key, border_index,
-                                     sizeof(lxw_border));
+                lxw_insert_hash_element(borders, key, border_index,
+                                        sizeof(lxw_border));
                 index++;
             }
         }
     }
 
-    _free_lxw_hash(borders);
+    lxw_hash_free(borders);
 
     self->border_count = index;
 }
@@ -202,7 +203,7 @@ STATIC void
 _prepare_fills(lxw_workbook *self)
 {
 
-    lxw_hash_table *fills = _new_lxw_hash(128, 1, 1);
+    lxw_hash_table *fills = lxw_hash_new(128, 1, 1);
     lxw_hash_element *hash_element;
     lxw_hash_element *used_format_element;
     uint16_t index = 2;
@@ -228,15 +229,15 @@ _prepare_fills(lxw_workbook *self)
     default_fill_1->fg_color = LXW_COLOR_UNSET;
     default_fill_1->bg_color = LXW_COLOR_UNSET;
     *fill_index1 = 0;
-    _insert_hash_element(fills, default_fill_1, fill_index1,
-                         sizeof(lxw_fill));
+    lxw_insert_hash_element(fills, default_fill_1, fill_index1,
+                            sizeof(lxw_fill));
 
     default_fill_2->pattern = LXW_PATTERN_GRAY_125;
     default_fill_2->fg_color = LXW_COLOR_UNSET;
     default_fill_2->bg_color = LXW_COLOR_UNSET;
     *fill_index2 = 1;
-    _insert_hash_element(fills, default_fill_2, fill_index2,
-                         sizeof(lxw_fill));
+    lxw_insert_hash_element(fills, default_fill_2, fill_index2,
+                            sizeof(lxw_fill));
 
     LXW_FOREACH_ORDERED(used_format_element, self->used_xf_formats) {
         lxw_format *format = (lxw_format *) used_format_element->value;
@@ -274,7 +275,7 @@ _prepare_fills(lxw_workbook *self)
 
         if (key) {
             /* Look up the format in the hash table. */
-            hash_element = _hash_key_exists(fills, key, sizeof(lxw_fill));
+            hash_element = lxw_hash_key_exists(fills, key, sizeof(lxw_fill));
 
             if (hash_element) {
                 /* Fill has already been used. */
@@ -288,14 +289,14 @@ _prepare_fills(lxw_workbook *self)
                 *fill_index = index;
                 format->fill_index = index;
                 format->has_fill = 1;
-                _insert_hash_element(fills, key, fill_index,
-                                     sizeof(lxw_fill));
+                lxw_insert_hash_element(fills, key, fill_index,
+                                        sizeof(lxw_fill));
                 index++;
             }
         }
     }
 
-    _free_lxw_hash(fills);
+    lxw_hash_free(fills);
 
     self->fill_count = index;
 
@@ -306,7 +307,7 @@ mem_error:
     free(fill_index1);
     free(default_fill_2);
     free(default_fill_1);
-    _free_lxw_hash(fills);
+    lxw_hash_free(fills);
 }
 
 /*
@@ -317,7 +318,7 @@ STATIC void
 _prepare_num_formats(lxw_workbook *self)
 {
 
-    lxw_hash_table *num_formats = _new_lxw_hash(128, 0, 1);
+    lxw_hash_table *num_formats = lxw_hash_new(128, 0, 1);
     lxw_hash_element *hash_element;
     lxw_hash_element *used_format_element;
     uint16_t index = 0xA4;
@@ -337,8 +338,8 @@ _prepare_num_formats(lxw_workbook *self)
 
         if (*num_format) {
             /* Look up the num_format in the hash table. */
-            hash_element = _hash_key_exists(num_formats, num_format,
-                                            strlen(num_format));
+            hash_element = lxw_hash_key_exists(num_formats, num_format,
+                                               strlen(num_format));
 
             if (hash_element) {
                 /* Num_Format has already been used. */
@@ -349,15 +350,15 @@ _prepare_num_formats(lxw_workbook *self)
                 num_format_index = calloc(1, sizeof(uint16_t));
                 *num_format_index = index;
                 format->num_format_index = index;
-                _insert_hash_element(num_formats, num_format,
-                                     num_format_index, strlen(num_format));
+                lxw_insert_hash_element(num_formats, num_format,
+                                        num_format_index, strlen(num_format));
                 index++;
                 num_format_count++;
             }
         }
     }
 
-    _free_lxw_hash(num_formats);
+    lxw_hash_free(num_formats);
 
     self->num_format_count = num_format_count;
 }
@@ -1042,7 +1043,7 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     TAILQ_INIT(workbook->defined_names);
 
     /* Add the shared strings table. */
-    workbook->sst = _new_sst();
+    workbook->sst = lxw_sst_new();
     GOTO_LABEL_ON_MEM_ERROR(workbook->sst, mem_error);
 
     /* Add the default workbook properties. */
@@ -1050,7 +1051,7 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     GOTO_LABEL_ON_MEM_ERROR(workbook->properties, mem_error);
 
     /* Add a hash table to track format indices. */
-    workbook->used_xf_formats = _new_lxw_hash(128, 1, 0);
+    workbook->used_xf_formats = lxw_hash_new(128, 1, 0);
     GOTO_LABEL_ON_MEM_ERROR(workbook->used_xf_formats, mem_error);
 
     /* Add the default cell format. */
@@ -1174,7 +1175,7 @@ workbook_close(lxw_workbook *self)
     _prepare_drawings(self);
 
     /* Create a packager object to assemble sub-elements into a zip file. */
-    packager = _new_packager(self->filename);
+    packager = lxw_packager_new(self->filename);
 
     /* If the packager fails it is generally due to a zip permission error. */
     if (packager == NULL) {
@@ -1188,10 +1189,10 @@ workbook_close(lxw_workbook *self)
     /* Set the workbook object in the packager. */
     packager->workbook = self;
 
-    error = _create_package(packager);
+    error = lxw_create_package(packager);
 
 mem_error:
-    _free_packager(packager);
+    lxw_packager_free(packager);
     lxw_workbook_free(self);
     return error;
 }

@@ -3203,7 +3203,7 @@ worksheet_write_string(lxw_worksheet *self,
 
     if (!self->optimize) {
         /* Get the SST string ID for the string. */
-        string_id = _get_sst_index(self->sst, string);
+        string_id = lxw_get_sst_index(self->sst, string);
 
         if (string_id < 0)
             return -LXW_ERROR_WORKSHEET_STRING_HASH_NOT_FOUND;

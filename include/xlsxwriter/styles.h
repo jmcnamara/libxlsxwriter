@@ -37,9 +37,9 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_styles *_new_styles();
-void _free_styles(lxw_styles *styles);
-void _styles_assemble_xml_file(lxw_styles *self);
+lxw_styles *lxw_styles_new();
+void lxw_styles_free(lxw_styles *styles);
+void lxw_styles_assemble_xml_file(lxw_styles *self);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

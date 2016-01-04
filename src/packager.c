@@ -57,7 +57,7 @@ _open_zipfile_win32(const char *filename)
  * Create a new packager object.
  */
 lxw_packager *
-_new_packager(const char *filename)
+lxw_packager_new(const char *filename)
 {
     struct tm *file_date;
     time_t now = time(NULL);
@@ -97,7 +97,7 @@ _new_packager(const char *filename)
     return packager;
 
 mem_error:
-    _free_packager(packager);
+    lxw_packager_free(packager);
     return NULL;
 }
 
@@ -105,7 +105,7 @@ mem_error:
  * Free a packager object.
  */
 void
-_free_packager(lxw_packager *packager)
+lxw_packager_free(lxw_packager *packager)
 {
     if (!packager)
         return;
@@ -248,7 +248,7 @@ _write_shared_strings_file(lxw_packager *self)
 
     sst->file = lxw_tmpfile();
 
-    _sst_assemble_xml_file(sst);
+    lxw_sst_assemble_xml_file(sst);
 
     _add_file_to_zip(self, sst->file, "xl/sharedStrings.xml");
 
@@ -365,7 +365,7 @@ _write_theme_file(lxw_packager *self)
 STATIC uint8_t
 _write_styles_file(lxw_packager *self)
 {
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_hash_element *hash_element;
 
     /* Copy the unique and in-use formats from the workbook to the styles
@@ -385,13 +385,13 @@ _write_styles_file(lxw_packager *self)
 
     styles->file = lxw_tmpfile();
 
-    _styles_assemble_xml_file(styles);
+    lxw_styles_assemble_xml_file(styles);
 
     _add_file_to_zip(self, styles->file, "xl/styles.xml");
 
     fclose(styles->file);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
 
     return 0;
 }
@@ -451,7 +451,7 @@ _write_content_types_file(lxw_packager *self)
 STATIC uint8_t
 _write_workbook_rels_file(lxw_packager *self)
 {
-    lxw_relationships *rels = _new_relationships();
+    lxw_relationships *rels = lxw_relationships_new();
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
     char sheetname[FILENAME_LEN] = { 0 };
@@ -462,22 +462,22 @@ _write_workbook_rels_file(lxw_packager *self)
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
         lxw_snprintf(sheetname, FILENAME_LEN, "worksheets/sheet%d.xml",
                      index++);
-        _add_document_relationship(rels, "/worksheet", sheetname);
+        lxw_add_document_relationship(rels, "/worksheet", sheetname);
     }
 
-    _add_document_relationship(rels, "/theme", "theme/theme1.xml");
-    _add_document_relationship(rels, "/styles", "styles.xml");
+    lxw_add_document_relationship(rels, "/theme", "theme/theme1.xml");
+    lxw_add_document_relationship(rels, "/styles", "styles.xml");
 
     if (workbook->sst->string_count)
-        _add_document_relationship(rels, "/sharedStrings",
-                                   "sharedStrings.xml");
+        lxw_add_document_relationship(rels, "/sharedStrings",
+                                      "sharedStrings.xml");
 
-    _relationships_assemble_xml_file(rels);
+    lxw_relationships_assemble_xml_file(rels);
 
     _add_file_to_zip(self, rels->file, "xl/_rels/workbook.xml.rels");
 
     fclose(rels->file);
-    _free_relationships(rels);
+    lxw_free_relationships(rels);
 
     return 0;
 }
@@ -502,28 +502,28 @@ _write_worksheet_rels_file(lxw_packager *self)
             STAILQ_EMPTY(worksheet->external_drawing_links))
             continue;
 
-        rels = _new_relationships();
+        rels = lxw_relationships_new();
         rels->file = lxw_tmpfile();
 
         STAILQ_FOREACH(rel, worksheet->external_hyperlinks, list_pointers) {
-            _add_worksheet_relationship(rels, rel->type, rel->target,
-                                        rel->target_mode);
+            lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+                                           rel->target_mode);
         }
 
         STAILQ_FOREACH(rel, worksheet->external_drawing_links, list_pointers) {
-            _add_worksheet_relationship(rels, rel->type, rel->target,
-                                        rel->target_mode);
+            lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+                                           rel->target_mode);
         }
 
         lxw_snprintf(sheetname, FILENAME_LEN,
                      "xl/worksheets/_rels/sheet%d.xml.rels", index++);
 
-        _relationships_assemble_xml_file(rels);
+        lxw_relationships_assemble_xml_file(rels);
 
         _add_file_to_zip(self, rels->file, sheetname);
 
         fclose(rels->file);
-        _free_relationships(rels);
+        lxw_free_relationships(rels);
     }
 
     return 0;
@@ -548,24 +548,24 @@ _write_drawing_rels_file(lxw_packager *self)
         if (STAILQ_EMPTY(worksheet->drawing_links))
             continue;
 
-        rels = _new_relationships();
+        rels = lxw_relationships_new();
         rels->file = lxw_tmpfile();
 
         STAILQ_FOREACH(rel, worksheet->drawing_links, list_pointers) {
-            _add_worksheet_relationship(rels, rel->type, rel->target,
-                                        rel->target_mode);
+            lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+                                           rel->target_mode);
 
         }
 
         lxw_snprintf(sheetname, FILENAME_LEN,
                      "xl/drawings/_rels/drawing%d.xml.rels", index++);
 
-        _relationships_assemble_xml_file(rels);
+        lxw_relationships_assemble_xml_file(rels);
 
         _add_file_to_zip(self, rels->file, sheetname);
 
         fclose(rels->file);
-        _free_relationships(rels);
+        lxw_free_relationships(rels);
     }
 
     return 0;
@@ -577,23 +577,23 @@ _write_drawing_rels_file(lxw_packager *self)
 STATIC uint8_t
 _write_root_rels_file(lxw_packager *self)
 {
-    lxw_relationships *rels = _new_relationships();
+    lxw_relationships *rels = lxw_relationships_new();
 
     rels->file = lxw_tmpfile();
 
-    _add_document_relationship(rels, "/officeDocument", "xl/workbook.xml");
-    _add_package_relationship(rels, "/metadata/core-properties",
-                              "docProps/core.xml");
-    _add_document_relationship(rels, "/extended-properties",
-                               "docProps/app.xml");
+    lxw_add_document_relationship(rels, "/officeDocument", "xl/workbook.xml");
+    lxw_add_package_relationship(rels, "/metadata/core-properties",
+                                 "docProps/core.xml");
+    lxw_add_document_relationship(rels, "/extended-properties",
+                                  "docProps/app.xml");
 
-    _relationships_assemble_xml_file(rels);
+    lxw_relationships_assemble_xml_file(rels);
 
     _add_file_to_zip(self, rels->file, "_rels/.rels");
 
     fclose(rels->file);
 
-    _free_relationships(rels);
+    lxw_free_relationships(rels);
 
     return 0;
 }
@@ -666,7 +666,7 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
  * Write the xml files that make up the XLXS OPC package.
  */
 uint8_t
-_create_package(lxw_packager *self)
+lxw_create_package(lxw_packager *self)
 {
 
     _write_worksheet_files(self);

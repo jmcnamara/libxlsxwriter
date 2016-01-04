@@ -277,7 +277,8 @@ _get_xf_index(lxw_format *self)
 
     /* Look up the format in the hash table. */
     hash_element =
-        _hash_key_exists(formats_hash_table, format_key, sizeof(lxw_format));
+        lxw_hash_key_exists(formats_hash_table, format_key,
+                            sizeof(lxw_format));
 
     if (hash_element) {
         /* Format matches existing format with an index. */
@@ -289,8 +290,8 @@ _get_xf_index(lxw_format *self)
         /* New format requiring an index. */
         index = formats_hash_table->unique_count;
         self->xf_index = index;
-        _insert_hash_element(formats_hash_table, format_key, self,
-                             sizeof(lxw_format));
+        lxw_insert_hash_element(formats_hash_table, format_key, self,
+                                sizeof(lxw_format));
         return index;
     }
 }

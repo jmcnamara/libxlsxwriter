@@ -17,12 +17,12 @@ CTEST(styles, xml_declaration) {
     char exp[] = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;
 
     _styles_xml_declaration(styles);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
 }

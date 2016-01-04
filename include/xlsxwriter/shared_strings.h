@@ -65,10 +65,10 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_sst *_new_sst();
-void _free_sst(lxw_sst *sst);
-int32_t _get_sst_index(lxw_sst *sst, const char *string);
-void _sst_assemble_xml_file(lxw_sst *self);
+lxw_sst *lxw_sst_new();
+void lxw_sst_free(lxw_sst *sst);
+int32_t lxw_get_sst_index(lxw_sst *sst, const char *string);
+void lxw_sst_assemble_xml_file(lxw_sst *self);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

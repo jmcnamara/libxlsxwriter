@@ -18,13 +18,13 @@ CTEST(styles, write_style_sheet) {
     char exp[] = "<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;
 
     _write_style_sheet(styles);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
 }
 

@@ -18,13 +18,13 @@ CTEST(styles, write_name) {
     char exp[] = "<name val=\"Calibri\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;
 
     _write_font_name(styles, "Calibri");
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
 }
 

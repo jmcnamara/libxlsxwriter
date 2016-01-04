@@ -118,7 +118,7 @@ CTEST(worksheet, worksheet03) {
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
-    worksheet->sst = _new_sst();
+    worksheet->sst = lxw_sst_new();
     worksheet_select(worksheet);
 
     worksheet_write_string(worksheet, 0, 0, "Foo", NULL);
@@ -130,7 +130,7 @@ CTEST(worksheet, worksheet03) {
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_sst(worksheet->sst);
+    lxw_sst_free(worksheet->sst);
     lxw_worksheet_free(worksheet);
 }
 

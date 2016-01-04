@@ -25,7 +25,7 @@
  * Create a new styles object.
  */
 lxw_styles *
-_new_styles()
+lxw_styles_new()
 {
     lxw_styles *styles = calloc(1, sizeof(lxw_styles));
     GOTO_LABEL_ON_MEM_ERROR(styles, mem_error);
@@ -38,7 +38,7 @@ _new_styles()
     return styles;
 
 mem_error:
-    _free_styles(styles);
+    lxw_styles_free(styles);
     return NULL;
 }
 
@@ -46,7 +46,7 @@ mem_error:
  * Free a styles object.
  */
 void
-_free_styles(lxw_styles *styles)
+lxw_styles_free(lxw_styles *styles)
 {
     lxw_format *format;
 
@@ -1037,7 +1037,7 @@ _write_table_styles(lxw_styles *self)
  * Assemble and write the XML file.
  */
 void
-_styles_assemble_xml_file(lxw_styles *self)
+lxw_styles_assemble_xml_file(lxw_styles *self)
 {
     /* Write the XML declaration. */
     _styles_xml_declaration(self);

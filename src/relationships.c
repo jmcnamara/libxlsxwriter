@@ -26,7 +26,7 @@
  * Create a new relationships object.
  */
 lxw_relationships *
-_new_relationships()
+lxw_relationships_new()
 {
     lxw_relationships *rels = calloc(1, sizeof(lxw_relationships));
     GOTO_LABEL_ON_MEM_ERROR(rels, mem_error);
@@ -38,7 +38,7 @@ _new_relationships()
     return rels;
 
 mem_error:
-    _free_relationships(rels);
+    lxw_free_relationships(rels);
     return NULL;
 }
 
@@ -46,7 +46,7 @@ mem_error:
  * Free a relationships object.
  */
 void
-_free_relationships(lxw_relationships *rels)
+lxw_free_relationships(lxw_relationships *rels)
 {
     lxw_rel_tuple *relationship;
 
@@ -140,7 +140,7 @@ _write_relationships(lxw_relationships *self)
  * Assemble and write the XML file.
  */
 void
-_relationships_assemble_xml_file(lxw_relationships *self)
+lxw_relationships_assemble_xml_file(lxw_relationships *self)
 {
     /* Write the XML declaration. */
     _relationships_xml_declaration(self);
@@ -205,8 +205,8 @@ mem_error:
  * Add a document relationship to XLSX .rels xml files.
  */
 void
-_add_document_relationship(lxw_relationships *self, const char *type,
-                           const char *target)
+lxw_add_document_relationship(lxw_relationships *self, const char *type,
+                              const char *target)
 {
     _add_relationship(self, LXW_DOCUMENT_SCHEMA, type, target, NULL);
 }
@@ -215,8 +215,8 @@ _add_document_relationship(lxw_relationships *self, const char *type,
  * Add a package relationship to XLSX .rels xml files.
  */
 void
-_add_package_relationship(lxw_relationships *self, const char *type,
-                          const char *target)
+lxw_add_package_relationship(lxw_relationships *self, const char *type,
+                             const char *target)
 {
     _add_relationship(self, LXW_PACKAGE_SCHEMA, type, target, NULL);
 }
@@ -225,8 +225,8 @@ _add_package_relationship(lxw_relationships *self, const char *type,
  * Add a MS schema package relationship to XLSX .rels xml files.
  */
 void
-_add_ms_package_relationship(lxw_relationships *self, const char *type,
-                             const char *target)
+lxw_add_ms_package_relationship(lxw_relationships *self, const char *type,
+                                const char *target)
 {
     _add_relationship(self, LXW_MS_SCHEMA, type, target, NULL);
 }
@@ -235,8 +235,8 @@ _add_ms_package_relationship(lxw_relationships *self, const char *type,
  * Add a worksheet relationship to sheet .rels xml files.
  */
 void
-_add_worksheet_relationship(lxw_relationships *self, const char *type,
-                            const char *target, const char *target_mode)
+lxw_add_worksheet_relationship(lxw_relationships *self, const char *type,
+                               const char *target, const char *target_mode)
 {
     _add_relationship(self, LXW_DOCUMENT_SCHEMA, type, target, target_mode);
 }

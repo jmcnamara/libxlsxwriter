@@ -26,21 +26,21 @@ CTEST(relationships, relationships01) {
 
     FILE* testfile = tmpfile();
 
-    lxw_relationships *rels = _new_relationships();
+    lxw_relationships *rels = lxw_relationships_new();
     rels->file = testfile;
 
-    _add_document_relationship(rels, "/worksheet",     "worksheets/sheet1.xml");
-    _add_document_relationship(rels, "/theme",         "theme/theme1.xml");
-    _add_document_relationship(rels, "/styles",        "styles.xml");
-    _add_document_relationship(rels, "/sharedStrings", "sharedStrings.xml");
-    _add_document_relationship(rels, "/calcChain",     "calcChain.xml");
+    lxw_add_document_relationship(rels, "/worksheet",     "worksheets/sheet1.xml");
+    lxw_add_document_relationship(rels, "/theme",         "theme/theme1.xml");
+    lxw_add_document_relationship(rels, "/styles",        "styles.xml");
+    lxw_add_document_relationship(rels, "/sharedStrings", "sharedStrings.xml");
+    lxw_add_document_relationship(rels, "/calcChain",     "calcChain.xml");
 
 
-    _relationships_assemble_xml_file(rels);
+    lxw_relationships_assemble_xml_file(rels);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_relationships(rels);
+    lxw_free_relationships(rels);
 }
 
 // Test assembling a complete Relationships file.
@@ -56,15 +56,15 @@ CTEST(relationships, relationships02) {
 
     FILE* testfile = tmpfile();
 
-    lxw_relationships *rels = _new_relationships();
+    lxw_relationships *rels = lxw_relationships_new();
     rels->file = testfile;
 
-    _add_worksheet_relationship(rels, "/hyperlink", "www.foo.com", "External");
-    _add_worksheet_relationship(rels, "/hyperlink", "link00.xlsx", "External");
+    lxw_add_worksheet_relationship(rels, "/hyperlink", "www.foo.com", "External");
+    lxw_add_worksheet_relationship(rels, "/hyperlink", "link00.xlsx", "External");
 
-    _relationships_assemble_xml_file(rels);
+    lxw_relationships_assemble_xml_file(rels);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_relationships(rels);
+    lxw_free_relationships(rels);
 }

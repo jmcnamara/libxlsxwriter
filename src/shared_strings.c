@@ -32,7 +32,7 @@ LXW_RB_GENERATE_ELEMENT(sst_rb_tree, sst_element, sst_tree_pointers,
  * Create a new SST SharedString object.
  */
 lxw_sst *
-_new_sst()
+lxw_sst_new()
 {
     /* Create the new shared string table. */
     lxw_sst *sst = calloc(1, sizeof(lxw_sst));
@@ -55,7 +55,7 @@ _new_sst()
     return sst;
 
 mem_error:
-    _free_sst(sst);
+    lxw_sst_free(sst);
     return NULL;
 }
 
@@ -63,7 +63,7 @@ mem_error:
  * Free a SST SharedString table object.
  */
 void
-_free_sst(lxw_sst *sst)
+lxw_sst_free(lxw_sst *sst)
 {
     struct sst_element *sst_element;
     struct sst_element *sst_element_temp;
@@ -204,7 +204,7 @@ _write_sst_strings(lxw_sst *self)
  * Assemble and write the XML file.
  */
 void
-_sst_assemble_xml_file(lxw_sst *self)
+lxw_sst_assemble_xml_file(lxw_sst *self)
 {
     /* Write the XML declaration. */
     _sst_xml_declaration(self);
@@ -228,7 +228,7 @@ _sst_assemble_xml_file(lxw_sst *self)
  * Add to or find a string in the SST SharedString table and return it's index.
  */
 int32_t
-_get_sst_index(lxw_sst *sst, const char *string)
+lxw_get_sst_index(lxw_sst *sst, const char *string)
 {
     struct sst_element *element;
     struct sst_element *existing_element;

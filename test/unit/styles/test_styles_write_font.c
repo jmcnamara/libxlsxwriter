@@ -18,7 +18,7 @@ CTEST(styles, write_font01) {
     char exp[] = "<font><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     styles->file = testfile;
@@ -27,7 +27,7 @@ CTEST(styles, write_font01) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -39,7 +39,7 @@ CTEST(styles, write_font02) {
     char exp[] = "<font><b/><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_bold(format);
@@ -50,7 +50,7 @@ CTEST(styles, write_font02) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -62,7 +62,7 @@ CTEST(styles, write_font03) {
     char exp[] = "<font><i/><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_italic(format);
@@ -73,7 +73,7 @@ CTEST(styles, write_font03) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -85,7 +85,7 @@ CTEST(styles, write_font04) {
     char exp[] = "<font><u/><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_underline(format, LXW_UNDERLINE_SINGLE);
@@ -96,7 +96,7 @@ CTEST(styles, write_font04) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -108,7 +108,7 @@ CTEST(styles, write_font05) {
     char exp[] = "<font><strike/><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_font_strikeout(format);
@@ -119,7 +119,7 @@ CTEST(styles, write_font05) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -131,7 +131,7 @@ CTEST(styles, write_font06) {
     char exp[] = "<font><vertAlign val=\"superscript\"/><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_font_script(format, LXW_FONT_SUPERSCRIPT);
@@ -142,7 +142,7 @@ CTEST(styles, write_font06) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -154,7 +154,7 @@ CTEST(styles, write_font07) {
     char exp[] = "<font><vertAlign val=\"subscript\"/><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_font_script(format, LXW_FONT_SUBSCRIPT);
@@ -165,7 +165,7 @@ CTEST(styles, write_font07) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -177,7 +177,7 @@ CTEST(styles, write_font08) {
     char exp[] = "<font><sz val=\"11\"/><color theme=\"1\"/><name val=\"Arial\"/><family val=\"2\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_font_name(format, "Arial");
@@ -188,7 +188,7 @@ CTEST(styles, write_font08) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -200,7 +200,7 @@ CTEST(styles, write_font09) {
     char exp[] = "<font><sz val=\"12\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_font_size(format, 12);
@@ -211,7 +211,7 @@ CTEST(styles, write_font09) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -223,7 +223,7 @@ CTEST(styles, write_font10) {
     char exp[] = "<font><outline/><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_font_outline(format);
@@ -234,7 +234,7 @@ CTEST(styles, write_font10) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -246,7 +246,7 @@ CTEST(styles, write_font11) {
     char exp[] = "<font><shadow/><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_font_shadow(format);
@@ -257,7 +257,7 @@ CTEST(styles, write_font11) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -269,7 +269,7 @@ CTEST(styles, write_font12) {
     char exp[] = "<font><sz val=\"11\"/><color rgb=\"FFFF0000\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_font_color(format, LXW_COLOR_RED);
@@ -280,7 +280,7 @@ CTEST(styles, write_font12) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -292,7 +292,7 @@ CTEST(styles, write_font13) {
     char exp[] = "<font><b/><i/><strike/><outline/><shadow/><u/><vertAlign val=\"superscript\"/><sz val=\"12\"/><color rgb=\"FFFF0000\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_bold(format);
@@ -311,7 +311,7 @@ CTEST(styles, write_font13) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -323,7 +323,7 @@ CTEST(styles, write_font14) {
     char exp[] = "<font><u val=\"double\"/><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_underline(format, LXW_UNDERLINE_DOUBLE);
@@ -334,7 +334,7 @@ CTEST(styles, write_font14) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -346,7 +346,7 @@ CTEST(styles, write_font15) {
     char exp[] = "<font><u val=\"singleAccounting\"/><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_underline(format, LXW_UNDERLINE_SINGLE_ACCOUNTING);
@@ -357,7 +357,7 @@ CTEST(styles, write_font15) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -369,7 +369,7 @@ CTEST(styles, write_font16) {
     char exp[] = "<font><u val=\"doubleAccounting\"/><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_underline(format, LXW_UNDERLINE_DOUBLE_ACCOUNTING);
@@ -380,7 +380,7 @@ CTEST(styles, write_font16) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 
@@ -394,7 +394,7 @@ CTEST(styles, write_font17) {
     char exp[] = "<font><u/><sz val=\"11\"/><color theme=\"10\"/><name val=\"Calibri\"/><family val=\"2\"/></font>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format_set_underline(format, LXW_UNDERLINE_SINGLE);
@@ -407,7 +407,7 @@ CTEST(styles, write_font17) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
     _free_format(format);
 }
 

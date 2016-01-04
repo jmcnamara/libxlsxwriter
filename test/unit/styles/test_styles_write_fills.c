@@ -17,7 +17,7 @@ CTEST(styles, write_fills) {
     char exp[] = "<fills count=\"2\"><fill><patternFill patternType=\"none\"/></fill><fill><patternFill patternType=\"gray125\"/></fill></fills>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     styles->fill_count = 2;
     styles->file = testfile;
 
@@ -25,6 +25,6 @@ CTEST(styles, write_fills) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
 }
 

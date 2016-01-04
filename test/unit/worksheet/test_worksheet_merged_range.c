@@ -41,7 +41,7 @@ CTEST(merged_range, merged_range01) {
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
-    worksheet->sst = _new_sst();
+    worksheet->sst = lxw_sst_new();
     worksheet_select(worksheet);
 
     lxw_format *format = _new_format();
@@ -53,6 +53,6 @@ CTEST(merged_range, merged_range01) {
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_sst(worksheet->sst);
+    lxw_sst_free(worksheet->sst);
     lxw_worksheet_free(worksheet);
 }

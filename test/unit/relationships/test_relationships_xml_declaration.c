@@ -17,12 +17,12 @@ CTEST(relationships, xml_declaration) {
     char exp[] = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
     FILE* testfile = tmpfile();
 
-    lxw_relationships *relationships = _new_relationships();
+    lxw_relationships *relationships = lxw_relationships_new();
     relationships->file = testfile;
 
     _relationships_xml_declaration(relationships);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_relationships(relationships);
+    lxw_free_relationships(relationships);
 }

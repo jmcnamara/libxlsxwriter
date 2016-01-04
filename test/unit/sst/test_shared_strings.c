@@ -30,22 +30,22 @@ CTEST(sst, sst01) {
 
     FILE* testfile = tmpfile();
 
-    lxw_sst *sst = _new_sst();
+    lxw_sst *sst = lxw_sst_new();
     sst->file = testfile;
 
-    _get_sst_index(sst, "neptune");
-    _get_sst_index(sst, "neptune");
-    _get_sst_index(sst, "neptune");
-    _get_sst_index(sst, "mars");
-    _get_sst_index(sst, "mars");
-    _get_sst_index(sst, "venus");
-    _get_sst_index(sst, "venus");
+    lxw_get_sst_index(sst, "neptune");
+    lxw_get_sst_index(sst, "neptune");
+    lxw_get_sst_index(sst, "neptune");
+    lxw_get_sst_index(sst, "mars");
+    lxw_get_sst_index(sst, "mars");
+    lxw_get_sst_index(sst, "venus");
+    lxw_get_sst_index(sst, "venus");
 
-    _sst_assemble_xml_file(sst);
+    lxw_sst_assemble_xml_file(sst);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_sst(sst);
+    lxw_sst_free(sst);
 }
 
 // Test assembling a complete SharedStrings file.
@@ -68,18 +68,18 @@ CTEST(sst, sst02) {
 
     FILE* testfile = tmpfile();
 
-    lxw_sst *sst = _new_sst();
+    lxw_sst *sst = lxw_sst_new();
     sst->file = testfile;
 
     // Test strings with whitespace that must be preserved.
-    _get_sst_index(sst, "abcdefg");
-    _get_sst_index(sst, "   abcdefg");
-    _get_sst_index(sst, "abcdefg   ");
+    lxw_get_sst_index(sst, "abcdefg");
+    lxw_get_sst_index(sst, "   abcdefg");
+    lxw_get_sst_index(sst, "abcdefg   ");
 
-    _sst_assemble_xml_file(sst);
+    lxw_sst_assemble_xml_file(sst);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_sst(sst);
+    lxw_sst_free(sst);
 }
 

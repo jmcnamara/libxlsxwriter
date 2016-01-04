@@ -17,13 +17,13 @@ CTEST(styles, write_cell_style) {
     char exp[] = "<cellStyle name=\"Normal\" xfId=\"0\" builtinId=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;
 
     _write_cell_style(styles);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
 }
 

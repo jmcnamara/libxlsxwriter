@@ -51,9 +51,9 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_packager *_new_packager(const char *filename);
-void _free_packager(lxw_packager *packager);
-uint8_t _create_package(lxw_packager *self);
+lxw_packager *lxw_packager_new(const char *filename);
+void lxw_packager_free(lxw_packager *packager);
+uint8_t lxw_create_package(lxw_packager *self);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

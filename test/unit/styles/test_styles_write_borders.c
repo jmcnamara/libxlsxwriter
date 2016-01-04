@@ -17,7 +17,7 @@ CTEST(styles, write_borders) {
     char exp[] = "<borders count=\"1\"><border><left/><right/><top/><bottom/><diagonal/></border></borders>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     lxw_format *format = _new_format();
 
     format->has_border = 1;
@@ -32,6 +32,6 @@ CTEST(styles, write_borders) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
 }
 

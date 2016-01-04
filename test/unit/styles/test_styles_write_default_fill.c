@@ -17,13 +17,13 @@ CTEST(styles, write_default_fill) {
     char exp[] = "<fill><patternFill patternType=\"none\"/></fill>";
     FILE* testfile = tmpfile();
 
-    lxw_styles *styles = _new_styles();
+    lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;
 
     _write_default_fill(styles, "none");
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_styles(styles);
+    lxw_styles_free(styles);
 }
 
