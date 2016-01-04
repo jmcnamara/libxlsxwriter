@@ -130,7 +130,7 @@ _write_workbook_file(lxw_packager *self)
 
     workbook->file = lxw_tmpfile();
 
-    _workbook_assemble_xml_file(workbook);
+    lxw_workbook_assemble_xml_file(workbook);
 
     _add_file_to_zip(self, workbook->file, "xl/workbook.xml");
 

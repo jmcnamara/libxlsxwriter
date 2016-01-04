@@ -24,5 +24,5 @@ CTEST(workbook, xml_declaration) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
 }

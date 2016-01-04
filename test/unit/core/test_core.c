@@ -49,7 +49,7 @@ CTEST(core, core01) {
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
     _free_core(core);
 }
 
@@ -104,6 +104,6 @@ CTEST(core, core02) {
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
     _free_core(core);
 }

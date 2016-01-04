@@ -25,6 +25,6 @@ CTEST(workbook, write_calc_pr) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
 }
 

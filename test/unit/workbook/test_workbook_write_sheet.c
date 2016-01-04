@@ -25,7 +25,7 @@ CTEST(workbook, write_sheet1) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
 }
 
 // Test the _write_sheet() function.
@@ -43,7 +43,7 @@ CTEST(workbook, write_sheet2) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
 }
 
 // Test the _write_sheet() function.
@@ -61,6 +61,6 @@ CTEST(workbook, write_sheet3) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
 }
 

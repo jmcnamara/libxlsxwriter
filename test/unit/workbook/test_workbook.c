@@ -36,11 +36,11 @@ CTEST(workbook, workbook01) {
 
     workbook_add_worksheet(workbook, NULL);
 
-    _workbook_assemble_xml_file(workbook);
+    lxw_workbook_assemble_xml_file(workbook);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
 }
 
 // Test assembling a complete Workbook file.
@@ -70,11 +70,11 @@ CTEST(workbook, workbook02) {
     workbook_add_worksheet(workbook, NULL);
     workbook_add_worksheet(workbook, NULL);
 
-    _workbook_assemble_xml_file(workbook);
+    lxw_workbook_assemble_xml_file(workbook);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
 }
 
 // Test assembling a complete Workbook file.
@@ -104,9 +104,9 @@ CTEST(workbook, workbook03) {
     workbook_add_worksheet(workbook, "Non Default Name");
     workbook_add_worksheet(workbook, "Another Name");
 
-    _workbook_assemble_xml_file(workbook);
+    lxw_workbook_assemble_xml_file(workbook);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
 }

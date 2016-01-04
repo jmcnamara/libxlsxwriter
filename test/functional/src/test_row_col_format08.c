@@ -25,7 +25,7 @@ int main() {
     format_set_italic(italic);
 
     /* Manually force the format index order for testing. */
-    _set_default_xf_indices(workbook);
+    lxw_workbook_set_default_xf_indices(workbook);
 
     worksheet_set_row(worksheet, 0, 15, bold);
     worksheet_set_column(worksheet, 0, 0, 8.43, italic);

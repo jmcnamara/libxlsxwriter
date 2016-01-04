@@ -468,9 +468,9 @@ documentation](http://office.microsoft.com/en-001/excel-help/define-and-use-name
 uint8_t workbook_define_name(lxw_workbook *workbook, const char *name,
                              const char *formula);
 
-void _free_workbook(lxw_workbook *workbook);
-void _workbook_assemble_xml_file(lxw_workbook *workbook);
-void _set_default_xf_indices(lxw_workbook *workbook);
+void lxw_workbook_free(lxw_workbook *workbook);
+void lxw_workbook_assemble_xml_file(lxw_workbook *workbook);
+void lxw_workbook_set_default_xf_indices(lxw_workbook *workbook);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

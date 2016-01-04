@@ -25,7 +25,7 @@ CTEST(workbook, write_workbook_view1) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
 }
 
 // Test the _write_workbook_view() function.
@@ -45,7 +45,7 @@ CTEST(workbook, write_workbook_view2) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
 }
 
 // Test the _write_workbook_view() function.
@@ -65,6 +65,6 @@ CTEST(workbook, write_workbook_view3) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
 }
 

@@ -28,7 +28,7 @@ CTEST(workbook, write_defined_names) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
 }
 
 
@@ -62,5 +62,5 @@ CTEST(workbook, write_defined_names_sorted) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
 }

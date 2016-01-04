@@ -49,7 +49,7 @@ _free_doc_properties(lxw_doc_properties *properties)
  * Free a workbook object.
  */
 void
-_free_workbook(lxw_workbook *workbook)
+lxw_workbook_free(lxw_workbook *workbook)
 {
     lxw_worksheet *worksheet;
     lxw_format *format;
@@ -95,7 +95,7 @@ _free_workbook(lxw_workbook *workbook)
  * Set the default index for each format. This is only used for testing.
  */
 void
-_set_default_xf_indices(lxw_workbook *self)
+lxw_workbook_set_default_xf_indices(lxw_workbook *self)
 {
     lxw_format *format;
 
@@ -950,7 +950,7 @@ _write_defined_names(lxw_workbook *self)
  * Assemble and write the XML file.
  */
 void
-_workbook_assemble_xml_file(lxw_workbook *self)
+lxw_workbook_assemble_xml_file(lxw_workbook *self)
 {
     /* Prepare workbook and sub-objects for writing. */
     _prepare_workbook(self);
@@ -1066,7 +1066,7 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     return workbook;
 
 mem_error:
-    _free_workbook(workbook);
+    lxw_workbook_free(workbook);
     workbook = NULL;
     return NULL;
 }
@@ -1192,7 +1192,7 @@ workbook_close(lxw_workbook *self)
 
 mem_error:
     _free_packager(packager);
-    _free_workbook(self);
+    lxw_workbook_free(self);
     return error;
 }
 
