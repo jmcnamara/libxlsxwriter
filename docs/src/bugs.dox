@@ -26,9 +26,9 @@ files to the @ref author.
 Excel 2010 and 2013 added functions which weren't defined in the original file
 specification. These functions are referred to as *future* functions. Examples
 of these functions are `ACOT`, `CHISQ.DIST.RT` , `CONFIDENCE.NORM`, `STDEV.P`,
-`STDEV.S` and `WORKDAY.INTL`. The full list is given in the [MS XLSX
-extensions documentation on future
-functions](http://msdn.microsoft.com/en-us/library/dd907480%28v=office.12%29.aspx).
+`STDEV.S` and `WORKDAY.INTL`. The full list is given in the
+[MS XLSX extensions documentation on future functions]
+(http://msdn.microsoft.com/en-us/library/dd907480%28v=office.12%29.aspx).
 
 When written using `write_formula()` these functions need to be fully
 qualified with the `_xlfn.` prefix as they are shown in the MS XLSX
@@ -52,18 +52,27 @@ have a facility to calculate formulas, such as Excel Viewer, or several mobile
 applications, will only display the 0 results.
 
 If required, it is also possible to specify the calculated result of the
-formula using the worksheet_write_formula_num() function.
+formula using the `worksheet_write_formula_num()` function.
 
 
 ## Strings aren't displayed in Apple Numbers in 'constant_memory' mode
 
-In new_workbook_opt `constant_memory` mode libxlsxwriter uses an optimization
+In `new_workbook_opt()` `constant_memory` mode libxlsxwriter uses an optimization
 where cell strings aren't stored in an Excel structure call "shared strings"
 and instead are written "in-line".
 
 This is a documented Excel feature that is supported by most spreadsheet
 applications. One known exception is Apple Numbers for Mac where the string
 data isn't displayed.
+
+## Images not displayed correctly in Excel 2001 for Mac and non-Excel applications
+
+Images inserted into worksheets via `worksheet_insert_image()` may not display
+correctly in Excel 2011 for Mac and non-Excel applications such as OpenOffice
+and LibreOffice. Specifically the images may looked stretched or squashed.
+
+This is not an XlsxWriter issue. It also occurs with files created in Excel
+2007 and Excel 2010.
 
 
 # Reporting Bugs
@@ -107,8 +116,8 @@ program that corresponds to your query and adapt it to use as a bug report.
 
 ## Use the xlsxwriter Issue tracker
 
-The [libxlsxwriter issue
-tracker](https://github.com/jmcnamara/libxlsxwriter/issues) is on GitHub.
+The [libxlsxwriter issuetracker]
+(https://github.com/jmcnamara/libxlsxwriter/issues) is on GitHub.
 
 
 ## Tips for submitting a bug report
