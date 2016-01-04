@@ -17,14 +17,14 @@ CTEST(worksheet, write_page_setup01) {
     char exp[] = "";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     _worksheet_write_page_setup(worksheet);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -34,7 +34,7 @@ CTEST(worksheet, write_page_setup02) {
     char exp[] = "<pageSetup orientation=\"landscape\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_landscape(worksheet);
@@ -42,7 +42,7 @@ CTEST(worksheet, write_page_setup02) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -52,7 +52,7 @@ CTEST(worksheet, write_page_setup03) {
     char exp[] = "<pageSetup orientation=\"portrait\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_portrait(worksheet);
@@ -60,7 +60,7 @@ CTEST(worksheet, write_page_setup03) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -70,7 +70,7 @@ CTEST(worksheet, write_page_setup04) {
     char exp[] = "<pageSetup paperSize=\"9\" orientation=\"portrait\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_paper(worksheet, 9);
@@ -78,7 +78,7 @@ CTEST(worksheet, write_page_setup04) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -88,7 +88,7 @@ CTEST(worksheet, write_page_setup05) {
     char exp[] = "<pageSetup pageOrder=\"overThenDown\" orientation=\"portrait\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_print_across(worksheet);
@@ -96,5 +96,5 @@ CTEST(worksheet, write_page_setup05) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }

@@ -17,7 +17,7 @@ CTEST(worksheet, write_sheet_views01) {
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"/></sheetViews>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_select(worksheet);
@@ -25,7 +25,7 @@ CTEST(worksheet, write_sheet_views01) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -35,7 +35,7 @@ CTEST(worksheet, write_sheet_views02) {
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"/></sheetViews>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_select(worksheet);
@@ -44,7 +44,7 @@ CTEST(worksheet, write_sheet_views02) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -54,7 +54,7 @@ CTEST(worksheet, write_sheet_views03) {
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" zoomScale=\"200\" zoomScaleNormal=\"200\" workbookViewId=\"0\"/></sheetViews>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_select(worksheet);
@@ -63,7 +63,7 @@ CTEST(worksheet, write_sheet_views03) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -73,7 +73,7 @@ CTEST(worksheet, write_sheet_views04) {
     char exp[] = "<sheetViews><sheetView rightToLeft=\"1\" tabSelected=\"1\" workbookViewId=\"0\"/></sheetViews>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_select(worksheet);
@@ -82,7 +82,7 @@ CTEST(worksheet, write_sheet_views04) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -92,7 +92,7 @@ CTEST(worksheet, write_sheet_views05) {
     char exp[] = "<sheetViews><sheetView showZeros=\"0\" tabSelected=\"1\" workbookViewId=\"0\"/></sheetViews>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_select(worksheet);
@@ -101,7 +101,7 @@ CTEST(worksheet, write_sheet_views05) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -111,7 +111,7 @@ CTEST(worksheet, write_sheet_views06) {
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" view=\"pageLayout\" workbookViewId=\"0\"/></sheetViews>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_select(worksheet);
@@ -120,5 +120,5 @@ CTEST(worksheet, write_sheet_views06) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }

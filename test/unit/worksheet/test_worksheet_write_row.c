@@ -17,7 +17,7 @@ CTEST(worksheet, write_row) {
     char exp[] = "<row r=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_row *row = _get_row_list(worksheet->table, 0);
@@ -26,5 +26,5 @@ CTEST(worksheet, write_row) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }

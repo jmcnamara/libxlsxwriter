@@ -17,7 +17,7 @@ CTEST(worksheet, write_sheet_view1) {
     char exp[] = "<sheetView tabSelected=\"1\" workbookViewId=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
@@ -25,7 +25,7 @@ CTEST(worksheet, write_sheet_view1) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 // Test the _write_sheet_view() function.
@@ -35,7 +35,7 @@ CTEST(worksheet, write_sheet_view2) {
     char exp[] = "<sheetView showGridLines=\"0\" tabSelected=\"1\" workbookViewId=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
@@ -45,7 +45,7 @@ CTEST(worksheet, write_sheet_view2) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 

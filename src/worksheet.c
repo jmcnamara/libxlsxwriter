@@ -40,7 +40,7 @@ LXW_RB_GENERATE_CELL(lxw_table_cells, lxw_cell, tree_pointers, _cell_cmp);
  * Create a new worksheet object.
  */
 lxw_worksheet *
-_new_worksheet(lxw_worksheet_init_data *init_data)
+lxw_worksheet_new(lxw_worksheet_init_data *init_data)
 {
     lxw_worksheet *worksheet = calloc(1, sizeof(lxw_worksheet));
     GOTO_LABEL_ON_MEM_ERROR(worksheet, mem_error);
@@ -158,7 +158,7 @@ _new_worksheet(lxw_worksheet_init_data *init_data)
     return worksheet;
 
 mem_error:
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
     return NULL;
 }
 
@@ -226,7 +226,7 @@ _free_image_options(lxw_image_options *image)
  * Free a worksheet object.
  */
 void
-_free_worksheet(lxw_worksheet *worksheet)
+lxw_worksheet_free(lxw_worksheet *worksheet)
 {
     lxw_row *row;
     lxw_row *next_row;
@@ -578,7 +578,7 @@ _get_row(lxw_worksheet *self, lxw_row_t row_num)
         }
         else {
             /* Flush row. */
-            _worksheet_write_single_row(self);
+            lxw_worksheet_write_single_row(self);
             row = self->optimize_row;
             row->row_num = row_num;
             return row;
@@ -1792,9 +1792,9 @@ _worksheet_position_object_emus(lxw_worksheet *self,
  * Set up image/drawings.
  */
 void
-_worksheet_prepare_image(lxw_worksheet *self,
-                         uint16_t image_ref_id, uint16_t drawing_id,
-                         lxw_image_options *image)
+lxw_worksheet_prepare_image(lxw_worksheet *self,
+                            uint16_t image_ref_id, uint16_t drawing_id,
+                            lxw_image_options *image)
 {
     lxw_drawing_object *drawing_object;
     lxw_rel_tuple *relationship;
@@ -2406,7 +2406,7 @@ _worksheet_write_rows(lxw_worksheet *self)
  * time. We don't write span data in the optimized case since it is optional.
  */
 void
-_worksheet_write_single_row(lxw_worksheet *self)
+lxw_worksheet_write_single_row(lxw_worksheet *self)
 {
     lxw_row *row = self->optimize_row;
     lxw_col_t col;
@@ -3076,7 +3076,7 @@ _write_drawings(lxw_worksheet *self)
  * Assemble and write the XML file.
  */
 void
-_worksheet_assemble_xml_file(lxw_worksheet *self)
+lxw_worksheet_assemble_xml_file(lxw_worksheet *self)
 {
     /* Write the XML declaration. */
     _worksheet_xml_declaration(self);

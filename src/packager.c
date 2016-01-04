@@ -155,11 +155,11 @@ _write_worksheet_files(lxw_packager *self)
                      "xl/worksheets/sheet%d.xml", index++);
 
         if (worksheet->optimize_row)
-            _worksheet_write_single_row(worksheet);
+            lxw_worksheet_write_single_row(worksheet);
 
         worksheet->file = lxw_tmpfile();
 
-        _worksheet_assemble_xml_file(worksheet);
+        lxw_worksheet_assemble_xml_file(worksheet);
 
         _add_file_to_zip(self, worksheet->file, sheetname);
 

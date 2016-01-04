@@ -17,7 +17,7 @@ CTEST(worksheet, write_odd_header) {
     char exp[] = "<oddHeader>Page &amp;P of &amp;N</oddHeader>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_header(worksheet, "Page &P of &N");
@@ -26,7 +26,7 @@ CTEST(worksheet, write_odd_header) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 // Test the header and footer functions.
@@ -36,7 +36,7 @@ CTEST(worksheet, write_odd_footer) {
     char exp[] = "<oddFooter>&amp;F</oddFooter>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_footer(worksheet, "&F");
@@ -45,7 +45,7 @@ CTEST(worksheet, write_odd_footer) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -56,7 +56,7 @@ CTEST(worksheet, _worksheet_write_header_footer1) {
     char exp[] = "<headerFooter><oddHeader>Page &amp;P of &amp;N</oddHeader></headerFooter>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_header(worksheet, "Page &P of &N");
@@ -65,7 +65,7 @@ CTEST(worksheet, _worksheet_write_header_footer1) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 // Test the header and footer functions.
@@ -75,7 +75,7 @@ CTEST(worksheet, _worksheet_write_header_footer2) {
     char exp[] = "<headerFooter><oddFooter>&amp;F</oddFooter></headerFooter>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_footer(worksheet, "&F");
@@ -84,7 +84,7 @@ CTEST(worksheet, _worksheet_write_header_footer2) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 // Test the header and footer functions.
@@ -94,7 +94,7 @@ CTEST(worksheet, _worksheet_write_header_footer3) {
     char exp[] = "<headerFooter><oddHeader>Page &amp;P of &amp;N</oddHeader><oddFooter>&amp;F</oddFooter></headerFooter>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_header(worksheet, "Page &P of &N");
@@ -104,5 +104,5 @@ CTEST(worksheet, _worksheet_write_header_footer3) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }

@@ -66,7 +66,7 @@ lxw_workbook_free(lxw_workbook *workbook)
     while (!STAILQ_EMPTY(workbook->worksheets)) {
         worksheet = STAILQ_FIRST(workbook->worksheets);
         STAILQ_REMOVE_HEAD(workbook->worksheets, list_pointers);
-        _free_worksheet(worksheet);
+        lxw_worksheet_free(worksheet);
     }
 
     /* Free the formats in the workbook. */
@@ -569,8 +569,8 @@ _prepare_drawings(lxw_workbook *self)
 
             image_ref_id++;
 
-            _worksheet_prepare_image(worksheet, image_ref_id, drawing_id,
-                                     image_options);
+            lxw_worksheet_prepare_image(worksheet, image_ref_id, drawing_id,
+                                        image_options);
         }
     }
 
@@ -1109,7 +1109,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     init_data.first_sheet = &self->first_sheet;
 
     /* Create a new worksheet object. */
-    worksheet = _new_worksheet(&init_data);
+    worksheet = lxw_worksheet_new(&init_data);
 
     if (worksheet) {
         self->num_sheets++;

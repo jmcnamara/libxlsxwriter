@@ -34,17 +34,17 @@ CTEST(worksheet, spans01) {
 
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
     worksheet_write_number(worksheet, 2, 1, 2000, NULL);
 
-    _worksheet_assemble_xml_file(worksheet);
+    lxw_worksheet_assemble_xml_file(worksheet);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 // Test assembling a Worksheet file with different span ranges.
@@ -71,17 +71,17 @@ CTEST(worksheet, spans02) {
 
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
     worksheet_write_number(worksheet, 1048575, 0, 123, NULL);
 
-    _worksheet_assemble_xml_file(worksheet);
+    lxw_worksheet_assemble_xml_file(worksheet);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 // Test assembling a Worksheet file with different span ranges.
@@ -108,17 +108,17 @@ CTEST(worksheet, spans03) {
 
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
     worksheet_write_number(worksheet, 0, 16383, 123, NULL);
 
-    _worksheet_assemble_xml_file(worksheet);
+    lxw_worksheet_assemble_xml_file(worksheet);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 // Test assembling a Worksheet file with different span ranges.
@@ -145,17 +145,17 @@ CTEST(worksheet, spans04) {
 
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
     worksheet_write_number(worksheet, 1048575, 16383, 123, NULL);
 
-    _worksheet_assemble_xml_file(worksheet);
+    lxw_worksheet_assemble_xml_file(worksheet);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 // Test assembling a Worksheet file with different span ranges.
@@ -278,18 +278,18 @@ CTEST(worksheet, spans05) {
 
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
     for (i = 0; i < 20; i++)
         worksheet_write_number(worksheet, i, i, i + 1, NULL);
 
-    _worksheet_assemble_xml_file(worksheet);
+    lxw_worksheet_assemble_xml_file(worksheet);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 // Test some out of bound writes.
@@ -298,7 +298,7 @@ CTEST(worksheet, spans06) {
     int err;
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
@@ -311,7 +311,7 @@ CTEST(worksheet, spans06) {
     err = worksheet_write_number(worksheet, 1048576, 16384, 123, NULL);
     ASSERT_EQUAL(-LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE, err);
 
-    _worksheet_assemble_xml_file(worksheet);
+    lxw_worksheet_assemble_xml_file(worksheet);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }

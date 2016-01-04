@@ -17,7 +17,7 @@ CTEST(worksheet, write_print_options1) {
     char exp[] = "<printOptions horizontalCentered=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
@@ -27,7 +27,7 @@ CTEST(worksheet, write_print_options1) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 // Test the _write_print_options() function.
@@ -37,7 +37,7 @@ CTEST(worksheet, write_print_options2) {
     char exp[] = "<printOptions verticalCentered=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
@@ -47,7 +47,7 @@ CTEST(worksheet, write_print_options2) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 // Test the _write_print_options() function.
@@ -57,7 +57,7 @@ CTEST(worksheet, write_print_options3) {
     char exp[] = "<printOptions horizontalCentered=\"1\" verticalCentered=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
@@ -68,7 +68,7 @@ CTEST(worksheet, write_print_options3) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -79,7 +79,7 @@ CTEST(worksheet, write_print_options4) {
     char exp[] = "<printOptions gridLines=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
@@ -89,6 +89,6 @@ CTEST(worksheet, write_print_options4) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 

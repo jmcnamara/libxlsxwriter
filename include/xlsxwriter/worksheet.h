@@ -2496,14 +2496,14 @@ void worksheet_protect(lxw_worksheet *worksheet, char *password,
 void worksheet_set_default_row(lxw_worksheet *worksheet, double height,
                                uint8_t hide_unused_rows);
 
-lxw_worksheet *_new_worksheet(lxw_worksheet_init_data *init_data);
-void _free_worksheet(lxw_worksheet *worksheet);
-void _worksheet_assemble_xml_file(lxw_worksheet *worksheet);
-void _worksheet_write_single_row(lxw_worksheet *worksheet);
+lxw_worksheet *lxw_worksheet_new(lxw_worksheet_init_data *init_data);
+void lxw_worksheet_free(lxw_worksheet *worksheet);
+void lxw_worksheet_assemble_xml_file(lxw_worksheet *worksheet);
+void lxw_worksheet_write_single_row(lxw_worksheet *worksheet);
 
-void _worksheet_prepare_image(lxw_worksheet *worksheet,
-                              uint16_t image_ref_id, uint16_t drawing_id,
-                              lxw_image_options *image);
+void lxw_worksheet_prepare_image(lxw_worksheet *worksheet,
+                                 uint16_t image_ref_id, uint16_t drawing_id,
+                                 lxw_image_options *image);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

@@ -29,15 +29,15 @@ CTEST(worksheet, worksheet01) {
 
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
-    _worksheet_assemble_xml_file(worksheet);
+    lxw_worksheet_assemble_xml_file(worksheet);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 // Test assembling a complete Worksheet file.
@@ -64,17 +64,17 @@ CTEST(worksheet, worksheet02) {
 
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet_select(worksheet);
 
     worksheet_write_number(worksheet, 0, 0, 123, NULL);
 
-    _worksheet_assemble_xml_file(worksheet);
+    lxw_worksheet_assemble_xml_file(worksheet);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 // Test assembling a complete Worksheet file.
@@ -116,7 +116,7 @@ CTEST(worksheet, worksheet03) {
 
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet->sst = _new_sst();
     worksheet_select(worksheet);
@@ -126,12 +126,12 @@ CTEST(worksheet, worksheet03) {
     worksheet_write_string(worksheet, 3, 1, "Bar", NULL);
     worksheet_write_number(worksheet, 8, 4, 890, NULL);
 
-    _worksheet_assemble_xml_file(worksheet);
+    lxw_worksheet_assemble_xml_file(worksheet);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
     _free_sst(worksheet->sst);
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 

@@ -16,7 +16,7 @@ CTEST(worksheet, set_selection41) {
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><pane ySplit=\"600\" topLeftCell=\"A21\" activePane=\"bottomLeft\"/><selection pane=\"bottomLeft\" activeCell=\"A2\" sqref=\"A2\"/></sheetView></sheetViews>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_select(worksheet);
@@ -26,7 +26,7 @@ CTEST(worksheet, set_selection41) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -36,7 +36,7 @@ CTEST(worksheet, set_selection42) {
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><pane ySplit=\"600\" topLeftCell=\"A21\" activePane=\"bottomLeft\"/><selection pane=\"bottomLeft\" activeCell=\"A21\" sqref=\"A21\"/></sheetView></sheetViews>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_select(worksheet);
@@ -46,7 +46,7 @@ CTEST(worksheet, set_selection42) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -56,7 +56,7 @@ CTEST(worksheet, set_selection43) {
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><pane xSplit=\"1350\" topLeftCell=\"E1\" activePane=\"topRight\"/><selection pane=\"topRight\" activeCell=\"B1\" sqref=\"B1\"/></sheetView></sheetViews>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_select(worksheet);
@@ -66,7 +66,7 @@ CTEST(worksheet, set_selection43) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -76,7 +76,7 @@ CTEST(worksheet, set_selection44) {
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><pane xSplit=\"1350\" topLeftCell=\"E1\" activePane=\"topRight\"/><selection pane=\"topRight\" activeCell=\"E1\" sqref=\"E1\"/></sheetView></sheetViews>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_select(worksheet);
@@ -86,5 +86,5 @@ CTEST(worksheet, set_selection44) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }

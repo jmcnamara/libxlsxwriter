@@ -17,7 +17,7 @@ CTEST(worksheet, write_write_sheet_protection01) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet->protection.is_configured = 1;
@@ -25,7 +25,7 @@ CTEST(worksheet, write_write_sheet_protection01) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -35,7 +35,7 @@ CTEST(worksheet, write_write_sheet_protection02) {
     char exp[] = "<sheetProtection password=\"83AF\" sheet=\"1\" objects=\"1\" scenarios=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_protect(worksheet, "password", NULL);
@@ -43,7 +43,7 @@ CTEST(worksheet, write_write_sheet_protection02) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 /* 3. Test the _write_sheet_protection() method. */
@@ -52,7 +52,7 @@ CTEST(worksheet, write_write_sheet_protection03) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\" selectLockedCells=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.no_select_locked_cells = 1};
@@ -62,7 +62,7 @@ CTEST(worksheet, write_write_sheet_protection03) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -72,7 +72,7 @@ CTEST(worksheet, write_write_sheet_protection04) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\" formatCells=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.format_cells = 1};
@@ -82,7 +82,7 @@ CTEST(worksheet, write_write_sheet_protection04) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -92,7 +92,7 @@ CTEST(worksheet, write_write_sheet_protection05) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\" formatColumns=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.format_columns = 1};
@@ -102,7 +102,7 @@ CTEST(worksheet, write_write_sheet_protection05) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -112,7 +112,7 @@ CTEST(worksheet, write_write_sheet_protection06) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\" formatRows=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.format_rows = 1};
@@ -122,7 +122,7 @@ CTEST(worksheet, write_write_sheet_protection06) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -132,7 +132,7 @@ CTEST(worksheet, write_write_sheet_protection07) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\" insertColumns=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.insert_columns = 1};
@@ -142,7 +142,7 @@ CTEST(worksheet, write_write_sheet_protection07) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -152,7 +152,7 @@ CTEST(worksheet, write_write_sheet_protection08) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\" insertRows=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.insert_rows = 1};
@@ -162,7 +162,7 @@ CTEST(worksheet, write_write_sheet_protection08) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -172,7 +172,7 @@ CTEST(worksheet, write_write_sheet_protection09) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\" insertHyperlinks=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.insert_hyperlinks = 1};
@@ -182,7 +182,7 @@ CTEST(worksheet, write_write_sheet_protection09) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -192,7 +192,7 @@ CTEST(worksheet, write_write_sheet_protection10) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\" deleteColumns=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.delete_columns = 1};
@@ -202,7 +202,7 @@ CTEST(worksheet, write_write_sheet_protection10) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -212,7 +212,7 @@ CTEST(worksheet, write_write_sheet_protection11) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\" deleteRows=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.delete_rows = 1};
@@ -222,7 +222,7 @@ CTEST(worksheet, write_write_sheet_protection11) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -232,7 +232,7 @@ CTEST(worksheet, write_write_sheet_protection12) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\" sort=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.sort = 1};
@@ -242,7 +242,7 @@ CTEST(worksheet, write_write_sheet_protection12) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -252,7 +252,7 @@ CTEST(worksheet, write_write_sheet_protection13) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\" autoFilter=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.autofilter = 1};
@@ -262,7 +262,7 @@ CTEST(worksheet, write_write_sheet_protection13) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -272,7 +272,7 @@ CTEST(worksheet, write_write_sheet_protection14) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\" pivotTables=\"0\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.pivot_tables = 1};
@@ -282,7 +282,7 @@ CTEST(worksheet, write_write_sheet_protection14) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -292,7 +292,7 @@ CTEST(worksheet, write_write_sheet_protection15) {
     char exp[] = "<sheetProtection sheet=\"1\" scenarios=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.objects = 1};
@@ -302,7 +302,7 @@ CTEST(worksheet, write_write_sheet_protection15) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -312,7 +312,7 @@ CTEST(worksheet, write_write_sheet_protection16) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {.scenarios = 1};
@@ -322,7 +322,7 @@ CTEST(worksheet, write_write_sheet_protection16) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -332,7 +332,7 @@ CTEST(worksheet, write_write_sheet_protection17) {
     char exp[] = "<sheetProtection sheet=\"1\" objects=\"1\" scenarios=\"1\" formatCells=\"0\" selectLockedCells=\"1\" selectUnlockedCells=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {
@@ -346,7 +346,7 @@ CTEST(worksheet, write_write_sheet_protection17) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -356,7 +356,7 @@ CTEST(worksheet, write_write_sheet_protection18) {
     char exp[] = "<sheetProtection password=\"996B\" sheet=\"1\" formatCells=\"0\" formatColumns=\"0\" formatRows=\"0\" insertColumns=\"0\" insertRows=\"0\" insertHyperlinks=\"0\" deleteColumns=\"0\" deleteRows=\"0\" selectLockedCells=\"1\" sort=\"0\" autoFilter=\"0\" pivotTables=\"0\" selectUnlockedCells=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     lxw_protection options = {
@@ -382,5 +382,5 @@ CTEST(worksheet, write_write_sheet_protection18) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }

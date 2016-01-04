@@ -17,12 +17,12 @@ CTEST(worksheet, write_dimension) {
     char exp[] = "<dimension ref=\"A1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     _worksheet_write_dimension(worksheet);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }

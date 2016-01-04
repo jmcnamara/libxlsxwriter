@@ -17,7 +17,7 @@ CTEST(worksheet, write_write_sheet_pr01) {
     char exp[] = "<sheetPr><pageSetUpPr fitToPage=\"1\"/></sheetPr>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet->fit_page = 1;
 
@@ -25,7 +25,7 @@ CTEST(worksheet, write_write_sheet_pr01) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -35,7 +35,7 @@ CTEST(worksheet, write_write_sheet_pr02) {
     char exp[] = "<sheetPr><tabColor rgb=\"FFFF0000\"/></sheetPr>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_tab_color(worksheet, LXW_COLOR_RED);
@@ -43,7 +43,7 @@ CTEST(worksheet, write_write_sheet_pr02) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -53,7 +53,7 @@ CTEST(worksheet, write_write_sheet_pr03) {
     char exp[] = "<sheetPr><tabColor rgb=\"FFFF0000\"/><pageSetUpPr fitToPage=\"1\"/></sheetPr>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet->fit_page = 1;
 
@@ -62,7 +62,7 @@ CTEST(worksheet, write_write_sheet_pr03) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 

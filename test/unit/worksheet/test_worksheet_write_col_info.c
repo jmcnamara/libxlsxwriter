@@ -19,14 +19,14 @@ CTEST(worksheet, write_col_info01) {
     FILE* testfile = tmpfile();
     lxw_col_options col_options = {1, 3, 5, NULL, 0, 0, 0};
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     _worksheet_write_col_info(worksheet, &col_options);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -37,14 +37,14 @@ CTEST(worksheet, write_col_info02) {
     FILE* testfile = tmpfile();
     lxw_col_options col_options = {5, 5, 8, NULL, 1, 0, 0};
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     _worksheet_write_col_info(worksheet, &col_options);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -59,14 +59,14 @@ CTEST(worksheet, write_col_info03) {
 
     lxw_col_options col_options = {7, 7, LXW_DEF_COL_WIDTH, format, 0, 0, 0};
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     _worksheet_write_col_info(worksheet, &col_options);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -81,14 +81,14 @@ CTEST(worksheet, write_col_info04) {
 
     lxw_col_options col_options = {8, 8, LXW_DEF_COL_WIDTH, format, 0, 0, 0};
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     _worksheet_write_col_info(worksheet, &col_options);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -99,14 +99,14 @@ CTEST(worksheet, write_col_info05) {
     FILE* testfile = tmpfile();
     lxw_col_options col_options = {9, 9, 2, NULL, 0, 0, 0};
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     _worksheet_write_col_info(worksheet, &col_options);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 
@@ -117,12 +117,12 @@ CTEST(worksheet, write_col_info06) {
     FILE* testfile = tmpfile();
     lxw_col_options col_options = {11, 11, LXW_DEF_COL_WIDTH, NULL, 1, 0, 0};
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     _worksheet_write_col_info(worksheet, &col_options);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }

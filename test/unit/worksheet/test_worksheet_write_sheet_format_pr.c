@@ -17,13 +17,13 @@ CTEST(worksheet, write_sheet_format_pr) {
     char exp[] = "<sheetFormatPr defaultRowHeight=\"15\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     _worksheet_write_sheet_format_pr(worksheet);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 

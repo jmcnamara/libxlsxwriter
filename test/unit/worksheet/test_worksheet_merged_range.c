@@ -39,7 +39,7 @@ CTEST(merged_range, merged_range01) {
 
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
     worksheet->sst = _new_sst();
     worksheet_select(worksheet);
@@ -49,10 +49,10 @@ CTEST(merged_range, merged_range01) {
 
     worksheet_merge_range(worksheet, 2, 1, 2, 2, "Foo", format);
 
-    _worksheet_assemble_xml_file(worksheet);
+    lxw_worksheet_assemble_xml_file(worksheet);
 
     RUN_XLSX_STREQ_SHORT(exp, got);
 
     _free_sst(worksheet->sst);
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }

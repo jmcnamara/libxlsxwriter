@@ -17,14 +17,14 @@ CTEST(worksheet, write_page_margin01) {
                  "bottom=\"0.75\" header=\"0.3\" footer=\"0.3\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     _worksheet_write_page_margins(worksheet);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 /* Test the _write_page_margins() method. */
@@ -34,7 +34,7 @@ CTEST(worksheet, write_page_margin02) {
                  "bottom=\"0.75\" header=\"0.3\" footer=\"0.3\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_margins(worksheet, -1, -1, -1, -1);
@@ -42,7 +42,7 @@ CTEST(worksheet, write_page_margin02) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 /* Test the _write_page_margins() method. */
@@ -52,7 +52,7 @@ CTEST(worksheet, write_page_margin03) {
                  "bottom=\"0.75\" header=\"0.3\" footer=\"0.3\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_margins(worksheet, 0.8, -1, -1, -1);
@@ -60,7 +60,7 @@ CTEST(worksheet, write_page_margin03) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 /* Test the _write_page_margins() method. */
@@ -70,7 +70,7 @@ CTEST(worksheet, write_page_margin04) {
                  "bottom=\"0.75\" header=\"0.3\" footer=\"0.3\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_margins(worksheet, -1, 0.8, -1, -1);
@@ -78,7 +78,7 @@ CTEST(worksheet, write_page_margin04) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 /* Test the _write_page_margins() method. */
@@ -88,7 +88,7 @@ CTEST(worksheet, write_page_margin05) {
                  "bottom=\"0.75\" header=\"0.3\" footer=\"0.3\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_margins(worksheet, -1, -1, 0.8, -1);
@@ -96,7 +96,7 @@ CTEST(worksheet, write_page_margin05) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 /* Test the _write_page_margins() method. */
@@ -106,7 +106,7 @@ CTEST(worksheet, write_page_margin06) {
                  "bottom=\"0.8\" header=\"0.3\" footer=\"0.3\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_margins(worksheet, -1, -1, -1, 0.8);
@@ -114,7 +114,7 @@ CTEST(worksheet, write_page_margin06) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
 /* Test the _write_page_margins() method. */
@@ -126,7 +126,7 @@ CTEST(worksheet, write_page_margin07) {
     lxw_header_footer_options header_options = {0.2};
     lxw_header_footer_options footer_options = {0.4};
 
-    lxw_worksheet *worksheet = _new_worksheet(NULL);
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
     worksheet_set_header_opt(worksheet, "", &header_options);
@@ -136,6 +136,6 @@ CTEST(worksheet, write_page_margin07) {
 
     RUN_XLSX_STREQ(exp, got);
 
-    _free_worksheet(worksheet);
+    lxw_worksheet_free(worksheet);
 }
 
