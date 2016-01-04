@@ -17,7 +17,7 @@ CTEST(workbook, write_defined_names) {
     char* got;
     char exp[] = "<definedNames><definedName name=\"_xlnm.Print_Titles\" localSheetId=\"0\">Sheet1!$1:$1</definedName></definedNames>";
     FILE* testfile = tmpfile();
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     workbook_add_worksheet(workbook, NULL);
@@ -40,7 +40,7 @@ CTEST(workbook, write_defined_names_sorted) {
     FILE* testfile = tmpfile();
 
 
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     workbook_add_worksheet(workbook, NULL);

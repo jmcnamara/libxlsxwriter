@@ -13,7 +13,7 @@ int main() {
 
     lxw_workbook_options options = {1};
 
-    lxw_workbook  *workbook  = new_workbook_opt("test_optimize24.xlsx", &options);
+    lxw_workbook  *workbook  = workbook_new_opt("test_optimize24.xlsx", &options);
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_format    *bold      = workbook_add_format(workbook);
 

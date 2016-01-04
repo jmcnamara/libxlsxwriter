@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_image05.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_image05.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     worksheet_insert_image(worksheet, CELL("A1"), "images/blue.png");

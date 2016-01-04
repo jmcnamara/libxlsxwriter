@@ -49,11 +49,11 @@ the input data might come from a database or a file.
 
 
 The next step is to create a workbook object in a @c main block or
-function using the new_workbook() function which takes the filename
+function using the workbook_new() function which takes the filename
 that we want to create:
 
 @dontinclude tutorial1.c
-@skipline new_workbook
+@skipline workbook_new
 
 
 The workbook object is then used to add a new worksheet via the

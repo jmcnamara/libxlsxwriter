@@ -14,6 +14,7 @@ int main() {
     lxw_datetime datetime1 = {0,    0,  0, 12, 0, 0};
     lxw_datetime datetime2 = {2013, 1, 27,  0, 0, 0};
 
+    /* Use deprecated constructor for testing. */
     lxw_workbook  *workbook  = new_workbook("test_simple04.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 

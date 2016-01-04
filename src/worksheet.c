@@ -3785,9 +3785,9 @@ worksheet_set_column(lxw_worksheet *self,
  */
 int8_t
 worksheet_set_row_opt(lxw_worksheet *self,
-                  lxw_row_t row_num,
-                  double height,
-                  lxw_format *format, lxw_row_col_options *user_options)
+                      lxw_row_t row_num,
+                      double height,
+                      lxw_format *format, lxw_row_col_options *user_options)
 {
 
     lxw_col_t min_col;
@@ -3840,9 +3840,7 @@ worksheet_set_row_opt(lxw_worksheet *self,
  */
 int8_t
 worksheet_set_row(lxw_worksheet *self,
-                  lxw_row_t row_num,
-                  double height,
-                  lxw_format *format)
+                  lxw_row_t row_num, double height, lxw_format *format)
 {
     return worksheet_set_row_opt(self, row_num, height, format, NULL);
 }

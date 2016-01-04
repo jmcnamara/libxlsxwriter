@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_gh42_01.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_gh42_01.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     char string[] = {0xe5, 0x9b, 0xbe, 0x14, 0xe5, 0x9b, 0xbe, 0x00};

@@ -18,7 +18,7 @@ CTEST(workbook, write_book_views) {
     char exp[] = "<bookViews><workbookView xWindow=\"240\" yWindow=\"15\" windowWidth=\"16095\" windowHeight=\"9660\"/></bookViews>";
     FILE* testfile = tmpfile();
 
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     _write_book_views(workbook);

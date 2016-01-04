@@ -11,7 +11,7 @@
 int main() {
 
     /* Create a new workbook and add a worksheet. */
-    lxw_workbook  *workbook  = new_workbook("array_formula.xlsx");
+    lxw_workbook  *workbook  = workbook_new("array_formula.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Write some data for the formulas. */

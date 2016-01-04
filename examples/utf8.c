@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("utf8.xlsx");
+    lxw_workbook  *workbook  = workbook_new("utf8.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     worksheet_write_string(worksheet, 2, 1, "Это фраза на русском!", NULL);

@@ -30,7 +30,7 @@
  *
  *     int main() {
  *
- *         lxw_workbook  *workbook  = new_workbook("filename.xlsx");
+ *         lxw_workbook  *workbook  = workbook_new("filename.xlsx");
  *         lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
  *
  *         worksheet_write_string(worksheet, 0, 0, "Hello Excel", NULL);
@@ -1000,7 +1000,6 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
                                    const char *formula,
                                    lxw_format *format, double result);
 
-
 /**
  * @brief Set the properties for a row of cells.
  *
@@ -1054,10 +1053,7 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
  *
  */
 int8_t worksheet_set_row(lxw_worksheet *worksheet,
-                         lxw_row_t row,
-                         double height,
-                         lxw_format *format);
-
+                         lxw_row_t row, double height, lxw_format *format);
 
 /**
  * @brief Set the properties for a row of cells.
@@ -1187,8 +1183,7 @@ int8_t worksheet_set_row_opt(lxw_worksheet *worksheet,
 int8_t worksheet_set_column(lxw_worksheet *worksheet,
                             lxw_col_t first_col,
                             lxw_col_t last_col,
-                            double width,
-                            lxw_format *format);
+                            double width, lxw_format *format);
 
  /**
   * @brief Set the properties for one or more columns of cells with options.

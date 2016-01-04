@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_data02.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_data02.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Tests for the row range. */

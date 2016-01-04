@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_defined_name04.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_defined_name04.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     workbook_define_name(workbook, "\\__",     "=Sheet1!$A$1");

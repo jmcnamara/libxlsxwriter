@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_set_selection01.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_set_selection01.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     worksheet_set_selection(worksheet, RANGE("B4:C5"));

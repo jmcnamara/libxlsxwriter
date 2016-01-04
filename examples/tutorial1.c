@@ -28,7 +28,7 @@ struct expense expenses[] = {
 int main() {
 
     /* Create a workbook and add a worksheet. */
-    lxw_workbook  *workbook  = new_workbook("tutorial01.xlsx");
+    lxw_workbook  *workbook  = workbook_new("tutorial01.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Start from the first cell. Rows and columns are zero indexed. */

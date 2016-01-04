@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_image08.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_image08.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     lxw_image_options options = {.x_scale = 0.5, .y_scale = 0.5};

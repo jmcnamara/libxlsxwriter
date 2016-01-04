@@ -135,7 +135,7 @@ Using you favourite editor Emacs create a file like the following called
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("myexcel.xlsx");
+    lxw_workbook  *workbook  = workbook_new("myexcel.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     int row = 0;
     int col = 0;

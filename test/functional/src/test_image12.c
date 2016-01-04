@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_image12.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_image12.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     worksheet_set_row(worksheet, 1, 75, NULL);

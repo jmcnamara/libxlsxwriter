@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook   = new_workbook("defined_name.xlsx");
+    lxw_workbook  *workbook   = workbook_new("defined_name.xlsx");
     lxw_worksheet *worksheet;
 
     /* We don't use the returned worksheets in this example and use a generic

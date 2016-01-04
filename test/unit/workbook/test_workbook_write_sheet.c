@@ -18,7 +18,7 @@ CTEST(workbook, write_sheet1) {
     char exp[] = "<sheet name=\"Sheet1\" sheetId=\"1\" r:id=\"rId1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     _write_sheet(workbook, "Sheet1", 1, 0);
@@ -36,7 +36,7 @@ CTEST(workbook, write_sheet2) {
     char exp[] = "<sheet name=\"Sheet1\" sheetId=\"1\" state=\"hidden\" r:id=\"rId1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     _write_sheet(workbook, "Sheet1", 1, 1);
@@ -54,7 +54,7 @@ CTEST(workbook, write_sheet3) {
     char exp[] = "<sheet name=\"Bits &amp; Bobs\" sheetId=\"1\" r:id=\"rId1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     _write_sheet(workbook, "Bits & Bobs", 1, 0);

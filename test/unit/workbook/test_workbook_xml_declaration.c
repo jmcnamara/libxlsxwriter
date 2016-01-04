@@ -17,7 +17,7 @@ CTEST(workbook, xml_declaration) {
     char exp[] = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
     FILE* testfile = tmpfile();
 
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     _workbook_xml_declaration(workbook);

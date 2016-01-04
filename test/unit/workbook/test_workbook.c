@@ -31,7 +31,7 @@ CTEST(workbook, workbook01) {
 
     FILE* testfile = tmpfile();
 
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     workbook_add_worksheet(workbook, NULL);
@@ -64,7 +64,7 @@ CTEST(workbook, workbook02) {
 
     FILE* testfile = tmpfile();
 
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     workbook_add_worksheet(workbook, NULL);
@@ -98,7 +98,7 @@ CTEST(workbook, workbook03) {
 
     FILE* testfile = tmpfile();
 
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     workbook_add_worksheet(workbook, "Non Default Name");

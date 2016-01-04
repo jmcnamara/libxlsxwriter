@@ -17,7 +17,7 @@ CTEST(workbook, write_workbook_pr) {
     char exp[] = "<workbookPr defaultThemeVersion=\"124226\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     _write_workbook_pr(workbook);

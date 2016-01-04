@@ -26,7 +26,7 @@
  *
  *     int main() {
  *
- *         lxw_workbook  *workbook  = new_workbook("filename.xlsx");
+ *         lxw_workbook  *workbook  = workbook_new("filename.xlsx");
  *         lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
  *
  *         worksheet_write_string(worksheet, 0, 0, "Hello Excel", NULL);
@@ -64,7 +64,7 @@ TAILQ_HEAD(lxw_defined_names, lxw_defined_name);
  * a pointer to the lxw_workbook:
  *
  * @code
- *    lxw_workbook  *workbook = new_workbook("test.xlsx");
+ *    lxw_workbook  *workbook = workbook_new("test.xlsx");
  *
  *    lxw_worksheet *worksheet; // Generic worksheet pointer.
  *
@@ -158,7 +158,7 @@ typedef struct lxw_doc_properties {
  * @brief Workbook options.
  *
  * Optional parameters when creating a new Workbook object via
- * new_workbook_opt().
+ * workbook_new_opt().
  *
  * Currently only the `constant_memory` property is supported:
  *
@@ -221,18 +221,18 @@ extern "C" {
  *
  * @return A lxw_workbook instance.
  *
- * The `%new_workbook()` constructor is used to create a new Excel workbook
+ * The `%workbook_new()` constructor is used to create a new Excel workbook
  * with a given filename:
  *
  * @code
- *     lxw_workbook *workbook  = new_workbook("filename.xlsx");
+ *     lxw_workbook *workbook  = workbook_new("filename.xlsx");
  * @endcode
  *
  * When specifying a filename it is recommended that you use an `.xlsx`
  * extension or Excel will generate a warning when opening the file.
  *
  */
-lxw_workbook *new_workbook(const char *filename);
+lxw_workbook *workbook_new(const char *filename);
 
 /**
  * @brief Create a new workbook object, and set the workbook options.
@@ -242,13 +242,13 @@ lxw_workbook *new_workbook(const char *filename);
  *
  * @return A lxw_workbook instance.
  *
- * This method is the same as the `new_workbook()` constructor but allows
+ * This method is the same as the `workbook_new()` constructor but allows
  * additional options to be set.
  *
  * @code
  *    lxw_workbook_options options = {.constant_memory = 1};
  *
- *    lxw_workbook  *workbook  = new_workbook_opt("filename.xlsx", &options);
+ *    lxw_workbook  *workbook  = workbook_new_opt("filename.xlsx", &options);
  * @endcode
  *
  * Note, in this mode a row of data is written and then discarded when a cell
@@ -259,6 +259,13 @@ lxw_workbook *new_workbook(const char *filename);
  * See @ref working_with_memory for more details.
  *
  */
+lxw_workbook *workbook_new_opt(const char *filename,
+                               lxw_workbook_options *options);
+
+/* Deprecated function name for backwards compatibility. */
+lxw_workbook *new_workbook(const char *filename);
+
+/* Deprecated function name for backwards compatibility. */
 lxw_workbook *new_workbook_opt(const char *filename,
                                lxw_workbook_options *options);
 

@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_default_row01.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_default_row01.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     worksheet_set_default_row(worksheet, 24, LXW_FALSE);

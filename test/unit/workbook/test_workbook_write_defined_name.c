@@ -18,7 +18,7 @@ CTEST(workbook, write_defined_name) {
     lxw_defined_name defined_name = {0, 0, "_xlnm.Print_Titles", "", "Sheet1!$1:$1", "", "", {NULL, NULL}};
 
 
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     _write_defined_name(workbook, &defined_name);

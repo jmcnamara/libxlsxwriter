@@ -12,7 +12,7 @@ The effect of this is that for large files libxlsxwriter can consume a lot of
 memory.
 
 Fortunately, this memory usage can be reduced almost completely by using
-new_workbook_opt() and the lxw_workbook_options `constant_memory` property:
+workbook_new_opt() and the lxw_workbook_options `constant_memory` property:
 
 @dontinclude constant_memory.c
 @skipline include
@@ -40,7 +40,7 @@ Since each new row flushes the previous row, data must be written in sequential
 row order when `constant_memory` mode is on:
 
 @code
-    lxw_workbook  *workbook  = new_workbook_opt("constant_memory.xlsx", &options);
+    lxw_workbook  *workbook  = workbook_new_opt("constant_memory.xlsx", &options);
     ...
 
     // !! Don't use "column x row" order in 'constant_memory' mode. Only

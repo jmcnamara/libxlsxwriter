@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_escapes05.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_escapes05.xlsx");
     lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, "Start");
     lxw_worksheet *worksheet2 = workbook_add_worksheet(workbook, "A & B");
 

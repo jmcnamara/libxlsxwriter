@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_hyperlink07.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_hyperlink07.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     worksheet_write_url_opt(worksheet, CELL("A1"), "external:\\\\VBOXSVR\\share\\foo.xlsx", NULL, "J:\\foo.xlsx", NULL);

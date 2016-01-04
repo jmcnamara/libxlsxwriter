@@ -10,7 +10,7 @@
 
 int main() {
 
-    lxw_workbook       *workbook   = new_workbook("doc_properties.xlsx");
+    lxw_workbook       *workbook   = workbook_new("doc_properties.xlsx");
     lxw_worksheet      *worksheet  = workbook_add_worksheet(workbook, NULL);
 
     /* Create a properties structure and set some of the fields. */

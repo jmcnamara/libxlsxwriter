@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_hyperlink08.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_hyperlink08.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Test with forward slashes instead of back slashes in test_hyperlink07.c. */

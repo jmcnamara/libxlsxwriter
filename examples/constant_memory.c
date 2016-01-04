@@ -20,7 +20,7 @@ int main() {
     options.constant_memory = 1;
 
     /* Create a new workbook with options. */
-    lxw_workbook  *workbook  = new_workbook_opt("constant_memory.xlsx", &options);
+    lxw_workbook  *workbook  = workbook_new_opt("constant_memory.xlsx", &options);
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     for (row = 0; row < max_row; row++) {

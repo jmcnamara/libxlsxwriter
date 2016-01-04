@@ -9,7 +9,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook   = new_workbook("tab_colors.xlsx");
+    lxw_workbook  *workbook   = workbook_new("tab_colors.xlsx");
 
     /* Set up some worksheets. */
     lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, NULL);

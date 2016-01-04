@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_panes01.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_panes01.xlsx");
     lxw_worksheet *worksheet01 = workbook_add_worksheet(workbook, NULL);
     lxw_worksheet *worksheet02 = workbook_add_worksheet(workbook, NULL);
     lxw_worksheet *worksheet03 = workbook_add_worksheet(workbook, NULL);

@@ -14,7 +14,7 @@
 int main() {
 
     /* Create a new workbook and add a worksheet. */
-    lxw_workbook  *workbook  = new_workbook("hide_row_col.xlsx");
+    lxw_workbook  *workbook  = workbook_new("hide_row_col.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_row_t row;
 

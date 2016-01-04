@@ -18,7 +18,7 @@ CTEST(workbook, write_sheets) {
     char exp[] = "<sheets><sheet name=\"Sheet1\" sheetId=\"1\" r:id=\"rId1\"/></sheets>";
     FILE* testfile = tmpfile();
 
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     workbook_add_worksheet(workbook, NULL);

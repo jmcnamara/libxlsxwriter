@@ -10,7 +10,7 @@
 int main() {
 
     /* Create a new workbook. */
-    lxw_workbook  *workbook   = new_workbook("anatomy.xlsx");
+    lxw_workbook  *workbook   = workbook_new("anatomy.xlsx");
 
     /* Add a worksheet with a user defined sheet name. */
     lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, "Demo");

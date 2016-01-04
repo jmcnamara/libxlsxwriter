@@ -84,7 +84,7 @@ the bug report more quickly.
 >
 >int main() {
 >
->    lxw_workbook  *workbook  = new_workbook("bug_report.xlsx");
+>    lxw_workbook  *workbook  = workbook_new("bug_report.xlsx");
 >    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 >
 >    worksheet_write_string(worksheet, 0, 0, "Hello", NULL);

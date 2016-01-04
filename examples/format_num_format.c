@@ -11,7 +11,7 @@
 int main() {
 
     /* Create a new workbook and add a worksheet. */
-    lxw_workbook  *workbook  = new_workbook("format_num_format.xlsx");
+    lxw_workbook  *workbook  = workbook_new("format_num_format.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Widen the first column to make the text clearer. */

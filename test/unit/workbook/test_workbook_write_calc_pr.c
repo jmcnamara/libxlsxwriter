@@ -18,7 +18,7 @@ CTEST(workbook, write_calc_pr) {
     char exp[] = "<calcPr calcId=\"124519\" fullCalcOnLoad=\"1\"/>";
     FILE* testfile = tmpfile();
 
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
     _write_calc_pr(workbook);

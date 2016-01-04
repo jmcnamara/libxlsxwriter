@@ -36,7 +36,7 @@ Here is an example that was used to create the spreadsheet shown above:
 int main() {
 
     /* Create a new workbook and add a worksheet. */
-    lxw_workbook  *workbook  = new_workbook("demo.xlsx");
+    lxw_workbook  *workbook  = workbook_new("demo.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Add a format. */

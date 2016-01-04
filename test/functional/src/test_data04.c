@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_data04.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_data04.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     worksheet_write_string(worksheet, 0,       0, "Foo",  NULL);

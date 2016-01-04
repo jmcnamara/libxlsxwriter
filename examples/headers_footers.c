@@ -35,7 +35,7 @@
 
 int main() {
 
-    lxw_workbook *workbook  = new_workbook("headers_footers.xlsx");
+    lxw_workbook *workbook  = workbook_new("headers_footers.xlsx");
 
     char preview[] = "Select Print Preview to see the header and footer";
 

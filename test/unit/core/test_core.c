@@ -27,7 +27,7 @@ CTEST(core, core01) {
     FILE* testfile = tmpfile();
 
     lxw_core *core = _new_core();
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
 
     core->file = testfile;
     core->properties = workbook->properties;
@@ -76,7 +76,7 @@ CTEST(core, core02) {
     FILE* testfile = tmpfile();
 
     lxw_core *core = _new_core();
-    lxw_workbook *workbook = new_workbook(NULL);
+    lxw_workbook *workbook = workbook_new(NULL);
 
     core->file = testfile;
     core->properties = workbook->properties;

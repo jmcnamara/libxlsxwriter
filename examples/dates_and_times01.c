@@ -18,7 +18,7 @@ int main() {
     double number = 41333.5;
 
     /* Create a new workbook and add a worksheet. */
-    lxw_workbook  *workbook  = new_workbook("date_and_times01.xlsx");
+    lxw_workbook  *workbook  = workbook_new("date_and_times01.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Add a format with date formatting. */

@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook       *workbook   = new_workbook("test_properties02.xlsx");
+    lxw_workbook       *workbook   = workbook_new("test_properties02.xlsx");
     lxw_worksheet      *worksheet  = workbook_add_worksheet(workbook, NULL);
     lxw_doc_properties *properties = calloc(1, sizeof(lxw_doc_properties));
 

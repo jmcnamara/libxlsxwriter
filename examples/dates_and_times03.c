@@ -36,7 +36,7 @@ int main() {
     };
 
     /* Create a new workbook and add a worksheet. */
-    lxw_workbook  *workbook  = new_workbook("date_and_times03.xlsx");
+    lxw_workbook  *workbook  = workbook_new("date_and_times03.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Add a bold format. */

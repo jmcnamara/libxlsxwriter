@@ -9,7 +9,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook   = new_workbook("hide_sheet.xlsx");
+    lxw_workbook  *workbook   = workbook_new("hide_sheet.xlsx");
     lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, NULL);
     lxw_worksheet *worksheet2 = workbook_add_worksheet(workbook, NULL);
     lxw_worksheet *worksheet3 = workbook_add_worksheet(workbook, NULL);

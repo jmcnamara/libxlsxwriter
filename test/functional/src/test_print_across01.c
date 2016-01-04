@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_print_across01.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_print_across01.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     worksheet_print_across(worksheet);

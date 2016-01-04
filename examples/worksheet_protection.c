@@ -10,7 +10,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("protection.xlsx");
+    lxw_workbook  *workbook  = workbook_new("protection.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     lxw_format *unlocked = workbook_add_format(workbook);

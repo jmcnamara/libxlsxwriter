@@ -9,7 +9,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook     = new_workbook("merge_range.xlsx");
+    lxw_workbook  *workbook     = workbook_new("merge_range.xlsx");
     lxw_worksheet *worksheet    = workbook_add_worksheet(workbook, NULL);
     lxw_format    *merge_format = workbook_add_format(workbook);
 

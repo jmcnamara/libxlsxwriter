@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_array_formula01.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_array_formula01.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     worksheet_write_number(worksheet, 0, 1, 0, NULL);

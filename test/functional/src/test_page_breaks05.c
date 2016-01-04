@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_page_breaks05.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_page_breaks05.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_col_t breaks[] = {1, 3, 8, 0};
 

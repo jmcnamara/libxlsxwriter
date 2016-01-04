@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_shared_strings01.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_shared_strings01.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     uint8_t i;
     char c[] = {0x00, 0x00};

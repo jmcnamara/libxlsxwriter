@@ -11,7 +11,7 @@
 int main() {
 
     /* Create a new workbook and add a worksheet. */
-    lxw_workbook  *workbook  = new_workbook("images.xlsx");
+    lxw_workbook  *workbook  = workbook_new("images.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Change some of the column widths for clarity. */

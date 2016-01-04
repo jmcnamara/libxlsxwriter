@@ -993,16 +993,30 @@ _workbook_assemble_xml_file(lxw_workbook *self)
  * Create a new workbook object.
  */
 lxw_workbook *
+workbook_new(const char *filename)
+{
+    return workbook_new_opt(filename, NULL);
+}
+
+/* Deprecated function name for backwards compatibility. */
+lxw_workbook *
 new_workbook(const char *filename)
 {
-    return new_workbook_opt(filename, NULL);
+    return workbook_new_opt(filename, NULL);
+}
+
+/* Deprecated function name for backwards compatibility. */
+lxw_workbook *
+new_workbook_opt(const char *filename, lxw_workbook_options *options)
+{
+    return workbook_new_opt(filename, options);
 }
 
 /*
  * Create a new workbook object with options.
  */
 lxw_workbook *
-new_workbook_opt(const char *filename, lxw_workbook_options *options)
+workbook_new_opt(const char *filename, lxw_workbook_options *options)
 {
     lxw_format *format;
     lxw_workbook *workbook;

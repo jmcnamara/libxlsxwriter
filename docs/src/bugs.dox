@@ -57,7 +57,7 @@ formula using the `worksheet_write_formula_num()` function.
 
 ## Strings aren't displayed in Apple Numbers in 'constant_memory' mode
 
-In `new_workbook_opt()` `constant_memory` mode libxlsxwriter uses an optimization
+In `workbook_new_opt()` `constant_memory` mode libxlsxwriter uses an optimization
 where cell strings aren't stored in an Excel structure call "shared strings"
 and instead are written "in-line".
 
@@ -145,7 +145,7 @@ the bug report more quickly.
 
     int main() {
 
-        lxw_workbook  *workbook  = new_workbook("bug_report.xlsx");
+        lxw_workbook  *workbook  = workbook_new("bug_report.xlsx");
         lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
         worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
