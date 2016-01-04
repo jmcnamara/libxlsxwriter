@@ -22,7 +22,7 @@ int main() {
     format_set_num_format(format, "mmm d yyyy hh:mm AM/PM");
 
     /* Widen the first column to make the text clearer. */
-    worksheet_set_column(worksheet, 0, 0, 20, NULL, NULL);
+    worksheet_set_column(worksheet, 0, 0, 20, NULL);
 
     /* Write the datetime without formatting. */
     worksheet_write_datetime(worksheet, 0, 0, &datetime, NULL  );  // 41333.5

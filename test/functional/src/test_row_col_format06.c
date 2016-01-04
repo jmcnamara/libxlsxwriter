@@ -20,8 +20,8 @@ int main() {
     lxw_format    *italic    = workbook_add_format(workbook);
     format_set_italic(italic);
 
-    worksheet_set_column(worksheet, 0, 0, 8.43, bold, NULL);
-    worksheet_set_column(worksheet, 2, 2, 8.43, italic, NULL);
+    worksheet_set_column(worksheet, 0, 0, 8.43, bold);
+    worksheet_set_column(worksheet, 2, 2, 8.43, italic);
 
     worksheet_write_string(worksheet, 0, 0, "Foo", NULL);
     worksheet_write_string(worksheet, 0, 2, "Bar", NULL);

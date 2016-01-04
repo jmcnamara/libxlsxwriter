@@ -3656,14 +3656,15 @@ worksheet_write_url(lxw_worksheet *self,
 }
 
 /*
- * Set the properties of a single column or a range of columns.
+ * Set the properties of a single column or a range of columns with options.
  */
 int8_t
-worksheet_set_column(lxw_worksheet *self,
-                     lxw_col_t firstcol,
-                     lxw_col_t lastcol,
-                     double width,
-                     lxw_format *format, lxw_row_col_options *user_options)
+worksheet_set_column_opt(lxw_worksheet *self,
+                         lxw_col_t firstcol,
+                         lxw_col_t lastcol,
+                         double width,
+                         lxw_format *format,
+                         lxw_row_col_options *user_options)
 {
     lxw_col_options *copied_options;
     uint8_t ignore_row = LXW_TRUE;
@@ -3765,6 +3766,18 @@ worksheet_set_column(lxw_worksheet *self,
     self->col_size_changed = LXW_TRUE;
 
     return 0;
+}
+
+/*
+ * Set the properties of a single column or a range of columns.
+ */
+int8_t
+worksheet_set_column(lxw_worksheet *self,
+                     lxw_col_t firstcol,
+                     lxw_col_t lastcol, double width, lxw_format *format)
+{
+    return worksheet_set_column_opt(self, firstcol, lastcol, width, format,
+                                    NULL);
 }
 
 /*

@@ -30,7 +30,7 @@ int main() {
 
     /* Write some text to the worksheets and a defined names in a formula. */
     LXW_FOREACH_WORKSHEET(worksheet, workbook){
-        worksheet_set_column(worksheet, 0, 0, 45, NULL, NULL);
+        worksheet_set_column(worksheet, 0, 0, 45, NULL);
 
         worksheet_write_string(worksheet, 0, 0,
                                "This worksheet contains some defined names.", NULL);

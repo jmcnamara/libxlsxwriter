@@ -22,7 +22,7 @@ int main() {
     format_set_num_format_index(format1, 20);
     format_set_num_format_index(format2, 14);
 
-    worksheet_set_column(worksheet, 0, 0, 12, NULL, NULL);
+    worksheet_set_column(worksheet, 0, 0, 12, NULL);
 
     worksheet_write_datetime(worksheet, 0, 0, &datetime1, format1);
     worksheet_write_datetime(worksheet, 1, 0, &datetime2, format2);

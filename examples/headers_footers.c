@@ -49,7 +49,7 @@ int main() {
     worksheet_set_header(worksheet1, header1);
     worksheet_set_footer(worksheet1, footer1);
 
-    worksheet_set_column(worksheet1, 0, 0, 50, NULL, NULL);
+    worksheet_set_column(worksheet1, 0, 0, 50, NULL);
     worksheet_write_string(worksheet1, 0, 0, preview, NULL);
 
 
@@ -64,7 +64,7 @@ int main() {
     worksheet_set_header(worksheet2, header2);
     worksheet_set_footer(worksheet2, footer2);
 
-    worksheet_set_column(worksheet2, 0, 0, 50, NULL, NULL);
+    worksheet_set_column(worksheet2, 0, 0, 50, NULL);
     worksheet_write_string(worksheet2, 0, 0, preview, NULL);
 
     worksheet_set_h_pagebreaks(worksheet2, breaks);
@@ -81,7 +81,7 @@ int main() {
     worksheet_set_header(worksheet3, header3);
     worksheet_set_footer(worksheet3, footer3);
 
-    worksheet_set_column(worksheet3, 0, 0, 50, NULL, NULL);
+    worksheet_set_column(worksheet3, 0, 0, 50, NULL);
     worksheet_write_string(worksheet3, 0, 0, preview, NULL);
 
 
@@ -93,7 +93,7 @@ int main() {
 
     worksheet_set_header(worksheet4, header4);
 
-    worksheet_set_column(worksheet4, 0, 0, 50, NULL, NULL);
+    worksheet_set_column(worksheet4, 0, 0, 50, NULL);
     worksheet_write_string(worksheet4, 0, 0, preview, NULL);
 
 
@@ -105,7 +105,7 @@ int main() {
 
     worksheet_set_header(worksheet5, header5);
 
-    worksheet_set_column(worksheet5, 0, 0, 50, NULL, NULL);
+    worksheet_set_column(worksheet5, 0, 0, 50, NULL);
     worksheet_write_string(worksheet5, 0, 0, preview, NULL);
 
 

@@ -32,7 +32,7 @@ int main() {
 
     /* Columns can be hidden explicitly. This doesn't increase the file size. */
     lxw_row_col_options options = {.hidden = 1};
-    worksheet_set_column(worksheet, COLS("G:XFD"), 8.43, NULL, &options);
+    worksheet_set_column_opt(worksheet, COLS("G:XFD"), 8.43, NULL, &options);
 
     workbook_close(workbook);
 

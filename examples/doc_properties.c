@@ -30,7 +30,7 @@ int main() {
     workbook_set_properties(workbook, &properties);
 
     /* Add some text to the file. */
-    worksheet_set_column(worksheet, 0, 0, 70, NULL, NULL);
+    worksheet_set_column(worksheet, 0, 0, 70, NULL);
     worksheet_write_string(worksheet, 0, 0,
         "Select 'Workbook Properties' to see properties." , NULL);
 

@@ -22,9 +22,9 @@ int main() {
     worksheet_write_string(worksheet3, 0, 0, "Sheet2 is hidden", NULL);
 
     /* Make the first column wider to make the text clearer. */
-    worksheet_set_column(worksheet1, 0, 0, 30, NULL, NULL);
-    worksheet_set_column(worksheet2, 0, 0, 30, NULL, NULL);
-    worksheet_set_column(worksheet3, 0, 0, 30, NULL, NULL);
+    worksheet_set_column(worksheet1, 0, 0, 30, NULL);
+    worksheet_set_column(worksheet2, 0, 0, 30, NULL);
+    worksheet_set_column(worksheet3, 0, 0, 30, NULL);
 
     workbook_close(workbook);
 

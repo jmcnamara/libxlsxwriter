@@ -1083,14 +1083,13 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  * @param last_col  The zero indexed last column.
  * @param width     The width of the column(s).
  * @param format    A pointer to a Format instance or NULL.
- * @param options   Optional row parameters: hidden, level, collapsed.
  *
  * The `%worksheet_set_column()` function can be used to change the default
  * properties of a single column or a range of columns:
  *
  * @code
  *     // Width of columns B:D set to 30.
- *     worksheet_set_column(worksheet, 1, 3, 30, NULL, NULL);
+ *     worksheet_set_column(worksheet, 1, 3, 30, NULL);
  *
  * @endcode
  *
@@ -1099,7 +1098,7 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  *
  * @code
  *     // Width of column B set to 30.
- *     worksheet_set_column(worksheet, 1, 1, 30, NULL, NULL);
+ *     worksheet_set_column(worksheet, 1, 1, 30, NULL);
  *
  * @endcode
  *
@@ -1107,12 +1106,12 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  * the form of `COLS()` macro:
  *
  * @code
- *     worksheet_set_column(worksheet, 4, 4, 20, NULL, NULL);
- *     worksheet_set_column(worksheet, 5, 8, 30, NULL, NULL);
+ *     worksheet_set_column(worksheet, 4, 4, 20, NULL);
+ *     worksheet_set_column(worksheet, 5, 8, 30, NULL);
  *
  *     // Same as the examples above but clearer.
- *     worksheet_set_column(worksheet, COLS("E:E"), 20, NULL, NULL);
- *     worksheet_set_column(worksheet, COLS("F:H"), 30, NULL, NULL);
+ *     worksheet_set_column(worksheet, COLS("E:E"), 20, NULL);
+ *     worksheet_set_column(worksheet, COLS("F:H"), 30, NULL);
  *
  * @endcode
  *
@@ -1132,7 +1131,7 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  *     format_set_bold(bold);
  *
  *     // Set the first column to bold.
- *     worksheet_set_column(worksheet, 0, 0, LXW_DEF_COL_HEIGHT, bold, NULL);
+ *     worksheet_set_column(worksheet, 0, 0, LXW_DEF_COL_HEIGHT, bold);
  * @endcode
  *
  * The `format` parameter will be applied to any cells in the column that
@@ -1140,7 +1139,7 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  *
  * @code
  *     // Column 1 has format1.
- *     worksheet_set_column(worksheet, COLS("A:A"), 8.43, format1, NULL);
+ *     worksheet_set_column(worksheet, COLS("A:A"), 8.43, format1);
  *
  *     // Cell A1 in column 1 defaults to format1.
  *     worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
@@ -1153,10 +1152,10 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  *
  * @code
  *     // Row 1 has format1.
- *     worksheet_set_row(worksheet, 0, 15, format1, NULL);
+ *     worksheet_set_row(worksheet, 0, 15, format1);
  *
  *     // Col 1 has format2.
- *     worksheet_set_column(worksheet, COLS("A:A"), 8.43, format2, NULL);
+ *     worksheet_set_column(worksheet, COLS("A:A"), 8.43, format2);
  *
  *     // Cell A1 defaults to format1, the row format.
  *     worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
@@ -1164,27 +1163,45 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  *    // Cell A2 keeps format2, the column format.
  *     worksheet_write_string(worksheet, 1, 0, "Hello", NULL);
  * @endcode
- *
- * The `options` parameter is a #lxw_row_col_options struct. It has the
- * following members but currently only the `hidden` property is supported:
- *
- * - `hidden`
- * - `level`
- * - `collapsed`
- *
- * The `"hidden"` option is used to hide a column. This can be used, for
- * example, to hide intermediary steps in a complicated calculation:
- *
- * @code
- *     lxw_row_col_options options = {.hidden = 1, .level = 0, .collapsed = 0};
- *
- *     worksheet_set_column(worksheet, COLS("A:A"), 8.43, NULL, &options);
- * @endcode
- *
  */
 int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
                             lxw_col_t last_col, double width,
-                            lxw_format *format, lxw_row_col_options *options);
+                            lxw_format *format);
+
+ /**
+  * @brief Set the properties for one or more columns of cells with options.
+  *
+  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+  * @param first_col The zero indexed first column.
+  * @param last_col  The zero indexed last column.
+  * @param width     The width of the column(s).
+  * @param format    A pointer to a Format instance or NULL.
+  * @param options   Optional row parameters: hidden, level, collapsed.
+  *
+  * The `%worksheet_set_column_opt()` function  is the same as
+  * `worksheet_set_column()` with an additional `options` parameter.
+  *
+  * The `options` parameter is a #lxw_row_col_options struct. It has the
+  * following members but currently only the `hidden` property is supported:
+  *
+  * - `hidden`
+  * - `level`
+  * - `collapsed`
+  *
+  * The `"hidden"` option is used to hide a column. This can be used, for
+  * example, to hide intermediary steps in a complicated calculation:
+  *
+  * @code
+  *     lxw_row_col_options options = {.hidden = 1, .level = 0, .collapsed = 0};
+  *
+  *     worksheet_set_column_opt(worksheet, COLS("A:A"), 8.43, NULL, &options);
+  * @endcode
+  *
+  */
+int8_t worksheet_set_column_opt(lxw_worksheet *worksheet, lxw_col_t first_col,
+                                lxw_col_t last_col, double width,
+                                lxw_format *format,
+                                lxw_row_col_options *options);
 
 /**
  * @brief Insert an image in a worksheet cell.

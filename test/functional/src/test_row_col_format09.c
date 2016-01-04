@@ -28,7 +28,7 @@ int main() {
     _set_default_xf_indices(workbook);
 
     worksheet_set_row(worksheet, 4, 15, bold, NULL);
-    worksheet_set_column(worksheet, 2, 2, 8.43, italic, NULL);
+    worksheet_set_column(worksheet, 2, 2, 8.43, italic);
 
     worksheet_write_string(worksheet, 0, 2, "Foo", NULL);
     worksheet_write_string(worksheet, 4, 0, "Foo", NULL);

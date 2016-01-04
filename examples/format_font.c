@@ -17,7 +17,7 @@ int main() {
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Widen the first column to make the text clearer. */
-    worksheet_set_column(worksheet, 0, 0, 20, NULL, NULL);
+    worksheet_set_column(worksheet, 0, 0, 20, NULL);
 
     /* Add some formats. */
     lxw_format    *format1   = workbook_add_format(workbook);

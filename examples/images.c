@@ -15,7 +15,7 @@ int main() {
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Change some of the column widths for clarity. */
-    worksheet_set_column(worksheet, COLS("A:A"), 30, NULL, NULL);
+    worksheet_set_column(worksheet, COLS("A:A"), 30, NULL);
 
     /* Insert an image. */
     worksheet_write_string(worksheet, CELL("A2"), "Insert an image in a cell:", NULL);

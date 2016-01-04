@@ -18,8 +18,8 @@ int main() {
 
     worksheet_set_row(worksheet,    1,     4.5,  NULL, NULL);
     worksheet_set_row(worksheet,    2,    35.25, NULL, NULL);
-    worksheet_set_column(worksheet, 2, 4,  3.29, NULL, NULL);
-    worksheet_set_column(worksheet, 5, 5, 10.71, NULL, NULL);
+    worksheet_set_column(worksheet, 2, 4,  3.29, NULL);
+    worksheet_set_column(worksheet, 5, 5, 10.71, NULL);
 
     worksheet_insert_image_opt(worksheet, CELL("C2"), "images/logo.png", &options);
 

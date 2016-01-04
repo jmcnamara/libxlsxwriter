@@ -20,8 +20,8 @@ int main() {
     format_set_bold(format);
 
     /* Change the column widths for clarity. */
-    worksheet_set_column(worksheet, 0, 0, 20, NULL, NULL);
-    worksheet_set_column(worksheet, 1, 1,  2, NULL, NULL);
+    worksheet_set_column(worksheet, 0, 0, 20, NULL);
+    worksheet_set_column(worksheet, 1, 1,  2, NULL);
 
     /* Write some simple text. */
     worksheet_write_string(worksheet, 0, 0, "Hello", NULL);

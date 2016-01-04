@@ -14,7 +14,7 @@ int main() {
     lxw_workbook  *workbook  = new_workbook("test_row_col_format11.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
-    worksheet_set_column(worksheet, 2, 2, 4, NULL, NULL);
+    worksheet_set_column(worksheet, 2, 2, 4, NULL);
 
     return workbook_close(workbook);
 }

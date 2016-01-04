@@ -20,7 +20,7 @@ int main() {
     format_set_hidden(hidden);
 
     /* Widen the first column to make the text clearer. */
-    worksheet_set_column(worksheet, 0, 0, 40, NULL, NULL);
+    worksheet_set_column(worksheet, 0, 0, 40, NULL);
 
     /* Turn worksheet protection on without a password. */
     worksheet_protect(worksheet, NULL, NULL);

@@ -18,11 +18,11 @@ int main() {
 
     format_set_bold(bold);
 
-    worksheet_set_column(worksheet, COLS("B:D"), 5, NULL, NULL);
-    worksheet_set_column(worksheet, COLS("F:F"), 8, NULL, &options);
-    worksheet_set_column(worksheet, COLS("H:H"), LXW_DEF_COL_WIDTH, bold, NULL);
-    worksheet_set_column(worksheet, COLS("J:J"), 2, NULL, NULL);
-    worksheet_set_column(worksheet, COLS("L:L"), LXW_DEF_COL_WIDTH, NULL, &options);
+    worksheet_set_column(worksheet, COLS("B:D"), 5, NULL);
+    worksheet_set_column_opt(worksheet, COLS("F:F"), 8, NULL, &options);
+    worksheet_set_column(worksheet, COLS("H:H"), LXW_DEF_COL_WIDTH, bold);
+    worksheet_set_column(worksheet, COLS("J:J"), 2, NULL);
+    worksheet_set_column_opt(worksheet, COLS("L:L"), LXW_DEF_COL_WIDTH, NULL, &options);
 
     return workbook_close(workbook);
 }

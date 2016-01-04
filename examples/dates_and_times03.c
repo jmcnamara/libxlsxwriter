@@ -48,7 +48,7 @@ int main() {
     worksheet_write_string(worksheet, row, col + 1, "Format",         bold);
 
     /* Widen the first column to make the text clearer. */
-    worksheet_set_column(worksheet, 0, 1, 20, NULL, NULL);
+    worksheet_set_column(worksheet, 0, 1, 20, NULL);
 
     /* Write the same date and time using each of the above formats. */
     for (i = 0; i < 14; i++) {

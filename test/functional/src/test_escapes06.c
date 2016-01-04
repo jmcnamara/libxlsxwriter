@@ -17,7 +17,7 @@ int main() {
 
     format_set_num_format(num_format, "[Red]0.0%\\ \"a\"");
 
-    worksheet_set_column(worksheet, 0, 0, 14, NULL, NULL);
+    worksheet_set_column(worksheet, 0, 0, 14, NULL);
 
     worksheet_write_number(worksheet, CELL("A1"), 123, num_format);
 

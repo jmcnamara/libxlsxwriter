@@ -27,7 +27,7 @@ int main() {
 
     workbook_set_properties(workbook, properties);
 
-    worksheet_set_column(worksheet, 0, 0, 70, NULL, NULL);
+    worksheet_set_column(worksheet, 0, 0, 70, NULL);
     worksheet_write_string(worksheet, CELL("A1"), "Select 'Office Button -> Prepare -> Properties' to see the file properties." , NULL);
 
     free(properties->title);

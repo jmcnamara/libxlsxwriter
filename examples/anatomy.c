@@ -29,7 +29,7 @@ int main() {
     format_set_num_format(myformat2, "$#,##0.00");
 
     /* Widen the first column to make the text clearer. */
-    worksheet_set_column(worksheet1, 0, 0, 20, NULL, NULL);
+    worksheet_set_column(worksheet1, 0, 0, 20, NULL);
 
     /* Write some unformatted data. */
     worksheet_write_string(worksheet1, 0, 0, "Peach", NULL);

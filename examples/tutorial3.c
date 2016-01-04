@@ -48,7 +48,7 @@ int main() {
     format_set_num_format(date_format, "mmmm d yyyy");
 
     /* Adjust the column width. */
-    worksheet_set_column(worksheet, 0, 0, 15, NULL, NULL);
+    worksheet_set_column(worksheet, 0, 0, 15, NULL);
 
     /* Write some data header. */
     worksheet_write_string(worksheet, row, col,     "Item", bold);

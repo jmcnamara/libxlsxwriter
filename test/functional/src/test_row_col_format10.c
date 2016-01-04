@@ -17,7 +17,7 @@ int main() {
     lxw_format    *bold      = workbook_add_format(workbook);
     format_set_bold(bold);
 
-    worksheet_set_column(worksheet, 2, 2, LXW_DEF_COL_WIDTH, bold, NULL);
+    worksheet_set_column(worksheet, 2, 2, LXW_DEF_COL_WIDTH, bold);
 
     return workbook_close(workbook);
 }

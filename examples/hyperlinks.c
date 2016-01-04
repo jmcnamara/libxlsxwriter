@@ -28,7 +28,7 @@ int main() {
     format_set_font_color(red_format, LXW_COLOR_RED);
 
     /* Widen the first column to make the text clearer. */
-    worksheet_set_column(worksheet, 0, 0, 30, NULL, NULL);
+    worksheet_set_column(worksheet, 0, 0, 30, NULL);
 
     /* Write a hyperlink. */
     worksheet_write_url(worksheet,    0, 0, "http://libxlsxwriter.github.io", url_format);

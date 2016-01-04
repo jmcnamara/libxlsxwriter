@@ -15,7 +15,7 @@ int main() {
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_row_col_options options = {1, 0, 0};
 
-    worksheet_set_column(worksheet, 2, 2, LXW_DEF_COL_WIDTH, NULL, &options);
+    worksheet_set_column_opt(worksheet, 2, 2, LXW_DEF_COL_WIDTH, NULL, &options);
 
     return workbook_close(workbook);
 }

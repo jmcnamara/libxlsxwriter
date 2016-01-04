@@ -17,7 +17,7 @@ int main() {
     lxw_format    *italic      = workbook_add_format(workbook);
     format_set_italic(italic);
 
-    worksheet_set_column(worksheet, 16383, 16383, 8.43, italic, NULL);
+    worksheet_set_column(worksheet, 16383, 16383, 8.43, italic);
 
     return workbook_close(workbook);
 }

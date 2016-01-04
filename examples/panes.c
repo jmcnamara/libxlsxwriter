@@ -40,7 +40,7 @@ int main() {
     worksheet_freeze_panes(worksheet1, 1, 0);
 
     /* Some sheet formatting. */
-    worksheet_set_column(worksheet1, 0, 8, 16, NULL, NULL);
+    worksheet_set_column(worksheet1, 0, 8, 16, NULL);
     worksheet_set_row(worksheet1, 0, 20, NULL, NULL);
     worksheet_set_selection(worksheet1, 4, 3, 4, 3);
 
@@ -62,7 +62,7 @@ int main() {
     worksheet_freeze_panes(worksheet2, 0, 1);
 
     /* Some sheet formatting. */
-    worksheet_set_column(worksheet2, 0, 0, 16, NULL, NULL);
+    worksheet_set_column(worksheet2, 0, 0, 16, NULL);
     worksheet_set_selection(worksheet2, 4, 3, 4, 3);
 
     /* Some worksheet text to demonstrate scrolling. */
@@ -82,7 +82,7 @@ int main() {
 
 
     /* Some sheet formatting. */
-    worksheet_set_column(worksheet3, 0, 25, 16, NULL, NULL);
+    worksheet_set_column(worksheet3, 0, 25, 16, NULL);
     worksheet_set_row(worksheet3, 0, 20, NULL, NULL);
     worksheet_write_string(worksheet3, 0, 0, "", header);
     worksheet_set_selection(worksheet3, 4, 3, 4, 3);
