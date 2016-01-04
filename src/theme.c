@@ -289,7 +289,7 @@ const char *theme_strs[] = {
  * Create a new theme object.
  */
 lxw_theme *
-_new_theme()
+lxw_theme_new()
 {
     lxw_theme *theme = calloc(1, sizeof(lxw_theme));
     GOTO_LABEL_ON_MEM_ERROR(theme, mem_error);
@@ -297,7 +297,7 @@ _new_theme()
     return theme;
 
 mem_error:
-    _free_theme(theme);
+    lxw_theme_free(theme);
     return NULL;
 }
 
@@ -305,7 +305,7 @@ mem_error:
  * Free a theme object.
  */
 void
-_free_theme(lxw_theme *theme)
+lxw_theme_free(lxw_theme *theme)
 {
     if (!theme)
         return;
@@ -331,7 +331,7 @@ _free_theme(lxw_theme *theme)
  * Assemble and write the XML file.
  */
 void
-_theme_assemble_xml_file(lxw_theme *self)
+lxw_theme_assemble_xml_file(lxw_theme *self)
 {
     int i = 0;
 

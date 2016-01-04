@@ -344,17 +344,17 @@ _write_core_file(lxw_packager *self)
 STATIC uint8_t
 _write_theme_file(lxw_packager *self)
 {
-    lxw_theme *theme = _new_theme();
+    lxw_theme *theme = lxw_theme_new();
 
     theme->file = lxw_tmpfile();
 
-    _theme_assemble_xml_file(theme);
+    lxw_theme_assemble_xml_file(theme);
 
     _add_file_to_zip(self, theme->file, "xl/theme/theme1.xml");
 
     fclose(theme->file);
 
-    _free_theme(theme);
+    lxw_theme_free(theme);
 
     return 0;
 }

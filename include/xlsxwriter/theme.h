@@ -28,10 +28,10 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_theme *_new_theme();
-void _free_theme(lxw_theme *theme);
-void _theme_xml_declaration(lxw_theme *self);
-void _theme_assemble_xml_file(lxw_theme *self);
+lxw_theme *lxw_theme_new();
+void lxw_theme_free(lxw_theme *theme);
+void lxw_theme_xml_declaration(lxw_theme *self);
+void lxw_theme_assemble_xml_file(lxw_theme *self);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING
