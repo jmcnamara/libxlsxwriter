@@ -139,7 +139,7 @@ uint16_t lxw_get_col(const char *col_str);
 uint32_t lxw_get_row_2(const char *row_str);
 uint16_t lxw_get_col_2(const char *col_str);
 
-double _datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904);
+double lxw_datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904);
 
 char *lxw_strdup(const char *str);
 

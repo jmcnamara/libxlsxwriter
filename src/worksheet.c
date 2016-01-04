@@ -3421,7 +3421,7 @@ worksheet_write_datetime(lxw_worksheet *self,
     if (err)
         return err;
 
-    excel_date = _datetime_to_excel_date(datetime, EPOCH_1900);
+    excel_date = lxw_datetime_to_excel_date(datetime, EPOCH_1900);
 
     cell = _new_number_cell(row_num, col_num, excel_date, format);
 

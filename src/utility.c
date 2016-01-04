@@ -231,7 +231,7 @@ lxw_get_col_2(const char *col_str)
  * Convert a lxw_datetime struct to an Excel serial date.
  */
 double
-_datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904)
+lxw_datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904)
 {
     int year = datetime->year;
     int month = datetime->month;

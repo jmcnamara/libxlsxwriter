@@ -80,7 +80,7 @@
     datetime->min   = _min;                                         \
     datetime->sec   = _sec;                                         \
                                                                     \
-    got = _datetime_to_excel_date(datetime, 0);                     \
+    got = lxw_datetime_to_excel_date(datetime, 0);                  \
                                                                     \
     ASSERT_DOUBLE(exp, got);                                        \
     free(datetime);
@@ -91,7 +91,7 @@
     datetime->month = _month;                                       \
     datetime->day   = _day;                                         \
                                                                     \
-    got = _datetime_to_excel_date(datetime, 0);                     \
+    got = lxw_datetime_to_excel_date(datetime, 0);                  \
                                                                     \
     ASSERT_DOUBLE(exp, got);                                        \
     free(datetime);
@@ -102,7 +102,7 @@
     datetime->month = _month;                                       \
     datetime->day   = _day;                                         \
                                                                     \
-    got = _datetime_to_excel_date(datetime, 1);                     \
+    got = lxw_datetime_to_excel_date(datetime, 1);                  \
                                                                     \
     ASSERT_DOUBLE(exp, got);                                        \
     free(datetime);
@@ -116,7 +116,7 @@
     datetime->min   = _min;                                         \
     datetime->sec   = _sec;                                         \
                                                                     \
-    got = _datetime_to_excel_date(datetime, 0);                     \
+    got = lxw_datetime_to_excel_date(datetime, 0);                  \
                                                                     \
     ASSERT_DOUBLE(exp, got);                                        \
     free(datetime);
