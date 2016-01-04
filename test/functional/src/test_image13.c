@@ -16,7 +16,7 @@ int main() {
 
     lxw_image_options options = {.x_offset = 8, .y_offset = 5};
 
-    worksheet_set_row(worksheet, 1, 75, NULL, NULL);
+    worksheet_set_row(worksheet, 1, 75, NULL);
     worksheet_set_column(worksheet, 2, 2, 32, NULL);
 
     worksheet_insert_image_opt(worksheet, CELL("C2"), "images/logo.png", &options);

@@ -21,7 +21,7 @@ int main() {
     worksheet_write_string(worksheet, CELL("A10"), "Bar" , NULL);
 
     for (row = 1; row <= 8; row++)
-        worksheet_set_row(worksheet, row, 24, NULL, NULL);
+        worksheet_set_row(worksheet, row, 24, NULL);
 
     return workbook_close(workbook);
 }

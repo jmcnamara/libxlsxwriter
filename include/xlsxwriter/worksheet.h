@@ -1000,6 +1000,7 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
                                    const char *formula,
                                    lxw_format *format, double result);
 
+
 /**
  * @brief Set the properties for a row of cells.
  *
@@ -1007,7 +1008,6 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
  * @param row       The zero indexed row number.
  * @param height    The row height.
  * @param format    A pointer to a Format instance or NULL.
- * @param options   Optional row parameters: hidden, level, collapsed.
  *
  * The `%worksheet_set_row()` function is used to change the default
  * properties of a row. The most common use for this function is to change the
@@ -1015,7 +1015,7 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
  *
  * @code
  *     // Set the height of Row 1 to 20.
- *     worksheet_set_row(worksheet, 0, 20, NULL, NULL);
+ *     worksheet_set_row(worksheet, 0, 20, NULL);
  * @endcode
  *
  * The other common use for `%worksheet_set_row()` is to set the a @ref
@@ -1026,15 +1026,15 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
  *     format_set_bold(bold);
  *
  *     // Set the header row to bold.
- *     worksheet_set_row(worksheet, 0, 15, bold, NULL);
+ *     worksheet_set_row(worksheet, 0, 15, bold);
  * @endcode
  *
  * If you wish to set the format of a row without changing the height you can
  * pass the default row height of #LXW_DEF_ROW_HEIGHT = 15:
  *
  * @code
- *     worksheet_set_row(worksheet, 0, LXW_DEF_ROW_HEIGHT, format, NULL);
- *     worksheet_set_row(worksheet, 0, 15, format, NULL); // Same as above.
+ *     worksheet_set_row(worksheet, 0, LXW_DEF_ROW_HEIGHT, format);
+ *     worksheet_set_row(worksheet, 0, 15, format); // Same as above.
  * @endcode
  *
  * The `format` parameter will be applied to any cells in the row that don't
@@ -1043,7 +1043,7 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
  *
  * @code
  *     // Row 1 has format1.
- *     worksheet_set_row(worksheet, 0, 15, format1, NULL);
+ *     worksheet_set_row(worksheet, 0, 15, format1);
  *
  *     // Cell A1 in Row 1 defaults to format1.
  *     worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
@@ -1051,6 +1051,25 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
  *     // Cell B1 in Row 1 keeps format2.
  *     worksheet_write_string(worksheet, 0, 1, "Hello", format2);
  * @endcode
+ *
+ */
+int8_t worksheet_set_row(lxw_worksheet *worksheet,
+                         lxw_row_t row,
+                         double height,
+                         lxw_format *format);
+
+
+/**
+ * @brief Set the properties for a row of cells.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param height    The row height.
+ * @param format    A pointer to a Format instance or NULL.
+ * @param options   Optional row parameters: hidden, level, collapsed.
+ *
+ * The `%worksheet_set_row_opt()` function  is the same as
+ *  `worksheet_set_row()` with an additional `options` parameter.
  *
  * The `options` parameter is a #lxw_row_col_options struct. It has the
  * following members but currently only the `hidden` property is supported:
@@ -1070,10 +1089,11 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
  * @endcode
  *
  */
-int8_t worksheet_set_row(lxw_worksheet *worksheet,
-                         lxw_row_t row,
-                         double height,
-                         lxw_format *format, lxw_row_col_options *options);
+int8_t worksheet_set_row_opt(lxw_worksheet *worksheet,
+                             lxw_row_t row,
+                             double height,
+                             lxw_format *format,
+                             lxw_row_col_options *options);
 
 /**
  * @brief Set the properties for one or more columns of cells.
@@ -1164,8 +1184,10 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  *     worksheet_write_string(worksheet, 1, 0, "Hello", NULL);
  * @endcode
  */
-int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
-                            lxw_col_t last_col, double width,
+int8_t worksheet_set_column(lxw_worksheet *worksheet,
+                            lxw_col_t first_col,
+                            lxw_col_t last_col,
+                            double width,
                             lxw_format *format);
 
  /**
@@ -1198,8 +1220,10 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet, lxw_col_t first_col,
   * @endcode
   *
   */
-int8_t worksheet_set_column_opt(lxw_worksheet *worksheet, lxw_col_t first_col,
-                                lxw_col_t last_col, double width,
+int8_t worksheet_set_column_opt(lxw_worksheet *worksheet,
+                                lxw_col_t first_col,
+                                lxw_col_t last_col,
+                                double width,
                                 lxw_format *format,
                                 lxw_row_col_options *options);
 

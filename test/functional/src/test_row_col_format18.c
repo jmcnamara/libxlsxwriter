@@ -17,7 +17,7 @@ int main() {
     lxw_format    *bold      = workbook_add_format(workbook);
     format_set_bold(bold);
 
-    worksheet_set_row(worksheet, 1048575, 15, bold, NULL);
+    worksheet_set_row(worksheet, 1048575, 15, bold);
 
     worksheet_write_string(worksheet, 1048575, 0, "Bar", NULL);
 

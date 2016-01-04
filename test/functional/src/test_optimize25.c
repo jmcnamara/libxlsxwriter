@@ -19,7 +19,7 @@ int main() {
 
     format_set_bold(bold);
 
-    worksheet_set_row(worksheet, 0, 20, bold, NULL);
+    worksheet_set_row(worksheet, 0, 20, bold);
     worksheet_write_string(worksheet, 2, 0, "Foo", NULL);
 
     return workbook_close(workbook);

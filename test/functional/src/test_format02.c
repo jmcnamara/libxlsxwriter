@@ -18,7 +18,7 @@ int main() {
     lxw_format    *format1    = workbook_add_format(workbook);
     lxw_format    *format2    = workbook_add_format(workbook);
 
-    worksheet_set_row(worksheet, 0, 30, NULL, NULL);
+    worksheet_set_row(worksheet, 0, 30, NULL);
 
     format_set_font_name(format1, "Arial");
     format_set_bold(format1);

@@ -28,7 +28,7 @@ int main() {
     /* Set the height of empty rows that we do want to display even if it is */
     /* the default height. */
     for (row = 1; row <= 6; row++)
-        worksheet_set_row(worksheet, row, 15, NULL, NULL);
+        worksheet_set_row(worksheet, row, 15, NULL);
 
     /* Columns can be hidden explicitly. This doesn't increase the file size. */
     lxw_row_col_options options = {.hidden = 1};

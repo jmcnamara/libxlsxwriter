@@ -3781,10 +3781,10 @@ worksheet_set_column(lxw_worksheet *self,
 }
 
 /*
- * Set the properties of a row.
+ * Set the properties of a row with options.
  */
 int8_t
-worksheet_set_row(lxw_worksheet *self,
+worksheet_set_row_opt(lxw_worksheet *self,
                   lxw_row_t row_num,
                   double height,
                   lxw_format *format, lxw_row_col_options *user_options)
@@ -3833,6 +3833,18 @@ worksheet_set_row(lxw_worksheet *self,
         row->height_changed = LXW_TRUE;
 
     return 0;
+}
+
+/*
+ * Set the properties of a row.
+ */
+int8_t
+worksheet_set_row(lxw_worksheet *self,
+                  lxw_row_t row_num,
+                  double height,
+                  lxw_format *format)
+{
+    return worksheet_set_row_opt(self, row_num, height, format, NULL);
 }
 
 /*
