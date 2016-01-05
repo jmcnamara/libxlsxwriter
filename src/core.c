@@ -78,7 +78,7 @@ _localtime_to_iso8601_date(time_t *timer, char *str, size_t size)
 STATIC void
 _core_xml_declaration(lxw_core *self)
 {
-    _xml_declaration(self->file);
+    lxw_xml_declaration(self->file);
 }
 
 /*
@@ -90,18 +90,18 @@ _write_cp_core_properties(lxw_core *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("xmlns:cp",
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:cp",
                          "http://schemas.openxmlformats.org/package/2006/metadata/core-properties");
-    _PUSH_ATTRIBUTES_STR("xmlns:dc", "http://purl.org/dc/elements/1.1/");
-    _PUSH_ATTRIBUTES_STR("xmlns:dcterms", "http://purl.org/dc/terms/");
-    _PUSH_ATTRIBUTES_STR("xmlns:dcmitype", "http://purl.org/dc/dcmitype/");
-    _PUSH_ATTRIBUTES_STR("xmlns:xsi",
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:dc", "http://purl.org/dc/elements/1.1/");
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:dcterms", "http://purl.org/dc/terms/");
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:dcmitype", "http://purl.org/dc/dcmitype/");
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:xsi",
                          "http://www.w3.org/2001/XMLSchema-instance");
 
-    _xml_start_tag(self->file, "cp:coreProperties", &attributes);
+    lxw_xml_start_tag(self->file, "cp:coreProperties", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -111,11 +111,11 @@ STATIC void
 _write_dc_creator(lxw_core *self)
 {
     if (self->properties->author) {
-        _xml_data_element(self->file, "dc:creator", self->properties->author,
-                          NULL);
+        lxw_xml_data_element(self->file, "dc:creator",
+                             self->properties->author, NULL);
     }
     else {
-        _xml_data_element(self->file, "dc:creator", "", NULL);
+        lxw_xml_data_element(self->file, "dc:creator", "", NULL);
     }
 }
 
@@ -126,11 +126,11 @@ STATIC void
 _write_cp_last_modified_by(lxw_core *self)
 {
     if (self->properties->author) {
-        _xml_data_element(self->file, "cp:lastModifiedBy",
-                          self->properties->author, NULL);
+        lxw_xml_data_element(self->file, "cp:lastModifiedBy",
+                             self->properties->author, NULL);
     }
     else {
-        _xml_data_element(self->file, "cp:lastModifiedBy", "", NULL);
+        lxw_xml_data_element(self->file, "cp:lastModifiedBy", "", NULL);
     }
 }
 
@@ -146,12 +146,13 @@ _write_dcterms_created(lxw_core *self)
 
     _localtime_to_iso8601_date(&self->properties->created, datetime, ATTR_32);
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("xsi:type", "dcterms:W3CDTF");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xsi:type", "dcterms:W3CDTF");
 
-    _xml_data_element(self->file, "dcterms:created", datetime, &attributes);
+    lxw_xml_data_element(self->file, "dcterms:created", datetime,
+                         &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -166,12 +167,13 @@ _write_dcterms_modified(lxw_core *self)
 
     _localtime_to_iso8601_date(&self->properties->created, datetime, ATTR_32);
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("xsi:type", "dcterms:W3CDTF");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xsi:type", "dcterms:W3CDTF");
 
-    _xml_data_element(self->file, "dcterms:modified", datetime, &attributes);
+    lxw_xml_data_element(self->file, "dcterms:modified", datetime,
+                         &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -183,7 +185,8 @@ _write_dc_title(lxw_core *self)
     if (!self->properties->title)
         return;
 
-    _xml_data_element(self->file, "dc:title", self->properties->title, NULL);
+    lxw_xml_data_element(self->file, "dc:title", self->properties->title,
+                         NULL);
 }
 
 /*
@@ -195,8 +198,8 @@ _write_dc_subject(lxw_core *self)
     if (!self->properties->subject)
         return;
 
-    _xml_data_element(self->file, "dc:subject", self->properties->subject,
-                      NULL);
+    lxw_xml_data_element(self->file, "dc:subject", self->properties->subject,
+                         NULL);
 }
 
 /*
@@ -208,8 +211,8 @@ _write_cp_keywords(lxw_core *self)
     if (!self->properties->keywords)
         return;
 
-    _xml_data_element(self->file, "cp:keywords", self->properties->keywords,
-                      NULL);
+    lxw_xml_data_element(self->file, "cp:keywords",
+                         self->properties->keywords, NULL);
 }
 
 /*
@@ -221,8 +224,8 @@ _write_dc_description(lxw_core *self)
     if (!self->properties->comments)
         return;
 
-    _xml_data_element(self->file, "dc:description",
-                      self->properties->comments, NULL);
+    lxw_xml_data_element(self->file, "dc:description",
+                         self->properties->comments, NULL);
 }
 
 /*
@@ -234,8 +237,8 @@ _write_cp_category(lxw_core *self)
     if (!self->properties->category)
         return;
 
-    _xml_data_element(self->file, "cp:category", self->properties->category,
-                      NULL);
+    lxw_xml_data_element(self->file, "cp:category",
+                         self->properties->category, NULL);
 }
 
 /*
@@ -247,8 +250,8 @@ _write_cp_content_status(lxw_core *self)
     if (!self->properties->status)
         return;
 
-    _xml_data_element(self->file, "cp:contentStatus",
-                      self->properties->status, NULL);
+    lxw_xml_data_element(self->file, "cp:contentStatus",
+                         self->properties->status, NULL);
 }
 
 /*****************************************************************************
@@ -278,7 +281,7 @@ lxw_core_assemble_xml_file(lxw_core *self)
     _write_cp_category(self);
     _write_cp_content_status(self);
 
-    _xml_end_tag(self->file, "cp:coreProperties");
+    lxw_xml_end_tag(self->file, "cp:coreProperties");
 }
 
 /*****************************************************************************

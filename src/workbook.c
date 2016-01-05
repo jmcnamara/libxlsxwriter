@@ -733,7 +733,7 @@ _prepare_defined_names(lxw_workbook *self)
 STATIC void
 _workbook_xml_declaration(lxw_workbook *self)
 {
-    _xml_declaration(self->file);
+    lxw_xml_declaration(self->file);
 }
 
 /*
@@ -749,13 +749,13 @@ _write_workbook(lxw_workbook *self)
     char xmlns_r[] = "http://schemas.openxmlformats.org"
         "/officeDocument/2006/relationships";
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("xmlns", xmlns);
-    _PUSH_ATTRIBUTES_STR("xmlns:r", xmlns_r);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xmlns", xmlns);
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:r", xmlns_r);
 
-    _xml_start_tag(self->file, "workbook", &attributes);
+    lxw_xml_start_tag(self->file, "workbook", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -767,15 +767,15 @@ _write_file_version(lxw_workbook *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("appName", "xl");
-    _PUSH_ATTRIBUTES_STR("lastEdited", "4");
-    _PUSH_ATTRIBUTES_STR("lowestEdited", "4");
-    _PUSH_ATTRIBUTES_STR("rupBuild", "4505");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("appName", "xl");
+    LXW_PUSH_ATTRIBUTES_STR("lastEdited", "4");
+    LXW_PUSH_ATTRIBUTES_STR("lowestEdited", "4");
+    LXW_PUSH_ATTRIBUTES_STR("rupBuild", "4505");
 
-    _xml_empty_tag(self->file, "fileVersion", &attributes);
+    lxw_xml_empty_tag(self->file, "fileVersion", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -787,12 +787,12 @@ _write_workbook_pr(lxw_workbook *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("defaultThemeVersion", "124226");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("defaultThemeVersion", "124226");
 
-    _xml_empty_tag(self->file, "workbookPr", &attributes);
+    lxw_xml_empty_tag(self->file, "workbookPr", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -804,21 +804,21 @@ _write_workbook_view(lxw_workbook *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("xWindow", "240");
-    _PUSH_ATTRIBUTES_STR("yWindow", "15");
-    _PUSH_ATTRIBUTES_STR("windowWidth", "16095");
-    _PUSH_ATTRIBUTES_STR("windowHeight", "9660");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xWindow", "240");
+    LXW_PUSH_ATTRIBUTES_STR("yWindow", "15");
+    LXW_PUSH_ATTRIBUTES_STR("windowWidth", "16095");
+    LXW_PUSH_ATTRIBUTES_STR("windowHeight", "9660");
 
     if (self->first_sheet)
-        _PUSH_ATTRIBUTES_INT("firstSheet", self->first_sheet);
+        LXW_PUSH_ATTRIBUTES_INT("firstSheet", self->first_sheet);
 
     if (self->active_sheet)
-        _PUSH_ATTRIBUTES_INT("activeTab", self->active_sheet);
+        LXW_PUSH_ATTRIBUTES_INT("activeTab", self->active_sheet);
 
-    _xml_empty_tag(self->file, "workbookView", &attributes);
+    lxw_xml_empty_tag(self->file, "workbookView", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -827,11 +827,11 @@ _write_workbook_view(lxw_workbook *self)
 STATIC void
 _write_book_views(lxw_workbook *self)
 {
-    _xml_start_tag(self->file, "bookViews", NULL);
+    lxw_xml_start_tag(self->file, "bookViews", NULL);
 
     _write_workbook_view(self);
 
-    _xml_end_tag(self->file, "bookViews");
+    lxw_xml_end_tag(self->file, "bookViews");
 }
 
 /*
@@ -847,18 +847,18 @@ _write_sheet(lxw_workbook *self, const char *name, uint32_t sheet_id,
 
     lxw_snprintf(r_id, ATTR_32, "rId%d", sheet_id);
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("name", name);
-    _PUSH_ATTRIBUTES_INT("sheetId", sheet_id);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("name", name);
+    LXW_PUSH_ATTRIBUTES_INT("sheetId", sheet_id);
 
     if (hidden)
-        _PUSH_ATTRIBUTES_STR("state", "hidden");
+        LXW_PUSH_ATTRIBUTES_STR("state", "hidden");
 
-    _PUSH_ATTRIBUTES_STR("r:id", r_id);
+    LXW_PUSH_ATTRIBUTES_STR("r:id", r_id);
 
-    _xml_empty_tag(self->file, "sheet", &attributes);
+    lxw_xml_empty_tag(self->file, "sheet", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -869,14 +869,14 @@ _write_sheets(lxw_workbook *self)
 {
     lxw_worksheet *worksheet;
 
-    _xml_start_tag(self->file, "sheets", NULL);
+    lxw_xml_start_tag(self->file, "sheets", NULL);
 
     STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
         _write_sheet(self, worksheet->name, worksheet->index + 1,
                      worksheet->hidden);
     }
 
-    _xml_end_tag(self->file, "sheets");
+    lxw_xml_end_tag(self->file, "sheets");
 }
 
 /*
@@ -888,13 +888,13 @@ _write_calc_pr(lxw_workbook *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("calcId", "124519");
-    _PUSH_ATTRIBUTES_STR("fullCalcOnLoad", "1");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("calcId", "124519");
+    LXW_PUSH_ATTRIBUTES_STR("fullCalcOnLoad", "1");
 
-    _xml_empty_tag(self->file, "calcPr", &attributes);
+    lxw_xml_empty_tag(self->file, "calcPr", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -906,19 +906,19 @@ _write_defined_name(lxw_workbook *self, lxw_defined_name *defined_name)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("name", defined_name->name);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("name", defined_name->name);
 
     if (defined_name->index != -1)
-        _PUSH_ATTRIBUTES_INT("localSheetId", defined_name->index);
+        LXW_PUSH_ATTRIBUTES_INT("localSheetId", defined_name->index);
 
     if (defined_name->hidden)
-        _PUSH_ATTRIBUTES_INT("hidden", 1);
+        LXW_PUSH_ATTRIBUTES_INT("hidden", 1);
 
-    _xml_data_element(self->file, "definedName", defined_name->formula,
-                      &attributes);
+    lxw_xml_data_element(self->file, "definedName", defined_name->formula,
+                         &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -932,13 +932,13 @@ _write_defined_names(lxw_workbook *self)
     if (TAILQ_EMPTY(self->defined_names))
         return;
 
-    _xml_start_tag(self->file, "definedNames", NULL);
+    lxw_xml_start_tag(self->file, "definedNames", NULL);
 
     TAILQ_FOREACH(defined_name, self->defined_names, list_pointers) {
         _write_defined_name(self, defined_name);
     }
 
-    _xml_end_tag(self->file, "definedNames");
+    lxw_xml_end_tag(self->file, "definedNames");
 }
 
 /*****************************************************************************
@@ -981,7 +981,7 @@ lxw_workbook_assemble_xml_file(lxw_workbook *self)
     _write_calc_pr(self);
 
     /* Close the workbook tag. */
-    _xml_end_tag(self->file, "workbook");
+    lxw_xml_end_tag(self->file, "workbook");
 }
 
 /*****************************************************************************

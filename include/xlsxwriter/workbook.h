@@ -476,7 +476,6 @@ void lxw_workbook_set_default_xf_indices(lxw_workbook *workbook);
 #ifdef TESTING
 
 STATIC void _workbook_xml_declaration(lxw_workbook *self);
-STATIC void _workbook_xml_declaration(lxw_workbook *self);
 STATIC void _write_workbook(lxw_workbook *self);
 STATIC void _write_file_version(lxw_workbook *self);
 STATIC void _write_workbook_pr(lxw_workbook *self);

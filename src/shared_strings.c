@@ -108,7 +108,7 @@ _element_cmp(struct sst_element *element1, struct sst_element *element2)
 STATIC void
 _sst_xml_declaration(lxw_sst *self)
 {
-    _xml_declaration(self->file);
+    lxw_xml_declaration(self->file);
 }
 
 /*
@@ -120,16 +120,16 @@ _write_t(lxw_sst *self, char *string)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     /* Add attribute to preserve leading or trailing whitespace. */
     if (isspace((unsigned char) string[0])
         || isspace((unsigned char) string[strlen(string) - 1]))
-        _PUSH_ATTRIBUTES_STR("xml:space", "preserve");
+        LXW_PUSH_ATTRIBUTES_STR("xml:space", "preserve");
 
-    _xml_data_element(self->file, "t", string, &attributes);
+    lxw_xml_data_element(self->file, "t", string, &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -140,20 +140,20 @@ _write_si(lxw_sst *self, char *string)
 {
     uint8_t escaped_string = LXW_FALSE;
 
-    _xml_start_tag(self->file, "si", NULL);
+    lxw_xml_start_tag(self->file, "si", NULL);
 
     /* Look for and escape control chars in the string. */
     if (strpbrk(string, "\x01\x02\x03\x04\x05\x06\x07\x08\x0B\x0C"
                 "\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16"
                 "\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F")) {
-        string = _escape_control_characters(string);
+        string = lxw_escape_control_characters(string);
         escaped_string = LXW_TRUE;
     }
 
     /* Write the t element. */
     _write_t(self, string);
 
-    _xml_end_tag(self->file, "si");
+    lxw_xml_end_tag(self->file, "si");
 
     if (escaped_string)
         free(string);
@@ -170,14 +170,14 @@ _write_sst(lxw_sst *self)
     char xmlns[] =
         "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("xmlns", xmlns);
-    _PUSH_ATTRIBUTES_INT("count", self->string_count);
-    _PUSH_ATTRIBUTES_INT("uniqueCount", self->unique_count);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xmlns", xmlns);
+    LXW_PUSH_ATTRIBUTES_INT("count", self->string_count);
+    LXW_PUSH_ATTRIBUTES_INT("uniqueCount", self->unique_count);
 
-    _xml_start_tag(self->file, "sst", &attributes);
+    lxw_xml_start_tag(self->file, "sst", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*****************************************************************************
@@ -216,7 +216,7 @@ lxw_sst_assemble_xml_file(lxw_sst *self)
     _write_sst_strings(self);
 
     /* Close the sst tag. */
-    _xml_end_tag(self->file, "sst");
+    lxw_xml_end_tag(self->file, "sst");
 }
 
 /*****************************************************************************

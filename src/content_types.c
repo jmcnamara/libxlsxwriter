@@ -105,7 +105,7 @@ lxw_content_types_free(lxw_content_types *content_types)
 STATIC void
 _content_types_xml_declaration(lxw_content_types *self)
 {
-    _xml_declaration(self->file);
+    lxw_xml_declaration(self->file);
 }
 
 /*
@@ -117,12 +117,12 @@ _write_types(lxw_content_types *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("xmlns", LXW_CONTENT_TYPE_SCHEMA);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xmlns", LXW_CONTENT_TYPE_SCHEMA);
 
-    _xml_start_tag(self->file, "Types", &attributes);
+    lxw_xml_start_tag(self->file, "Types", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -134,13 +134,13 @@ _write_default(lxw_content_types *self, const char *ext, const char *type)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("Extension", ext);
-    _PUSH_ATTRIBUTES_STR("ContentType", type);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("Extension", ext);
+    LXW_PUSH_ATTRIBUTES_STR("ContentType", type);
 
-    _xml_empty_tag(self->file, "Default", &attributes);
+    lxw_xml_empty_tag(self->file, "Default", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -153,13 +153,13 @@ _write_override(lxw_content_types *self, const char *part_name,
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("PartName", part_name);
-    _PUSH_ATTRIBUTES_STR("ContentType", type);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("PartName", part_name);
+    LXW_PUSH_ATTRIBUTES_STR("ContentType", type);
 
-    _xml_empty_tag(self->file, "Override", &attributes);
+    lxw_xml_empty_tag(self->file, "Override", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*****************************************************************************
@@ -208,7 +208,7 @@ lxw_content_types_assemble_xml_file(lxw_content_types *self)
     _write_overrides(self);
 
     /* Close the content_types tag. */
-    _xml_end_tag(self->file, "Types");
+    lxw_xml_end_tag(self->file, "Types");
 }
 
 /*****************************************************************************

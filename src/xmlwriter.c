@@ -29,7 +29,7 @@ void _fprint_escaped_data(FILE * xmlfile, const char *data);
  * Write the XML declaration.
  */
 void
-_xml_declaration(FILE * xmlfile)
+lxw_xml_declaration(FILE * xmlfile)
 {
     fprintf(xmlfile, "<?xml version=\"1.0\" "
             "encoding=\"UTF-8\" standalone=\"yes\"?>\n");
@@ -39,8 +39,8 @@ _xml_declaration(FILE * xmlfile)
  * Write an XML start tag with optional attributes.
  */
 void
-_xml_start_tag(FILE * xmlfile,
-               const char *tag, struct xml_attribute_list *attributes)
+lxw_xml_start_tag(FILE * xmlfile,
+                  const char *tag, struct xml_attribute_list *attributes)
 {
     fprintf(xmlfile, "<%s", tag);
 
@@ -54,9 +54,9 @@ _xml_start_tag(FILE * xmlfile,
  * This is a minor speed optimization for elements that don't need encoding.
  */
 void
-_xml_start_tag_unencoded(FILE * xmlfile,
-                         const char *tag,
-                         struct xml_attribute_list *attributes)
+lxw_xml_start_tag_unencoded(FILE * xmlfile,
+                            const char *tag,
+                            struct xml_attribute_list *attributes)
 {
     struct xml_attribute *attribute;
 
@@ -75,7 +75,7 @@ _xml_start_tag_unencoded(FILE * xmlfile,
  * Write an XML end tag.
  */
 void
-_xml_end_tag(FILE * xmlfile, const char *tag)
+lxw_xml_end_tag(FILE * xmlfile, const char *tag)
 {
     fprintf(xmlfile, "</%s>", tag);
 }
@@ -84,8 +84,8 @@ _xml_end_tag(FILE * xmlfile, const char *tag)
  * Write an empty XML tag with optional attributes.
  */
 void
-_xml_empty_tag(FILE * xmlfile,
-               const char *tag, struct xml_attribute_list *attributes)
+lxw_xml_empty_tag(FILE * xmlfile,
+                  const char *tag, struct xml_attribute_list *attributes)
 {
     fprintf(xmlfile, "<%s", tag);
 
@@ -99,9 +99,9 @@ _xml_empty_tag(FILE * xmlfile,
  * This is a minor speed optimization for elements that don't need encoding.
  */
 void
-_xml_empty_tag_unencoded(FILE * xmlfile,
-                         const char *tag,
-                         struct xml_attribute_list *attributes)
+lxw_xml_empty_tag_unencoded(FILE * xmlfile,
+                            const char *tag,
+                            struct xml_attribute_list *attributes)
 {
     struct xml_attribute *attribute;
 
@@ -120,9 +120,9 @@ _xml_empty_tag_unencoded(FILE * xmlfile,
  * Write an XML element containing data with optional attributes.
  */
 void
-_xml_data_element(FILE * xmlfile,
-                  const char *tag,
-                  const char *data, struct xml_attribute_list *attributes)
+lxw_xml_data_element(FILE * xmlfile,
+                     const char *tag,
+                     const char *data, struct xml_attribute_list *attributes)
 {
     fprintf(xmlfile, "<%s", tag);
 
@@ -216,7 +216,7 @@ _escape_data(const char *data)
  * Escape control characters in strings with with _xHHHH_.
  */
 char *
-_escape_control_characters(const char *string)
+lxw_escape_control_characters(const char *string)
 {
     size_t escape_len = sizeof("_xHHHH_") - 1;
     size_t encoded_len = (strlen(string) * escape_len + 1);
@@ -315,7 +315,7 @@ _fprint_escaped_data(FILE * xmlfile, const char *data)
 
 /* Create a new string XML attribute. */
 struct xml_attribute *
-_new_attribute_str(const char *key, const char *value)
+lxw_new_attribute_str(const char *key, const char *value)
 {
     struct xml_attribute *attribute = malloc(sizeof(struct xml_attribute));
 
@@ -327,7 +327,7 @@ _new_attribute_str(const char *key, const char *value)
 
 /* Create a new integer XML attribute. */
 struct xml_attribute *
-_new_attribute_int(const char *key, uint32_t value)
+lxw_new_attribute_int(const char *key, uint32_t value)
 {
     struct xml_attribute *attribute = malloc(sizeof(struct xml_attribute));
 
@@ -339,7 +339,7 @@ _new_attribute_int(const char *key, uint32_t value)
 
 /* Create a new double XML attribute. */
 struct xml_attribute *
-_new_attribute_dbl(const char *key, double value)
+lxw_new_attribute_dbl(const char *key, double value)
 {
     struct xml_attribute *attribute = malloc(sizeof(struct xml_attribute));
 

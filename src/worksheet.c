@@ -778,7 +778,7 @@ _hash_password(char *password)
 STATIC void
 _worksheet_xml_declaration(lxw_worksheet *self)
 {
-    _xml_declaration(self->file);
+    lxw_xml_declaration(self->file);
 }
 
 /*
@@ -794,12 +794,12 @@ _worksheet_write_worksheet(lxw_worksheet *self)
     char xmlns_r[] = "http://schemas.openxmlformats.org/"
         "officeDocument/2006/relationships";
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("xmlns", xmlns);
-    _PUSH_ATTRIBUTES_STR("xmlns:r", xmlns_r);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xmlns", xmlns);
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:r", xmlns_r);
 
-    _xml_start_tag(self->file, "worksheet", &attributes);
-    _FREE_ATTRIBUTES();
+    lxw_xml_start_tag(self->file, "worksheet", &attributes);
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -830,12 +830,12 @@ _worksheet_write_dimension(lxw_worksheet *self)
         lxw_range(ref, dim_rowmin, dim_colmin, dim_rowmax, dim_colmax);
     }
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("ref", ref);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("ref", ref);
 
-    _xml_empty_tag(self->file, "dimension", &attributes);
+    lxw_xml_empty_tag(self->file, "dimension", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -870,7 +870,7 @@ _worksheet_write_freeze_panes(lxw_worksheet *self)
         RETURN_VOID_ON_MEM_ERROR(user_selection);
     }
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     lxw_rowcol_to_cell(top_left_cell, top_row, left_col);
 
@@ -934,24 +934,24 @@ _worksheet_write_freeze_panes(lxw_worksheet *self)
     }
 
     if (col)
-        _PUSH_ATTRIBUTES_INT("xSplit", col);
+        LXW_PUSH_ATTRIBUTES_INT("xSplit", col);
 
     if (row)
-        _PUSH_ATTRIBUTES_INT("ySplit", row);
+        LXW_PUSH_ATTRIBUTES_INT("ySplit", row);
 
-    _PUSH_ATTRIBUTES_STR("topLeftCell", top_left_cell);
-    _PUSH_ATTRIBUTES_STR("activePane", active_pane);
+    LXW_PUSH_ATTRIBUTES_STR("topLeftCell", top_left_cell);
+    LXW_PUSH_ATTRIBUTES_STR("activePane", active_pane);
 
     if (self->panes.type == FREEZE_PANES)
-        _PUSH_ATTRIBUTES_STR("state", "frozen");
+        LXW_PUSH_ATTRIBUTES_STR("state", "frozen");
     else if (self->panes.type == FREEZE_SPLIT_PANES)
-        _PUSH_ATTRIBUTES_STR("state", "frozenSplit");
+        LXW_PUSH_ATTRIBUTES_STR("state", "frozenSplit");
 
-    _xml_empty_tag(self->file, "pane", &attributes);
+    lxw_xml_empty_tag(self->file, "pane", &attributes);
 
     free(user_selection);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -1023,7 +1023,7 @@ _worksheet_write_split_panes(lxw_worksheet *self)
         RETURN_VOID_ON_MEM_ERROR(user_selection);
     }
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     /* Convert the row and col to 1/20 twip units with padding. */
     if (y_split > 0.0)
@@ -1109,21 +1109,21 @@ _worksheet_write_split_panes(lxw_worksheet *self)
     }
 
     if (x_split > 0.0)
-        _PUSH_ATTRIBUTES_DBL("xSplit", x_split);
+        LXW_PUSH_ATTRIBUTES_DBL("xSplit", x_split);
 
     if (y_split > 0.0)
-        _PUSH_ATTRIBUTES_DBL("ySplit", y_split);
+        LXW_PUSH_ATTRIBUTES_DBL("ySplit", y_split);
 
-    _PUSH_ATTRIBUTES_STR("topLeftCell", top_left_cell);
+    LXW_PUSH_ATTRIBUTES_STR("topLeftCell", top_left_cell);
 
     if (has_selection)
-        _PUSH_ATTRIBUTES_STR("activePane", active_pane);
+        LXW_PUSH_ATTRIBUTES_STR("activePane", active_pane);
 
-    _xml_empty_tag(self->file, "pane", &attributes);
+    lxw_xml_empty_tag(self->file, "pane", &attributes);
 
     free(user_selection);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -1135,20 +1135,20 @@ _worksheet_write_selection(lxw_worksheet *self, lxw_selection *selection)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     if (*selection->pane)
-        _PUSH_ATTRIBUTES_STR("pane", selection->pane);
+        LXW_PUSH_ATTRIBUTES_STR("pane", selection->pane);
 
     if (*selection->active_cell)
-        _PUSH_ATTRIBUTES_STR("activeCell", selection->active_cell);
+        LXW_PUSH_ATTRIBUTES_STR("activeCell", selection->active_cell);
 
     if (*selection->sqref)
-        _PUSH_ATTRIBUTES_STR("sqref", selection->sqref);
+        LXW_PUSH_ATTRIBUTES_STR("sqref", selection->sqref);
 
-    _xml_empty_tag(self->file, "selection", &attributes);
+    lxw_xml_empty_tag(self->file, "selection", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -1192,58 +1192,58 @@ _worksheet_write_sheet_view(lxw_worksheet *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     /* Hide screen gridlines if required */
     if (!self->screen_gridlines)
-        _PUSH_ATTRIBUTES_STR("showGridLines", "0");
+        LXW_PUSH_ATTRIBUTES_STR("showGridLines", "0");
 
     /* Hide zeroes in cells. */
     if (!self->show_zeros) {
-        _PUSH_ATTRIBUTES_STR("showZeros", "0");
+        LXW_PUSH_ATTRIBUTES_STR("showZeros", "0");
     }
 
     /* Display worksheet right to left for Hebrew, Arabic and others. */
     if (self->right_to_left) {
-        _PUSH_ATTRIBUTES_STR("rightToLeft", "1");
+        LXW_PUSH_ATTRIBUTES_STR("rightToLeft", "1");
     }
 
     /* Show that the sheet tab is selected. */
     if (self->selected)
-        _PUSH_ATTRIBUTES_STR("tabSelected", "1");
+        LXW_PUSH_ATTRIBUTES_STR("tabSelected", "1");
 
     /* Turn outlines off. Also required in the outlinePr element. */
     if (!self->outline_on) {
-        _PUSH_ATTRIBUTES_STR("showOutlineSymbols", "0");
+        LXW_PUSH_ATTRIBUTES_STR("showOutlineSymbols", "0");
     }
 
     /* Set the page view/layout mode if required. */
     if (self->page_view)
-        _PUSH_ATTRIBUTES_STR("view", "pageLayout");
+        LXW_PUSH_ATTRIBUTES_STR("view", "pageLayout");
 
     /* Set the zoom level. */
     if (self->zoom != 100) {
         if (!self->page_view) {
-            _PUSH_ATTRIBUTES_INT("zoomScale", self->zoom);
+            LXW_PUSH_ATTRIBUTES_INT("zoomScale", self->zoom);
 
             if (self->zoom_scale_normal)
-                _PUSH_ATTRIBUTES_INT("zoomScaleNormal", self->zoom);
+                LXW_PUSH_ATTRIBUTES_INT("zoomScaleNormal", self->zoom);
         }
     }
 
-    _PUSH_ATTRIBUTES_STR("workbookViewId", "0");
+    LXW_PUSH_ATTRIBUTES_STR("workbookViewId", "0");
 
     if (self->panes.type != NO_PANES || !STAILQ_EMPTY(self->selections)) {
-        _xml_start_tag(self->file, "sheetView", &attributes);
+        lxw_xml_start_tag(self->file, "sheetView", &attributes);
         _worksheet_write_panes(self);
         _worksheet_write_selections(self);
-        _xml_end_tag(self->file, "sheetView");
+        lxw_xml_end_tag(self->file, "sheetView");
     }
     else {
-        _xml_empty_tag(self->file, "sheetView", &attributes);
+        lxw_xml_empty_tag(self->file, "sheetView", &attributes);
     }
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -1252,12 +1252,12 @@ _worksheet_write_sheet_view(lxw_worksheet *self)
 STATIC void
 _worksheet_write_sheet_views(lxw_worksheet *self)
 {
-    _xml_start_tag(self->file, "sheetViews", NULL);
+    lxw_xml_start_tag(self->file, "sheetViews", NULL);
 
     /* Write the sheetView element. */
     _worksheet_write_sheet_view(self);
 
-    _xml_end_tag(self->file, "sheetViews");
+    lxw_xml_end_tag(self->file, "sheetViews");
 }
 
 /*
@@ -1269,18 +1269,18 @@ _worksheet_write_sheet_format_pr(lxw_worksheet *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_DBL("defaultRowHeight", self->default_row_height);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_DBL("defaultRowHeight", self->default_row_height);
 
     if (self->default_row_height != LXW_DEF_ROW_HEIGHT)
-        _PUSH_ATTRIBUTES_STR("customHeight", "1");
+        LXW_PUSH_ATTRIBUTES_STR("customHeight", "1");
 
     if (self->default_row_zeroed)
-        _PUSH_ATTRIBUTES_STR("zeroHeight", "1");
+        LXW_PUSH_ATTRIBUTES_STR("zeroHeight", "1");
 
-    _xml_empty_tag(self->file, "sheetFormatPr", &attributes);
+    lxw_xml_empty_tag(self->file, "sheetFormatPr", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -1290,12 +1290,12 @@ STATIC void
 _worksheet_write_sheet_data(lxw_worksheet *self)
 {
     if (RB_EMPTY(self->table)) {
-        _xml_empty_tag(self->file, "sheetData", NULL);
+        lxw_xml_empty_tag(self->file, "sheetData", NULL);
     }
     else {
-        _xml_start_tag(self->file, "sheetData", NULL);
+        lxw_xml_start_tag(self->file, "sheetData", NULL);
         _worksheet_write_rows(self);
-        _xml_end_tag(self->file, "sheetData");
+        lxw_xml_end_tag(self->file, "sheetData");
     }
 }
 
@@ -1312,11 +1312,11 @@ _worksheet_write_optimized_sheet_data(lxw_worksheet *self)
 
     if (self->dim_rowmin == LXW_ROW_MAX) {
         /* If the dimensions aren't defined then there is no data to write. */
-        _xml_empty_tag(self->file, "sheetData", NULL);
+        lxw_xml_empty_tag(self->file, "sheetData", NULL);
     }
     else {
 
-        _xml_start_tag(self->file, "sheetData", NULL);
+        lxw_xml_start_tag(self->file, "sheetData", NULL);
 
         /* Flush and rewind the temp file. */
         fflush(self->optimize_tmpfile);
@@ -1329,7 +1329,7 @@ _worksheet_write_optimized_sheet_data(lxw_worksheet *self)
 
         fclose(self->optimize_tmpfile);
 
-        _xml_end_tag(self->file, "sheetData");
+        lxw_xml_end_tag(self->file, "sheetData");
     }
 }
 
@@ -1348,17 +1348,17 @@ _worksheet_write_page_margins(lxw_worksheet *self)
     double header = self->margin_header;
     double footer = self->margin_footer;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_DBL("left", left);
-    _PUSH_ATTRIBUTES_DBL("right", right);
-    _PUSH_ATTRIBUTES_DBL("top", top);
-    _PUSH_ATTRIBUTES_DBL("bottom", bottom);
-    _PUSH_ATTRIBUTES_DBL("header", header);
-    _PUSH_ATTRIBUTES_DBL("footer", footer);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_DBL("left", left);
+    LXW_PUSH_ATTRIBUTES_DBL("right", right);
+    LXW_PUSH_ATTRIBUTES_DBL("top", top);
+    LXW_PUSH_ATTRIBUTES_DBL("bottom", bottom);
+    LXW_PUSH_ATTRIBUTES_DBL("header", header);
+    LXW_PUSH_ATTRIBUTES_DBL("footer", footer);
 
-    _xml_empty_tag(self->file, "pageMargins", &attributes);
+    lxw_xml_empty_tag(self->file, "pageMargins", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -1384,54 +1384,54 @@ _worksheet_write_page_setup(lxw_worksheet *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     if (!self->page_setup_changed)
         return;
 
     /* Set paper size. */
     if (self->paper_size)
-        _PUSH_ATTRIBUTES_INT("paperSize", self->paper_size);
+        LXW_PUSH_ATTRIBUTES_INT("paperSize", self->paper_size);
 
     /* Set the print_scale. */
     if (self->print_scale != 100)
-        _PUSH_ATTRIBUTES_INT("scale", self->print_scale);
+        LXW_PUSH_ATTRIBUTES_INT("scale", self->print_scale);
 
     /* Set the "Fit to page" properties. */
     if (self->fit_page && self->fit_width != 1)
-        _PUSH_ATTRIBUTES_INT("fitToWidth", self->fit_width);
+        LXW_PUSH_ATTRIBUTES_INT("fitToWidth", self->fit_width);
 
     if (self->fit_page && self->fit_height != 1)
-        _PUSH_ATTRIBUTES_INT("fitToHeight", self->fit_height);
+        LXW_PUSH_ATTRIBUTES_INT("fitToHeight", self->fit_height);
 
     /* Set the page print direction. */
     if (self->page_order)
-        _PUSH_ATTRIBUTES_STR("pageOrder", "overThenDown");
+        LXW_PUSH_ATTRIBUTES_STR("pageOrder", "overThenDown");
 
     /* Set start page. */
     if (self->page_start > 1)
-        _PUSH_ATTRIBUTES_INT("firstPageNumber", self->page_start);
+        LXW_PUSH_ATTRIBUTES_INT("firstPageNumber", self->page_start);
 
     /* Set page orientation. */
     if (self->orientation)
-        _PUSH_ATTRIBUTES_STR("orientation", "portrait");
+        LXW_PUSH_ATTRIBUTES_STR("orientation", "portrait");
     else
-        _PUSH_ATTRIBUTES_STR("orientation", "landscape");
+        LXW_PUSH_ATTRIBUTES_STR("orientation", "landscape");
 
     /* Set start page active flag. */
     if (self->page_start)
-        _PUSH_ATTRIBUTES_INT("useFirstPageNumber", 1);
+        LXW_PUSH_ATTRIBUTES_INT("useFirstPageNumber", 1);
 
     /* Set the DPI. Mainly only for testing. */
     if (self->horizontal_dpi)
-        _PUSH_ATTRIBUTES_INT("horizontalDpi", self->horizontal_dpi);
+        LXW_PUSH_ATTRIBUTES_INT("horizontalDpi", self->horizontal_dpi);
 
     if (self->vertical_dpi)
-        _PUSH_ATTRIBUTES_INT("verticalDpi", self->vertical_dpi);
+        LXW_PUSH_ATTRIBUTES_INT("verticalDpi", self->vertical_dpi);
 
-    _xml_empty_tag(self->file, "pageSetup", &attributes);
+    lxw_xml_empty_tag(self->file, "pageSetup", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -1445,31 +1445,31 @@ _worksheet_write_print_options(lxw_worksheet *self)
     if (!self->print_options_changed)
         return;
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     /* Set horizontal centering. */
     if (self->hcenter) {
-        _PUSH_ATTRIBUTES_STR("horizontalCentered", "1");
+        LXW_PUSH_ATTRIBUTES_STR("horizontalCentered", "1");
     }
 
     /* Set vertical centering. */
     if (self->vcenter) {
-        _PUSH_ATTRIBUTES_STR("verticalCentered", "1");
+        LXW_PUSH_ATTRIBUTES_STR("verticalCentered", "1");
     }
 
     /* Enable row and column headers. */
     if (self->print_headers) {
-        _PUSH_ATTRIBUTES_STR("headings", "1");
+        LXW_PUSH_ATTRIBUTES_STR("headings", "1");
     }
 
     /* Set printed gridlines. */
     if (self->print_gridlines) {
-        _PUSH_ATTRIBUTES_STR("gridLines", "1");
+        LXW_PUSH_ATTRIBUTES_STR("gridLines", "1");
     }
 
-    _xml_empty_tag(self->file, "printOptions", &attributes);
+    lxw_xml_empty_tag(self->file, "printOptions", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -1492,36 +1492,36 @@ _write_row(lxw_worksheet *self, lxw_row *row, char *spans)
     else
         height = self->default_row_height;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("r", row->row_num + 1);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("r", row->row_num + 1);
 
     if (spans)
-        _PUSH_ATTRIBUTES_STR("spans", spans);
+        LXW_PUSH_ATTRIBUTES_STR("spans", spans);
 
     if (xf_index)
-        _PUSH_ATTRIBUTES_INT("s", xf_index);
+        LXW_PUSH_ATTRIBUTES_INT("s", xf_index);
 
     if (row->format)
-        _PUSH_ATTRIBUTES_STR("customFormat", "1");
+        LXW_PUSH_ATTRIBUTES_STR("customFormat", "1");
 
     if (height != LXW_DEF_ROW_HEIGHT)
-        _PUSH_ATTRIBUTES_DBL("ht", height);
+        LXW_PUSH_ATTRIBUTES_DBL("ht", height);
 
     if (row->hidden)
-        _PUSH_ATTRIBUTES_STR("hidden", "1");
+        LXW_PUSH_ATTRIBUTES_STR("hidden", "1");
 
     if (height != LXW_DEF_ROW_HEIGHT)
-        _PUSH_ATTRIBUTES_STR("customHeight", "1");
+        LXW_PUSH_ATTRIBUTES_STR("customHeight", "1");
 
     if (row->collapsed)
-        _PUSH_ATTRIBUTES_STR("collapsed", "1");
+        LXW_PUSH_ATTRIBUTES_STR("collapsed", "1");
 
     if (!row->data_changed)
-        _xml_empty_tag(self->file, "row", &attributes);
+        lxw_xml_empty_tag(self->file, "row", &attributes);
     else
-        _xml_start_tag(self->file, "row", &attributes);
+        lxw_xml_start_tag(self->file, "row", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -2182,7 +2182,7 @@ _write_number_cell(lxw_worksheet *self, lxw_cell *cell)
 
     lxw_snprintf(data, ATTR_32, "%.16g", cell->u.number);
 
-    _xml_data_element(self->file, "v", data, NULL);
+    lxw_xml_data_element(self->file, "v", data, NULL);
 
 }
 
@@ -2196,7 +2196,7 @@ _write_string_cell(lxw_worksheet *self, lxw_cell *cell)
 
     lxw_snprintf(data, ATTR_32, "%d", cell->u.string_id);
 
-    _xml_data_element(self->file, "v", data, NULL);
+    lxw_xml_data_element(self->file, "v", data, NULL);
 }
 
 /*
@@ -2209,8 +2209,8 @@ _write_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 
     lxw_snprintf(data, ATTR_32, "%.16g", cell->formula_result);
 
-    _xml_data_element(self->file, "f", cell->u.string, NULL);
-    _xml_data_element(self->file, "v", data, NULL);
+    lxw_xml_data_element(self->file, "f", cell->u.string, NULL);
+    lxw_xml_data_element(self->file, "v", data, NULL);
 }
 
 /*
@@ -2223,16 +2223,16 @@ _write_array_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
     struct xml_attribute *attribute;
     char data[ATTR_32];
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("t", "array");
-    _PUSH_ATTRIBUTES_STR("ref", cell->user_data1);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("t", "array");
+    LXW_PUSH_ATTRIBUTES_STR("ref", cell->user_data1);
 
     lxw_snprintf(data, ATTR_32, "%.16g", cell->formula_result);
 
-    _xml_data_element(self->file, "f", cell->u.string, &attributes);
-    _xml_data_element(self->file, "v", data, NULL);
+    lxw_xml_data_element(self->file, "f", cell->u.string, &attributes);
+    lxw_xml_data_element(self->file, "v", data, NULL);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -2245,18 +2245,18 @@ _write_inline_string_cell(lxw_worksheet *self, lxw_cell *cell)
     struct xml_attribute *attribute;
     char *string = cell->u.string;
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     /* Add attribute to preserve leading or trailing whitespace. */
     if (isspace((unsigned char) string[0])
         || isspace((unsigned char) string[strlen(string) - 1]))
-        _PUSH_ATTRIBUTES_STR("xml:space", "preserve");
+        LXW_PUSH_ATTRIBUTES_STR("xml:space", "preserve");
 
-    _xml_start_tag(self->file, "is", NULL);
-    _xml_data_element(self->file, "t", string, &attributes);
-    _xml_end_tag(self->file, "is");
+    lxw_xml_start_tag(self->file, "is", NULL);
+    lxw_xml_data_element(self->file, "t", string, &attributes);
+    lxw_xml_end_tag(self->file, "is");
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -2312,8 +2312,8 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
 
     lxw_rowcol_to_cell(range, row_num, col_num);
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("r", range);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("r", range);
 
     if (cell->format) {
         index = lxw_format_get_xf_index(cell->format);
@@ -2326,40 +2326,40 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
     }
 
     if (index)
-        _PUSH_ATTRIBUTES_INT("s", index);
+        LXW_PUSH_ATTRIBUTES_INT("s", index);
 
     if (cell->type == NUMBER_CELL) {
-        _xml_start_tag(self->file, "c", &attributes);
+        lxw_xml_start_tag(self->file, "c", &attributes);
         _write_number_cell(self, cell);
-        _xml_end_tag(self->file, "c");
+        lxw_xml_end_tag(self->file, "c");
     }
     else if (cell->type == STRING_CELL) {
-        _PUSH_ATTRIBUTES_STR("t", "s");
-        _xml_start_tag(self->file, "c", &attributes);
+        LXW_PUSH_ATTRIBUTES_STR("t", "s");
+        lxw_xml_start_tag(self->file, "c", &attributes);
         _write_string_cell(self, cell);
-        _xml_end_tag(self->file, "c");
+        lxw_xml_end_tag(self->file, "c");
     }
     else if (cell->type == INLINE_STRING_CELL) {
-        _PUSH_ATTRIBUTES_STR("t", "inlineStr");
-        _xml_start_tag(self->file, "c", &attributes);
+        LXW_PUSH_ATTRIBUTES_STR("t", "inlineStr");
+        lxw_xml_start_tag(self->file, "c", &attributes);
         _write_inline_string_cell(self, cell);
-        _xml_end_tag(self->file, "c");
+        lxw_xml_end_tag(self->file, "c");
     }
     else if (cell->type == FORMULA_CELL) {
-        _xml_start_tag(self->file, "c", &attributes);
+        lxw_xml_start_tag(self->file, "c", &attributes);
         _write_formula_num_cell(self, cell);
-        _xml_end_tag(self->file, "c");
+        lxw_xml_end_tag(self->file, "c");
     }
     else if (cell->type == BLANK_CELL) {
-        _xml_empty_tag(self->file, "c", &attributes);
+        lxw_xml_empty_tag(self->file, "c", &attributes);
     }
     else if (cell->type == ARRAY_FORMULA_CELL) {
-        _xml_start_tag(self->file, "c", &attributes);
+        lxw_xml_start_tag(self->file, "c", &attributes);
         _write_array_formula_num_cell(self, cell);
-        _xml_end_tag(self->file, "c");
+        lxw_xml_end_tag(self->file, "c");
     }
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -2394,7 +2394,7 @@ _worksheet_write_rows(lxw_worksheet *self)
             RB_FOREACH(cell, lxw_table_cells, row->cells) {
                 _write_cell(self, cell, row->format);
             }
-            _xml_end_tag(self->file, "row");
+            lxw_xml_end_tag(self->file, "row");
         }
     }
 }
@@ -2432,7 +2432,7 @@ lxw_worksheet_write_single_row(lxw_worksheet *self)
             }
         }
 
-        _xml_end_tag(self->file, "row");
+        lxw_xml_end_tag(self->file, "row");
     }
 
     /* Reset the row. */
@@ -2490,29 +2490,29 @@ _worksheet_write_col_info(lxw_worksheet *self, lxw_col_options *options)
         }
     }
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("min", 1 + options->firstcol);
-    _PUSH_ATTRIBUTES_INT("max", 1 + options->lastcol);
-    _PUSH_ATTRIBUTES_DBL("width", width);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("min", 1 + options->firstcol);
+    LXW_PUSH_ATTRIBUTES_INT("max", 1 + options->lastcol);
+    LXW_PUSH_ATTRIBUTES_DBL("width", width);
 
     if (xf_index)
-        _PUSH_ATTRIBUTES_INT("style", xf_index);
+        LXW_PUSH_ATTRIBUTES_INT("style", xf_index);
 
     if (options->hidden)
-        _PUSH_ATTRIBUTES_STR("hidden", "1");
+        LXW_PUSH_ATTRIBUTES_STR("hidden", "1");
 
     if (has_custom_width)
-        _PUSH_ATTRIBUTES_STR("customWidth", "1");
+        LXW_PUSH_ATTRIBUTES_STR("customWidth", "1");
 
     if (options->level)
-        _PUSH_ATTRIBUTES_INT("outlineLevel", options->level);
+        LXW_PUSH_ATTRIBUTES_INT("outlineLevel", options->level);
 
     if (options->collapsed)
-        _PUSH_ATTRIBUTES_STR("collapsed", "1");
+        LXW_PUSH_ATTRIBUTES_STR("collapsed", "1");
 
-    _xml_empty_tag(self->file, "col", &attributes);
+    lxw_xml_empty_tag(self->file, "col", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -2526,14 +2526,14 @@ _worksheet_write_cols(lxw_worksheet *self)
     if (!self->col_size_changed)
         return;
 
-    _xml_start_tag(self->file, "cols", NULL);
+    lxw_xml_start_tag(self->file, "cols", NULL);
 
     for (col = 0; col < self->col_options_max; col++) {
         if (self->col_options[col])
             _worksheet_write_col_info(self, self->col_options[col]);
     }
 
-    _xml_end_tag(self->file, "cols");
+    lxw_xml_end_tag(self->file, "cols");
 }
 
 /*
@@ -2548,17 +2548,17 @@ _worksheet_write_merge_cell(lxw_worksheet *self,
     struct xml_attribute *attribute;
     char ref[MAX_CELL_RANGE_LENGTH];
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     /* Convert the merge dimensions to a cell range. */
     lxw_range(ref, merged_range->first_row, merged_range->first_col,
               merged_range->last_row, merged_range->last_col);
 
-    _PUSH_ATTRIBUTES_STR("ref", ref);
+    LXW_PUSH_ATTRIBUTES_STR("ref", ref);
 
-    _xml_empty_tag(self->file, "mergeCell", &attributes);
+    lxw_xml_empty_tag(self->file, "mergeCell", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -2572,18 +2572,18 @@ _worksheet_write_merge_cells(lxw_worksheet *self)
     lxw_merged_range *merged_range;
 
     if (self->merged_range_count) {
-        _INIT_ATTRIBUTES();
+        LXW_INIT_ATTRIBUTES();
 
-        _PUSH_ATTRIBUTES_INT("count", self->merged_range_count);
+        LXW_PUSH_ATTRIBUTES_INT("count", self->merged_range_count);
 
-        _xml_start_tag(self->file, "mergeCells", &attributes);
+        lxw_xml_start_tag(self->file, "mergeCells", &attributes);
 
         STAILQ_FOREACH(merged_range, self->merged_ranges, list_pointers) {
             _worksheet_write_merge_cell(self, merged_range);
         }
-        _xml_end_tag(self->file, "mergeCells");
+        lxw_xml_end_tag(self->file, "mergeCells");
 
-        _FREE_ATTRIBUTES();
+        LXW_FREE_ATTRIBUTES();
     }
 }
 
@@ -2593,7 +2593,7 @@ _worksheet_write_merge_cells(lxw_worksheet *self)
 STATIC void
 _worksheet_write_odd_header(lxw_worksheet *self)
 {
-    _xml_data_element(self->file, "oddHeader", self->header, NULL);
+    lxw_xml_data_element(self->file, "oddHeader", self->header, NULL);
 }
 
 /*
@@ -2602,7 +2602,7 @@ _worksheet_write_odd_header(lxw_worksheet *self)
 STATIC void
 _worksheet_write_odd_footer(lxw_worksheet *self)
 {
-    _xml_data_element(self->file, "oddFooter", self->footer, NULL);
+    lxw_xml_data_element(self->file, "oddFooter", self->footer, NULL);
 }
 
 /*
@@ -2614,7 +2614,7 @@ _worksheet_write_header_footer(lxw_worksheet *self)
     if (!self->header_footer_changed)
         return;
 
-    _xml_start_tag(self->file, "headerFooter", NULL);
+    lxw_xml_start_tag(self->file, "headerFooter", NULL);
 
     if (self->header[0] != '\0')
         _worksheet_write_odd_header(self);
@@ -2622,7 +2622,7 @@ _worksheet_write_header_footer(lxw_worksheet *self)
     if (self->footer[0] != '\0')
         _worksheet_write_odd_footer(self);
 
-    _xml_end_tag(self->file, "headerFooter");
+    lxw_xml_end_tag(self->file, "headerFooter");
 }
 
 /*
@@ -2637,12 +2637,12 @@ _worksheet_write_page_set_up_pr(lxw_worksheet *self)
     if (!self->fit_page)
         return;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("fitToPage", "1");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("fitToPage", "1");
 
-    _xml_empty_tag(self->file, "pageSetUpPr", &attributes);
+    lxw_xml_empty_tag(self->file, "pageSetUpPr", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 
 }
 
@@ -2662,12 +2662,12 @@ _worksheet_write_tab_color(lxw_worksheet *self)
     lxw_snprintf(rgb_str, ATTR_32, "FF%06X",
                  self->tab_color & LXW_COLOR_MASK);
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("rgb", rgb_str);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("rgb", rgb_str);
 
-    _xml_empty_tag(self->file, "tabColor", &attributes);
+    lxw_xml_empty_tag(self->file, "tabColor", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -2686,27 +2686,27 @@ _worksheet_write_sheet_pr(lxw_worksheet *self)
         return;
     }
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     if (self->vba_codename)
-        _PUSH_ATTRIBUTES_INT("codeName", self->vba_codename);
+        LXW_PUSH_ATTRIBUTES_INT("codeName", self->vba_codename);
 
     if (self->filter_on)
-        _PUSH_ATTRIBUTES_STR("filterMode", "1");
+        LXW_PUSH_ATTRIBUTES_STR("filterMode", "1");
 
     if (self->fit_page || self->tab_color != LXW_COLOR_UNSET
         || self->outline_changed) {
-        _xml_start_tag(self->file, "sheetPr", &attributes);
+        lxw_xml_start_tag(self->file, "sheetPr", &attributes);
         _worksheet_write_tab_color(self);
         /* _worksheet_write_outline_pr(self); */
         _worksheet_write_page_set_up_pr(self);
-        _xml_end_tag(self->file, "sheetPr");
+        lxw_xml_end_tag(self->file, "sheetPr");
     }
     else {
-        _xml_empty_tag(self->file, "sheetPr", &attributes);
+        lxw_xml_empty_tag(self->file, "sheetPr", &attributes);
     }
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 
 }
 
@@ -2719,14 +2719,14 @@ _worksheet_write_brk(lxw_worksheet *self, uint32_t id, uint32_t max)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("id", id);
-    _PUSH_ATTRIBUTES_INT("max", max);
-    _PUSH_ATTRIBUTES_STR("man", "1");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("id", id);
+    LXW_PUSH_ATTRIBUTES_INT("max", max);
+    LXW_PUSH_ATTRIBUTES_STR("man", "1");
 
-    _xml_empty_tag(self->file, "brk", &attributes);
+    lxw_xml_empty_tag(self->file, "brk", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -2749,18 +2749,18 @@ _worksheet_write_row_breaks(lxw_worksheet *self)
     if (count > LXW_BREAKS_MAX)
         count = LXW_BREAKS_MAX;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("count", count);
-    _PUSH_ATTRIBUTES_INT("manualBreakCount", count);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("count", count);
+    LXW_PUSH_ATTRIBUTES_INT("manualBreakCount", count);
 
-    _xml_start_tag(self->file, "rowBreaks", &attributes);
+    lxw_xml_start_tag(self->file, "rowBreaks", &attributes);
 
     for (i = 0; i < count; i++)
         _worksheet_write_brk(self, self->hbreaks[i], LXW_COL_MAX - 1);
 
-    _xml_end_tag(self->file, "rowBreaks");
+    lxw_xml_end_tag(self->file, "rowBreaks");
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -2783,18 +2783,18 @@ _worksheet_write_col_breaks(lxw_worksheet *self)
     if (count > LXW_BREAKS_MAX)
         count = LXW_BREAKS_MAX;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("count", count);
-    _PUSH_ATTRIBUTES_INT("manualBreakCount", count);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("count", count);
+    LXW_PUSH_ATTRIBUTES_INT("manualBreakCount", count);
 
-    _xml_start_tag(self->file, "colBreaks", &attributes);
+    lxw_xml_start_tag(self->file, "colBreaks", &attributes);
 
     for (i = 0; i < count; i++)
         _worksheet_write_brk(self, self->vbreaks[i], LXW_ROW_MAX - 1);
 
-    _xml_end_tag(self->file, "colBreaks");
+    lxw_xml_end_tag(self->file, "colBreaks");
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -2815,12 +2815,12 @@ _worksheet_write_auto_filter(lxw_worksheet *self)
               self->autofilter.first_col,
               self->autofilter.last_row, self->autofilter.last_col);
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("ref", range);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("ref", range);
 
-    _xml_empty_tag(self->file, "autoFilter", &attributes);
+    lxw_xml_empty_tag(self->file, "autoFilter", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -2840,19 +2840,19 @@ _worksheet_write_hyperlink_external(lxw_worksheet *self, lxw_row_t row_num,
 
     lxw_snprintf(r_id, ATTR_32, "rId%d", id);
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("ref", ref);
-    _PUSH_ATTRIBUTES_STR("r:id", r_id);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("ref", ref);
+    LXW_PUSH_ATTRIBUTES_STR("r:id", r_id);
 
     if (location)
-        _PUSH_ATTRIBUTES_STR("location", location);
+        LXW_PUSH_ATTRIBUTES_STR("location", location);
 
     if (tooltip)
-        _PUSH_ATTRIBUTES_STR("tooltip", tooltip);
+        LXW_PUSH_ATTRIBUTES_STR("tooltip", tooltip);
 
-    _xml_empty_tag(self->file, "hyperlink", &attributes);
+    lxw_xml_empty_tag(self->file, "hyperlink", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -2869,21 +2869,21 @@ _worksheet_write_hyperlink_internal(lxw_worksheet *self, lxw_row_t row_num,
 
     lxw_rowcol_to_cell(ref, row_num, col_num);
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("ref", ref);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("ref", ref);
 
     if (location)
-        _PUSH_ATTRIBUTES_STR("location", location);
+        LXW_PUSH_ATTRIBUTES_STR("location", location);
 
     if (tooltip)
-        _PUSH_ATTRIBUTES_STR("tooltip", tooltip);
+        LXW_PUSH_ATTRIBUTES_STR("tooltip", tooltip);
 
     if (display)
-        _PUSH_ATTRIBUTES_STR("display", display);
+        LXW_PUSH_ATTRIBUTES_STR("display", display);
 
-    _xml_empty_tag(self->file, "hyperlink", &attributes);
+    lxw_xml_empty_tag(self->file, "hyperlink", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -2902,7 +2902,7 @@ _worksheet_write_hyperlinks(lxw_worksheet *self)
         return;
 
     /* Write the hyperlink elements. */
-    _xml_start_tag(self->file, "hyperlinks", NULL);
+    lxw_xml_start_tag(self->file, "hyperlinks", NULL);
 
     RB_FOREACH(row, lxw_table_rows, self->hyperlinks) {
 
@@ -2948,7 +2948,7 @@ _worksheet_write_hyperlinks(lxw_worksheet *self)
 
     }
 
-    _xml_end_tag(self->file, "hyperlinks");
+    lxw_xml_end_tag(self->file, "hyperlinks");
     return;
 
 mem_error:
@@ -2958,7 +2958,7 @@ mem_error:
         free(relationship->target_mode);
         free(relationship);
     }
-    _xml_end_tag(self->file, "hyperlinks");
+    lxw_xml_end_tag(self->file, "hyperlinks");
 }
 
 /*
@@ -2975,65 +2975,65 @@ _worksheet_write_sheet_protection(lxw_worksheet *self)
     if (!protect->is_configured)
         return;
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     if (*protect->hash)
-        _PUSH_ATTRIBUTES_STR("password", protect->hash);
+        LXW_PUSH_ATTRIBUTES_STR("password", protect->hash);
 
     if (!protect->no_sheet)
-        _PUSH_ATTRIBUTES_INT("sheet", 1);
+        LXW_PUSH_ATTRIBUTES_INT("sheet", 1);
 
     if (protect->content)
-        _PUSH_ATTRIBUTES_INT("content", 1);
+        LXW_PUSH_ATTRIBUTES_INT("content", 1);
 
     if (!protect->objects)
-        _PUSH_ATTRIBUTES_INT("objects", 1);
+        LXW_PUSH_ATTRIBUTES_INT("objects", 1);
 
     if (!protect->scenarios)
-        _PUSH_ATTRIBUTES_INT("scenarios", 1);
+        LXW_PUSH_ATTRIBUTES_INT("scenarios", 1);
 
     if (protect->format_cells)
-        _PUSH_ATTRIBUTES_INT("formatCells", 0);
+        LXW_PUSH_ATTRIBUTES_INT("formatCells", 0);
 
     if (protect->format_columns)
-        _PUSH_ATTRIBUTES_INT("formatColumns", 0);
+        LXW_PUSH_ATTRIBUTES_INT("formatColumns", 0);
 
     if (protect->format_rows)
-        _PUSH_ATTRIBUTES_INT("formatRows", 0);
+        LXW_PUSH_ATTRIBUTES_INT("formatRows", 0);
 
     if (protect->insert_columns)
-        _PUSH_ATTRIBUTES_INT("insertColumns", 0);
+        LXW_PUSH_ATTRIBUTES_INT("insertColumns", 0);
 
     if (protect->insert_rows)
-        _PUSH_ATTRIBUTES_INT("insertRows", 0);
+        LXW_PUSH_ATTRIBUTES_INT("insertRows", 0);
 
     if (protect->insert_hyperlinks)
-        _PUSH_ATTRIBUTES_INT("insertHyperlinks", 0);
+        LXW_PUSH_ATTRIBUTES_INT("insertHyperlinks", 0);
 
     if (protect->delete_columns)
-        _PUSH_ATTRIBUTES_INT("deleteColumns", 0);
+        LXW_PUSH_ATTRIBUTES_INT("deleteColumns", 0);
 
     if (protect->delete_rows)
-        _PUSH_ATTRIBUTES_INT("deleteRows", 0);
+        LXW_PUSH_ATTRIBUTES_INT("deleteRows", 0);
 
     if (protect->no_select_locked_cells)
-        _PUSH_ATTRIBUTES_INT("selectLockedCells", 1);
+        LXW_PUSH_ATTRIBUTES_INT("selectLockedCells", 1);
 
     if (protect->sort)
-        _PUSH_ATTRIBUTES_INT("sort", 0);
+        LXW_PUSH_ATTRIBUTES_INT("sort", 0);
 
     if (protect->autofilter)
-        _PUSH_ATTRIBUTES_INT("autoFilter", 0);
+        LXW_PUSH_ATTRIBUTES_INT("autoFilter", 0);
 
     if (protect->pivot_tables)
-        _PUSH_ATTRIBUTES_INT("pivotTables", 0);
+        LXW_PUSH_ATTRIBUTES_INT("pivotTables", 0);
 
     if (protect->no_select_unlocked_cells)
-        _PUSH_ATTRIBUTES_INT("selectUnlockedCells", 1);
+        LXW_PUSH_ATTRIBUTES_INT("selectUnlockedCells", 1);
 
-    _xml_empty_tag(self->file, "sheetProtection", &attributes);
+    lxw_xml_empty_tag(self->file, "sheetProtection", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -3048,13 +3048,13 @@ _write_drawing(lxw_worksheet *self, uint16_t id)
 
     lxw_snprintf(r_id, ATTR_32, "rId%d", id);
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
-    _PUSH_ATTRIBUTES_STR("r:id", r_id);
+    LXW_PUSH_ATTRIBUTES_STR("r:id", r_id);
 
-    _xml_empty_tag(self->file, "drawing", &attributes);
+    lxw_xml_empty_tag(self->file, "drawing", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 
 }
 
@@ -3139,7 +3139,7 @@ lxw_worksheet_assemble_xml_file(lxw_worksheet *self)
     _write_drawings(self);
 
     /* Close the worksheet tag. */
-    _xml_end_tag(self->file, "worksheet");
+    lxw_xml_end_tag(self->file, "worksheet");
 }
 
 /*****************************************************************************
@@ -3215,7 +3215,7 @@ worksheet_write_string(lxw_worksheet *self,
         if (strpbrk(string, "\x01\x02\x03\x04\x05\x06\x07\x08\x0B\x0C"
                     "\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16"
                     "\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F")) {
-            string_copy = _escape_control_characters(string);
+            string_copy = lxw_escape_control_characters(string);
         }
         else {
             string_copy = lxw_strdup(string);

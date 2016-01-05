@@ -78,7 +78,7 @@ lxw_free_relationships(lxw_relationships *rels)
 STATIC void
 _relationships_xml_declaration(lxw_relationships *self)
 {
-    _xml_declaration(self->file);
+    lxw_xml_declaration(self->file);
 }
 
 /*
@@ -95,17 +95,17 @@ _write_relationship(lxw_relationships *self, const char *type,
     self->rel_id++;
     lxw_snprintf(r_id, ATTR_32, "rId%d", self->rel_id);
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("Id", r_id);
-    _PUSH_ATTRIBUTES_STR("Type", type);
-    _PUSH_ATTRIBUTES_STR("Target", target);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("Id", r_id);
+    LXW_PUSH_ATTRIBUTES_STR("Type", type);
+    LXW_PUSH_ATTRIBUTES_STR("Target", target);
 
     if (target_mode)
-        _PUSH_ATTRIBUTES_STR("TargetMode", target_mode);
+        LXW_PUSH_ATTRIBUTES_STR("TargetMode", target_mode);
 
-    _xml_empty_tag(self->file, "Relationship", &attributes);
+    lxw_xml_empty_tag(self->file, "Relationship", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -118,16 +118,16 @@ _write_relationships(lxw_relationships *self)
     struct xml_attribute *attribute;
     lxw_rel_tuple *rel;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("xmlns", LXW_PACKAGE_SCHEMA);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xmlns", LXW_PACKAGE_SCHEMA);
 
-    _xml_start_tag(self->file, "Relationships", &attributes);
+    lxw_xml_start_tag(self->file, "Relationships", &attributes);
 
     STAILQ_FOREACH(rel, self->relationships, list_pointers) {
         _write_relationship(self, rel->type, rel->target, rel->target_mode);
     }
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*****************************************************************************
@@ -148,7 +148,7 @@ lxw_relationships_assemble_xml_file(lxw_relationships *self)
     _write_relationships(self);
 
     /* Close the relationships tag. */
-    _xml_end_tag(self->file, "Relationships");
+    lxw_xml_end_tag(self->file, "Relationships");
 }
 
 /*

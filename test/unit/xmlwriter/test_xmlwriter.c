@@ -17,7 +17,7 @@ CTEST(xmlwriter, xml_declaration) {
     char exp[] = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
     FILE* testfile = tmpfile();
 
-    _xml_declaration(testfile);
+    lxw_xml_declaration(testfile);
 
     RUN_XLSX_STREQ(exp, got);
 }
@@ -29,7 +29,7 @@ CTEST(xmlwriter, xml_start_tag) {
     char exp[] = "<foo>";
     FILE* testfile = tmpfile();
 
-    _xml_start_tag(testfile, "foo", NULL);
+    lxw_xml_start_tag(testfile, "foo", NULL);
 
     RUN_XLSX_STREQ(exp, got);
 }
@@ -43,15 +43,15 @@ CTEST(xmlwriter, xml_start_tag_with_attributes) {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("span", "8");
-    _PUSH_ATTRIBUTES_STR("baz",  "7");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("span", "8");
+    LXW_PUSH_ATTRIBUTES_STR("baz",  "7");
 
-    _xml_start_tag(testfile, "foo", &attributes);
+    lxw_xml_start_tag(testfile, "foo", &attributes);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 // Test _xml_start_tag() with attributes requiring escaping.
@@ -63,14 +63,14 @@ CTEST(xmlwriter, xml_start_tag_with_attributes_to_escape) {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("span", "&<>\"");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("span", "&<>\"");
 
-    _xml_start_tag(testfile, "foo", &attributes);
+    lxw_xml_start_tag(testfile, "foo", &attributes);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 // Test _xml_start_tag_unencoded() with attributes.
@@ -82,14 +82,14 @@ CTEST(xmlwriter, xml_start_tag_unencoded) {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("span", "&<>\"");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("span", "&<>\"");
 
-    _xml_start_tag_unencoded(testfile, "foo", &attributes);
+    lxw_xml_start_tag_unencoded(testfile, "foo", &attributes);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 // Test _xml_end_tag().
@@ -99,7 +99,7 @@ CTEST(xmlwriter, xml_end_tag) {
     char exp[] = "</foo>";
     FILE* testfile = tmpfile();
 
-    _xml_end_tag(testfile, "foo");
+    lxw_xml_end_tag(testfile, "foo");
 
     RUN_XLSX_STREQ(exp, got);
 }
@@ -111,7 +111,7 @@ CTEST(xmlwriter, xml_empty_tag) {
     char exp[] = "<foo/>";
     FILE* testfile = tmpfile();
 
-    _xml_empty_tag(testfile, "foo", NULL);
+    lxw_xml_empty_tag(testfile, "foo", NULL);
 
     RUN_XLSX_STREQ(exp, got);
 }
@@ -125,15 +125,15 @@ CTEST(xmlwriter, xml_empty_tag_with_attributes) {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("span", "8");
-    _PUSH_ATTRIBUTES_STR("baz",  "7");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("span", "8");
+    LXW_PUSH_ATTRIBUTES_STR("baz",  "7");
 
-    _xml_empty_tag(testfile, "foo", &attributes);
+    lxw_xml_empty_tag(testfile, "foo", &attributes);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 // Test _xml_empty_tag() with attributes requiring escaping.
@@ -145,14 +145,14 @@ CTEST(xmlwriter, xml_empty_tag_with_attributes_to_escape) {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("span", "&<>\"");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("span", "&<>\"");
 
-    _xml_empty_tag(testfile, "foo", &attributes);
+    lxw_xml_empty_tag(testfile, "foo", &attributes);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 // Test _xml_empty_tag_unencoded() with attributes.
@@ -164,14 +164,14 @@ CTEST(xmlwriter, xml_empty_tag_unencoded) {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("span", "&<>\"");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("span", "&<>\"");
 
-    _xml_empty_tag_unencoded(testfile, "foo", &attributes);
+    lxw_xml_empty_tag_unencoded(testfile, "foo", &attributes);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 // Test _xml_empty_tag() with no attributes.
@@ -181,7 +181,7 @@ CTEST(xmlwriter, xml_data_element) {
     char exp[] = "<foo>bar</foo>";
     FILE* testfile = tmpfile();
 
-    _xml_data_element(testfile, "foo", "bar", NULL);
+    lxw_xml_data_element(testfile, "foo", "bar", NULL);
 
     RUN_XLSX_STREQ(exp, got);
 }
@@ -195,14 +195,14 @@ CTEST(xmlwriter, xml_data_element_with_attributes) {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("span", "8");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("span", "8");
 
-    _xml_data_element(testfile, "foo", "bar", &attributes);
+    lxw_xml_data_element(testfile, "foo", "bar", &attributes);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 // Test _xml_data_element() with data requiring escaping.
@@ -214,13 +214,13 @@ CTEST(xmlwriter, xml_data_element_with_escapes) {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("span", "8");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("span", "8");
 
-    _xml_data_element(testfile, "foo", "&<>\"", &attributes);
+    lxw_xml_data_element(testfile, "foo", "&<>\"", &attributes);
 
     RUN_XLSX_STREQ(exp, got);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 

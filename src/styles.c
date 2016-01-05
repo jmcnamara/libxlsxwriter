@@ -76,7 +76,7 @@ lxw_styles_free(lxw_styles *styles)
 STATIC void
 _styles_xml_declaration(lxw_styles *self)
 {
-    _xml_declaration(self->file);
+    lxw_xml_declaration(self->file);
 }
 
 /*
@@ -87,13 +87,13 @@ _write_style_sheet(lxw_styles *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("xmlns",
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xmlns",
                          "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 
-    _xml_start_tag(self->file, "styleSheet", &attributes);
+    lxw_xml_start_tag(self->file, "styleSheet", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -105,13 +105,13 @@ _write_num_fmt(lxw_styles *self, uint8_t num_fmt_id, char *format_code)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("numFmtId", num_fmt_id);
-    _PUSH_ATTRIBUTES_STR("formatCode", format_code);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("numFmtId", num_fmt_id);
+    LXW_PUSH_ATTRIBUTES_STR("formatCode", format_code);
 
-    _xml_empty_tag(self->file, "numFmt", &attributes);
+    lxw_xml_empty_tag(self->file, "numFmt", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -127,10 +127,10 @@ _write_num_fmts(lxw_styles *self)
     if (!self->num_format_count)
         return;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("count", self->num_format_count);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("count", self->num_format_count);
 
-    _xml_start_tag(self->file, "numFmts", &attributes);
+    lxw_xml_start_tag(self->file, "numFmts", &attributes);
 
     /* Write the numFmts elements. */
     STAILQ_FOREACH(format, self->xf_formats, list_pointers) {
@@ -142,9 +142,9 @@ _write_num_fmts(lxw_styles *self)
         _write_num_fmt(self, format->num_format_index, format->num_format);
     }
 
-    _xml_end_tag(self->file, "numFmts");
+    lxw_xml_end_tag(self->file, "numFmts");
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -156,12 +156,12 @@ _write_font_size(lxw_styles *self, uint16_t font_size)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("val", font_size);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("val", font_size);
 
-    _xml_empty_tag(self->file, "sz", &attributes);
+    lxw_xml_empty_tag(self->file, "sz", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -173,12 +173,12 @@ _write_font_color_theme(lxw_styles *self, uint8_t theme)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("theme", theme);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("theme", theme);
 
-    _xml_empty_tag(self->file, "color", &attributes);
+    lxw_xml_empty_tag(self->file, "color", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -193,12 +193,12 @@ _write_font_color_rgb(lxw_styles *self, int32_t rgb)
 
     lxw_snprintf(rgb_str, ATTR_32, "FF%06X", rgb & LXW_COLOR_MASK);
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("rgb", rgb_str);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("rgb", rgb_str);
 
-    _xml_empty_tag(self->file, "color", &attributes);
+    lxw_xml_empty_tag(self->file, "color", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -210,16 +210,16 @@ _write_font_name(lxw_styles *self, const char *font_name)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     if (*font_name)
-        _PUSH_ATTRIBUTES_STR("val", font_name);
+        LXW_PUSH_ATTRIBUTES_STR("val", font_name);
     else
-        _PUSH_ATTRIBUTES_STR("val", LXW_DEFAULT_FONT_NAME);
+        LXW_PUSH_ATTRIBUTES_STR("val", LXW_DEFAULT_FONT_NAME);
 
-    _xml_empty_tag(self->file, "name", &attributes);
+    lxw_xml_empty_tag(self->file, "name", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -231,12 +231,12 @@ _write_font_family(lxw_styles *self, uint8_t font_family)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("val", font_family);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("val", font_family);
 
-    _xml_empty_tag(self->file, "family", &attributes);
+    lxw_xml_empty_tag(self->file, "family", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -248,16 +248,16 @@ _write_font_scheme(lxw_styles *self, const char *font_scheme)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     if (*font_scheme)
-        _PUSH_ATTRIBUTES_STR("val", font_scheme);
+        LXW_PUSH_ATTRIBUTES_STR("val", font_scheme);
     else
-        _PUSH_ATTRIBUTES_STR("val", "minor");
+        LXW_PUSH_ATTRIBUTES_STR("val", "minor");
 
-    _xml_empty_tag(self->file, "scheme", &attributes);
+    lxw_xml_empty_tag(self->file, "scheme", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -269,20 +269,20 @@ _write_font_underline(lxw_styles *self, uint8_t underline)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     /* Handle the underline variants. */
     if (underline == LXW_UNDERLINE_DOUBLE)
-        _PUSH_ATTRIBUTES_STR("val", "double");
+        LXW_PUSH_ATTRIBUTES_STR("val", "double");
     else if (underline == LXW_UNDERLINE_SINGLE_ACCOUNTING)
-        _PUSH_ATTRIBUTES_STR("val", "singleAccounting");
+        LXW_PUSH_ATTRIBUTES_STR("val", "singleAccounting");
     else if (underline == LXW_UNDERLINE_DOUBLE_ACCOUNTING)
-        _PUSH_ATTRIBUTES_STR("val", "doubleAccounting");
+        LXW_PUSH_ATTRIBUTES_STR("val", "doubleAccounting");
     /* Default to single underline. */
 
-    _xml_empty_tag(self->file, "u", &attributes);
+    lxw_xml_empty_tag(self->file, "u", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 
 }
 
@@ -295,12 +295,12 @@ _write_vert_align(lxw_styles *self, const char *align)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("val", align);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", align);
 
-    _xml_empty_tag(self->file, "vertAlign", &attributes);
+    lxw_xml_empty_tag(self->file, "vertAlign", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -309,22 +309,22 @@ _write_vert_align(lxw_styles *self, const char *align)
 STATIC void
 _write_font(lxw_styles *self, lxw_format *format)
 {
-    _xml_start_tag(self->file, "font", NULL);
+    lxw_xml_start_tag(self->file, "font", NULL);
 
     if (format->bold)
-        _xml_empty_tag(self->file, "b", NULL);
+        lxw_xml_empty_tag(self->file, "b", NULL);
 
     if (format->italic)
-        _xml_empty_tag(self->file, "i", NULL);
+        lxw_xml_empty_tag(self->file, "i", NULL);
 
     if (format->font_strikeout)
-        _xml_empty_tag(self->file, "strike", NULL);
+        lxw_xml_empty_tag(self->file, "strike", NULL);
 
     if (format->font_outline)
-        _xml_empty_tag(self->file, "outline", NULL);
+        lxw_xml_empty_tag(self->file, "outline", NULL);
 
     if (format->font_shadow)
-        _xml_empty_tag(self->file, "shadow", NULL);
+        lxw_xml_empty_tag(self->file, "shadow", NULL);
 
     if (format->underline)
         _write_font_underline(self, format->underline);
@@ -356,7 +356,7 @@ _write_font(lxw_styles *self, lxw_format *format)
         _write_font_scheme(self, format->font_scheme);
     }
 
-    _xml_end_tag(self->file, "font");
+    lxw_xml_end_tag(self->file, "font");
 }
 
 /*
@@ -369,19 +369,19 @@ _write_fonts(lxw_styles *self)
     struct xml_attribute *attribute;
     lxw_format *format;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("count", self->font_count);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("count", self->font_count);
 
-    _xml_start_tag(self->file, "fonts", &attributes);
+    lxw_xml_start_tag(self->file, "fonts", &attributes);
 
     STAILQ_FOREACH(format, self->xf_formats, list_pointers) {
         if (format->has_font)
             _write_font(self, format);
     }
 
-    _xml_end_tag(self->file, "fonts");
+    lxw_xml_end_tag(self->file, "fonts");
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -393,14 +393,14 @@ _write_default_fill(lxw_styles *self, const char *pattern)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("patternType", pattern);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("patternType", pattern);
 
-    _xml_start_tag(self->file, "fill", NULL);
-    _xml_empty_tag(self->file, "patternFill", &attributes);
-    _xml_end_tag(self->file, "fill");
+    lxw_xml_start_tag(self->file, "fill", NULL);
+    lxw_xml_empty_tag(self->file, "patternFill", &attributes);
+    lxw_xml_end_tag(self->file, "fill");
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -413,14 +413,14 @@ _write_fg_color(lxw_styles *self, lxw_color_t color)
     struct xml_attribute *attribute;
     char rgb_str[ATTR_32];
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     lxw_snprintf(rgb_str, ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
-    _PUSH_ATTRIBUTES_STR("rgb", rgb_str);
+    LXW_PUSH_ATTRIBUTES_STR("rgb", rgb_str);
 
-    _xml_empty_tag(self->file, "fgColor", &attributes);
+    lxw_xml_empty_tag(self->file, "fgColor", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -433,19 +433,19 @@ _write_bg_color(lxw_styles *self, lxw_color_t color)
     struct xml_attribute *attribute;
     char rgb_str[ATTR_32];
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     if (color == LXW_COLOR_UNSET) {
-        _PUSH_ATTRIBUTES_STR("indexed", "64");
+        LXW_PUSH_ATTRIBUTES_STR("indexed", "64");
     }
     else {
         lxw_snprintf(rgb_str, ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
-        _PUSH_ATTRIBUTES_STR("rgb", rgb_str);
+        LXW_PUSH_ATTRIBUTES_STR("rgb", rgb_str);
     }
 
-    _xml_empty_tag(self->file, "bgColor", &attributes);
+    lxw_xml_empty_tag(self->file, "bgColor", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -483,24 +483,24 @@ _write_fill(lxw_styles *self, lxw_format *format)
         "gray0625",
     };
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
-    _xml_start_tag(self->file, "fill", NULL);
+    lxw_xml_start_tag(self->file, "fill", NULL);
 
     if (pattern)
-        _PUSH_ATTRIBUTES_STR("patternType", patterns[pattern]);
+        LXW_PUSH_ATTRIBUTES_STR("patternType", patterns[pattern]);
 
-    _xml_start_tag(self->file, "patternFill", &attributes);
+    lxw_xml_start_tag(self->file, "patternFill", &attributes);
 
     if (fg_color != LXW_COLOR_UNSET)
         _write_fg_color(self, fg_color);
 
     _write_bg_color(self, bg_color);
 
-    _xml_end_tag(self->file, "patternFill");
-    _xml_end_tag(self->file, "fill");
+    lxw_xml_end_tag(self->file, "patternFill");
+    lxw_xml_end_tag(self->file, "fill");
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -513,10 +513,10 @@ _write_fills(lxw_styles *self)
     struct xml_attribute *attribute;
     lxw_format *format;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("count", self->fill_count);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("count", self->fill_count);
 
-    _xml_start_tag(self->file, "fills", &attributes);
+    lxw_xml_start_tag(self->file, "fills", &attributes);
 
     /* Write the default fills. */
     _write_default_fill(self, "none");
@@ -527,9 +527,9 @@ _write_fills(lxw_styles *self)
             _write_fill(self, format);
     }
 
-    _xml_end_tag(self->file, "fills");
+    lxw_xml_end_tag(self->file, "fills");
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -542,19 +542,19 @@ _write_border_color(lxw_styles *self, lxw_color_t color)
     struct xml_attribute *attribute;
     char rgb_str[ATTR_32];
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     if (color != LXW_COLOR_UNSET) {
         lxw_snprintf(rgb_str, ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
-        _PUSH_ATTRIBUTES_STR("rgb", rgb_str);
+        LXW_PUSH_ATTRIBUTES_STR("rgb", rgb_str);
     }
     else {
-        _PUSH_ATTRIBUTES_STR("auto", "1");
+        LXW_PUSH_ATTRIBUTES_STR("auto", "1");
     }
 
-    _xml_empty_tag(self->file, "color", &attributes);
+    lxw_xml_empty_tag(self->file, "color", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -585,20 +585,20 @@ _write_sub_border(lxw_styles *self, const char *type, uint8_t style,
     };
 
     if (!style) {
-        _xml_empty_tag(self->file, type, NULL);
+        lxw_xml_empty_tag(self->file, type, NULL);
         return;
     }
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("style", border_styles[style]);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("style", border_styles[style]);
 
-    _xml_start_tag(self->file, type, &attributes);
+    lxw_xml_start_tag(self->file, type, &attributes);
 
     _write_border_color(self, color);
 
-    _xml_end_tag(self->file, type);
+    lxw_xml_end_tag(self->file, type);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -610,18 +610,18 @@ _write_border(lxw_styles *self, lxw_format *format)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     /* Add attributes for diagonal borders. */
     if (format->diag_type == LXW_DIAGONAL_BORDER_UP) {
-        _PUSH_ATTRIBUTES_STR("diagonalUp", "1");
+        LXW_PUSH_ATTRIBUTES_STR("diagonalUp", "1");
     }
     else if (format->diag_type == LXW_DIAGONAL_BORDER_DOWN) {
-        _PUSH_ATTRIBUTES_STR("diagonalDown", "1");
+        LXW_PUSH_ATTRIBUTES_STR("diagonalDown", "1");
     }
     else if (format->diag_type == LXW_DIAGONAL_BORDER_UP_DOWN) {
-        _PUSH_ATTRIBUTES_STR("diagonalUp", "1");
-        _PUSH_ATTRIBUTES_STR("diagonalDown", "1");
+        LXW_PUSH_ATTRIBUTES_STR("diagonalUp", "1");
+        LXW_PUSH_ATTRIBUTES_STR("diagonalDown", "1");
     }
 
     /* Ensure that a default diag border is set if the diag type is set. */
@@ -630,7 +630,7 @@ _write_border(lxw_styles *self, lxw_format *format)
     }
 
     /* Write the start border tag. */
-    _xml_start_tag(self->file, "border", &attributes);
+    lxw_xml_start_tag(self->file, "border", &attributes);
 
     /* Write the <border> sub elements. */
     _write_sub_border(self, "left", format->left, format->left_color);
@@ -640,9 +640,9 @@ _write_border(lxw_styles *self, lxw_format *format)
     _write_sub_border(self,
                       "diagonal", format->diag_border, format->diag_color);
 
-    _xml_end_tag(self->file, "border");
+    lxw_xml_end_tag(self->file, "border");
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -655,19 +655,19 @@ _write_borders(lxw_styles *self)
     struct xml_attribute *attribute;
     lxw_format *format;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("count", self->border_count);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("count", self->border_count);
 
-    _xml_start_tag(self->file, "borders", &attributes);
+    lxw_xml_start_tag(self->file, "borders", &attributes);
 
     STAILQ_FOREACH(format, self->xf_formats, list_pointers) {
         if (format->has_border)
             _write_border(self, format);
     }
 
-    _xml_end_tag(self->file, "borders");
+    lxw_xml_end_tag(self->file, "borders");
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -679,15 +679,15 @@ _write_style_xf(lxw_styles *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("numFmtId", "0");
-    _PUSH_ATTRIBUTES_STR("fontId", "0");
-    _PUSH_ATTRIBUTES_STR("fillId", "0");
-    _PUSH_ATTRIBUTES_STR("borderId", "0");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("numFmtId", "0");
+    LXW_PUSH_ATTRIBUTES_STR("fontId", "0");
+    LXW_PUSH_ATTRIBUTES_STR("fillId", "0");
+    LXW_PUSH_ATTRIBUTES_STR("borderId", "0");
 
-    _xml_empty_tag(self->file, "xf", &attributes);
+    lxw_xml_empty_tag(self->file, "xf", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -699,14 +699,14 @@ _write_cell_style_xfs(lxw_styles *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("count", "1");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("count", "1");
 
-    _xml_start_tag(self->file, "cellStyleXfs", &attributes);
+    lxw_xml_start_tag(self->file, "cellStyleXfs", &attributes);
     _write_style_xf(self);
-    _xml_end_tag(self->file, "cellStyleXfs");
+    lxw_xml_end_tag(self->file, "cellStyleXfs");
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -750,7 +750,7 @@ _write_alignment(lxw_styles *self, lxw_format *format)
     struct xml_attribute *attribute;
     int16_t rotation = format->rotation;
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     /* Indent is only allowed for horizontal left, right and distributed. */
     /* If it is defined for any other alignment or no alignment has been  */
@@ -782,43 +782,43 @@ _write_alignment(lxw_styles *self, lxw_format *format)
         format->just_distrib = 0;
 
     if (format->text_h_align == LXW_ALIGN_LEFT)
-        _PUSH_ATTRIBUTES_STR("horizontal", "left");
+        LXW_PUSH_ATTRIBUTES_STR("horizontal", "left");
 
     if (format->text_h_align == LXW_ALIGN_CENTER)
-        _PUSH_ATTRIBUTES_STR("horizontal", "center");
+        LXW_PUSH_ATTRIBUTES_STR("horizontal", "center");
 
     if (format->text_h_align == LXW_ALIGN_RIGHT)
-        _PUSH_ATTRIBUTES_STR("horizontal", "right");
+        LXW_PUSH_ATTRIBUTES_STR("horizontal", "right");
 
     if (format->text_h_align == LXW_ALIGN_FILL)
-        _PUSH_ATTRIBUTES_STR("horizontal", "fill");
+        LXW_PUSH_ATTRIBUTES_STR("horizontal", "fill");
 
     if (format->text_h_align == LXW_ALIGN_JUSTIFY)
-        _PUSH_ATTRIBUTES_STR("horizontal", "justify");
+        LXW_PUSH_ATTRIBUTES_STR("horizontal", "justify");
 
     if (format->text_h_align == LXW_ALIGN_CENTER_ACROSS)
-        _PUSH_ATTRIBUTES_STR("horizontal", "centerContinuous");
+        LXW_PUSH_ATTRIBUTES_STR("horizontal", "centerContinuous");
 
     if (format->text_h_align == LXW_ALIGN_DISTRIBUTED)
-        _PUSH_ATTRIBUTES_STR("horizontal", "distributed");
+        LXW_PUSH_ATTRIBUTES_STR("horizontal", "distributed");
 
     if (format->just_distrib)
-        _PUSH_ATTRIBUTES_STR("justifyLastLine", "1");
+        LXW_PUSH_ATTRIBUTES_STR("justifyLastLine", "1");
 
     if (format->text_v_align == LXW_ALIGN_VERTICAL_TOP)
-        _PUSH_ATTRIBUTES_STR("vertical", "top");
+        LXW_PUSH_ATTRIBUTES_STR("vertical", "top");
 
     if (format->text_v_align == LXW_ALIGN_VERTICAL_CENTER)
-        _PUSH_ATTRIBUTES_STR("vertical", "center");
+        LXW_PUSH_ATTRIBUTES_STR("vertical", "center");
 
     if (format->text_v_align == LXW_ALIGN_VERTICAL_JUSTIFY)
-        _PUSH_ATTRIBUTES_STR("vertical", "justify");
+        LXW_PUSH_ATTRIBUTES_STR("vertical", "justify");
 
     if (format->text_v_align == LXW_ALIGN_VERTICAL_DISTRIBUTED)
-        _PUSH_ATTRIBUTES_STR("vertical", "distributed");
+        LXW_PUSH_ATTRIBUTES_STR("vertical", "distributed");
 
     if (format->indent)
-        _PUSH_ATTRIBUTES_INT("indent", format->indent);
+        LXW_PUSH_ATTRIBUTES_INT("indent", format->indent);
 
     /* Map rotation to Excel values. */
     if (rotation) {
@@ -827,25 +827,25 @@ _write_alignment(lxw_styles *self, lxw_format *format)
         else if (rotation < 0)
             rotation = -rotation + 90;
 
-        _PUSH_ATTRIBUTES_INT("textRotation", rotation);
+        LXW_PUSH_ATTRIBUTES_INT("textRotation", rotation);
     }
 
     if (format->text_wrap)
-        _PUSH_ATTRIBUTES_STR("wrapText", "1");
+        LXW_PUSH_ATTRIBUTES_STR("wrapText", "1");
 
     if (format->shrink)
-        _PUSH_ATTRIBUTES_STR("shrinkToFit", "1");
+        LXW_PUSH_ATTRIBUTES_STR("shrinkToFit", "1");
 
     if (format->reading_order == 1)
-        _PUSH_ATTRIBUTES_STR("readingOrder", "1");
+        LXW_PUSH_ATTRIBUTES_STR("readingOrder", "1");
 
     if (format->reading_order == 2)
-        _PUSH_ATTRIBUTES_STR("readingOrder", "2");
+        LXW_PUSH_ATTRIBUTES_STR("readingOrder", "2");
 
     if (!STAILQ_EMPTY(&attributes))
-        _xml_empty_tag(self->file, "alignment", &attributes);
+        lxw_xml_empty_tag(self->file, "alignment", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -857,17 +857,17 @@ _write_protection(lxw_styles *self, lxw_format *format)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
 
     if (!format->locked)
-        _PUSH_ATTRIBUTES_STR("locked", "0");
+        LXW_PUSH_ATTRIBUTES_STR("locked", "0");
 
     if (format->hidden)
-        _PUSH_ATTRIBUTES_STR("hidden", "1");
+        LXW_PUSH_ATTRIBUTES_STR("hidden", "1");
 
-    _xml_empty_tag(self->file, "protection", &attributes);
+    lxw_xml_empty_tag(self->file, "protection", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -882,38 +882,38 @@ _write_xf(lxw_styles *self, lxw_format *format)
     uint8_t has_alignment = _has_alignment(format);
     uint8_t apply_alignment = _apply_alignment(format);
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("numFmtId", format->num_format_index);
-    _PUSH_ATTRIBUTES_INT("fontId", format->font_index);
-    _PUSH_ATTRIBUTES_INT("fillId", format->fill_index);
-    _PUSH_ATTRIBUTES_INT("borderId", format->border_index);
-    _PUSH_ATTRIBUTES_STR("xfId", "0");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("numFmtId", format->num_format_index);
+    LXW_PUSH_ATTRIBUTES_INT("fontId", format->font_index);
+    LXW_PUSH_ATTRIBUTES_INT("fillId", format->fill_index);
+    LXW_PUSH_ATTRIBUTES_INT("borderId", format->border_index);
+    LXW_PUSH_ATTRIBUTES_STR("xfId", "0");
 
     if (format->num_format_index > 0)
-        _PUSH_ATTRIBUTES_STR("applyNumberFormat", "1");
+        LXW_PUSH_ATTRIBUTES_STR("applyNumberFormat", "1");
 
     /* Add applyFont attribute if XF format uses a font element. */
     if (format->font_index > 0)
-        _PUSH_ATTRIBUTES_STR("applyFont", "1");
+        LXW_PUSH_ATTRIBUTES_STR("applyFont", "1");
 
     /* Add applyFill attribute if XF format uses a fill element. */
     if (format->fill_index > 0)
-        _PUSH_ATTRIBUTES_STR("applyFill", "1");
+        LXW_PUSH_ATTRIBUTES_STR("applyFill", "1");
 
     /* Add applyBorder attribute if XF format uses a border element. */
     if (format->border_index > 0)
-        _PUSH_ATTRIBUTES_STR("applyBorder", "1");
+        LXW_PUSH_ATTRIBUTES_STR("applyBorder", "1");
 
     /* We can also have applyAlignment without a sub-element. */
     if (apply_alignment)
-        _PUSH_ATTRIBUTES_STR("applyAlignment", "1");
+        LXW_PUSH_ATTRIBUTES_STR("applyAlignment", "1");
 
     if (has_protection)
-        _PUSH_ATTRIBUTES_STR("applyProtection", "1");
+        LXW_PUSH_ATTRIBUTES_STR("applyProtection", "1");
 
     /* Write XF with sub-elements if required. */
     if (has_alignment || has_protection) {
-        _xml_start_tag(self->file, "xf", &attributes);
+        lxw_xml_start_tag(self->file, "xf", &attributes);
 
         if (has_alignment)
             _write_alignment(self, format);
@@ -921,13 +921,13 @@ _write_xf(lxw_styles *self, lxw_format *format)
         if (has_protection)
             _write_protection(self, format);
 
-        _xml_end_tag(self->file, "xf");
+        lxw_xml_end_tag(self->file, "xf");
     }
     else {
-        _xml_empty_tag(self->file, "xf", &attributes);
+        lxw_xml_empty_tag(self->file, "xf", &attributes);
     }
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -940,18 +940,18 @@ _write_cell_xfs(lxw_styles *self)
     struct xml_attribute *attribute;
     lxw_format *format;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_INT("count", self->xf_count);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("count", self->xf_count);
 
-    _xml_start_tag(self->file, "cellXfs", &attributes);
+    lxw_xml_start_tag(self->file, "cellXfs", &attributes);
 
     STAILQ_FOREACH(format, self->xf_formats, list_pointers) {
         _write_xf(self, format);
     }
 
-    _xml_end_tag(self->file, "cellXfs");
+    lxw_xml_end_tag(self->file, "cellXfs");
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -963,14 +963,14 @@ _write_cell_style(lxw_styles *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("name", "Normal");
-    _PUSH_ATTRIBUTES_STR("xfId", "0");
-    _PUSH_ATTRIBUTES_STR("builtinId", "0");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("name", "Normal");
+    LXW_PUSH_ATTRIBUTES_STR("xfId", "0");
+    LXW_PUSH_ATTRIBUTES_STR("builtinId", "0");
 
-    _xml_empty_tag(self->file, "cellStyle", &attributes);
+    lxw_xml_empty_tag(self->file, "cellStyle", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -981,14 +981,14 @@ _write_cell_styles(lxw_styles *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("count", "1");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("count", "1");
 
-    _xml_start_tag(self->file, "cellStyles", &attributes);
+    lxw_xml_start_tag(self->file, "cellStyles", &attributes);
     _write_cell_style(self);
-    _xml_end_tag(self->file, "cellStyles");
+    lxw_xml_end_tag(self->file, "cellStyles");
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -1000,12 +1000,12 @@ _write_dxfs(lxw_styles *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("count", "0");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("count", "0");
 
-    _xml_empty_tag(self->file, "dxfs", &attributes);
+    lxw_xml_empty_tag(self->file, "dxfs", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -1017,14 +1017,14 @@ _write_table_styles(lxw_styles *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    _INIT_ATTRIBUTES();
-    _PUSH_ATTRIBUTES_STR("count", "0");
-    _PUSH_ATTRIBUTES_STR("defaultTableStyle", "TableStyleMedium9");
-    _PUSH_ATTRIBUTES_STR("defaultPivotStyle", "PivotStyleLight16");
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("count", "0");
+    LXW_PUSH_ATTRIBUTES_STR("defaultTableStyle", "TableStyleMedium9");
+    LXW_PUSH_ATTRIBUTES_STR("defaultPivotStyle", "PivotStyleLight16");
 
-    _xml_empty_tag(self->file, "tableStyles", &attributes);
+    lxw_xml_empty_tag(self->file, "tableStyles", &attributes);
 
-    _FREE_ATTRIBUTES();
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*****************************************************************************
@@ -1076,7 +1076,7 @@ lxw_styles_assemble_xml_file(lxw_styles *self)
     /* _write_colors(self); */
 
     /* Close the style sheet tag. */
-    _xml_end_tag(self->file, "styleSheet");
+    lxw_xml_end_tag(self->file, "styleSheet");
 }
 
 /*****************************************************************************
