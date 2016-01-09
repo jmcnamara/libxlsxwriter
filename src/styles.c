@@ -89,7 +89,7 @@ _write_style_sheet(lxw_styles *self)
     struct xml_attribute *attribute;
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("xmlns",
-                         "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+                            "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 
     lxw_xml_start_tag(self->file, "styleSheet", &attributes);
 

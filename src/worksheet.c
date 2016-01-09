@@ -2173,30 +2173,77 @@ _get_image_properties(lxw_image_options *image_options)
  ****************************************************************************/
 
 /*
- * Write out a number worksheet cell.
+ * Write out a number worksheet cell. Doesn't use the xml functions as an
+ * optimization in the inner cell writing loop.
  */
 STATIC void
-_write_number_cell(lxw_worksheet *self, lxw_cell *cell)
+_write_number_cell(lxw_worksheet *self, char *range,
+                   int32_t style_index, lxw_cell *cell)
 {
-    char data[ATTR_32];
-
-    lxw_snprintf(data, ATTR_32, "%.16g", cell->u.number);
-
-    lxw_xml_data_element(self->file, "v", data, NULL);
-
+    if (style_index)
+        fprintf(self->file,
+                "<c r=\"%s\" s=\"%d\"><v>%.16g</v></c>",
+                range, style_index, cell->u.number);
+    else
+        fprintf(self->file,
+                "<c r=\"%s\"><v>%.16g</v></c>", range, cell->u.number);
 }
 
 /*
- * Write out a string worksheet cell.
+ * Write out a string worksheet cell. Doesn't use the xml functions as an
+ * optimization in the inner cell writing loop.
  */
 STATIC void
-_write_string_cell(lxw_worksheet *self, lxw_cell *cell)
+_write_string_cell(lxw_worksheet *self, char *range,
+                   int32_t style_index, lxw_cell *cell)
 {
-    char data[ATTR_32];
+    if (style_index)
+        fprintf(self->file,
+                "<c r=\"%s\" s=\"%d\" t=\"s\"><v>%d</v></c>",
+                range, style_index, cell->u.string_id);
+    else
+        fprintf(self->file,
+                "<c r=\"%s\" t=\"s\"><v>%d</v></c>",
+                range, cell->u.string_id);
+}
 
-    lxw_snprintf(data, ATTR_32, "%d", cell->u.string_id);
+/*
+ * Write out an inline string. Doesn't use the xml functions as an
+ * optimization in the inner cell writing loop.
+ */
+STATIC void
+_write_inline_string_cell(lxw_worksheet *self, char *range,
+                          int32_t style_index, lxw_cell *cell)
+{
+    char *string = lxw_escape_data(cell->u.string);
 
-    lxw_xml_data_element(self->file, "v", data, NULL);
+    /* Add attribute to preserve leading or trailing whitespace. */
+    if (isspace((unsigned char) string[0])
+        || isspace((unsigned char) string[strlen(string) - 1])) {
+
+        if (style_index)
+            fprintf(self->file,
+                    "<c r=\"%s\" s=\"%d\" t=\"inlineStr\"><is>"
+                    "<t xml:space=\"preserve\">%s</t></is></c>",
+                    range, style_index, string);
+        else
+            fprintf(self->file,
+                    "<c r=\"%s\" t=\"inlineStr\"><is>"
+                    "<t xml:space=\"preserve\">%s</t></is></c>",
+                    range, string);
+    }
+    else {
+        if (style_index)
+            fprintf(self->file,
+                    "<c r=\"%s\" s=\"%d\" t=\"inlineStr\">"
+                    "<is><t>%s</t></is></c>", range, style_index, string);
+        else
+            fprintf(self->file,
+                    "<c r=\"%s\" t=\"inlineStr\">"
+                    "<is><t>%s</t></is></c>", range, string);
+    }
+
+    free(string);
 }
 
 /*
@@ -2231,30 +2278,6 @@ _write_array_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 
     lxw_xml_data_element(self->file, "f", cell->u.string, &attributes);
     lxw_xml_data_element(self->file, "v", data, NULL);
-
-    LXW_FREE_ATTRIBUTES();
-}
-
-/*
- * Write out an inline string.
- */
-STATIC void
-_write_inline_string_cell(lxw_worksheet *self, lxw_cell *cell)
-{
-    struct xml_attribute_list attributes;
-    struct xml_attribute *attribute;
-    char *string = cell->u.string;
-
-    LXW_INIT_ATTRIBUTES();
-
-    /* Add attribute to preserve leading or trailing whitespace. */
-    if (isspace((unsigned char) string[0])
-        || isspace((unsigned char) string[strlen(string) - 1]))
-        LXW_PUSH_ATTRIBUTES_STR("xml:space", "preserve");
-
-    lxw_xml_start_tag(self->file, "is", NULL);
-    lxw_xml_data_element(self->file, "t", string, &attributes);
-    lxw_xml_end_tag(self->file, "is");
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -2308,44 +2331,44 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
     char range[MAX_CELL_NAME_LENGTH] = { 0 };
     lxw_row_t row_num = cell->row_num;
     lxw_col_t col_num = cell->col_num;
-    int32_t index = 0;
+    int32_t style_index = 0;
 
     lxw_rowcol_to_cell(range, row_num, col_num);
 
+    if (cell->format) {
+        style_index = lxw_format_get_xf_index(cell->format);
+    }
+    else if (row_format) {
+        style_index = lxw_format_get_xf_index(row_format);
+    }
+    else if (col_num < self->col_formats_max && self->col_formats[col_num]) {
+        style_index = lxw_format_get_xf_index(self->col_formats[col_num]);
+    }
+
+    /* Unrolled optimization for most commonly written cell types. */
+    if (cell->type == NUMBER_CELL) {
+        _write_number_cell(self, range, style_index, cell);
+        return;
+    }
+
+    if (cell->type == STRING_CELL) {
+        _write_string_cell(self, range, style_index, cell);
+        return;
+    }
+
+    if (cell->type == INLINE_STRING_CELL) {
+        _write_inline_string_cell(self, range, style_index, cell);
+        return;
+    }
+
+    /* For other cell types use the general functions. */
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("r", range);
 
-    if (cell->format) {
-        index = lxw_format_get_xf_index(cell->format);
-    }
-    else if (row_format) {
-        index = lxw_format_get_xf_index(row_format);
-    }
-    else if (col_num < self->col_formats_max && self->col_formats[col_num]) {
-        index = lxw_format_get_xf_index(self->col_formats[col_num]);
-    }
+    if (style_index)
+        LXW_PUSH_ATTRIBUTES_INT("s", style_index);
 
-    if (index)
-        LXW_PUSH_ATTRIBUTES_INT("s", index);
-
-    if (cell->type == NUMBER_CELL) {
-        lxw_xml_start_tag(self->file, "c", &attributes);
-        _write_number_cell(self, cell);
-        lxw_xml_end_tag(self->file, "c");
-    }
-    else if (cell->type == STRING_CELL) {
-        LXW_PUSH_ATTRIBUTES_STR("t", "s");
-        lxw_xml_start_tag(self->file, "c", &attributes);
-        _write_string_cell(self, cell);
-        lxw_xml_end_tag(self->file, "c");
-    }
-    else if (cell->type == INLINE_STRING_CELL) {
-        LXW_PUSH_ATTRIBUTES_STR("t", "inlineStr");
-        lxw_xml_start_tag(self->file, "c", &attributes);
-        _write_inline_string_cell(self, cell);
-        lxw_xml_end_tag(self->file, "c");
-    }
-    else if (cell->type == FORMULA_CELL) {
+    if (cell->type == FORMULA_CELL) {
         lxw_xml_start_tag(self->file, "c", &attributes);
         _write_formula_num_cell(self, cell);
         lxw_xml_end_tag(self->file, "c");

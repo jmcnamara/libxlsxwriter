@@ -92,12 +92,12 @@ _write_cp_core_properties(lxw_core *self)
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("xmlns:cp",
-                         "http://schemas.openxmlformats.org/package/2006/metadata/core-properties");
+                            "http://schemas.openxmlformats.org/package/2006/metadata/core-properties");
     LXW_PUSH_ATTRIBUTES_STR("xmlns:dc", "http://purl.org/dc/elements/1.1/");
     LXW_PUSH_ATTRIBUTES_STR("xmlns:dcterms", "http://purl.org/dc/terms/");
     LXW_PUSH_ATTRIBUTES_STR("xmlns:dcmitype", "http://purl.org/dc/dcmitype/");
     LXW_PUSH_ATTRIBUTES_STR("xmlns:xsi",
-                         "http://www.w3.org/2001/XMLSchema-instance");
+                            "http://www.w3.org/2001/XMLSchema-instance");
 
     lxw_xml_start_tag(self->file, "cp:coreProperties", &attributes);
 

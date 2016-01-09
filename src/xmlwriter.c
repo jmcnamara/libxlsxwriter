@@ -18,7 +18,7 @@
 /* Forward declarations. */
 char *_escape_attributes(struct xml_attribute *attribute);
 
-char *_escape_data(const char *data);
+char *lxw_escape_data(const char *data);
 
 void _fprint_escaped_attributes(FILE * xmlfile,
                                 struct xml_attribute_list *attributes);
@@ -180,7 +180,7 @@ _escape_attributes(struct xml_attribute *attribute)
  * in that double quotes are not escaped by Excel.
  */
 char *
-_escape_data(const char *data)
+lxw_escape_data(const char *data)
 {
     size_t encoded_len = (strlen(data) * 5 + 1);
 
@@ -305,7 +305,7 @@ _fprint_escaped_data(FILE * xmlfile, const char *data)
         fprintf(xmlfile, "%s", data);
     }
     else {
-        char *encoded = _escape_data(data);
+        char *encoded = lxw_escape_data(data);
         if (encoded) {
             fprintf(xmlfile, "%s", encoded);
             free(encoded);

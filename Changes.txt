@@ -1,22 +1,26 @@
 /**
 @page changes Changes
 
+## 0.3.1 January 9 2016
+
+- Improved performance 20-30% for large data files.
+
 
 ## 0.3.0 January 4 2016
 
 - Renamed `worksheet_set_row()` function to `worksheet_set_row_opt()` for
   consistency with current and future APIs. The `worksheet_set_row()` function
   is now used without the options parameter.
-  
+
   Note: This is a backward incompatible change.
-  
-  
+
+
 - Renamed `worksheet_set_column()` function to `worksheet_set_column_opt()`
   for consistency with current and future APIs. The `worksheet_set_column()`
   function is now used without the options parameter.
-  
+
   Note: This is a backward incompatible change.
-  
+
 
 ## 0.2.9 January 3 2016
 

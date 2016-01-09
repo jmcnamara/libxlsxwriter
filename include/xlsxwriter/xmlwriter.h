@@ -167,6 +167,8 @@ void lxw_xml_data_element(FILE * xmlfile,
 
 char *lxw_escape_control_characters(const char *string);
 
+char *lxw_escape_data(const char *data);
+
 /* *INDENT-OFF* */
 #ifdef __cplusplus
 }
