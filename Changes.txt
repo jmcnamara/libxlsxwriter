@@ -1,6 +1,15 @@
 /**
 @page changes Changes
 
+## 0.3.2 April 8 2016
+
+- Added the `worksheet_write_boolean()` function to write Excel boolean
+  values.
+  Feature request [#47][gh_47].
+
+  [gh_47]: https://github.com/jmcnamara/libxlsxwriter/issues/47
+
+
 ## 0.3.1 January 9 2016
 
 - Improved performance 20-30% for large data files.

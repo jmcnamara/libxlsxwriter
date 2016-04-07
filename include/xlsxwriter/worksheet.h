@@ -923,7 +923,7 @@ int8_t worksheet_write_url(lxw_worksheet *worksheet,
                            lxw_format *format);
 
 /**
- * @brief Write a formatted blank worksheet cell.
+ * @brief Write a formatted boolean worksheet cell.
  *
  * @param worksheet pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
@@ -936,7 +936,7 @@ int8_t worksheet_write_url(lxw_worksheet *worksheet,
  * Write an Excel boolean to the cell specified by `row` and `column`:
  *
  * @code
- *     worksheet_write_boolean(worksheet, 1, 1, 0, my_format);
+ *     worksheet_write_boolean(worksheet, 2, 2, 0, my_format);
  * @endcode
  *
  */
@@ -945,7 +945,7 @@ int8_t worksheet_write_boolean(lxw_worksheet *worksheet,
                                int value, lxw_format *format);
 
 /**
- * @brief Write a formatted boolean worksheet cell.
+ * @brief Write a formatted blank worksheet cell.
  *
  * @param worksheet pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
