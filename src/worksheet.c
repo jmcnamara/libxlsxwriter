@@ -172,7 +172,7 @@ _free_cell(lxw_cell *cell)
         return;
 
     if (cell->type != NUMBER_CELL && cell->type != STRING_CELL
-        && cell->type != BLANK_CELL) {
+        && cell->type != BLANK_CELL && cell->type != BOOLEAN_CELL) {
 
         free(cell->u.string);
     }
@@ -490,6 +490,25 @@ _new_blank_cell(lxw_row_t row_num, lxw_col_t col_num, lxw_format *format)
     cell->col_num = col_num;
     cell->type = BLANK_CELL;
     cell->format = format;
+
+    return cell;
+}
+
+/*
+ * Create a new worksheet boolean cell object.
+ */
+STATIC lxw_cell *
+_new_boolean_cell(lxw_row_t row_num, lxw_col_t col_num, int value,
+                  lxw_format *format)
+{
+    lxw_cell *cell = calloc(1, sizeof(lxw_cell));
+    RETURN_ON_MEM_ERROR(cell, cell);
+
+    cell->row_num = row_num;
+    cell->col_num = col_num;
+    cell->type = BOOLEAN_CELL;
+    cell->format = format;
+    cell->u.number = value;
 
     return cell;
 }
@@ -2283,6 +2302,24 @@ _write_array_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 }
 
 /*
+ * Write out a boolean worksheet cell.
+ */
+STATIC void
+_write_boolean_cell(lxw_worksheet *self, lxw_cell *cell)
+{
+    char data[ATTR_32];
+
+    if (cell->u.number)
+        data[0] = '1';
+    else
+        data[0] = '0';
+
+    data[1] = '\0';
+
+    lxw_xml_data_element(self->file, "v", data, NULL);
+}
+
+/*
  * Calculate the "spans" attribute of the <row> tag. This is an XLSX
  * optimization and isn't strictly required. However, it makes comparing
  * files easier.
@@ -2375,6 +2412,12 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
     }
     else if (cell->type == BLANK_CELL) {
         lxw_xml_empty_tag(self->file, "c", &attributes);
+    }
+    else if (cell->type == BOOLEAN_CELL) {
+        LXW_PUSH_ATTRIBUTES_STR("t", "b");
+        lxw_xml_start_tag(self->file, "c", &attributes);
+        _write_boolean_cell(self, cell);
+        lxw_xml_end_tag(self->file, "c");
     }
     else if (cell->type == ARRAY_FORMULA_CELL) {
         lxw_xml_start_tag(self->file, "c", &attributes);
@@ -3420,6 +3463,29 @@ worksheet_write_blank(lxw_worksheet *self,
         return err;
 
     cell = _new_blank_cell(row_num, col_num, format);
+
+    _insert_cell(self, row_num, col_num, cell);
+
+    return 0;
+}
+
+/*
+ * Write a boolean cell with a format to a cell in Excel.
+ */
+int8_t
+worksheet_write_boolean(lxw_worksheet *self,
+                        lxw_row_t row_num, lxw_col_t col_num,
+                        int value, lxw_format *format)
+{
+    lxw_cell *cell;
+    int8_t err;
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
+
+    if (err)
+        return err;
+
+    cell = _new_boolean_cell(row_num, col_num, value, format);
 
     _insert_cell(self, row_num, col_num, cell);
 
