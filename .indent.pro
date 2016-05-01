@@ -47,6 +47,8 @@
 -T lxw_autofilter
 -T lxw_border
 -T lxw_cell
+-T lxw_chart
+-T lxw_chart_series
 -T lxw_col_options
 -T lxw_col_t
 -T lxw_color_t
@@ -80,6 +82,7 @@
 -T lxw_row_col_options
 -T lxw_row_t
 -T lxw_selection
+-T lxw_series_range
 -T lxw_sst
 -T lxw_styles
 -T lxw_theme
