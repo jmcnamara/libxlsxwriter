@@ -15,7 +15,6 @@
 
 #include "common.h"
 
-#define LXW_CONTENT_TYPE_SCHEMA "http://schemas.openxmlformats.org/package/2006/content-types"
 #define LXW_APP_PACKAGE  "application/vnd.openxmlformats-package."
 #define LXW_APP_DOCUMENT "application/vnd.openxmlformats-officedocument."
 
@@ -46,6 +45,7 @@ void lxw_ct_add_default(lxw_content_types *self, const char *key,
 void lxw_ct_add_override(lxw_content_types *self, const char *key,
                          const char *value);
 void lxw_ct_add_worksheet_name(lxw_content_types *self, const char *name);
+void lxw_ct_add_chart_name(lxw_content_types *self, const char *name);
 void lxw_ct_add_drawing_name(lxw_content_types *self, const char *name);
 void lxw_ct_add_shared_strings(lxw_content_types *self);
 void lxw_ct_add_calc_chain(lxw_content_types *self);

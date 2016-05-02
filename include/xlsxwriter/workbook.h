@@ -46,12 +46,14 @@
 #include <errno.h>
 
 #include "worksheet.h"
+#include "chart.h"
 #include "shared_strings.h"
 #include "hash_table.h"
 #include "common.h"
 
 /* Define the queue.h structs for the workbook lists. */
 STAILQ_HEAD(lxw_worksheets, lxw_worksheet);
+STAILQ_HEAD(lxw_charts, lxw_chart);
 TAILQ_HEAD(lxw_defined_names, lxw_defined_name);
 
 #define LXW_DEFINED_NAME_LENGTH 128
@@ -180,6 +182,7 @@ typedef struct lxw_workbook {
 
     FILE *file;
     struct lxw_worksheets *worksheets;
+    struct lxw_charts *charts;
     struct lxw_formats *formats;
     struct lxw_defined_names *defined_names;
     lxw_sst *sst;
@@ -307,6 +310,8 @@ lxw_workbook *new_workbook_opt(const char *filename,
  */
 lxw_worksheet *workbook_add_worksheet(lxw_workbook *workbook,
                                       const char *sheetname);
+
+lxw_chart *workbook_add_chart(lxw_workbook *workbook, uint8_t chart_type);
 
 /**
  * @brief Create a new @ref format.h "Format" object to formats cells in

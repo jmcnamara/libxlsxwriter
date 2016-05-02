@@ -13,8 +13,8 @@
 // Test assembling a complete Chart file.
 CTEST(chart, chart01) {
 
-    lxw_chart_series series1 = {};
-    lxw_chart_series series2 = {};
+    lxw_chart_series *series1;
+    lxw_chart_series *series2;
 
     char* got;
     char exp[] =
@@ -33,6 +33,25 @@ CTEST(chart, chart01) {
                   "<c:val>"
                     "<c:numRef>"
                       "<c:f>Sheet1!$A$1:$A$5</c:f>"
+                      "<c:numCache>"
+                        "<c:formatCode>General</c:formatCode>"
+                        "<c:ptCount val=\"5\"/>"
+                        "<c:pt idx=\"0\">"
+                          "<c:v>1</c:v>"
+                        "</c:pt>"
+                        "<c:pt idx=\"1\">"
+                          "<c:v>2</c:v>"
+                        "</c:pt>"
+                        "<c:pt idx=\"2\">"
+                          "<c:v>3</c:v>"
+                        "</c:pt>"
+                        "<c:pt idx=\"3\">"
+                          "<c:v>4</c:v>"
+                        "</c:pt>"
+                        "<c:pt idx=\"4\">"
+                          "<c:v>5</c:v>"
+                        "</c:pt>"
+                      "</c:numCache>"
                     "</c:numRef>"
                   "</c:val>"
                 "</c:ser>"
@@ -42,27 +61,46 @@ CTEST(chart, chart01) {
                   "<c:val>"
                     "<c:numRef>"
                       "<c:f>Sheet1!$B$1:$B$5</c:f>"
+                      "<c:numCache>"
+                        "<c:formatCode>General</c:formatCode>"
+                        "<c:ptCount val=\"5\"/>"
+                        "<c:pt idx=\"0\">"
+                          "<c:v>2</c:v>"
+                        "</c:pt>"
+                        "<c:pt idx=\"1\">"
+                          "<c:v>4</c:v>"
+                        "</c:pt>"
+                        "<c:pt idx=\"2\">"
+                          "<c:v>6</c:v>"
+                        "</c:pt>"
+                        "<c:pt idx=\"3\">"
+                          "<c:v>8</c:v>"
+                        "</c:pt>"
+                        "<c:pt idx=\"4\">"
+                          "<c:v>10</c:v>"
+                        "</c:pt>"
+                      "</c:numCache>"
                     "</c:numRef>"
                   "</c:val>"
                 "</c:ser>"
-                "<c:axId val=\"53850880\"/>"
-                "<c:axId val=\"82642816\"/>"
+                "<c:axId val=\"50010001\"/>"
+                "<c:axId val=\"50010002\"/>"
               "</c:barChart>"
               "<c:catAx>"
-                "<c:axId val=\"53850880\"/>"
+                "<c:axId val=\"50010001\"/>"
                 "<c:scaling>"
                   "<c:orientation val=\"minMax\"/>"
                 "</c:scaling>"
                 "<c:axPos val=\"l\"/>"
                 "<c:tickLblPos val=\"nextTo\"/>"
-                "<c:crossAx val=\"82642816\"/>"
+                "<c:crossAx val=\"50010002\"/>"
                 "<c:crosses val=\"autoZero\"/>"
                 "<c:auto val=\"1\"/>"
                 "<c:lblAlgn val=\"ctr\"/>"
                 "<c:lblOffset val=\"100\"/>"
               "</c:catAx>"
               "<c:valAx>"
-                "<c:axId val=\"82642816\"/>"
+                "<c:axId val=\"50010002\"/>"
                 "<c:scaling>"
                   "<c:orientation val=\"minMax\"/>"
                 "</c:scaling>"
@@ -70,7 +108,7 @@ CTEST(chart, chart01) {
                 "<c:majorGridlines/>"
                 "<c:numFmt formatCode=\"General\" sourceLinked=\"1\"/>"
                 "<c:tickLblPos val=\"nextTo\"/>"
-                "<c:crossAx val=\"53850880\"/>"
+                "<c:crossAx val=\"50010001\"/>"
                 "<c:crosses val=\"autoZero\"/>"
                 "<c:crossBetween val=\"between\"/>"
               "</c:valAx>"
@@ -90,22 +128,22 @@ CTEST(chart, chart01) {
 
     FILE* testfile = tmpfile();
 
-    lxw_chart *chart = lxw_chart_new(NULL);
+    lxw_chart *chart = lxw_chart_new(LXW_CHART_BAR);
     chart->file = testfile;
 
     /* Set the chart axis ids for testing. */
-    chart->axis_id_1 = 53850880;
-    chart->axis_id_2 = 82642816;
+    //chart->axis_id_1 = 53850880;
+    //chart->axis_id_2 = 82642816;
 
+    series1 = chart_add_series(chart, NULL, "Sheet1!$A$1:$A$5");
+    series2 = chart_add_series(chart, NULL, "Sheet1!$B$1:$B$5");
 
-    series1.values.range = strdup("Sheet1!$A$1:$A$5");
-    series2.values.range = strdup("Sheet1!$B$1:$B$5");
+    uint8_t test_data1[] = {1, 2, 3, 4, 5};
+    uint8_t test_data2[] = {2, 4, 6, 8, 10};
 
-    series1.values.sheetname = NULL;
-    series2.values.sheetname = NULL;
+    lxw_chart_add_data_cache(&series1->values, 5, test_data1);
+    lxw_chart_add_data_cache(&series2->values, 5, test_data2);
 
-    chart_add_series(chart, &series1);
-    chart_add_series(chart, &series2);
 
     lxw_chart_assemble_xml_file(chart);
 

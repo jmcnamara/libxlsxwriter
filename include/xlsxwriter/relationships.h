@@ -14,11 +14,6 @@
 
 #include "common.h"
 
-#define LXW_SCHEMA_ROOT     "http://schemas.openxmlformats.org"
-#define LXW_PACKAGE_SCHEMA  LXW_SCHEMA_ROOT "/package/2006/relationships"
-#define LXW_DOCUMENT_SCHEMA LXW_SCHEMA_ROOT "/officeDocument/2006/relationships"
-#define LXW_MS_SCHEMA       "http://schemas.microsoft.com/office/2006/relationships"
-
 /* Define the queue.h STAILQ structs for the generic data structs. */
 STAILQ_HEAD(lxw_rel_tuples, lxw_rel_tuple);
 

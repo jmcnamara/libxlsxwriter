@@ -8,13 +8,11 @@
  */
 
 #include "xlsxwriter/xmlwriter.h"
+#include "xlsxwriter/common.h"
 #include "xlsxwriter/drawing.h"
 #include "xlsxwriter/utility.h"
 
-#define DRAWING_SCHEMA "http://schemas.openxmlformats.org/drawingml/2006/"
-#define OFFICEDOC_SCHEMA "http://schemas.openxmlformats.org/officeDocument/2006/"
-
-#define PIC_NAME_LENGTH 14      /* "Picture 65536" */
+#define PIC_NAME_LENGTH 14      /* "Picture 65536", or "Chart 65536" */
 /*
  * Forward declarations.
  */
@@ -120,8 +118,8 @@ _write_drawing_workspace(lxw_drawing *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char xmlns_xdr[] = DRAWING_SCHEMA "spreadsheetDrawing";
-    char xmlns_a[] = DRAWING_SCHEMA "main";
+    char xmlns_xdr[] = LXW_SCHEMA_DRAWING "/spreadsheetDrawing";
+    char xmlns_a[] = LXW_SCHEMA_DRAWING "/main";
 
     LXW_INIT_ATTRIBUTES();
 
@@ -223,20 +221,22 @@ _drawing_write_to(lxw_drawing *self, lxw_drawing_coords *coords)
  * Write the <xdr:cNvPr> element.
  */
 STATIC void
-_drawing_write_c_nv_pr(lxw_drawing *self, uint16_t index,
+_drawing_write_c_nv_pr(lxw_drawing *self, char *object_name, uint16_t index,
                        lxw_drawing_object *drawing_object)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
     char name[PIC_NAME_LENGTH];
-    lxw_snprintf(name, PIC_NAME_LENGTH, "Picture %d", index);
+    lxw_snprintf(name, PIC_NAME_LENGTH, "%s %d", object_name, index);
 
     LXW_INIT_ATTRIBUTES();
 
     LXW_PUSH_ATTRIBUTES_INT("id", index + 1);
     LXW_PUSH_ATTRIBUTES_STR("name", name);
-    LXW_PUSH_ATTRIBUTES_STR("descr", drawing_object->description);
+
+    if (drawing_object)
+        LXW_PUSH_ATTRIBUTES_STR("descr", drawing_object->description);
 
     lxw_xml_empty_tag(self->file, "xdr:cNvPr", &attributes);
 
@@ -284,7 +284,7 @@ _drawing_write_nv_pic_pr(lxw_drawing *self, uint16_t index,
     lxw_xml_start_tag(self->file, "xdr:nvPicPr", NULL);
 
     /* Write the xdr:cNvPr element. */
-    _drawing_write_c_nv_pr(self, index, drawing_object);
+    _drawing_write_c_nv_pr(self, "Picture", index, drawing_object);
 
     /* Write the xdr:cNvPicPr element. */
     _drawing_write_c_nv_pic_pr(self);
@@ -300,7 +300,7 @@ _drawing_write_a_blip(lxw_drawing *self, uint16_t index)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char xmlns_r[] = OFFICEDOC_SCHEMA "relationships";
+    char xmlns_r[] = LXW_SCHEMA_OFFICEDOC "/relationships";
     char r_id[MAX_ATTRIBUTE_LENGTH];
 
     lxw_snprintf(r_id, ATTR_32, "rId%d", index);
@@ -486,6 +486,175 @@ _drawing_write_client_data(lxw_drawing *self)
 }
 
 /*
+ * Write the <xdr:cNvGraphicFramePr> element.
+ */
+STATIC void
+_drawing_write_c_nv_graphic_frame_pr(lxw_drawing *self)
+{
+    lxw_xml_empty_tag(self->file, "xdr:cNvGraphicFramePr", NULL);
+}
+
+/*
+ * Write the <xdr:nvGraphicFramePr> element.
+ */
+STATIC void
+_drawing_write_nv_graphic_frame_pr(lxw_drawing *self, uint16_t index)
+{
+    lxw_xml_start_tag(self->file, "xdr:nvGraphicFramePr", NULL);
+
+    /* Write the xdr:cNvPr element. */
+    _drawing_write_c_nv_pr(self, "Chart", index, NULL);
+
+    /* Write the xdr:cNvGraphicFramePr element. */
+    _drawing_write_c_nv_graphic_frame_pr(self);
+
+    lxw_xml_end_tag(self->file, "xdr:nvGraphicFramePr");
+}
+
+/*
+ * Write the <a:off> element.
+ */
+STATIC void
+_drawing_write_xfrm_offset(lxw_drawing *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("x", "0");
+    LXW_PUSH_ATTRIBUTES_STR("y", "0");
+
+    lxw_xml_empty_tag(self->file, "a:off", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <a:ext> element.
+ */
+STATIC void
+_drawing_write_xfrm_extension(lxw_drawing *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("cx", "0");
+    LXW_PUSH_ATTRIBUTES_STR("cy", "0");
+
+    lxw_xml_empty_tag(self->file, "a:ext", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <xdr:xfrm> element.
+ */
+STATIC void
+_drawing_write_xfrm(lxw_drawing *self)
+{
+    lxw_xml_start_tag(self->file, "xdr:xfrm", NULL);
+
+    /* Write the a:off element. */
+    _drawing_write_xfrm_offset(self);
+
+    /* Write the a:ext element. */
+    _drawing_write_xfrm_extension(self);
+
+    lxw_xml_end_tag(self->file, "xdr:xfrm");
+}
+
+/*
+ * Write the <c:chart> element.
+ */
+STATIC void
+_drawing_write_chart(lxw_drawing *self, uint16_t index)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char xmlns_c[] = LXW_SCHEMA_DRAWING "/chart";
+    char xmlns_r[] = LXW_SCHEMA_OFFICEDOC "/relationships";
+    char r_id[MAX_ATTRIBUTE_LENGTH];
+
+    lxw_snprintf(r_id, ATTR_32, "rId%d", index);
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:c", xmlns_c);
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:r", xmlns_r);
+    LXW_PUSH_ATTRIBUTES_STR("r:id", r_id);
+
+    lxw_xml_empty_tag(self->file, "c:chart", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <a:graphicData> element.
+ */
+STATIC void
+_drawing_write_a_graphic_data(lxw_drawing *self, uint16_t index)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char uri[] = LXW_SCHEMA_DRAWING "/chart";
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("uri", uri);
+
+    lxw_xml_start_tag(self->file, "a:graphicData", &attributes);
+
+    /* Write the c:chart element. */
+    _drawing_write_chart(self, index);
+
+    lxw_xml_end_tag(self->file, "a:graphicData");
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <a:graphic> element.
+ */
+STATIC void
+_drawing_write_a_graphic(lxw_drawing *self, uint16_t index)
+{
+
+    lxw_xml_start_tag(self->file, "a:graphic", NULL);
+
+    /* Write the a:graphicData element. */
+    _drawing_write_a_graphic_data(self, index);
+
+    lxw_xml_end_tag(self->file, "a:graphic");
+}
+
+/*
+ * Write the <xdr:graphicFrame> element.
+ */
+STATIC void
+_drawing_write_graphic_frame(lxw_drawing *self, uint16_t index)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("macro", "");
+
+    lxw_xml_start_tag(self->file, "xdr:graphicFrame", &attributes);
+
+    /* Write the xdr:nvGraphicFramePr element. */
+    _drawing_write_nv_graphic_frame_pr(self, index);
+
+    /* Write the xdr:xfrm element. */
+    _drawing_write_xfrm(self);
+
+    /* Write the a:graphic element. */
+    _drawing_write_a_graphic(self, index);
+
+    lxw_xml_end_tag(self->file, "xdr:graphicFrame");
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <xdr:twoCellAnchor> element.
  */
 STATIC void
@@ -511,9 +680,8 @@ _drawing_write_two_cell_anchor(lxw_drawing *self, uint16_t index,
     _drawing_write_to(self, &drawing_object->to);
 
     if (drawing_object->anchor_type == LXW_ANCHOR_TYPE_CHART) {
-        /* Graphic frame. */
         /* Write the xdr:graphicFrame element for charts. */
-        /*_drawing_write_graphic_frame(self, index, description); */
+        _drawing_write_graphic_frame(self, index);
     }
     else if (drawing_object->anchor_type == LXW_ANCHOR_TYPE_IMAGE) {
         /* Write the xdr:pic element. */

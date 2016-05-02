@@ -15,18 +15,42 @@
 #include "common.h"
 
 STAILQ_HEAD(lxw_chart_series_list, lxw_chart_series);
+STAILQ_HEAD(lxw_series_data_points, lxw_series_data_point);
+
+/** Available chart types . */
+enum lxw_chart_types {
+
+    /** None. */
+    LXW_CHART_NONE = 0,
+
+    /** Bar chart. */
+    LXW_CHART_BAR
+};
 
 typedef struct lxw_series_range {
-    char *range;
+    char *formula;
     char *sheetname;
     uint32_t first_row;
     uint32_t last_row;
     uint16_t first_col;
     uint16_t last_col;
 
+    uint8_t has_data_cache;
+    uint16_t num_data_points;
+    struct lxw_series_data_points *data_cache;
+
 } lxw_series_range;
 
+typedef struct lxw_series_data_point {
+    double number;
+
+    STAILQ_ENTRY (lxw_series_data_point) list_pointers;
+
+} lxw_series_data_point;
+
 typedef struct lxw_chart_series {
+    /* TODO: change to pointers. */
+    lxw_series_range categories;
     lxw_series_range values;
 
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
@@ -40,6 +64,7 @@ typedef struct lxw_chart {
 
     FILE *file;
 
+    uint8_t type;
     uint16_t series_index;
 
     uint32_t id;
@@ -48,7 +73,9 @@ typedef struct lxw_chart {
     uint32_t axis_id_3;
     uint32_t axis_id_4;
 
-    struct lxw_chart_series_list *series;
+    struct lxw_chart_series_list *series_list;
+
+    STAILQ_ENTRY (lxw_chart) list_pointers;
 
 } lxw_chart;
 
@@ -59,11 +86,15 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_chart *lxw_chart_new();
+lxw_chart *lxw_chart_new(uint8_t type);
 void lxw_chart_free(lxw_chart *chart);
-void lxw_chart_assemble_xml_file(lxw_chart *self);
+void lxw_chart_assemble_xml_file(lxw_chart *chart);
+int lxw_chart_init_data_cache(lxw_series_range *range);
+lxw_chart_series *chart_add_series(lxw_chart *chart,
+                                   char *categories, char *values);
 
-int chart_add_series(lxw_chart *chart, lxw_chart_series *user_series);
+int lxw_chart_add_data_cache(lxw_series_range *range,
+                             uint16_t num_data_points, uint8_t *data);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

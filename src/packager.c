@@ -184,10 +184,10 @@ _write_image_files(lxw_packager *self)
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
 
-        if (STAILQ_EMPTY(worksheet->images))
+        if (STAILQ_EMPTY(worksheet->image_data))
             continue;
 
-        STAILQ_FOREACH(image, worksheet->images, list_pointers) {
+        STAILQ_FOREACH(image, worksheet->image_data, list_pointers) {
 
             lxw_snprintf(filename, FILENAME_LEN,
                          "xl/media/image%d.%s", index++, image->extension);
@@ -198,6 +198,35 @@ _write_image_files(lxw_packager *self)
 
             fclose(image->stream);
         }
+    }
+
+    return 0;
+}
+
+/*
+ * Write the chart files.
+ */
+STATIC uint8_t
+_write_chart_files(lxw_packager *self)
+{
+    lxw_workbook *workbook = self->workbook;
+    lxw_chart *chart;
+    char sheetname[FILENAME_LEN] = { 0 };
+    uint16_t index = 1;
+
+    STAILQ_FOREACH(chart, workbook->charts, list_pointers) {
+        lxw_snprintf(sheetname, FILENAME_LEN,
+                     "xl/charts/chart%d.xml", index++);
+
+        chart->file = lxw_tmpfile();
+
+        lxw_chart_assemble_xml_file(chart);
+
+        _add_file_to_zip(self, chart->file, sheetname);
+
+        self->chart_count++;
+
+        fclose(chart->file);
     }
 
     return 0;
@@ -225,6 +254,7 @@ _write_drawing_files(lxw_packager *self)
             drawing->file = lxw_tmpfile();
             lxw_drawing_assemble_xml_file(drawing);
             _add_file_to_zip(self, drawing->file, filename);
+
             fclose(drawing->file);
 
             self->drawing_count++;
@@ -423,6 +453,11 @@ _write_content_types_file(lxw_packager *self)
         lxw_snprintf(filename, FILENAME_LEN,
                      "/xl/worksheets/sheet%d.xml", index++);
         lxw_ct_add_worksheet_name(content_types, filename);
+    }
+
+    for (index = 1; index <= self->chart_count; index++) {
+        lxw_snprintf(filename, FILENAME_LEN, "/xl/charts/chart%d.xml", index);
+        lxw_ct_add_chart_name(content_types, filename);
     }
 
     for (index = 1; index <= self->drawing_count; index++) {
@@ -671,6 +706,7 @@ lxw_create_package(lxw_packager *self)
 
     _write_worksheet_files(self);
     _write_workbook_file(self);
+    _write_chart_files(self);
     _write_drawing_files(self);
     _write_shared_strings_file(self);
     _write_app_file(self);

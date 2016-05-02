@@ -119,7 +119,7 @@ _write_relationships(lxw_relationships *self)
     lxw_rel_tuple *rel;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("xmlns", LXW_PACKAGE_SCHEMA);
+    LXW_PUSH_ATTRIBUTES_STR("xmlns", LXW_SCHEMA_PACKAGE);
 
     lxw_xml_start_tag(self->file, "Relationships", &attributes);
 
@@ -208,7 +208,7 @@ void
 lxw_add_document_relationship(lxw_relationships *self, const char *type,
                               const char *target)
 {
-    _add_relationship(self, LXW_DOCUMENT_SCHEMA, type, target, NULL);
+    _add_relationship(self, LXW_SCHEMA_DOCUMENT, type, target, NULL);
 }
 
 /*
@@ -218,7 +218,7 @@ void
 lxw_add_package_relationship(lxw_relationships *self, const char *type,
                              const char *target)
 {
-    _add_relationship(self, LXW_PACKAGE_SCHEMA, type, target, NULL);
+    _add_relationship(self, LXW_SCHEMA_PACKAGE, type, target, NULL);
 }
 
 /*
@@ -228,7 +228,7 @@ void
 lxw_add_ms_package_relationship(lxw_relationships *self, const char *type,
                                 const char *target)
 {
-    _add_relationship(self, LXW_MS_SCHEMA, type, target, NULL);
+    _add_relationship(self, LXW_SCHEMA_MS, type, target, NULL);
 }
 
 /*
@@ -238,5 +238,5 @@ void
 lxw_add_worksheet_relationship(lxw_relationships *self, const char *type,
                                const char *target, const char *target_mode)
 {
-    _add_relationship(self, LXW_DOCUMENT_SCHEMA, type, target, target_mode);
+    _add_relationship(self, LXW_SCHEMA_DOCUMENT, type, target, target_mode);
 }

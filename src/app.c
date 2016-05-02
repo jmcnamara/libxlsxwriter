@@ -11,8 +11,6 @@
 #include "xlsxwriter/app.h"
 #include "xlsxwriter/utility.h"
 
-#define APP_SCHEMA "http://schemas.openxmlformats.org/officeDocument/2006"
-
 /*
  * Forward declarations.
  */
@@ -103,8 +101,8 @@ _write_properties(lxw_app *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char xmlns[] = APP_SCHEMA "/extended-properties";
-    char xmlns_vt[] = APP_SCHEMA "/docPropsVTypes";
+    char xmlns[] = LXW_SCHEMA_OFFICEDOC "/extended-properties";
+    char xmlns_vt[] = LXW_SCHEMA_OFFICEDOC "/docPropsVTypes";
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("xmlns", xmlns);

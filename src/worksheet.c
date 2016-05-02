@@ -76,8 +76,11 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     worksheet->merged_ranges = calloc(1, sizeof(struct lxw_merged_ranges));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->merged_ranges, mem_error);
 
-    worksheet->images = calloc(1, sizeof(struct lxw_images));
-    GOTO_LABEL_ON_MEM_ERROR(worksheet->images, mem_error);
+    worksheet->image_data = calloc(1, sizeof(struct lxw_image_data));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->image_data, mem_error);
+
+    worksheet->chart_data = calloc(1, sizeof(struct lxw_chart_data));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->chart_data, mem_error);
 
     worksheet->selections = calloc(1, sizeof(struct lxw_selections));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->selections, mem_error);
@@ -95,7 +98,8 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     RB_INIT(worksheet->table);
     RB_INIT(worksheet->hyperlinks);
     STAILQ_INIT(worksheet->merged_ranges);
-    STAILQ_INIT(worksheet->images);
+    STAILQ_INIT(worksheet->image_data);
+    STAILQ_INIT(worksheet->chart_data);
     STAILQ_INIT(worksheet->selections);
     STAILQ_INIT(worksheet->external_hyperlinks);
     STAILQ_INIT(worksheet->external_drawing_links);
@@ -232,7 +236,7 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     lxw_row *next_row;
     lxw_col_t col;
     lxw_merged_range *merged_range;
-    lxw_image_options *image;
+    lxw_image_options *image_options;
     lxw_selection *selection;
     lxw_rel_tuple *relationship;
 
@@ -285,14 +289,24 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
         free(worksheet->merged_ranges);
     }
 
-    if (worksheet->images) {
-        while (!STAILQ_EMPTY(worksheet->images)) {
-            image = STAILQ_FIRST(worksheet->images);
-            STAILQ_REMOVE_HEAD(worksheet->images, list_pointers);
-            _free_image_options(image);
+    if (worksheet->image_data) {
+        while (!STAILQ_EMPTY(worksheet->image_data)) {
+            image_options = STAILQ_FIRST(worksheet->image_data);
+            STAILQ_REMOVE_HEAD(worksheet->image_data, list_pointers);
+            _free_image_options(image_options);
         }
 
-        free(worksheet->images);
+        free(worksheet->image_data);
+    }
+
+    if (worksheet->chart_data) {
+        while (!STAILQ_EMPTY(worksheet->chart_data)) {
+            image_options = STAILQ_FIRST(worksheet->chart_data);
+            STAILQ_REMOVE_HEAD(worksheet->chart_data, list_pointers);
+            _free_image_options(image_options);
+        }
+
+        free(worksheet->chart_data);
     }
 
     if (worksheet->selections) {
@@ -1813,7 +1827,7 @@ _worksheet_position_object_emus(lxw_worksheet *self,
 void
 lxw_worksheet_prepare_image(lxw_worksheet *self,
                             uint16_t image_ref_id, uint16_t drawing_id,
-                            lxw_image_options *image)
+                            lxw_image_options *image_data)
 {
     lxw_drawing_object *drawing_object;
     lxw_rel_tuple *relationship;
@@ -1847,21 +1861,21 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
 
     drawing_object->anchor_type = LXW_ANCHOR_TYPE_IMAGE;
     drawing_object->edit_as = LXW_ANCHOR_EDIT_AS_ONE_CELL;
-    drawing_object->description = lxw_strdup(image->short_name);
+    drawing_object->description = lxw_strdup(image_data->short_name);
 
     /* Scale to user scale. */
-    width = image->width * image->x_scale;
-    height = image->height * image->y_scale;
+    width = image_data->width * image_data->x_scale;
+    height = image_data->height * image_data->y_scale;
 
     /* Scale by non 96dpi resolutions. */
-    width *= 96.0 / image->x_dpi;
-    height *= 96.0 / image->y_dpi;
+    width *= 96.0 / image_data->x_dpi;
+    height *= 96.0 / image_data->y_dpi;
 
     /* Convert to the nearest pixel. */
-    image->width = width;
-    image->height = height;
+    image_data->width = width;
+    image_data->height = height;
 
-    _worksheet_position_object_emus(self, image, drawing_object);
+    _worksheet_position_object_emus(self, image_data, drawing_object);
 
     /* Convert from pixels to emus. */
     drawing_object->width = 0.5 + width * 9525;
@@ -1876,7 +1890,89 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
     GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
 
     lxw_snprintf(filename, 32, "../media/image%d.%s", image_ref_id,
-                 image->extension);
+                 image_data->extension);
+
+    relationship->target = lxw_strdup(filename);
+    GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+
+    STAILQ_INSERT_TAIL(self->drawing_links, relationship, list_pointers);
+
+    return;
+
+mem_error:
+    if (relationship) {
+        free(relationship->type);
+        free(relationship->target);
+        free(relationship->target_mode);
+        free(relationship);
+    }
+}
+
+/*
+ * Set up chart/drawings.
+ */
+void
+lxw_worksheet_prepare_chart(lxw_worksheet *self,
+                            uint16_t chart_ref_id, uint16_t drawing_id,
+                            lxw_image_options *image_data)
+{
+    lxw_drawing_object *drawing_object;
+    lxw_rel_tuple *relationship;
+    double width;
+    double height;
+    char filename[FILENAME_LEN];
+
+    if (!self->drawing) {
+        self->drawing = lxw_drawing_new();
+        self->drawing->embedded = LXW_TRUE;
+        RETURN_VOID_ON_MEM_ERROR(self->drawing);
+
+        relationship = calloc(1, sizeof(lxw_rel_tuple));
+        GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
+
+        relationship->type = lxw_strdup("/drawing");
+        GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
+
+        lxw_snprintf(filename, FILENAME_LEN, "../drawings/drawing%d.xml",
+                     drawing_id);
+
+        relationship->target = lxw_strdup(filename);
+        GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+
+        STAILQ_INSERT_TAIL(self->external_drawing_links, relationship,
+                           list_pointers);
+    }
+
+    drawing_object = calloc(1, sizeof(lxw_drawing_object));
+    RETURN_VOID_ON_MEM_ERROR(drawing_object);
+
+    drawing_object->anchor_type = LXW_ANCHOR_TYPE_CHART;
+    drawing_object->edit_as = LXW_ANCHOR_EDIT_AS_ONE_CELL;
+    drawing_object->description = lxw_strdup("TODO_DESC");
+
+    /* Scale to user scale. */
+    width = image_data->width * image_data->x_scale;
+    height = image_data->height * image_data->y_scale;
+
+    /* Convert to the nearest pixel. */
+    image_data->width = width;
+    image_data->height = height;
+
+    _worksheet_position_object_emus(self, image_data, drawing_object);
+
+    /* Convert from pixels to emus. */
+    drawing_object->width = 0.5 + width * 9525;
+    drawing_object->height = 0.5 + height * 9525;
+
+    lxw_add_drawing_object(self->drawing, drawing_object);
+
+    relationship = calloc(1, sizeof(lxw_rel_tuple));
+    GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
+
+    relationship->type = lxw_strdup("/chart");
+    GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
+
+    lxw_snprintf(filename, 32, "../charts/chart%d.xml", chart_ref_id);
 
     relationship->target = lxw_strdup(filename);
     GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
@@ -4701,7 +4797,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
         options->y_scale = 1;
 
     if (_get_image_properties(options) == LXW_NO_ERROR)
-        STAILQ_INSERT_TAIL(self->images, options, list_pointers);
+        STAILQ_INSERT_TAIL(self->image_data, options, list_pointers);
     else
         free(options);
 
@@ -4717,4 +4813,55 @@ worksheet_insert_image(lxw_worksheet *self,
                        const char *filename)
 {
     return worksheet_insert_image_opt(self, row_num, col_num, filename, NULL);
+}
+
+/*
+ * Insert an chart into the worksheet.
+ */
+int
+worksheet_insert_chart_opt(lxw_worksheet *self,
+                           lxw_row_t row_num, lxw_col_t col_num,
+                           lxw_chart *chart, lxw_image_options *user_options)
+{
+    lxw_image_options *options;
+
+    if (!chart) {
+        LXW_WARN("worksheet_insert_chart()/_opt(): chart must be non-NULL");
+        return -1;
+    }
+
+    /* Create a new object to hold the chart image options. */
+    options = calloc(1, sizeof(lxw_image_options));
+    RETURN_ON_MEM_ERROR(options, -1);
+
+    if (user_options)
+        memcpy(options, user_options, sizeof(lxw_image_options));
+
+    /* Copy other options or set defaults. */
+    options->row = row_num;
+    options->col = col_num;
+
+    /* TODO. Read defaults from chart. */
+    options->width = 480;
+    options->height = 288;
+
+    if (!options->x_scale)
+        options->x_scale = 1;
+
+    if (!options->y_scale)
+        options->y_scale = 1;
+
+    STAILQ_INSERT_TAIL(self->chart_data, options, list_pointers);
+
+    return 0;
+}
+
+/*
+ * Insert an image into the worksheet.
+ */
+int
+worksheet_insert_chart(lxw_worksheet *self,
+                       lxw_row_t row_num, lxw_col_t col_num, lxw_chart *chart)
+{
+    return worksheet_insert_chart_opt(self, row_num, col_num, chart, NULL);
 }

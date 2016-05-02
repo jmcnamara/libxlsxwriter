@@ -12,8 +12,7 @@
 #include <stdint.h>
 #include <string.h>
 #include "xlsxwriter/workbook.h"
-
-#include "common.h"
+#include "xlsxwriter/common.h"
 
 /* Define the queue.h TAILQ structs for the App structs. */
 STAILQ_HEAD(lxw_heading_pairs, lxw_heading_pair);

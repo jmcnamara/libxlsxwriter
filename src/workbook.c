@@ -52,6 +52,7 @@ void
 lxw_workbook_free(lxw_workbook *workbook)
 {
     lxw_worksheet *worksheet;
+    lxw_chart *chart;
     lxw_format *format;
     lxw_defined_name *defined_name;
 
@@ -67,6 +68,13 @@ lxw_workbook_free(lxw_workbook *workbook)
         worksheet = STAILQ_FIRST(workbook->worksheets);
         STAILQ_REMOVE_HEAD(workbook->worksheets, list_pointers);
         lxw_worksheet_free(worksheet);
+    }
+
+    /* Free the charts in the workbook. */
+    while (!STAILQ_EMPTY(workbook->charts)) {
+        chart = STAILQ_FIRST(workbook->charts);
+        STAILQ_REMOVE_HEAD(workbook->charts, list_pointers);
+        lxw_chart_free(chart);
     }
 
     /* Free the formats in the workbook. */
@@ -86,6 +94,7 @@ lxw_workbook_free(lxw_workbook *workbook)
     lxw_hash_free(workbook->used_xf_formats);
     lxw_sst_free(workbook->sst);
     free(workbook->worksheets);
+    free(workbook->charts);
     free(workbook->formats);
     free(workbook->defined_names);
     free(workbook);
@@ -547,17 +556,25 @@ _prepare_drawings(lxw_workbook *self)
 {
     lxw_worksheet *worksheet;
     lxw_image_options *image_options;
+    uint16_t chart_ref_id = 0;
     uint16_t image_ref_id = 0;
     uint16_t drawing_id = 0;
 
     STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
 
-        if (STAILQ_EMPTY(worksheet->images))
+        if (STAILQ_EMPTY(worksheet->image_data)
+            && STAILQ_EMPTY(worksheet->chart_data))
             continue;
 
         drawing_id++;
 
-        STAILQ_FOREACH(image_options, worksheet->images, list_pointers) {
+        STAILQ_FOREACH(image_options, worksheet->chart_data, list_pointers) {
+            chart_ref_id++;
+            lxw_worksheet_prepare_chart(worksheet, chart_ref_id, drawing_id,
+                                        image_options);
+        }
+
+        STAILQ_FOREACH(image_options, worksheet->image_data, list_pointers) {
 
             if (image_options->image_type == LXW_IMAGE_PNG)
                 self->has_png = LXW_TRUE;
@@ -1032,6 +1049,11 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     GOTO_LABEL_ON_MEM_ERROR(workbook->worksheets, mem_error);
     STAILQ_INIT(workbook->worksheets);
 
+    /* Add the charts list. */
+    workbook->charts = calloc(1, sizeof(struct lxw_charts));
+    GOTO_LABEL_ON_MEM_ERROR(workbook->charts, mem_error);
+    STAILQ_INIT(workbook->charts);
+
     /* Add the formats list. */
     workbook->formats = calloc(1, sizeof(struct lxw_formats));
     GOTO_LABEL_ON_MEM_ERROR(workbook->formats, mem_error);
@@ -1121,6 +1143,23 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     }
 
     return worksheet;
+}
+
+/*
+ * Add a new chart to the Excel workbook.
+ */
+lxw_chart *
+workbook_add_chart(lxw_workbook *self, uint8_t type)
+{
+    lxw_chart *chart;
+
+    /* Create a new chart object. */
+    chart = lxw_chart_new(type);
+
+    if (chart)
+        STAILQ_INSERT_TAIL(self->charts, chart, list_pointers);
+
+    return chart;
 }
 
 /*

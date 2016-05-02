@@ -50,6 +50,7 @@
 #include <libgen.h>
 
 #include "shared_strings.h"
+#include "chart.h"
 #include "drawing.h"
 #include "common.h"
 #include "format.h"
@@ -175,7 +176,8 @@ struct lxw_table_rows {
 
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
 STAILQ_HEAD(lxw_selections, lxw_selection);
-STAILQ_HEAD(lxw_images, lxw_image_options);
+STAILQ_HEAD(lxw_image_data, lxw_image_options);
+STAILQ_HEAD(lxw_chart_data, lxw_image_options);
 
 /**
  * @brief Options for rows and columns.
@@ -387,7 +389,8 @@ typedef struct lxw_worksheet {
     struct lxw_cell **array;
     struct lxw_merged_ranges *merged_ranges;
     struct lxw_selections *selections;
-    struct lxw_images *images;
+    struct lxw_image_data *image_data;
+    struct lxw_chart_data *chart_data;
 
     lxw_row_t dim_rowmin;
     lxw_row_t dim_rowmax;
@@ -1314,6 +1317,15 @@ int worksheet_insert_image_opt(lxw_worksheet *worksheet,
                                lxw_row_t row, lxw_col_t col,
                                const char *filename,
                                lxw_image_options *options);
+
+int worksheet_insert_chart_opt(lxw_worksheet *worksheet,
+                               lxw_row_t row_num, lxw_col_t col_num,
+                               lxw_chart *chart,
+                               lxw_image_options *user_options);
+
+int worksheet_insert_chart(lxw_worksheet *worksheet,
+                           lxw_row_t row_num, lxw_col_t col_num,
+                           lxw_chart *chart);
 
 /**
  * @brief Merge a range of cells.
@@ -2526,7 +2538,11 @@ void lxw_worksheet_write_single_row(lxw_worksheet *worksheet);
 
 void lxw_worksheet_prepare_image(lxw_worksheet *worksheet,
                                  uint16_t image_ref_id, uint16_t drawing_id,
-                                 lxw_image_options *image);
+                                 lxw_image_options *image_data);
+
+void lxw_worksheet_prepare_chart(lxw_worksheet *worksheet,
+                                 uint16_t chart_ref_id, uint16_t drawing_id,
+                                 lxw_image_options *image_data);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

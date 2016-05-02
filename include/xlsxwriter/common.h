@@ -31,6 +31,14 @@ enum lxw_boolean {
 #define FILENAME_LEN      128
 #define LXW_NO_ERROR        0
 
+#define LXW_SCHEMA_ROOT      "http://schemas.openxmlformats.org"
+#define LXW_SCHEMA_DRAWING   LXW_SCHEMA_ROOT "/drawingml/2006"
+#define LXW_SCHEMA_OFFICEDOC LXW_SCHEMA_ROOT "/officeDocument/2006"
+#define LXW_SCHEMA_PACKAGE   LXW_SCHEMA_ROOT "/package/2006/relationships"
+#define LXW_SCHEMA_DOCUMENT  LXW_SCHEMA_ROOT "/officeDocument/2006/relationships"
+#define LXW_SCHEMA_CONTENT   LXW_SCHEMA_ROOT "/package/2006/content-types"
+#define LXW_SCHEMA_MS       "http://schemas.microsoft.com/office/2006/relationships"
+
 #define LXW_ERROR(message)                      \
     fprintf(stderr, "[ERROR][%s:%d]: " message "\n", __FILE__, __LINE__)
 

@@ -118,7 +118,7 @@ _write_types(lxw_content_types *self)
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("xmlns", LXW_CONTENT_TYPE_SCHEMA);
+    LXW_PUSH_ATTRIBUTES_STR("xmlns", LXW_SCHEMA_CONTENT);
 
     lxw_xml_start_tag(self->file, "Types", &attributes);
 
@@ -290,6 +290,15 @@ lxw_ct_add_worksheet_name(lxw_content_types *self, const char *name)
 {
     lxw_ct_add_override(self, name,
                         LXW_APP_DOCUMENT "spreadsheetml.worksheet+xml");
+}
+
+/*
+ * Add the name of a chart to the ContentTypes overrides.
+ */
+void
+lxw_ct_add_chart_name(lxw_content_types *self, const char *name)
+{
+    lxw_ct_add_override(self, name, LXW_APP_DOCUMENT "drawingml.chart+xml");
 }
 
 /*

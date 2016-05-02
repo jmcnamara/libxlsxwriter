@@ -40,6 +40,7 @@ typedef struct lxw_packager {
     char *filename;
     char *buffer;
 
+    uint16_t chart_count;
     uint16_t drawing_count;
 
 } lxw_packager;
