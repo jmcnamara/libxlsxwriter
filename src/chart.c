@@ -54,16 +54,14 @@ lxw_chart_free_range(lxw_series_range *range)
     if (!range)
         return;
 
-    if (range->has_data_cache) {
-        while (!STAILQ_EMPTY(range->data_cache)) {
-            data_point = STAILQ_FIRST(range->data_cache);
-            STAILQ_REMOVE_HEAD(range->data_cache, list_pointers);
+    while (!STAILQ_EMPTY(range->data_cache)) {
+        data_point = STAILQ_FIRST(range->data_cache);
+        STAILQ_REMOVE_HEAD(range->data_cache, list_pointers);
 
-            free(data_point);
-        }
-
-        free(range->data_cache);
+        free(data_point);
     }
+
+    free(range->data_cache);
 
     free(range->formula);
     free(range->sheetname);
