@@ -12,6 +12,7 @@ int main() {
 
     lxw_workbook  *workbook  = new_workbook("chart_bar.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+    int row, col;
 
     /* Some data for the chart. */
     uint8_t data[5][3] = {
@@ -23,8 +24,8 @@ int main() {
     };
 
     /* Write the data to the worksheet. */
-    for (int row = 0; row < 5; row++)
-        for (int col = 0; col < 3; col++)
+    for (row = 0; row < 5; row++)
+        for (col = 0; col < 3; col++)
             worksheet_write_number(worksheet, row, col, data[row][col] , NULL);
 
 
