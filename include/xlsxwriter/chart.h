@@ -49,9 +49,8 @@ typedef struct lxw_series_data_point {
 } lxw_series_data_point;
 
 typedef struct lxw_chart_series {
-    /* TODO: change to pointers. */
-    lxw_series_range categories;
-    lxw_series_range values;
+    lxw_series_range *categories;
+    lxw_series_range *values;
 
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
 
@@ -93,8 +92,8 @@ int lxw_chart_init_data_cache(lxw_series_range *range);
 lxw_chart_series *chart_add_series(lxw_chart *chart,
                                    char *categories, char *values);
 
-int lxw_chart_add_data_cache(lxw_series_range *range,
-                             uint16_t num_data_points, uint8_t *data);
+int lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
+                             uint16_t rows, uint8_t cols, uint8_t col);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

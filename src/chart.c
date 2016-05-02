@@ -62,10 +62,9 @@ lxw_chart_free_range(lxw_series_range *range)
     }
 
     free(range->data_cache);
-
     free(range->formula);
     free(range->sheetname);
-    /* free(range); */
+    free(range);
 }
 
 /*
@@ -77,8 +76,8 @@ lxw_chart_series_free(lxw_chart_series *series)
     if (!series)
         return;
 
-    lxw_chart_free_range(&series->categories);
-    lxw_chart_free_range(&series->values);
+    lxw_chart_free_range(series->categories);
+    lxw_chart_free_range(series->values);
 
     free(series);
 }
@@ -401,7 +400,7 @@ _chart_write_val(lxw_chart *self, lxw_chart_series *series)
     lxw_xml_start_tag(self->file, "c:val", NULL);
 
     /* Write the c:numRef element. */
-    _chart_write_num_ref(self, &series->values);
+    _chart_write_num_ref(self, series->values);
 
     lxw_xml_end_tag(self->file, "c:val");
 }
@@ -964,19 +963,19 @@ lxw_chart_assemble_xml_file(lxw_chart *self)
  * Add data to a data cache in a range object, for testing only.
  */
 int
-lxw_chart_add_data_cache(lxw_series_range *range, uint16_t num_data_points,
-                         uint8_t *data)
+lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
+                         uint16_t rows, uint8_t cols, uint8_t col)
 {
     struct lxw_series_data_point *data_point;
     uint16_t i;
 
-    range->num_data_points = num_data_points;
+    range->num_data_points = rows;
 
     /* Initialize the series range data cache. */
-    for (i = 0; i < num_data_points; i++) {
+    for (i = 0; i < rows; i++) {
         data_point = calloc(1, sizeof(struct lxw_series_data_point));
         STAILQ_INSERT_TAIL(range->data_cache, data_point, list_pointers);
-        data_point->number = data[i];
+        data_point->number = data[i * cols + col];
     }
 
     return 0;
@@ -1006,15 +1005,25 @@ chart_add_series(lxw_chart *self, char *categories, char *values)
 
     /* Create a new object to hold the series. */
     series = calloc(1, sizeof(lxw_chart_series));
-    RETURN_ON_MEM_ERROR(series, series);
+    GOTO_LABEL_ON_MEM_ERROR(series, mem_error);
 
-    series->categories.formula = lxw_strdup(categories);
-    series->values.formula = lxw_strdup(values);
+    series->categories = calloc(1, sizeof(lxw_series_range));
+    GOTO_LABEL_ON_MEM_ERROR(series->categories, mem_error);
 
-    lxw_chart_init_data_cache(&series->categories);
-    lxw_chart_init_data_cache(&series->values);
+    series->values = calloc(1, sizeof(lxw_series_range));
+    GOTO_LABEL_ON_MEM_ERROR(series->values, mem_error);
+
+    series->categories->formula = lxw_strdup(categories);
+    series->values->formula = lxw_strdup(values);
+
+    lxw_chart_init_data_cache(series->categories);
+    lxw_chart_init_data_cache(series->values);
 
     STAILQ_INSERT_TAIL(self->series_list, series, list_pointers);
 
     return series;
+
+mem_error:
+    lxw_chart_series_free(series);
+    return NULL;
 }

@@ -16,6 +16,16 @@ CTEST(chart, chart01) {
     lxw_chart_series *series1;
     lxw_chart_series *series2;
 
+    uint8_t data[5][3] = {
+        {1, 2,  3},
+        {2, 4,  6},
+        {3, 6,  9},
+        {4, 8,  12},
+        {5, 10, 15}
+    };
+
+
+
     char* got;
     char exp[] =
         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n"
@@ -131,19 +141,11 @@ CTEST(chart, chart01) {
     lxw_chart *chart = lxw_chart_new(LXW_CHART_BAR);
     chart->file = testfile;
 
-    /* Set the chart axis ids for testing. */
-    //chart->axis_id_1 = 53850880;
-    //chart->axis_id_2 = 82642816;
-
     series1 = chart_add_series(chart, NULL, "Sheet1!$A$1:$A$5");
     series2 = chart_add_series(chart, NULL, "Sheet1!$B$1:$B$5");
 
-    uint8_t test_data1[] = {1, 2, 3, 4, 5};
-    uint8_t test_data2[] = {2, 4, 6, 8, 10};
-
-    lxw_chart_add_data_cache(&series1->values, 5, test_data1);
-    lxw_chart_add_data_cache(&series2->values, 5, test_data2);
-
+    lxw_chart_add_data_cache(series1->values, data[0], 5, 3, 0);
+    lxw_chart_add_data_cache(series2->values, data[0], 5, 3, 1);
 
     lxw_chart_assemble_xml_file(chart);
 
