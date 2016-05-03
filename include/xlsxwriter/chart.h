@@ -35,7 +35,6 @@ typedef struct lxw_series_range {
     uint16_t first_col;
     uint16_t last_col;
 
-    uint8_t has_data_cache;
     uint16_t num_data_points;
     struct lxw_series_data_points *data_cache;
 
@@ -71,6 +70,8 @@ typedef struct lxw_chart {
     uint32_t axis_id_2;
     uint32_t axis_id_3;
     uint32_t axis_id_4;
+
+    uint8_t cat_has_num_fmt;
 
     struct lxw_chart_series_list *series_list;
 

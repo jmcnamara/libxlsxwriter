@@ -392,6 +392,27 @@ _chart_write_num_ref(lxw_chart *self, lxw_series_range *range)
 }
 
 /*
+ * Write the <c:cat> element.
+ */
+STATIC void
+_chart_write_cat(lxw_chart *self, lxw_chart_series *series)
+{
+    /* Ignore <c:cat> elements for charts without category values. */
+    if (!series->categories->formula)
+        return;
+
+    /* TODO */
+    self->cat_has_num_fmt = LXW_TRUE;
+
+    lxw_xml_start_tag(self->file, "c:cat", NULL);
+
+    /* Write the c:numRef element. */
+    _chart_write_num_ref(self, series->categories);
+
+    lxw_xml_end_tag(self->file, "c:cat");
+}
+
+/*
  * Write the <c:val> element.
  */
 STATIC void
@@ -420,6 +441,9 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
 
     /* Write the c:order element. */
     _chart_write_order(self, index);
+
+    /* Write the c:cat element. */
+    _chart_write_cat(self, series);
 
     /* Write the c:val element. */
     _chart_write_val(self, series);
@@ -765,6 +789,10 @@ _chart_write_cat_axis(lxw_chart *self)
     /* Write the c:axPos element. */
     _chart_write_axis_pos(self, "l");
 
+    /* Write the c:numFmt element. */
+    if (self->cat_has_num_fmt)
+        _chart_write_num_fmt(self);
+
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
 
@@ -1013,8 +1041,19 @@ chart_add_series(lxw_chart *self, char *categories, char *values)
     series->values = calloc(1, sizeof(lxw_series_range));
     GOTO_LABEL_ON_MEM_ERROR(series->values, mem_error);
 
-    series->categories->formula = lxw_strdup(categories);
-    series->values->formula = lxw_strdup(values);
+    if (categories) {
+        if (categories[0] == '=')
+            series->categories->formula = lxw_strdup(categories + 1);
+        else
+            series->categories->formula = lxw_strdup(categories);
+    }
+
+    if (values) {
+        if (values[0] == '=')
+            series->values->formula = lxw_strdup(values + 1);
+        else
+            series->values->formula = lxw_strdup(values);
+    }
 
     lxw_chart_init_data_cache(series->categories);
     lxw_chart_init_data_cache(series->values);

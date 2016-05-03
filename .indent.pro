@@ -82,6 +82,7 @@
 -T lxw_row_col_options
 -T lxw_row_t
 -T lxw_selection
+-T lxw_series_data_point
 -T lxw_series_range
 -T lxw_sst
 -T lxw_styles
