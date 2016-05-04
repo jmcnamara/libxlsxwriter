@@ -529,9 +529,11 @@ _write_worksheet_rels_file(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
     char sheetname[FILENAME_LEN] = { 0 };
-    uint16_t index = 1;
+    uint16_t index = 0;
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+
+        index++;
 
         if (STAILQ_EMPTY(worksheet->external_hyperlinks) &&
             STAILQ_EMPTY(worksheet->external_drawing_links))
@@ -551,7 +553,7 @@ _write_worksheet_rels_file(lxw_packager *self)
         }
 
         lxw_snprintf(sheetname, FILENAME_LEN,
-                     "xl/worksheets/_rels/sheet%d.xml.rels", index++);
+                     "xl/worksheets/_rels/sheet%d.xml.rels", index);
 
         lxw_relationships_assemble_xml_file(rels);
 
