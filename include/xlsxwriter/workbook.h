@@ -51,12 +51,36 @@
 #include "hash_table.h"
 #include "common.h"
 
+#define LXW_DEFINED_NAME_LENGTH 128
+
+/* Define the tree.h RB structs for the red-black head types. */
+RB_HEAD(lxw_worksheet_names, lxw_worksheet_name);
+
 /* Define the queue.h structs for the workbook lists. */
 STAILQ_HEAD(lxw_worksheets, lxw_worksheet);
 STAILQ_HEAD(lxw_charts, lxw_chart);
 TAILQ_HEAD(lxw_defined_names, lxw_defined_name);
 
-#define LXW_DEFINED_NAME_LENGTH 128
+/* Struct to represent a worksheet name/pointer pair. */
+typedef struct lxw_worksheet_name {
+    char *name;
+    lxw_worksheet *worksheet;
+
+    RB_ENTRY (lxw_worksheet_name) tree_pointers;
+} lxw_worksheet_name;
+
+/* Wrapper around RB_GENERATE_STATIC from tree.h to avoid unused function
+ * warnings and to avoid portability issues with the _unused attribute. */
+#define LXW_RB_GENERATE_NAMES(name, type, field, cmp)     \
+    RB_GENERATE_INSERT_COLOR(name, type, field, static)   \
+    RB_GENERATE_REMOVE_COLOR(name, type, field, static)   \
+    RB_GENERATE_INSERT(name, type, field, cmp, static)    \
+    RB_GENERATE_REMOVE(name, type, field, static)         \
+    RB_GENERATE_FIND(name, type, field, cmp, static)      \
+    RB_GENERATE_NEXT(name, type, field, static)           \
+    RB_GENERATE_MINMAX(name, type, field, static)         \
+    /* Add unused struct to allow adding a semicolon */   \
+    struct lxw_rb_generate_names{int unused;}
 
 /**
  * @brief Macro to loop over all the worksheets in a workbook.
@@ -182,6 +206,7 @@ typedef struct lxw_workbook {
 
     FILE *file;
     struct lxw_worksheets *worksheets;
+    struct lxw_worksheet_names *worksheet_names;
     struct lxw_charts *charts;
     struct lxw_formats *formats;
     struct lxw_defined_names *defined_names;

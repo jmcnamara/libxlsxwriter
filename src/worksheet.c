@@ -47,9 +47,11 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
 
     worksheet->table = calloc(1, sizeof(struct lxw_table_rows));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->table, mem_error);
+    RB_INIT(worksheet->table);
 
     worksheet->hyperlinks = calloc(1, sizeof(struct lxw_table_rows));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->hyperlinks, mem_error);
+    RB_INIT(worksheet->hyperlinks);
 
     /* Initialize the cached rows. */
     worksheet->table->cached_row_num = LXW_ROW_MAX + 1;
@@ -75,34 +77,31 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
 
     worksheet->merged_ranges = calloc(1, sizeof(struct lxw_merged_ranges));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->merged_ranges, mem_error);
+    STAILQ_INIT(worksheet->merged_ranges);
 
     worksheet->image_data = calloc(1, sizeof(struct lxw_image_data));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->image_data, mem_error);
+    STAILQ_INIT(worksheet->image_data);
 
     worksheet->chart_data = calloc(1, sizeof(struct lxw_chart_data));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->chart_data, mem_error);
+    STAILQ_INIT(worksheet->chart_data);
 
     worksheet->selections = calloc(1, sizeof(struct lxw_selections));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->selections, mem_error);
+    STAILQ_INIT(worksheet->selections);
 
     worksheet->external_hyperlinks = calloc(1, sizeof(struct lxw_rel_tuples));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->external_hyperlinks, mem_error);
+    STAILQ_INIT(worksheet->external_hyperlinks);
 
     worksheet->external_drawing_links =
         calloc(1, sizeof(struct lxw_rel_tuples));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->external_drawing_links, mem_error);
+    STAILQ_INIT(worksheet->external_drawing_links);
 
     worksheet->drawing_links = calloc(1, sizeof(struct lxw_rel_tuples));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->drawing_links, mem_error);
-
-    RB_INIT(worksheet->table);
-    RB_INIT(worksheet->hyperlinks);
-    STAILQ_INIT(worksheet->merged_ranges);
-    STAILQ_INIT(worksheet->image_data);
-    STAILQ_INIT(worksheet->chart_data);
-    STAILQ_INIT(worksheet->selections);
-    STAILQ_INIT(worksheet->external_hyperlinks);
-    STAILQ_INIT(worksheet->external_drawing_links);
     STAILQ_INIT(worksheet->drawing_links);
 
     if (init_data && init_data->optimize) {

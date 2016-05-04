@@ -92,3 +92,4 @@
 -T lxw_workbook_options
 -T lxw_worksheet
 -T lxw_worksheet_init_data
+-T lxw_worksheet_name

@@ -13,6 +13,10 @@
 #include "xlsxwriter/packager.h"
 #include "xlsxwriter/hash_table.h"
 
+STATIC int _name_cmp(lxw_worksheet_name *name1, lxw_worksheet_name *name2);
+LXW_RB_GENERATE_NAMES(lxw_worksheet_names, lxw_worksheet_name, tree_pointers,
+                      _name_cmp);
+
 /*
  * Forward declarations.
  */
@@ -22,6 +26,15 @@
  * Private functions.
  *
  ****************************************************************************/
+
+/*
+ * Comparator for the worksheet names structure red/black tree.
+ */
+STATIC int
+_name_cmp(lxw_worksheet_name *name1, lxw_worksheet_name *name2)
+{
+    return strcmp(name1->name, name2->name);
+}
 
 /*
  * Free workbook properties.
@@ -52,6 +65,8 @@ void
 lxw_workbook_free(lxw_workbook *workbook)
 {
     lxw_worksheet *worksheet;
+    struct lxw_worksheet_name *worksheet_name;
+    struct lxw_worksheet_name *next_name;
     lxw_chart *chart;
     lxw_format *format;
     lxw_defined_name *defined_name;
@@ -89,6 +104,21 @@ lxw_workbook_free(lxw_workbook *workbook)
         defined_name = TAILQ_FIRST(workbook->defined_names);
         TAILQ_REMOVE(workbook->defined_names, defined_name, list_pointers);
         free(defined_name);
+    }
+
+    if (workbook->worksheet_names) {
+        for (worksheet_name =
+             RB_MIN(lxw_worksheet_names, workbook->worksheet_names);
+             worksheet_name; worksheet_name = next_name) {
+
+            next_name = RB_NEXT(lxw_worksheet_names,
+                                workbook->worksheet_name, worksheet_name);
+            RB_REMOVE(lxw_worksheet_names,
+                      workbook->worksheet_names, worksheet_name);
+            free(worksheet_name);
+        }
+
+        free(workbook->worksheet_names);
     }
 
     lxw_hash_free(workbook->used_xf_formats);
@@ -1049,6 +1079,11 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     GOTO_LABEL_ON_MEM_ERROR(workbook->worksheets, mem_error);
     STAILQ_INIT(workbook->worksheets);
 
+    /* Add the worksheet mames tree. */
+    workbook->worksheet_names = calloc(1, sizeof(struct lxw_worksheet_names));
+    GOTO_LABEL_ON_MEM_ERROR(workbook->worksheet_names, mem_error);
+    RB_INIT(workbook->worksheet_names);
+
     /* Add the charts list. */
     workbook->charts = calloc(1, sizeof(struct lxw_charts));
     GOTO_LABEL_ON_MEM_ERROR(workbook->charts, mem_error);
@@ -1101,7 +1136,8 @@ lxw_worksheet *
 workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
 {
     lxw_worksheet *worksheet;
-    lxw_worksheet_init_data init_data;
+    lxw_worksheet_name *worksheet_name = NULL;
+    lxw_worksheet_init_data init_data = { 0, 0, 0, 0, 0, 0, 0, 0 };
     char *new_name = NULL;
 
     if (sheetname) {
@@ -1117,13 +1153,27 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     else {
         /* Use the default SheetN name. */
         new_name = malloc(LXW_SHEETNAME_LEN);
-        RETURN_ON_MEM_ERROR(new_name, NULL);
+        GOTO_LABEL_ON_MEM_ERROR(new_name, mem_error);
+
         lxw_snprintf(new_name, LXW_SHEETNAME_LEN, "Sheet%d",
                      self->num_sheets + 1);
         init_data.name = new_name;
         init_data.quoted_name = lxw_strdup(new_name);
     }
 
+    /* Create a struct to find/store the worksheet name/pointer. */
+    worksheet_name = calloc(1, sizeof(struct lxw_worksheet_name));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet_name, mem_error);
+
+    /* Check if the worksheet name is already in use. */
+    worksheet_name->name = init_data.name;
+    if (RB_FIND(lxw_worksheet_names, self->worksheet_names, worksheet_name)) {
+        LXW_WARN_FORMAT("workbook_add_worksheet(): "
+                        "sheet name '%s' already exists.\n", init_data.name);
+        goto mem_error;
+    }
+
+    /* Initialize the metadata to pass to the worksheet. */
     init_data.hidden = 0;
     init_data.index = self->num_sheets;
     init_data.sst = self->sst;
@@ -1133,16 +1183,22 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
 
     /* Create a new worksheet object. */
     worksheet = lxw_worksheet_new(&init_data);
+    GOTO_LABEL_ON_MEM_ERROR(worksheet, mem_error);
 
-    if (worksheet) {
-        self->num_sheets++;
-        STAILQ_INSERT_TAIL(self->worksheets, worksheet, list_pointers);
-    }
-    else {
-        free(new_name);
-    }
+    self->num_sheets++;
+    STAILQ_INSERT_TAIL(self->worksheets, worksheet, list_pointers);
+
+    /* Store the worksheet so we can look it up by name. */
+    worksheet_name->worksheet = worksheet;
+    RB_INSERT(lxw_worksheet_names, self->worksheet_names, worksheet_name);
 
     return worksheet;
+
+mem_error:
+    free(init_data.name);
+    free(init_data.quoted_name);
+    free(worksheet_name);
+    return NULL;
 }
 
 /*
