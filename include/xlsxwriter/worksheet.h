@@ -109,18 +109,6 @@ enum lxw_gridlines {
     LXW_SHOW_ALL_GRIDLINES
 };
 
-/** Data type to represent a row value.
- *
- * The maximum row in Excel is 1,048,576.
- */
-typedef uint32_t lxw_row_t;
-
-/** Data type to represent a column value.
- *
- * The maximum column in Excel is 16,384.
- */
-typedef uint16_t lxw_col_t;
-
 enum cell_types {
     NUMBER_CELL = 1,
     STRING_CELL,

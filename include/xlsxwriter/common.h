@@ -2,8 +2,14 @@
  * libxlsxwriter
  *
  * Copyright 2014-2016, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
+ */
+
+/**
+ * @file common.h
  *
- * common - Common functions and defines for the libxlsxwriter library.
+ * @brief Common functions and defines for the libxlsxwriter library.
+ *
+ * <!-- Copyright 2014-2016, John McNamara, jmcnamara@cpan.org -->
  *
  */
 #ifndef __LXW_COMMON_H__
@@ -19,8 +25,23 @@
 #define STATIC
 #endif
 
+/** Integer data type to represent a row value. Equivalent to `uint32_t`.
+ *
+ * The maximum row in Excel is 1,048,576.
+ */
+typedef uint32_t lxw_row_t;
+
+/** Integer data type to represent a column value. Equivalent to `uint16_t`.
+ *
+ * The maximum column in Excel is 16,384.
+ */
+typedef uint16_t lxw_col_t;
+
+/** Boolean values used in libxlsxwriter. */
 enum lxw_boolean {
+    /** False value. */
     LXW_FALSE,
+    /** True value. */
     LXW_TRUE
 };
 

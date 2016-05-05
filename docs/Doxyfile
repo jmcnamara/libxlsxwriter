@@ -764,6 +764,7 @@ INPUT                  = src/mainpage.dox                  \
                          ../include/xlsxwriter/worksheet.h \
                          ../include/xlsxwriter/format.h    \
                          ../include/xlsxwriter/utility.h   \
+                         ../include/xlsxwriter/common.h    \
                          src/working_with_formats.dox      \
                          src/working_with_colors.dox       \
                          src/working_with_dates.dox        \
