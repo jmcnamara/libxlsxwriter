@@ -189,9 +189,9 @@ _write_font_color_rgb(lxw_styles *self, int32_t rgb)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char rgb_str[ATTR_32];
+    char rgb_str[LXW_ATTR_32];
 
-    lxw_snprintf(rgb_str, ATTR_32, "FF%06X", rgb & LXW_COLOR_MASK);
+    lxw_snprintf(rgb_str, LXW_ATTR_32, "FF%06X", rgb & LXW_COLOR_MASK);
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("rgb", rgb_str);
@@ -411,11 +411,11 @@ _write_fg_color(lxw_styles *self, lxw_color_t color)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char rgb_str[ATTR_32];
+    char rgb_str[LXW_ATTR_32];
 
     LXW_INIT_ATTRIBUTES();
 
-    lxw_snprintf(rgb_str, ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
+    lxw_snprintf(rgb_str, LXW_ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
     LXW_PUSH_ATTRIBUTES_STR("rgb", rgb_str);
 
     lxw_xml_empty_tag(self->file, "fgColor", &attributes);
@@ -431,7 +431,7 @@ _write_bg_color(lxw_styles *self, lxw_color_t color)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char rgb_str[ATTR_32];
+    char rgb_str[LXW_ATTR_32];
 
     LXW_INIT_ATTRIBUTES();
 
@@ -439,7 +439,7 @@ _write_bg_color(lxw_styles *self, lxw_color_t color)
         LXW_PUSH_ATTRIBUTES_STR("indexed", "64");
     }
     else {
-        lxw_snprintf(rgb_str, ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
+        lxw_snprintf(rgb_str, LXW_ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
         LXW_PUSH_ATTRIBUTES_STR("rgb", rgb_str);
     }
 
@@ -540,12 +540,12 @@ _write_border_color(lxw_styles *self, lxw_color_t color)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char rgb_str[ATTR_32];
+    char rgb_str[LXW_ATTR_32];
 
     LXW_INIT_ATTRIBUTES();
 
     if (color != LXW_COLOR_UNSET) {
-        lxw_snprintf(rgb_str, ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
+        lxw_snprintf(rgb_str, LXW_ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
         LXW_PUSH_ATTRIBUTES_STR("rgb", rgb_str);
     }
     else {

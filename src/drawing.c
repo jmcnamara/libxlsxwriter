@@ -12,7 +12,7 @@
 #include "xlsxwriter/drawing.h"
 #include "xlsxwriter/utility.h"
 
-#define PIC_NAME_LENGTH 14      /* "Picture 65536", or "Chart 65536" */
+#define LXW_OBJ_NAME_LENGTH 14  /* "Picture 65536", or "Chart 65536" */
 /*
  * Forward declarations.
  */
@@ -173,20 +173,22 @@ _drawing_write_row_off(lxw_drawing *self, char *data)
 STATIC void
 _drawing_write_from(lxw_drawing *self, lxw_drawing_coords *coords)
 {
-    char data[LXW_UINT32_T_LEN];
+    char data[LXW_UINT32_T_LENGTH];
 
     lxw_xml_start_tag(self->file, "xdr:from", NULL);
 
-    lxw_snprintf(data, LXW_UINT32_T_LEN, "%u", coords->col);
+    lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u", coords->col);
     _drawing_write_col(self, data);
 
-    lxw_snprintf(data, LXW_UINT32_T_LEN, "%u", (uint32_t) coords->col_offset);
+    lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u",
+                 (uint32_t) coords->col_offset);
     _drawing_write_col_off(self, data);
 
-    lxw_snprintf(data, LXW_UINT32_T_LEN, "%u", coords->row);
+    lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u", coords->row);
     _drawing_write_row(self, data);
 
-    lxw_snprintf(data, LXW_UINT32_T_LEN, "%u", (uint32_t) coords->row_offset);
+    lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u",
+                 (uint32_t) coords->row_offset);
     _drawing_write_row_off(self, data);
 
     lxw_xml_end_tag(self->file, "xdr:from");
@@ -198,20 +200,22 @@ _drawing_write_from(lxw_drawing *self, lxw_drawing_coords *coords)
 STATIC void
 _drawing_write_to(lxw_drawing *self, lxw_drawing_coords *coords)
 {
-    char data[LXW_UINT32_T_LEN];
+    char data[LXW_UINT32_T_LENGTH];
 
     lxw_xml_start_tag(self->file, "xdr:to", NULL);
 
-    lxw_snprintf(data, LXW_UINT32_T_LEN, "%u", coords->col);
+    lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u", coords->col);
     _drawing_write_col(self, data);
 
-    lxw_snprintf(data, LXW_UINT32_T_LEN, "%u", (uint32_t) coords->col_offset);
+    lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u",
+                 (uint32_t) coords->col_offset);
     _drawing_write_col_off(self, data);
 
-    lxw_snprintf(data, LXW_UINT32_T_LEN, "%u", coords->row);
+    lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u", coords->row);
     _drawing_write_row(self, data);
 
-    lxw_snprintf(data, LXW_UINT32_T_LEN, "%u", (uint32_t) coords->row_offset);
+    lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u",
+                 (uint32_t) coords->row_offset);
     _drawing_write_row_off(self, data);
 
     lxw_xml_end_tag(self->file, "xdr:to");
@@ -227,8 +231,8 @@ _drawing_write_c_nv_pr(lxw_drawing *self, char *object_name, uint16_t index,
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    char name[PIC_NAME_LENGTH];
-    lxw_snprintf(name, PIC_NAME_LENGTH, "%s %d", object_name, index);
+    char name[LXW_OBJ_NAME_LENGTH];
+    lxw_snprintf(name, LXW_OBJ_NAME_LENGTH, "%s %d", object_name, index);
 
     LXW_INIT_ATTRIBUTES();
 
@@ -301,9 +305,9 @@ _drawing_write_a_blip(lxw_drawing *self, uint16_t index)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
     char xmlns_r[] = LXW_SCHEMA_OFFICEDOC "/relationships";
-    char r_id[MAX_ATTRIBUTE_LENGTH];
+    char r_id[LXW_MAX_ATTRIBUTE_LENGTH];
 
-    lxw_snprintf(r_id, ATTR_32, "rId%d", index);
+    lxw_snprintf(r_id, LXW_ATTR_32, "rId%d", index);
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("xmlns:r", xmlns_r);
@@ -574,9 +578,9 @@ _drawing_write_chart(lxw_drawing *self, uint16_t index)
     struct xml_attribute *attribute;
     char xmlns_c[] = LXW_SCHEMA_DRAWING "/chart";
     char xmlns_r[] = LXW_SCHEMA_OFFICEDOC "/relationships";
-    char r_id[MAX_ATTRIBUTE_LENGTH];
+    char r_id[LXW_MAX_ATTRIBUTE_LENGTH];
 
-    lxw_snprintf(r_id, ATTR_32, "rId%d", index);
+    lxw_snprintf(r_id, LXW_ATTR_32, "rId%d", index);
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("xmlns:c", xmlns_c);

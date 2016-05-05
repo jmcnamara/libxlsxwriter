@@ -15,10 +15,10 @@
 #include "xlsxwriter/utility.h"
 #include "xlsxwriter/relationships.h"
 
-#define LXW_STR_MAX 32767
-#define BUFFER_SIZE 4096
-#define LXW_PORTRAIT 1
-#define LXW_LANDSCAPE 0
+#define LXW_STR_MAX      32767
+#define LXW_BUFFER_SIZE  4096
+#define LXW_PORTRAIT     1
+#define LXW_LANDSCAPE    0
 #define LXW_PRINT_ACROSS 1
 
 /*
@@ -842,7 +842,7 @@ _worksheet_write_dimension(lxw_worksheet *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char ref[MAX_CELL_RANGE_LENGTH];
+    char ref[LXW_MAX_CELL_RANGE_LENGTH];
     lxw_row_t dim_rowmin = self->dim_rowmin;
     lxw_row_t dim_rowmax = self->dim_rowmax;
     lxw_col_t dim_colmin = self->dim_colmin;
@@ -851,15 +851,16 @@ _worksheet_write_dimension(lxw_worksheet *self)
     if (dim_rowmin == LXW_ROW_MAX && dim_colmin == LXW_COL_MAX) {
         /* If the rows and cols are still the defaults then no dimensions have
          * been set and we use the default range "A1". */
-        lxw_range(ref, 0, 0, 0, 0);
+        lxw_rowcol_to_range(ref, 0, 0, 0, 0);
     }
     else if (dim_rowmin == LXW_ROW_MAX && dim_colmin != LXW_COL_MAX) {
         /* If the rows aren't set but the columns are then the dimensions have
          * been changed via set_column(). */
-        lxw_range(ref, 0, dim_colmin, 0, dim_colmax);
+        lxw_rowcol_to_range(ref, 0, dim_colmin, 0, dim_colmax);
     }
     else {
-        lxw_range(ref, dim_rowmin, dim_colmin, dim_rowmax, dim_colmax);
+        lxw_rowcol_to_range(ref, dim_rowmin, dim_colmin, dim_rowmax,
+                            dim_colmax);
     }
 
     LXW_INIT_ATTRIBUTES();
@@ -886,9 +887,9 @@ _worksheet_write_freeze_panes(lxw_worksheet *self)
     lxw_row_t top_row = self->panes.top_row;
     lxw_col_t left_col = self->panes.left_col;
 
-    char row_cell[MAX_CELL_NAME_LENGTH];
-    char col_cell[MAX_CELL_NAME_LENGTH];
-    char top_left_cell[MAX_CELL_NAME_LENGTH];
+    char row_cell[LXW_MAX_CELL_NAME_LENGTH];
+    char col_cell[LXW_MAX_CELL_NAME_LENGTH];
+    char top_left_cell[LXW_MAX_CELL_NAME_LENGTH];
     char active_pane[LXW_PANE_NAME_LENGTH];
 
     /* If there is a user selection we remove it from the list and use it. */
@@ -1038,9 +1039,9 @@ _worksheet_write_split_panes(lxw_worksheet *self)
     double y_split = self->panes.y_split;
     uint8_t has_selection = LXW_FALSE;
 
-    char row_cell[MAX_CELL_NAME_LENGTH];
-    char col_cell[MAX_CELL_NAME_LENGTH];
-    char top_left_cell[MAX_CELL_NAME_LENGTH];
+    char row_cell[LXW_MAX_CELL_NAME_LENGTH];
+    char col_cell[LXW_MAX_CELL_NAME_LENGTH];
+    char top_left_cell[LXW_MAX_CELL_NAME_LENGTH];
     char active_pane[LXW_PANE_NAME_LENGTH];
 
     /* If there is a user selection we remove it from the list and use it. */
@@ -1340,7 +1341,7 @@ STATIC void
 _worksheet_write_optimized_sheet_data(lxw_worksheet *self)
 {
     uint16_t read_size = 1;
-    char buffer[BUFFER_SIZE];
+    char buffer[LXW_BUFFER_SIZE];
 
     if (self->dim_rowmin == LXW_ROW_MAX) {
         /* If the dimensions aren't defined then there is no data to write. */
@@ -1355,7 +1356,8 @@ _worksheet_write_optimized_sheet_data(lxw_worksheet *self)
         rewind(self->optimize_tmpfile);
 
         while (read_size) {
-            read_size = fread(buffer, 1, BUFFER_SIZE, self->optimize_tmpfile);
+            read_size =
+                fread(buffer, 1, LXW_BUFFER_SIZE, self->optimize_tmpfile);
             fwrite(buffer, 1, read_size, self->file);
         }
 
@@ -1832,7 +1834,7 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
     lxw_rel_tuple *relationship;
     double width;
     double height;
-    char filename[FILENAME_LEN];
+    char filename[LXW_FILENAME_LENGTH];
 
     if (!self->drawing) {
         self->drawing = lxw_drawing_new();
@@ -1845,8 +1847,8 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
         relationship->type = lxw_strdup("/drawing");
         GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
 
-        lxw_snprintf(filename, FILENAME_LEN, "../drawings/drawing%d.xml",
-                     drawing_id);
+        lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+                     "../drawings/drawing%d.xml", drawing_id);
 
         relationship->target = lxw_strdup(filename);
         GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
@@ -1919,7 +1921,7 @@ lxw_worksheet_prepare_chart(lxw_worksheet *self,
     lxw_rel_tuple *relationship;
     double width;
     double height;
-    char filename[FILENAME_LEN];
+    char filename[LXW_FILENAME_LENGTH];
 
     if (!self->drawing) {
         self->drawing = lxw_drawing_new();
@@ -1932,8 +1934,8 @@ lxw_worksheet_prepare_chart(lxw_worksheet *self,
         relationship->type = lxw_strdup("/drawing");
         GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
 
-        lxw_snprintf(filename, FILENAME_LEN, "../drawings/drawing%d.xml",
-                     drawing_id);
+        lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+                     "../drawings/drawing%d.xml", drawing_id);
 
         relationship->target = lxw_strdup(filename);
         GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
@@ -2366,9 +2368,9 @@ _write_inline_string_cell(lxw_worksheet *self, char *range,
 STATIC void
 _write_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 {
-    char data[ATTR_32];
+    char data[LXW_ATTR_32];
 
-    lxw_snprintf(data, ATTR_32, "%.16g", cell->formula_result);
+    lxw_snprintf(data, LXW_ATTR_32, "%.16g", cell->formula_result);
 
     lxw_xml_data_element(self->file, "f", cell->u.string, NULL);
     lxw_xml_data_element(self->file, "v", data, NULL);
@@ -2382,13 +2384,13 @@ _write_array_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char data[ATTR_32];
+    char data[LXW_ATTR_32];
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("t", "array");
     LXW_PUSH_ATTRIBUTES_STR("ref", cell->user_data1);
 
-    lxw_snprintf(data, ATTR_32, "%.16g", cell->formula_result);
+    lxw_snprintf(data, LXW_ATTR_32, "%.16g", cell->formula_result);
 
     lxw_xml_data_element(self->file, "f", cell->u.string, &attributes);
     lxw_xml_data_element(self->file, "v", data, NULL);
@@ -2402,7 +2404,7 @@ _write_array_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 STATIC void
 _write_boolean_cell(lxw_worksheet *self, lxw_cell *cell)
 {
-    char data[ATTR_32];
+    char data[LXW_ATTR_32];
 
     if (cell->u.number)
         data[0] = '1';
@@ -2448,7 +2450,7 @@ _calculate_spans(struct lxw_row *row, char *span, int32_t *block_num)
         row = RB_NEXT(lxw_table_rows, root, row);
     }
 
-    lxw_snprintf(span, MAX_CELL_RANGE_LENGTH,
+    lxw_snprintf(span, LXW_MAX_CELL_RANGE_LENGTH,
                  "%d:%d", span_col_min + 1, span_col_max + 1);
 }
 
@@ -2460,7 +2462,7 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char range[MAX_CELL_NAME_LENGTH] = { 0 };
+    char range[LXW_MAX_CELL_NAME_LENGTH] = { 0 };
     lxw_row_t row_num = cell->row_num;
     lxw_col_t col_num = cell->col_num;
     int32_t style_index = 0;
@@ -2532,7 +2534,7 @@ _worksheet_write_rows(lxw_worksheet *self)
     lxw_row *row;
     lxw_cell *cell;
     int32_t block_num = -1;
-    char spans[MAX_CELL_RANGE_LENGTH] = { 0 };
+    char spans[LXW_MAX_CELL_RANGE_LENGTH] = { 0 };
 
     RB_FOREACH(row, lxw_table_rows, self->table) {
 
@@ -2707,13 +2709,13 @@ _worksheet_write_merge_cell(lxw_worksheet *self,
 
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char ref[MAX_CELL_RANGE_LENGTH];
+    char ref[LXW_MAX_CELL_RANGE_LENGTH];
 
     LXW_INIT_ATTRIBUTES();
 
     /* Convert the merge dimensions to a cell range. */
-    lxw_range(ref, merged_range->first_row, merged_range->first_col,
-              merged_range->last_row, merged_range->last_col);
+    lxw_rowcol_to_range(ref, merged_range->first_row, merged_range->first_col,
+                        merged_range->last_row, merged_range->last_col);
 
     LXW_PUSH_ATTRIBUTES_STR("ref", ref);
 
@@ -2815,12 +2817,12 @@ _worksheet_write_tab_color(lxw_worksheet *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char rgb_str[ATTR_32];
+    char rgb_str[LXW_ATTR_32];
 
     if (self->tab_color == LXW_COLOR_UNSET)
         return;
 
-    lxw_snprintf(rgb_str, ATTR_32, "FF%06X",
+    lxw_snprintf(rgb_str, LXW_ATTR_32, "FF%06X",
                  self->tab_color & LXW_COLOR_MASK);
 
     LXW_INIT_ATTRIBUTES();
@@ -2966,15 +2968,15 @@ _worksheet_write_auto_filter(lxw_worksheet *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char range[MAX_CELL_RANGE_LENGTH];
+    char range[LXW_MAX_CELL_RANGE_LENGTH];
 
     if (!self->autofilter.in_use)
         return;
 
-    lxw_range(range,
-              self->autofilter.first_row,
-              self->autofilter.first_col,
-              self->autofilter.last_row, self->autofilter.last_col);
+    lxw_rowcol_to_range(range,
+                        self->autofilter.first_row,
+                        self->autofilter.first_col,
+                        self->autofilter.last_row, self->autofilter.last_col);
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("ref", range);
@@ -2994,12 +2996,12 @@ _worksheet_write_hyperlink_external(lxw_worksheet *self, lxw_row_t row_num,
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char ref[MAX_CELL_NAME_LENGTH];
-    char r_id[MAX_ATTRIBUTE_LENGTH];
+    char ref[LXW_MAX_CELL_NAME_LENGTH];
+    char r_id[LXW_MAX_ATTRIBUTE_LENGTH];
 
     lxw_rowcol_to_cell(ref, row_num, col_num);
 
-    lxw_snprintf(r_id, ATTR_32, "rId%d", id);
+    lxw_snprintf(r_id, LXW_ATTR_32, "rId%d", id);
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("ref", ref);
@@ -3026,7 +3028,7 @@ _worksheet_write_hyperlink_internal(lxw_worksheet *self, lxw_row_t row_num,
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char ref[MAX_CELL_NAME_LENGTH];
+    char ref[LXW_MAX_CELL_NAME_LENGTH];
 
     lxw_rowcol_to_cell(ref, row_num, col_num);
 
@@ -3205,9 +3207,9 @@ _write_drawing(lxw_worksheet *self, uint16_t id)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char r_id[MAX_ATTRIBUTE_LENGTH];
+    char r_id[LXW_MAX_ATTRIBUTE_LENGTH];
 
-    lxw_snprintf(r_id, ATTR_32, "rId%d", id);
+    lxw_snprintf(r_id, LXW_ATTR_32, "rId%d", id);
 
     LXW_INIT_ATTRIBUTES();
 
@@ -3477,13 +3479,13 @@ worksheet_write_array_formula_num(lxw_worksheet *self,
         return err;
 
     /* Define the array range. */
-    range = calloc(1, MAX_CELL_RANGE_LENGTH);
+    range = calloc(1, LXW_MAX_CELL_RANGE_LENGTH);
     RETURN_ON_MEM_ERROR(range, -1);
 
     if (first_row == last_row && first_col == last_col)
         lxw_rowcol_to_cell(range, first_row, last_col);
     else
-        lxw_range(range, first_row, first_col, last_row, last_col);
+        lxw_rowcol_to_range(range, first_row, first_col, last_row, last_col);
 
     /* Copy and trip leading "{=" from formula. */
     if (formula[0] == '{')
@@ -3605,7 +3607,7 @@ worksheet_write_datetime(lxw_worksheet *self,
     if (err)
         return err;
 
-    excel_date = lxw_datetime_to_excel_date(datetime, EPOCH_1900);
+    excel_date = lxw_datetime_to_excel_date(datetime, LXW_EPOCH_1900);
 
     cell = _new_number_cell(row_num, col_num, excel_date, format);
 
@@ -4210,8 +4212,8 @@ worksheet_set_selection(lxw_worksheet *self,
     lxw_selection *selection;
     lxw_row_t tmp_row;
     lxw_col_t tmp_col;
-    char active_cell[MAX_CELL_RANGE_LENGTH];
-    char sqref[MAX_CELL_RANGE_LENGTH];
+    char active_cell[LXW_MAX_CELL_RANGE_LENGTH];
+    char sqref[LXW_MAX_CELL_RANGE_LENGTH];
 
     /* Only allow selection to be set once to avoid freeing/re-creating it. */
     if (!STAILQ_EMPTY(self->selections))
@@ -4245,7 +4247,7 @@ worksheet_set_selection(lxw_worksheet *self,
     if ((first_row == last_row) && (first_col == last_col))
         lxw_rowcol_to_cell(sqref, first_row, first_col);
     else
-        lxw_range(sqref, first_row, first_col, last_row, last_col);
+        lxw_rowcol_to_range(sqref, first_row, first_col, last_row, last_col);
 
     strcpy(selection->pane, "");
     strcpy(selection->active_cell, active_cell);

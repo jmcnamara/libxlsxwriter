@@ -64,13 +64,13 @@
     ASSERT_STR(exp, got);
 
 
-#define TEST_XL_RANGE(row1, col1, row2, col2, exp)                  \
-    lxw_range(got, row1, col1, row2, col2);                         \
+#define TEST_ROWCOL_TO_RANGE(row1, col1, row2, col2, exp)           \
+    lxw_rowcol_to_range(got, row1, col1, row2, col2);               \
     ASSERT_STR(exp, got);
 
 
-#define TEST_XL_RANGE_ABS(row1, col1, row2, col2, exp)              \
-    lxw_range_abs(got, row1, col1, row2, col2);                     \
+#define TEST_ROWCOL_TO_RANGE_ABS(row1, col1, row2, col2, exp)       \
+    lxw_rowcol_to_range_abs(got, row1, col1, row2, col2);           \
     ASSERT_STR(exp, got);
 
 

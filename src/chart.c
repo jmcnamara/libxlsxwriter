@@ -288,9 +288,9 @@ _chart_write_pt_count(lxw_chart *self, uint16_t num_data_points)
 STATIC void
 _chart_write_v(lxw_chart *self, double number)
 {
-    char data[ATTR_32];
+    char data[LXW_ATTR_32];
 
-    lxw_snprintf(data, ATTR_32, "%.16g", number);
+    lxw_snprintf(data, LXW_ATTR_32, "%.16g", number);
 
     lxw_xml_data_element(self->file, "c:v", data, NULL);
 }

@@ -635,7 +635,7 @@ _prepare_defined_names(lxw_workbook *self)
     lxw_worksheet *worksheet;
     char app_name[LXW_DEFINED_NAME_LENGTH];
     char range[LXW_DEFINED_NAME_LENGTH];
-    char area[MAX_CELL_RANGE_LENGTH];
+    char area[LXW_MAX_CELL_RANGE_LENGTH];
     char first_col[8];
     char last_col[8];
 
@@ -649,11 +649,11 @@ _prepare_defined_names(lxw_workbook *self)
             lxw_snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
                          "%s!_FilterDatabase", worksheet->quoted_name);
 
-            lxw_range_abs(area,
-                          worksheet->autofilter.first_row,
-                          worksheet->autofilter.first_col,
-                          worksheet->autofilter.last_row,
-                          worksheet->autofilter.last_col);
+            lxw_rowcol_to_range_abs(area,
+                                    worksheet->autofilter.first_row,
+                                    worksheet->autofilter.first_col,
+                                    worksheet->autofilter.last_row,
+                                    worksheet->autofilter.last_col);
 
             lxw_snprintf(range, LXW_DEFINED_NAME_LENGTH - 1, "%s!%s",
                          worksheet->quoted_name, area);
@@ -681,7 +681,7 @@ _prepare_defined_names(lxw_workbook *self)
                 lxw_col_to_name(last_col,
                                 worksheet->print_area.last_col, LXW_FALSE);
 
-                lxw_snprintf(area, MAX_CELL_RANGE_LENGTH - 1, "$%s:$%s",
+                lxw_snprintf(area, LXW_MAX_CELL_RANGE_LENGTH - 1, "$%s:$%s",
                              first_col, last_col);
 
             }
@@ -689,17 +689,17 @@ _prepare_defined_names(lxw_workbook *self)
             else if (worksheet->print_area.first_col == 0
                      && worksheet->print_area.last_col == LXW_COL_MAX - 1) {
 
-                lxw_snprintf(area, MAX_CELL_RANGE_LENGTH - 1, "$%d:$%d",
+                lxw_snprintf(area, LXW_MAX_CELL_RANGE_LENGTH - 1, "$%d:$%d",
                              worksheet->print_area.first_row + 1,
                              worksheet->print_area.last_row + 1);
 
             }
             else {
-                lxw_range_abs(area,
-                              worksheet->print_area.first_row,
-                              worksheet->print_area.first_col,
-                              worksheet->print_area.last_row,
-                              worksheet->print_area.last_col);
+                lxw_rowcol_to_range_abs(area,
+                                        worksheet->print_area.first_row,
+                                        worksheet->print_area.first_col,
+                                        worksheet->print_area.last_row,
+                                        worksheet->print_area.last_col);
             }
 
             lxw_snprintf(range, LXW_DEFINED_NAME_LENGTH - 1, "%s!%s",
@@ -890,9 +890,9 @@ _write_sheet(lxw_workbook *self, const char *name, uint32_t sheet_id,
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char r_id[MAX_ATTRIBUTE_LENGTH] = "rId1";
+    char r_id[LXW_MAX_ATTRIBUTE_LENGTH] = "rId1";
 
-    lxw_snprintf(r_id, ATTR_32, "rId%d", sheet_id);
+    lxw_snprintf(r_id, LXW_ATTR_32, "rId%d", sheet_id);
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("name", name);
@@ -1152,10 +1152,10 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     }
     else {
         /* Use the default SheetN name. */
-        new_name = malloc(LXW_SHEETNAME_LEN);
+        new_name = malloc(LXW_SHEETNAME_LENGTH);
         GOTO_LABEL_ON_MEM_ERROR(new_name, mem_error);
 
-        lxw_snprintf(new_name, LXW_SHEETNAME_LEN, "Sheet%d",
+        lxw_snprintf(new_name, LXW_SHEETNAME_LENGTH, "Sheet%d",
                      self->num_sheets + 1);
         init_data.name = new_name;
         init_data.quoted_name = lxw_strdup(new_name);

@@ -12,7 +12,7 @@
 
 
 // Test _datetime_to_excel_date().
-CTEST(utility, _quote_sheetname) {
+CTEST(utility, lxw_quote_sheetname) {
 
     ASSERT_STR("Sheet1",     lxw_quote_sheetname("Sheet1"));
     ASSERT_STR("Sheet.2",    lxw_quote_sheetname("Sheet.2"));

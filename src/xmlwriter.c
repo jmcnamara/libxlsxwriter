@@ -13,7 +13,7 @@
 #include "xlsxwriter/xmlwriter.h"
 
 /* Defines. */
-#define MAX_ENCODED_ATTRIBUTE_LENGTH (MAX_ATTRIBUTE_LENGTH*6)
+#define LXW_MAX_ENCODED_ATTRIBUTE_LENGTH (LXW_MAX_ATTRIBUTE_LENGTH*6)
 
 /* Forward declarations. */
 char *_escape_attributes(struct xml_attribute *attribute);
@@ -141,7 +141,7 @@ lxw_xml_data_element(FILE * xmlfile,
 char *
 _escape_attributes(struct xml_attribute *attribute)
 {
-    char *encoded = (char *) calloc(MAX_ENCODED_ATTRIBUTE_LENGTH, 1);
+    char *encoded = (char *) calloc(LXW_MAX_ENCODED_ATTRIBUTE_LENGTH, 1);
     char *p_encoded = encoded;
     char *p_attr = attribute->value;
 
@@ -332,7 +332,7 @@ lxw_new_attribute_int(const char *key, uint32_t value)
     struct xml_attribute *attribute = malloc(sizeof(struct xml_attribute));
 
     LXW_ATTRIBUTE_COPY(attribute->key, key);
-    lxw_snprintf(attribute->value, MAX_ATTRIBUTE_LENGTH, "%d", value);
+    lxw_snprintf(attribute->value, LXW_MAX_ATTRIBUTE_LENGTH, "%d", value);
 
     return attribute;
 }
@@ -344,7 +344,7 @@ lxw_new_attribute_dbl(const char *key, double value)
     struct xml_attribute *attribute = malloc(sizeof(struct xml_attribute));
 
     LXW_ATTRIBUTE_COPY(attribute->key, key);
-    lxw_snprintf(attribute->value, MAX_ATTRIBUTE_LENGTH, "%.16g", value);
+    lxw_snprintf(attribute->value, LXW_MAX_ATTRIBUTE_LENGTH, "%.16g", value);
 
     return attribute;
 }

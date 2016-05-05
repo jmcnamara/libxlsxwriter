@@ -258,8 +258,8 @@ typedef struct lxw_panes {
 
 typedef struct lxw_selection {
     char pane[LXW_PANE_NAME_LENGTH];
-    char active_cell[MAX_CELL_RANGE_LENGTH];
-    char sqref[MAX_CELL_RANGE_LENGTH];
+    char active_cell[LXW_MAX_CELL_RANGE_LENGTH];
+    char sqref[LXW_MAX_CELL_RANGE_LENGTH];
 
     STAILQ_ENTRY (lxw_selection) list_pointers;
 

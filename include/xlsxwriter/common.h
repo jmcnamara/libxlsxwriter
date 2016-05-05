@@ -24,12 +24,12 @@ enum lxw_boolean {
     LXW_TRUE
 };
 
-#define LXW_SHEETNAME_MAX  32
-#define LXW_SHEETNAME_LEN  65
-#define LXW_UINT32_T_LEN   11   /* Length of 4294967296\0. */
-#define LXW_IGNORE          1
-#define FILENAME_LEN      128
-#define LXW_NO_ERROR        0
+#define LXW_SHEETNAME_MAX     32
+#define LXW_SHEETNAME_LENGTH  65
+#define LXW_UINT32_T_LENGTH   11        /* Length of 4294967296\0. */
+#define LXW_IGNORE            1
+#define LXW_FILENAME_LENGTH   128
+#define LXW_NO_ERROR          0
 
 #define LXW_SCHEMA_ROOT      "http://schemas.openxmlformats.org"
 #define LXW_SCHEMA_DRAWING   LXW_SCHEMA_ROOT "/drawingml/2006"
@@ -82,10 +82,10 @@ enum lxw_boolean {
 
 /* Compilers that have a native snprintf() can use it directly. */
 #ifdef _MSC_VER
-#define HAS_SNPRINTF
+#define LXW_HAS_SNPRINTF
 #endif
 
-#ifdef HAS_SNPRINTF
+#ifdef LXW_HAS_SNPRINTF
 #define lxw_snprintf snprintf
 #else
 #define lxw_snprintf __builtin_snprintf

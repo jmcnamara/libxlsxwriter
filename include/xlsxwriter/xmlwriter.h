@@ -24,13 +24,13 @@
 #include <stdint.h>
 #include "common.h"
 
-#define MAX_ATTRIBUTE_LENGTH 256
-#define ATTR_32              32
+#define LXW_MAX_ATTRIBUTE_LENGTH 256
+#define LXW_ATTR_32              32
 
-#define LXW_ATTRIBUTE_COPY(dst, src)                \
-    do{                                             \
-        strncpy(dst, src, MAX_ATTRIBUTE_LENGTH -1); \
-        dst[MAX_ATTRIBUTE_LENGTH - 1] = '\0';       \
+#define LXW_ATTRIBUTE_COPY(dst, src)                    \
+    do{                                                 \
+        strncpy(dst, src, LXW_MAX_ATTRIBUTE_LENGTH -1); \
+        dst[LXW_MAX_ATTRIBUTE_LENGTH - 1] = '\0';       \
     } while (0)
 
 
@@ -42,8 +42,8 @@ extern "C" {
 
 /* Attribute used in XML elements. */
 struct xml_attribute {
-    char key[MAX_ATTRIBUTE_LENGTH];
-    char value[MAX_ATTRIBUTE_LENGTH];
+    char key[LXW_MAX_ATTRIBUTE_LENGTH];
+    char value[LXW_MAX_ATTRIBUTE_LENGTH];
 
     /* Make the struct a queue.h list element. */
     STAILQ_ENTRY (xml_attribute) list_entries;

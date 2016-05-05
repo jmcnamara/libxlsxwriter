@@ -20,16 +20,16 @@
 #include "common.h"
 
 /* Max col: $XFD\0 */
-#define MAX_COL_NAME_LENGTH   5
+#define LXW_MAX_COL_NAME_LENGTH   5
 
 /* Max cell: $XFWD$1048576\0 */
-#define MAX_CELL_NAME_LENGTH  14
+#define LXW_MAX_CELL_NAME_LENGTH  14
 
 /* Max range: $XFWD$1048576:$XFWD$1048576\0 */
-#define MAX_CELL_RANGE_LENGTH (MAX_CELL_NAME_LENGTH * 2)
+#define LXW_MAX_CELL_RANGE_LENGTH (LXW_MAX_CELL_NAME_LENGTH * 2)
 
-#define EPOCH_1900            0
-#define EPOCH_1904            1
+#define LXW_EPOCH_1900            0
+#define LXW_EPOCH_1904            1
 
 /**
  * @brief Convert an Excel `A1` cell string into a `(row, col)` pair.
@@ -51,7 +51,7 @@
  * expands to two function calls.
  */
 #define CELL(cell) \
-    lxw_get_row(cell), lxw_get_col(cell)
+    lxw_name_to_row(cell), lxw_name_to_col(cell)
 
 /**
  * @brief Convert an Excel `A:B` column range into a `(col1, col2)` pair.
@@ -69,7 +69,7 @@
  *
  */
 #define COLS(cols) \
-    lxw_get_col(cols), lxw_get_col_2(cols)
+    lxw_name_to_col(cols), lxw_name_to_col_2(cols)
 
 /**
  * @brief Convert an Excel `A1:B2` range into a `(first_row, first_col,
@@ -88,7 +88,8 @@
  * @endcode
  */
 #define RANGE(range) \
-    lxw_get_row(range), lxw_get_col(range), lxw_get_row_2(range), lxw_get_col_2(range)
+    lxw_name_to_row(range), lxw_name_to_col(range), \
+    lxw_name_to_row_2(range), lxw_name_to_col_2(range)
 
 /** @brief Struct to represent a date and time in Excel.
  *
@@ -128,16 +129,18 @@ void lxw_rowcol_to_cell_abs(char *cell_name,
                             int row,
                             int col, uint8_t abs_row, uint8_t abs_col);
 
-void lxw_range(char *range,
-               int first_row, int first_col, int last_row, int last_col);
+void lxw_rowcol_to_range(char *range,
+                         int first_row, int first_col, int last_row,
+                         int last_col);
 
-void lxw_range_abs(char *range,
-                   int first_row, int first_col, int last_row, int last_col);
+void lxw_rowcol_to_range_abs(char *range,
+                             int first_row, int first_col, int last_row,
+                             int last_col);
 
-uint32_t lxw_get_row(const char *row_str);
-uint16_t lxw_get_col(const char *col_str);
-uint32_t lxw_get_row_2(const char *row_str);
-uint16_t lxw_get_col_2(const char *col_str);
+uint32_t lxw_name_to_row(const char *row_str);
+uint16_t lxw_name_to_col(const char *col_str);
+uint32_t lxw_name_to_row_2(const char *row_str);
+uint16_t lxw_name_to_col_2(const char *col_str);
 
 double lxw_datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904);
 

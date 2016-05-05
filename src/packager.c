@@ -147,11 +147,11 @@ _write_worksheet_files(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
-    char sheetname[FILENAME_LEN] = { 0 };
+    char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
-        lxw_snprintf(sheetname, FILENAME_LEN,
+        lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
                      "xl/worksheets/sheet%d.xml", index++);
 
         if (worksheet->optimize_row)
@@ -179,7 +179,7 @@ _write_image_files(lxw_packager *self)
     lxw_worksheet *worksheet;
     lxw_image_options *image;
 
-    char filename[FILENAME_LEN] = { 0 };
+    char filename[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
@@ -189,7 +189,7 @@ _write_image_files(lxw_packager *self)
 
         STAILQ_FOREACH(image, worksheet->image_data, list_pointers) {
 
-            lxw_snprintf(filename, FILENAME_LEN,
+            lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                          "xl/media/image%d.%s", index++, image->extension);
 
             rewind(image->stream);
@@ -211,11 +211,11 @@ _write_chart_files(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
     lxw_chart *chart;
-    char sheetname[FILENAME_LEN] = { 0 };
+    char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
 
     STAILQ_FOREACH(chart, workbook->charts, list_pointers) {
-        lxw_snprintf(sheetname, FILENAME_LEN,
+        lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
                      "xl/charts/chart%d.xml", index++);
 
         chart->file = lxw_tmpfile();
@@ -241,14 +241,14 @@ _write_drawing_files(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
     lxw_drawing *drawing;
-    char filename[FILENAME_LEN] = { 0 };
+    char filename[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
         drawing = worksheet->drawing;
 
         if (drawing) {
-            lxw_snprintf(filename, FILENAME_LEN,
+            lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                          "xl/drawings/drawing%d.xml", index++);
 
             drawing->file = lxw_tmpfile();
@@ -300,11 +300,11 @@ _write_app_file(lxw_packager *self)
     uint16_t named_range_count = 0;
     char *autofilter;
     char *has_range;
-    char number[ATTR_32] = { 0 };
+    char number[LXW_ATTR_32] = { 0 };
 
     app->file = lxw_tmpfile();
 
-    lxw_snprintf(number, ATTR_32, "%d", self->workbook->num_sheets);
+    lxw_snprintf(number, LXW_ATTR_32, "%d", self->workbook->num_sheets);
 
     lxw_app_add_heading_pair(app, "Worksheets", number);
 
@@ -327,7 +327,7 @@ _write_app_file(lxw_packager *self)
 
     /* Add the Named Range heading pairs. */
     if (named_range_count) {
-        lxw_snprintf(number, ATTR_32, "%d", named_range_count);
+        lxw_snprintf(number, LXW_ATTR_32, "%d", named_range_count);
         lxw_app_add_heading_pair(app, "Named Ranges", number);
     }
 
@@ -435,7 +435,7 @@ _write_content_types_file(lxw_packager *self)
     lxw_content_types *content_types = lxw_content_types_new();
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
-    char filename[MAX_ATTRIBUTE_LENGTH] = { 0 };
+    char filename[LXW_MAX_ATTRIBUTE_LENGTH] = { 0 };
     uint16_t index = 1;
 
     content_types->file = lxw_tmpfile();
@@ -450,18 +450,19 @@ _write_content_types_file(lxw_packager *self)
         lxw_ct_add_default(content_types, "bmp", "image/bmp");
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
-        lxw_snprintf(filename, FILENAME_LEN,
+        lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                      "/xl/worksheets/sheet%d.xml", index++);
         lxw_ct_add_worksheet_name(content_types, filename);
     }
 
     for (index = 1; index <= self->chart_count; index++) {
-        lxw_snprintf(filename, FILENAME_LEN, "/xl/charts/chart%d.xml", index);
+        lxw_snprintf(filename, LXW_FILENAME_LENGTH, "/xl/charts/chart%d.xml",
+                     index);
         lxw_ct_add_chart_name(content_types, filename);
     }
 
     for (index = 1; index <= self->drawing_count; index++) {
-        lxw_snprintf(filename, FILENAME_LEN,
+        lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                      "/xl/drawings/drawing%d.xml", index);
         lxw_ct_add_drawing_name(content_types, filename);
     }
@@ -489,13 +490,13 @@ _write_workbook_rels_file(lxw_packager *self)
     lxw_relationships *rels = lxw_relationships_new();
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
-    char sheetname[FILENAME_LEN] = { 0 };
+    char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
 
     rels->file = lxw_tmpfile();
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
-        lxw_snprintf(sheetname, FILENAME_LEN, "worksheets/sheet%d.xml",
+        lxw_snprintf(sheetname, LXW_FILENAME_LENGTH, "worksheets/sheet%d.xml",
                      index++);
         lxw_add_document_relationship(rels, "/worksheet", sheetname);
     }
@@ -528,7 +529,7 @@ _write_worksheet_rels_file(lxw_packager *self)
     lxw_rel_tuple *rel;
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
-    char sheetname[FILENAME_LEN] = { 0 };
+    char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 0;
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
@@ -552,7 +553,7 @@ _write_worksheet_rels_file(lxw_packager *self)
                                            rel->target_mode);
         }
 
-        lxw_snprintf(sheetname, FILENAME_LEN,
+        lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
                      "xl/worksheets/_rels/sheet%d.xml.rels", index);
 
         lxw_relationships_assemble_xml_file(rels);
@@ -577,7 +578,7 @@ _write_drawing_rels_file(lxw_packager *self)
     lxw_rel_tuple *rel;
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
-    char sheetname[FILENAME_LEN] = { 0 };
+    char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
@@ -594,7 +595,7 @@ _write_drawing_rels_file(lxw_packager *self)
 
         }
 
-        lxw_snprintf(sheetname, FILENAME_LEN,
+        lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
                      "xl/drawings/_rels/drawing%d.xml.rels", index++);
 
         lxw_relationships_assemble_xml_file(rels);

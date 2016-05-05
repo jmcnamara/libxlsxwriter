@@ -90,10 +90,10 @@ _write_relationship(lxw_relationships *self, const char *type,
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char r_id[MAX_ATTRIBUTE_LENGTH] = { 0 };
+    char r_id[LXW_MAX_ATTRIBUTE_LENGTH] = { 0 };
 
     self->rel_id++;
-    lxw_snprintf(r_id, ATTR_32, "rId%d", self->rel_id);
+    lxw_snprintf(r_id, LXW_ATTR_32, "rId%d", self->rel_id);
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("Id", r_id);
@@ -167,11 +167,11 @@ _add_relationship(lxw_relationships *self, const char *schema,
     relationship = calloc(1, sizeof(lxw_rel_tuple));
     GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
 
-    relationship->type = calloc(1, MAX_ATTRIBUTE_LENGTH);
+    relationship->type = calloc(1, LXW_MAX_ATTRIBUTE_LENGTH);
     GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
 
     /* Add the schema to the relationship type. */
-    lxw_snprintf(relationship->type, MAX_ATTRIBUTE_LENGTH, "%s%s",
+    lxw_snprintf(relationship->type, LXW_MAX_ATTRIBUTE_LENGTH, "%s%s",
                  schema, type);
 
     relationship->target = lxw_strdup(target);

@@ -81,8 +81,8 @@ lxw_rowcol_to_cell(char *cell_name, int row, int col)
  * an absolute reference.
  */
 void
-lxw_rowcol_to_cell_abs(char *cell_name,
-                       int row, int col, uint8_t abs_row, uint8_t abs_col)
+lxw_rowcol_to_cell_abs(char *cell_name, int row, int col, uint8_t abs_row,
+                       uint8_t abs_col)
 {
     uint8_t pos;
 
@@ -104,8 +104,8 @@ lxw_rowcol_to_cell_abs(char *cell_name,
  * range reference.
  */
 void
-lxw_range(char *range,
-          int first_row, int first_col, int last_row, int last_col)
+lxw_rowcol_to_range(char *range, int first_row, int first_col, int last_row,
+                    int last_col)
 {
     uint8_t pos;
 
@@ -131,8 +131,8 @@ lxw_range(char *range,
  * range reference with absolute values.
  */
 void
-lxw_range_abs(char *range,
-              int first_row, int first_col, int last_row, int last_col)
+lxw_rowcol_to_range_abs(char *range, int first_row, int first_col,
+                        int last_row, int last_col)
 {
     uint8_t pos;
 
@@ -157,13 +157,13 @@ lxw_range_abs(char *range,
  * Convert an Excel style A1 cell reference to a zero indexed row number.
  */
 uint32_t
-lxw_get_row(const char *row_str)
+lxw_name_to_row(const char *row_str)
 {
     int row_num = 0;
     const char *p = row_str;
 
-    /* Skip the column letters of the A1 cell. */
-    while (p && isalpha((unsigned char) *p))
+    /* Skip the column letters and absolute symbol of the A1 cell. */
+    while (p && !isdigit((unsigned char) *p))
         p++;
 
     /* Convert the row part of the A1 cell to a number. */
@@ -177,14 +177,15 @@ lxw_get_row(const char *row_str)
  * Convert an Excel style A1 cell reference to a zero indexed column number.
  */
 uint16_t
-lxw_get_col(const char *col_str)
+lxw_name_to_col(const char *col_str)
 {
     int col_num = 0;
     const char *p = col_str;
 
-    /* Convert the leading column letters of the A1 cell. */
-    while (p && isupper((unsigned char) *p)) {
-        col_num = (col_num * 26) + (*p - 'A' + 1);
+    /* Convert leading column letters of A1 cell. Ignore absolute $ marker. */
+    while (p && (isupper((unsigned char) *p) || *p == '$')) {
+        if (*p != '$')
+            col_num = (col_num * 26) + (*p - 'A' + 1);
         p++;
     }
 
@@ -195,7 +196,7 @@ lxw_get_col(const char *col_str)
  * Convert the second row of an Excel range ref to a zero indexed number.
  */
 uint32_t
-lxw_get_row_2(const char *row_str)
+lxw_name_to_row_2(const char *row_str)
 {
     const char *p = row_str;
 
@@ -204,7 +205,7 @@ lxw_get_row_2(const char *row_str)
         p++;
 
     if (p)
-        return lxw_get_row(++p);
+        return lxw_name_to_row(++p);
     else
         return -1;
 }
@@ -213,7 +214,7 @@ lxw_get_row_2(const char *row_str)
  * Convert the second column of an Excel range ref to a zero indexed number.
  */
 uint16_t
-lxw_get_col_2(const char *col_str)
+lxw_name_to_col_2(const char *col_str)
 {
     const char *p = col_str;
 
@@ -222,7 +223,7 @@ lxw_get_col_2(const char *col_str)
         p++;
 
     if (p)
-        return lxw_get_col(++p);
+        return lxw_name_to_col(++p);
     else
         return -1;
 }
