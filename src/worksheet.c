@@ -2075,7 +2075,7 @@ _process_png(lxw_image_options *image_options)
     /* Ensure that we read some valid data from the file. */
     if (width == 0) {
         LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "no size data found in file: %s\n",
+                        "no size data found in file: %s.",
                         image_options->filename);
         return -1;
     }
@@ -2186,7 +2186,7 @@ _process_jpeg(lxw_image_options *image_options)
     /* Ensure that we read some valid data from the file. */
     if (width == 0) {
         LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "no size data found in file: %s\n",
+                        "no size data found in file: %s.",
                         image_options->filename);
         return -1;
     }
@@ -2227,7 +2227,7 @@ _process_bmp(lxw_image_options *image_options)
     /* Ensure that we read some valid data from the file. */
     if (width == 0) {
         LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "no size data found in file: %s\n",
+                        "no size data found in file: %s.",
                         image_options->filename);
         return -1;
     }
@@ -2255,7 +2255,7 @@ _get_image_properties(lxw_image_options *image_options)
     /* Read 4 bytes to look for the file header/signature. */
     if (fread(signature, 1, 4, image_options->stream) < 4) {
         LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "couldn't read file type for file: %s\n",
+                        "couldn't read file type for file: %s.",
                         image_options->filename);
         return -1;
     }
@@ -2274,7 +2274,7 @@ _get_image_properties(lxw_image_options *image_options)
     }
     else {
         LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "unsupported image format for file: %s\n",
+                        "unsupported image format for file: %s.",
                         image_options->filename);
         return -1;
     }
@@ -4658,7 +4658,7 @@ worksheet_set_zoom(lxw_worksheet *self, uint16_t scale)
     /* Confine the scale to Excel"s range */
     if (scale < 10 || scale > 400) {
         LXW_WARN("worksheet_set_zoom(): "
-                 "Zoom factor scale outside range: 10 <= zoom <= 400");
+                 "Zoom factor scale outside range: 10 <= zoom <= 400.");
         return;
     }
 
@@ -4753,7 +4753,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
 
     if (!filename) {
         LXW_WARN("worksheet_insert_image()/_opt(): "
-                 "filename must be specified");
+                 "filename must be specified.");
         return -1;
     }
 
@@ -4761,7 +4761,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     image_stream = fopen(filename, "rb");
     if (!image_stream) {
         LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "file doesn't exist or can't be opened: %s",
+                        "file doesn't exist or can't be opened: %s.",
                         filename);
         return -1;
     }
@@ -4770,7 +4770,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     short_name = basename((char *) filename);
     if (!short_name) {
         LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "couldn't get basename for file: %s", filename);
+                        "couldn't get basename for file: %s.", filename);
         return -1;
     }
 
@@ -4825,10 +4825,37 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
                            lxw_chart *chart, lxw_image_options *user_options)
 {
     lxw_image_options *options;
+    lxw_chart_series *series;
 
     if (!chart) {
-        LXW_WARN("worksheet_insert_chart()/_opt(): chart must be non-NULL");
+        LXW_WARN("worksheet_insert_chart()/_opt(): chart must be non-NULL.");
         return -1;
+    }
+
+    /* Check that the chart isn't being used more than once. */
+    if (chart->in_use) {
+        LXW_WARN("worksheet_insert_chart()/_opt(): the same chart object "
+                 "cannot be inserted in a worksheet more than once.");
+
+        return -1;
+    }
+
+    /* Check that the chart has a data series. */
+    if (STAILQ_EMPTY(chart->series_list)) {
+        LXW_WARN
+            ("worksheet_insert_chart()/_opt(): chart must have a series.");
+
+        return -1;
+    }
+
+    /* Check that the chart has a 'values' series. */
+    STAILQ_FOREACH(series, chart->series_list, list_pointers) {
+        if (!series->values->formula && !series->values->sheetname) {
+            LXW_WARN("worksheet_insert_chart()/_opt(): chart must have a "
+                     "'values' series.");
+
+            return -1;
+        }
     }
 
     /* Create a new object to hold the chart image options. */
@@ -4853,6 +4880,8 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
         options->y_scale = 1;
 
     STAILQ_INSERT_TAIL(self->chart_data, options, list_pointers);
+
+    chart->in_use = LXW_TRUE;
 
     return 0;
 }

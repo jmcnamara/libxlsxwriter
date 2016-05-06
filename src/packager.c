@@ -215,6 +215,9 @@ _write_chart_files(lxw_packager *self)
     uint16_t index = 1;
 
     STAILQ_FOREACH(chart, workbook->charts, list_pointers) {
+        if (!chart->in_use)
+            continue;
+
         lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
                      "xl/charts/chart%d.xml", index++);
 

@@ -85,10 +85,10 @@ enum lxw_boolean {
     }
 
 #define LXW_WARN(message)                       \
-    fprintf(stderr, "[WARN]: " message "\n")
+    fprintf(stderr, "[WARNING]: " message "\n")
 
 #define LXW_WARN_FORMAT(message, var)           \
-    fprintf(stderr, "[WARN]: " message "\n", var)
+    fprintf(stderr, "[WARNING]: " message "\n", var)
 
 #ifndef LXW_BIG_ENDIAN
 #define LXW_UINT32_NETWORK(n) ((((n) & 0xFF)       << 24) | \

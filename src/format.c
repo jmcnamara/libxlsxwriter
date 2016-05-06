@@ -461,7 +461,7 @@ format_set_rotation(lxw_format *self, int16_t angle)
         self->rotation = angle;
     }
     else {
-        LXW_WARN("Rotation rotation outside range: -90 <= angle <= 90");
+        LXW_WARN("Rotation rotation outside range: -90 <= angle <= 90.");
         self->rotation = 0;
     }
 }

@@ -600,6 +600,7 @@ _prepare_drawings(lxw_workbook *self)
 
         STAILQ_FOREACH(image_options, worksheet->chart_data, list_pointers) {
             chart_ref_id++;
+            printf("XXX %d\n", chart_ref_id);
             lxw_worksheet_prepare_chart(worksheet, chart_ref_id, drawing_id,
                                         image_options);
         }
@@ -1169,7 +1170,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     worksheet_name->name = init_data.name;
     if (RB_FIND(lxw_worksheet_names, self->worksheet_names, worksheet_name)) {
         LXW_WARN_FORMAT("workbook_add_worksheet(): "
-                        "sheet name '%s' already exists.\n", init_data.name);
+                        "sheet name '%s' already exists.", init_data.name);
         goto mem_error;
     }
 

@@ -71,6 +71,8 @@ typedef struct lxw_chart {
     uint32_t axis_id_3;
     uint32_t axis_id_4;
 
+    uint8_t in_use;
+    uint8_t ignore_cache;
     uint8_t cat_has_num_fmt;
 
     struct lxw_chart_series_list *series_list;
