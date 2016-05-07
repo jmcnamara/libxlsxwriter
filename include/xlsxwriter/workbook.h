@@ -498,6 +498,9 @@ documentation](http://office.microsoft.com/en-001/excel-help/define-and-use-name
 uint8_t workbook_define_name(lxw_workbook *workbook, const char *name,
                              const char *formula);
 
+lxw_worksheet *workbook_get_worksheet_by_name(lxw_workbook *workbook,
+                                              char *name);
+
 void lxw_workbook_free(lxw_workbook *workbook);
 void lxw_workbook_assemble_xml_file(lxw_workbook *workbook);
 void lxw_workbook_set_default_xf_indices(lxw_workbook *workbook);

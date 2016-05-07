@@ -578,6 +578,92 @@ mem_error:
     return 1;
 }
 
+STATIC void
+_populate_series_range(lxw_workbook *self, lxw_series_range *range)
+{
+
+    char formula[128] = { 0 };
+    char *tmp_str;
+    char *sheetname;
+
+    if (!range->formula && !range->sheetname) {
+        return;
+    }
+
+    if (!range->sheetname) {
+        /* The sheetname hasn't been defined but formula has. */
+
+        /* Ignore non-contiguous like (Sheet1!$A$1:$A$2,Sheet1!$A$4:$A$5) */
+        if (range->formula[0] == '(') {
+            range->ignore_cache = LXW_TRUE;
+            return;
+        }
+
+        snprintf(formula, 128, "%s", range->formula);
+
+        /* Check for valid formula. */
+        tmp_str = strchr(formula, '!');
+
+        if (tmp_str == NULL) {
+            range->ignore_cache = LXW_TRUE;
+            return;
+        }
+        else {
+            *tmp_str = '\0';
+            tmp_str++;
+            sheetname = formula;
+
+            /* Remove any worksheet quoting. */
+            if (sheetname[0] == '\'')
+                sheetname++;
+            if (sheetname[strlen(sheetname) - 1] == '\'')
+                sheetname[strlen(sheetname) - 1] = '\0';
+
+            /* Check that the sheetname exists. */
+            if (!workbook_get_worksheet_by_name(self, sheetname)) {
+                LXW_WARN_FORMAT2("workbook_add_chart(): worksheet name '%s' "
+                                 "in chart formula '%s' doesn't exist.",
+                                 sheetname, range->formula);
+                range->ignore_cache = LXW_TRUE;
+                return;
+            }
+
+            range->sheetname = lxw_strdup(sheetname);
+            range->first_row = lxw_name_to_row(tmp_str);
+            range->first_col = lxw_name_to_col(tmp_str);
+            range->last_row = lxw_name_to_row_2(tmp_str);
+            range->last_col = lxw_name_to_col_2(tmp_str);
+        }
+    }
+}
+
+/*
+ * Add "cached" data to charts to provide the numCache and strCache data for
+ * series and title/axis ranges.
+ */
+STATIC void
+_add_chart_data(lxw_workbook *self)
+{
+    lxw_chart *chart;
+    lxw_chart_series *series;
+    uint16_t num_data_points;
+
+    STAILQ_FOREACH(chart, self->charts, list_pointers) {
+        num_data_points = 0;
+
+        if (!chart->in_use)
+            continue;
+
+        if (STAILQ_EMPTY(chart->series_list))
+            continue;
+
+        STAILQ_FOREACH(series, chart->series_list, list_pointers) {
+            _populate_series_range(self, series->categories);
+            _populate_series_range(self, series->values);
+        }
+    }
+}
+
 /*
  * Iterate through the worksheets and set up any chart or image drawings.
  */
@@ -600,7 +686,6 @@ _prepare_drawings(lxw_workbook *self)
 
         STAILQ_FOREACH(image_options, worksheet->chart_data, list_pointers) {
             chart_ref_id++;
-            printf("XXX %d\n", chart_ref_id);
             lxw_worksheet_prepare_chart(worksheet, chart_ref_id, drawing_id,
                                         image_options);
         }
@@ -647,7 +732,7 @@ _prepare_defined_names(lxw_workbook *self)
          */
         if (worksheet->autofilter.in_use) {
 
-            lxw_snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+            lxw_snprintf(app_name, LXW_DEFINED_NAME_LENGTH,
                          "%s!_FilterDatabase", worksheet->quoted_name);
 
             lxw_rowcol_to_range_abs(area,
@@ -656,7 +741,7 @@ _prepare_defined_names(lxw_workbook *self)
                                     worksheet->autofilter.last_row,
                                     worksheet->autofilter.last_col);
 
-            lxw_snprintf(range, LXW_DEFINED_NAME_LENGTH - 1, "%s!%s",
+            lxw_snprintf(range, LXW_DEFINED_NAME_LENGTH, "%s!%s",
                          worksheet->quoted_name, area);
 
             /* Autofilters are the only defined name to set the hidden flag. */
@@ -669,7 +754,7 @@ _prepare_defined_names(lxw_workbook *self)
          */
         if (worksheet->print_area.in_use) {
 
-            lxw_snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+            lxw_snprintf(app_name, LXW_DEFINED_NAME_LENGTH,
                          "%s!Print_Area", worksheet->quoted_name);
 
             /* Check for print area that is the max row range. */
@@ -703,7 +788,7 @@ _prepare_defined_names(lxw_workbook *self)
                                         worksheet->print_area.last_col);
             }
 
-            lxw_snprintf(range, LXW_DEFINED_NAME_LENGTH - 1, "%s!%s",
+            lxw_snprintf(range, LXW_DEFINED_NAME_LENGTH, "%s!%s",
                          worksheet->quoted_name, area);
 
             _store_defined_name(self, "_xlnm.Print_Area", app_name,
@@ -716,7 +801,7 @@ _prepare_defined_names(lxw_workbook *self)
         if (worksheet->repeat_rows.in_use || worksheet->repeat_cols.in_use) {
             if (worksheet->repeat_rows.in_use
                 && worksheet->repeat_cols.in_use) {
-                lxw_snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+                lxw_snprintf(app_name, LXW_DEFINED_NAME_LENGTH,
                              "%s!Print_Titles", worksheet->quoted_name);
 
                 lxw_col_to_name(first_col,
@@ -725,7 +810,7 @@ _prepare_defined_names(lxw_workbook *self)
                 lxw_col_to_name(last_col,
                                 worksheet->repeat_cols.last_col, LXW_FALSE);
 
-                lxw_snprintf(range, LXW_DEFINED_NAME_LENGTH - 1,
+                lxw_snprintf(range, LXW_DEFINED_NAME_LENGTH,
                              "%s!$%s:$%s,%s!$%d:$%d",
                              worksheet->quoted_name, first_col,
                              last_col, worksheet->quoted_name,
@@ -737,10 +822,10 @@ _prepare_defined_names(lxw_workbook *self)
             }
             else if (worksheet->repeat_rows.in_use) {
 
-                lxw_snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+                lxw_snprintf(app_name, LXW_DEFINED_NAME_LENGTH,
                              "%s!Print_Titles", worksheet->quoted_name);
 
-                lxw_snprintf(range, LXW_DEFINED_NAME_LENGTH - 1,
+                lxw_snprintf(range, LXW_DEFINED_NAME_LENGTH,
                              "%s!$%d:$%d", worksheet->quoted_name,
                              worksheet->repeat_rows.first_row + 1,
                              worksheet->repeat_rows.last_row + 1);
@@ -749,7 +834,7 @@ _prepare_defined_names(lxw_workbook *self)
                                     range, worksheet->index, LXW_FALSE);
             }
             else if (worksheet->repeat_cols.in_use) {
-                lxw_snprintf(app_name, LXW_DEFINED_NAME_LENGTH - 1,
+                lxw_snprintf(app_name, LXW_DEFINED_NAME_LENGTH,
                              "%s!Print_Titles", worksheet->quoted_name);
 
                 lxw_col_to_name(first_col,
@@ -758,7 +843,7 @@ _prepare_defined_names(lxw_workbook *self)
                 lxw_col_to_name(last_col,
                                 worksheet->repeat_cols.last_col, LXW_FALSE);
 
-                lxw_snprintf(range, LXW_DEFINED_NAME_LENGTH - 1,
+                lxw_snprintf(range, LXW_DEFINED_NAME_LENGTH,
                              "%s!$%s:$%s", worksheet->quoted_name,
                              first_col, last_col);
 
@@ -1167,10 +1252,9 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     GOTO_LABEL_ON_MEM_ERROR(worksheet_name, mem_error);
 
     /* Check if the worksheet name is already in use. */
-    worksheet_name->name = init_data.name;
-    if (RB_FIND(lxw_worksheet_names, self->worksheet_names, worksheet_name)) {
-        LXW_WARN_FORMAT("workbook_add_worksheet(): "
-                        "sheet name '%s' already exists.", init_data.name);
+    if (workbook_get_worksheet_by_name(self, init_data.name)) {
+        LXW_WARN_FORMAT("workbook_add_worksheet(): worksheet name "
+                        "'%s' already exists.", init_data.name);
         goto mem_error;
     }
 
@@ -1190,6 +1274,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     STAILQ_INSERT_TAIL(self->worksheets, worksheet, list_pointers);
 
     /* Store the worksheet so we can look it up by name. */
+    worksheet_name->name = init_data.name;
     worksheet_name->worksheet = worksheet;
     RB_INSERT(lxw_worksheet_names, self->worksheet_names, worksheet_name);
 
@@ -1269,6 +1354,9 @@ workbook_close(lxw_workbook *self)
 
     /* Prepare the drawings, charts and images. */
     _prepare_drawings(self);
+
+    /* Add cached data to charts. */
+    _add_chart_data(self);
 
     /* Create a packager object to assemble sub-elements into a zip file. */
     packager = lxw_packager_new(self->filename);
@@ -1376,4 +1464,23 @@ workbook_set_properties(lxw_workbook *self, lxw_doc_properties *user_props)
 mem_error:
     _free_doc_properties(doc_props);
     return -1;
+}
+
+lxw_worksheet *
+workbook_get_worksheet_by_name(lxw_workbook *self, char *name)
+{
+    lxw_worksheet_name worksheet_name;
+    lxw_worksheet_name *found;
+
+    if (!name)
+        return NULL;
+
+    worksheet_name.name = name;
+    found = RB_FIND(lxw_worksheet_names,
+                    self->worksheet_names, &worksheet_name);
+
+    if (found)
+        return found->worksheet;
+    else
+        return NULL;
 }

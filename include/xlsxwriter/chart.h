@@ -30,10 +30,11 @@ enum lxw_chart_types {
 typedef struct lxw_series_range {
     char *formula;
     char *sheetname;
-    uint32_t first_row;
-    uint32_t last_row;
-    uint16_t first_col;
-    uint16_t last_col;
+    lxw_row_t first_row;
+    lxw_row_t last_row;
+    lxw_col_t first_col;
+    lxw_col_t last_col;
+    uint8_t ignore_cache;
 
     uint16_t num_data_points;
     struct lxw_series_data_points *data_cache;
@@ -72,7 +73,6 @@ typedef struct lxw_chart {
     uint32_t axis_id_4;
 
     uint8_t in_use;
-    uint8_t ignore_cache;
     uint8_t cat_has_num_fmt;
 
     struct lxw_chart_series_list *series_list;

@@ -121,13 +121,13 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-void lxw_col_to_name(char *col_name, int col_num, uint8_t absolute);
+void lxw_col_to_name(char *col_name, lxw_col_t col_num, uint8_t absolute);
 
-void lxw_rowcol_to_cell(char *cell_name, int row, int col);
+void lxw_rowcol_to_cell(char *cell_name, lxw_row_t row, lxw_col_t col);
 
 void lxw_rowcol_to_cell_abs(char *cell_name,
-                            int row,
-                            int col, uint8_t abs_row, uint8_t abs_col);
+                            lxw_row_t row,
+                            lxw_col_t col, uint8_t abs_row, uint8_t abs_col);
 
 void lxw_rowcol_to_range(char *range,
                          int first_row, int first_col, int last_row,

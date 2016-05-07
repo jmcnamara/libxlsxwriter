@@ -87,8 +87,12 @@ enum lxw_boolean {
 #define LXW_WARN(message)                       \
     fprintf(stderr, "[WARNING]: " message "\n")
 
+/* Can't use variadic macros here since we support ANSI C. */
 #define LXW_WARN_FORMAT(message, var)           \
     fprintf(stderr, "[WARNING]: " message "\n", var)
+
+#define LXW_WARN_FORMAT2(message, var1, var2)    \
+    fprintf(stderr, "[WARNING]: " message "\n", var1, var2)
 
 #ifndef LXW_BIG_ENDIAN
 #define LXW_UINT32_NETWORK(n) ((((n) & 0xFF)       << 24) | \
