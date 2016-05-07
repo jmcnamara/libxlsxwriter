@@ -997,6 +997,7 @@ lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
     struct lxw_series_data_point *data_point;
     uint16_t i;
 
+    range->ignore_cache = LXW_TRUE;
     range->num_data_points = rows;
 
     /* Initialize the series range data cache. */

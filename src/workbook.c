@@ -578,15 +578,107 @@ mem_error:
     return 1;
 }
 
+/*
+ * Populate the data cache of a chart data series by reading the data from the
+ * relevant worksheet and adding it to the cached in the range object as a
+ * list of points.
+ *
+ * Note, the data cache isn't strictly required by Excel but it helps if the
+ * chart is embedded in another application such as Powerpoint and it also
+ * helps with comparison testing.
+ */
 STATIC void
-_populate_series_range(lxw_workbook *self, lxw_series_range *range)
+_populate_range_data_cache(lxw_workbook *self, lxw_series_range *range)
+{
+    lxw_worksheet *worksheet;
+    lxw_row_t row_num;
+    lxw_col_t col_num;
+    lxw_row *row_obj;
+    lxw_cell *cell_obj;
+    struct lxw_series_data_point *data_point;
+    uint16_t num_data_points = 0;
+    double number;
+
+    /* If ignore_cache is set then don't try to populate the cache. This flag
+     * may be set manually, for testing, or due to a case where the cache
+     * can't be calculated.
+     */
+    if (range->ignore_cache)
+        return;
+
+    /* Currently we only handle 2D ranges so ensure either the rows or cols
+     * are the same.
+     */
+    if (range->first_row != range->last_row
+        && range->first_col != range->last_col) {
+        range->ignore_cache = LXW_TRUE;
+        return;
+    }
+
+    /* Check that the sheetname exists. */
+    worksheet = workbook_get_worksheet_by_name(self, range->sheetname);
+    if (!worksheet) {
+        LXW_WARN_FORMAT2("workbook_add_chart(): worksheet name '%s' "
+                         "in chart formula '%s' doesn't exist.",
+                         range->sheetname, range->formula);
+        range->ignore_cache = LXW_TRUE;
+        return;
+    }
+
+    /* We can't read the data when worksheet optimization is on. */
+    if (worksheet->optimize) {
+        range->ignore_cache = LXW_TRUE;
+        return;
+    }
+
+    /* Iterate through the worksheet data and populate the range cache. */
+    for (row_num = range->first_row; row_num <= range->last_row; row_num++) {
+        number = 0;
+        row_obj = lxw_worksheet_find_row(worksheet, row_num);
+
+        for (col_num = range->first_col; col_num <= range->last_col;
+             col_num++) {
+
+            data_point = calloc(1, sizeof(struct lxw_series_data_point));
+            if (!data_point) {
+                range->ignore_cache = LXW_TRUE;
+                return;
+            }
+
+            cell_obj = lxw_worksheet_find_cell(row_obj, col_num);
+
+            if (cell_obj) {
+                if (cell_obj->type == NUMBER_CELL)
+                    number = cell_obj->u.number;
+            }
+
+            data_point->number = number;
+            STAILQ_INSERT_TAIL(range->data_cache, data_point, list_pointers);
+            num_data_points++;
+        }
+    }
+
+    range->num_data_points = num_data_points;
+
+}
+
+/* Convert a chart range such as Sheet1!$A$1:$A$5 to a sheet name and row-col
+ * dimensions, or vice-versa. This gives us the dimensions to read data back
+ * from the worksheet.
+ */
+STATIC void
+_populate_range_dimensions(lxw_workbook *self, lxw_series_range *range)
 {
 
     char formula[128] = { 0 };
     char *tmp_str;
     char *sheetname;
 
+    /* If neither the range formula or sheetname is defined then this probably
+     * isn't a valid range.
+     */
     if (!range->formula && !range->sheetname) {
+        range->ignore_cache = LXW_TRUE;
         return;
     }
 
@@ -599,9 +691,9 @@ _populate_series_range(lxw_workbook *self, lxw_series_range *range)
             return;
         }
 
-        snprintf(formula, 128, "%s", range->formula);
+        lxw_snprintf(formula, 128, "%s", range->formula);
 
-        /* Check for valid formula. */
+        /* Check for valid formula. TODO. This needs stronger validation. */
         tmp_str = strchr(formula, '!');
 
         if (tmp_str == NULL) {
@@ -609,6 +701,7 @@ _populate_series_range(lxw_workbook *self, lxw_series_range *range)
             return;
         }
         else {
+            /* Split the formulas into sheetname and row-col data. */
             *tmp_str = '\0';
             tmp_str++;
             sheetname = formula;
@@ -646,11 +739,8 @@ _add_chart_data(lxw_workbook *self)
 {
     lxw_chart *chart;
     lxw_chart_series *series;
-    uint16_t num_data_points;
 
     STAILQ_FOREACH(chart, self->charts, list_pointers) {
-        num_data_points = 0;
-
         if (!chart->in_use)
             continue;
 
@@ -658,8 +748,10 @@ _add_chart_data(lxw_workbook *self)
             continue;
 
         STAILQ_FOREACH(series, chart->series_list, list_pointers) {
-            _populate_series_range(self, series->categories);
-            _populate_series_range(self, series->values);
+            _populate_range_dimensions(self, series->categories);
+            _populate_range_dimensions(self, series->values);
+            _populate_range_data_cache(self, series->categories);
+            _populate_range_data_cache(self, series->values);
         }
     }
 }

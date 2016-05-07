@@ -36,6 +36,36 @@ LXW_RB_GENERATE_CELL(lxw_table_cells, lxw_cell, tree_pointers, _cell_cmp);
  * Private functions.
  *
  ****************************************************************************/
+
+/*
+ * Find but don't create a row object for a given row number.
+ */
+lxw_row *
+lxw_worksheet_find_row(lxw_worksheet *self, lxw_row_t row_num)
+{
+    lxw_row row;
+
+    row.row_num = row_num;
+
+    return RB_FIND(lxw_table_rows, self->table, &row);
+}
+
+/*
+ * Find but don't create a cell object for a given row object and col number.
+ */
+lxw_cell *
+lxw_worksheet_find_cell(lxw_row *row, lxw_col_t col_num)
+{
+    lxw_cell cell;
+
+    if (!row)
+        return NULL;
+
+    cell.col_num = col_num;
+
+    return RB_FIND(lxw_table_cells, row->cells, &cell);
+}
+
 /*
  * Create a new worksheet object.
  */
@@ -574,19 +604,6 @@ _get_row_list(struct lxw_table_rows *table, lxw_row_t row_num)
     table->cached_row_num = row_num;
 
     return row;
-}
-
-/*
- * Find but don't create a row object for a given row number.
- */
-STATIC lxw_row *
-_find_row(lxw_worksheet *self, lxw_row_t row_num)
-{
-    lxw_row row;
-
-    row.row_num = row_num;
-
-    return RB_FIND(lxw_table_rows, self->table, &row);
 }
 
 /*
@@ -1620,7 +1637,7 @@ _worksheet_size_row(lxw_worksheet *self, lxw_row_t row_num)
     uint32_t pixels;
     double height;
 
-    row = _find_row(self, row_num);
+    row = lxw_worksheet_find_row(self, row_num);
 
     if (row) {
         height = row->height;

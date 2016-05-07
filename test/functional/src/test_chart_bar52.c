@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook   = new_workbook("test_chart_bar02.xlsx");
+    lxw_workbook  *workbook   = new_workbook("test_chart_bar52.xlsx");
     lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, NULL);
     lxw_worksheet *worksheet2 = workbook_add_worksheet(workbook, NULL);
     lxw_chart     *chart      = workbook_add_chart(workbook, LXW_CHART_BAR);
@@ -35,9 +35,14 @@ int main() {
 
     worksheet_write_string(worksheet1, CELL("A1"), "Foo" , NULL);
 
-    chart_add_series(chart, "Sheet2!$A$1:$A$5", "Sheet2!$B$1:$B$5");
-    chart_add_series(chart, "Sheet2!$A$1:$A$5", "Sheet2!$C$1:$C$5");
+    lxw_chart_series *series1 = chart_add_series(chart, "Sheet2!$A$1:$A$5", "Sheet2!$B$1:$B$5");
+    lxw_chart_series *series2 = chart_add_series(chart, "Sheet2!$A$1:$A$5", "Sheet2!$C$1:$C$5");
 
+    /* Add cache data for testing. */
+    lxw_chart_add_data_cache(series1->categories, data[0], 5, 3, 0);
+    lxw_chart_add_data_cache(series2->categories, data[0], 5, 3, 0);
+    lxw_chart_add_data_cache(series1->values,     data[0], 5, 3, 1);
+    lxw_chart_add_data_cache(series2->values,     data[0], 5, 3, 2);
 
     worksheet_insert_chart(worksheet2, CELL("E9"), chart);
 

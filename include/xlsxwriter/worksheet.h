@@ -157,6 +157,7 @@ struct lxw_table_rows {
     RB_GENERATE_REMOVE_COLOR(name, type, field, static)   \
     RB_GENERATE_INSERT(name, type, field, cmp, static)    \
     RB_GENERATE_REMOVE(name, type, field, static)         \
+    RB_GENERATE_FIND(name, type, field, cmp, static)      \
     RB_GENERATE_NEXT(name, type, field, static)           \
     RB_GENERATE_MINMAX(name, type, field, static)         \
     /* Add unused struct to allow adding a semicolon */   \
@@ -2531,6 +2532,9 @@ void lxw_worksheet_prepare_image(lxw_worksheet *worksheet,
 void lxw_worksheet_prepare_chart(lxw_worksheet *worksheet,
                                  uint16_t chart_ref_id, uint16_t drawing_id,
                                  lxw_image_options *image_data);
+
+lxw_row *lxw_worksheet_find_row(lxw_worksheet *worksheet, lxw_row_t row_num);
+lxw_cell *lxw_worksheet_find_cell(lxw_row *row, lxw_col_t col_num);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

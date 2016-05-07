@@ -25,7 +25,7 @@ class XLSXBaseTest(unittest.TestCase):
         self.ignore_files = []
         self.ignore_elements = {}
 
-    def run_exe_test(self, exe_name, got_filename=None):
+    def run_exe_test(self, exe_name, exp_filename=None):
         """Run C exe and compare output xlsx file with the Excel file."""
 
         # Run the C executable to generate the "got" xlsx file.
@@ -33,10 +33,10 @@ class XLSXBaseTest(unittest.TestCase):
         self.assertEqual(got, self.no_system_error)
 
         # Create the path/file names for the xlsx files to compare.
-        exp_filename = exe_name.replace('test_', '') + '.xlsx'
+        got_filename = exe_name.replace('test_', '') + '.xlsx'
 
-        if not got_filename:
-            got_filename = exp_filename
+        if not exp_filename:
+            exp_filename = got_filename
 
         self.got_filename = 'test/functional/src/test_' + got_filename
         self.exp_filename = 'test/functional/xlsx_files/' + exp_filename
