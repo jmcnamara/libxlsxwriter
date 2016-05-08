@@ -21,3 +21,18 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chart_column03(self):
         self.run_exe_test('test_chart_column03')
+
+    def test_chart_column05(self):
+        self.run_exe_test('test_chart_column05')
+
+    def test_chart_column06(self):
+        self.run_exe_test('test_chart_column06')
+
+    def test_chart_column07(self):
+        self.run_exe_test('test_chart_column07')
+
+    def test_chart_column08(self):
+        self.run_exe_test('test_chart_column08')
+
+    def test_chart_column09(self):
+        self.run_exe_test('test_chart_column09')
