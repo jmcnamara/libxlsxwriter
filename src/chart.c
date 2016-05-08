@@ -36,6 +36,18 @@ lxw_chart_new(uint8_t type)
 
     chart->type = type;
 
+    /* Set the default axis positions. */
+    strcpy(chart->cat_axis_position, "b");
+    strcpy(chart->val_axis_position, "l");
+
+    /* Set the default grouping. */
+    strcpy(chart->grouping, "clustered");
+
+    strcpy(chart->x_axis.default_num_format, "General");
+    strcpy(chart->y_axis.default_num_format, "General");
+
+    chart->series_overlap_1 = 100;
+
     return chart;
 
 mem_error:
@@ -187,14 +199,13 @@ _chart_write_layout(lxw_chart *self)
  * Write the <c:grouping> element.
  */
 STATIC void
-_chart_write_grouping(lxw_chart *self)
+_chart_write_grouping(lxw_chart *self, char *grouping)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "clustered";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+    LXW_PUSH_ATTRIBUTES_STR("val", grouping);
 
     lxw_xml_empty_tag(self->file, "c:grouping", &attributes);
 
@@ -620,15 +631,14 @@ _chart_write_major_gridlines(lxw_chart *self)
  * Write the <c:numFmt> element.
  */
 STATIC void
-_chart_write_num_fmt(lxw_chart *self)
+_chart_write_number_format(lxw_chart *self, lxw_axis *axis)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char format_code[] = "General";
     char source_linked[] = "1";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("formatCode", format_code);
+    LXW_PUSH_ATTRIBUTES_STR("formatCode", axis->default_num_format);
     LXW_PUSH_ATTRIBUTES_STR("sourceLinked", source_linked);
 
     lxw_xml_empty_tag(self->file, "c:numFmt", &attributes);
@@ -774,11 +784,30 @@ _chart_write_print_settings(lxw_chart *self)
 }
 
 /*
+ * Write the <c:overlap> element.
+ */
+STATIC void
+_chart_write_overlap(lxw_chart *self, int overlap)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("val", overlap);
+
+    lxw_xml_empty_tag(self->file, "c:overlap", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <c:catAx> element. Usually the X axis.
  */
 STATIC void
 _chart_write_cat_axis(lxw_chart *self)
 {
+    char *position = self->cat_axis_position;
+
     lxw_xml_start_tag(self->file, "c:catAx", NULL);
 
     _chart_write_axis_id(self, self->axis_id_1);
@@ -787,11 +816,11 @@ _chart_write_cat_axis(lxw_chart *self)
     _chart_write_scaling(self);
 
     /* Write the c:axPos element. */
-    _chart_write_axis_pos(self, "l");
+    _chart_write_axis_pos(self, position);
 
     /* Write the c:numFmt element. */
     if (self->cat_has_num_fmt)
-        _chart_write_num_fmt(self);
+        _chart_write_number_format(self, &self->x_axis);
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
@@ -818,8 +847,10 @@ _chart_write_cat_axis(lxw_chart *self)
  * Write the <c:valAx> element.
  */
 STATIC void
-_chart_write_val_ax(lxw_chart *self)
+_chart_write_val_axis(lxw_chart *self)
 {
+    char *position = self->val_axis_position;
+
     lxw_xml_start_tag(self->file, "c:valAx", NULL);
 
     _chart_write_axis_id(self, self->axis_id_2);
@@ -828,13 +859,13 @@ _chart_write_val_ax(lxw_chart *self)
     _chart_write_scaling(self);
 
     /* Write the c:axPos element. */
-    _chart_write_axis_pos(self, "b");
+    _chart_write_axis_pos(self, position);
 
     /* Write the c:majorGridlines element. */
     _chart_write_major_gridlines(self);
 
     /* Write the c:numFmt element. */
-    _chart_write_num_fmt(self);
+    _chart_write_number_format(self, &self->y_axis);
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
@@ -859,13 +890,13 @@ _chart_write_val_ax(lxw_chart *self)
  * Write the <c:barDir> element.
  */
 STATIC void
-_chart_write_bar_dir(lxw_chart *self)
+_chart_write_bar_dir(lxw_chart *self, char *type)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", "bar");
+    LXW_PUSH_ATTRIBUTES_STR("val", type);
 
     lxw_xml_empty_tag(self->file, "c:barDir", &attributes);
 
@@ -876,21 +907,88 @@ _chart_write_bar_dir(lxw_chart *self)
  * Write the <c:barChart> element.
  */
 STATIC void
-_chart_write_bar_chart(lxw_chart *self)
+_chart_write_bar_chart(lxw_chart *self, uint8_t type)
 {
     lxw_chart_series *series;
+
+    if (type == LXW_CHART_BAR_STACKED) {
+        strcpy(self->grouping, "stacked");
+        self->has_overlap = LXW_TRUE;
+        self->subtype = LXW_CHART_SUBTYPE_STACKED;
+    }
+
+    if (type == LXW_CHART_BAR_STACKED_PERCENT) {
+        strcpy(self->grouping, "percentStacked");
+        strcpy((&self->y_axis)->default_num_format, "0%");
+        self->has_overlap = LXW_TRUE;
+        self->subtype = LXW_CHART_SUBTYPE_STACKED;
+    }
+
+    /* Override the default axis positions for a bar chart. */
+    strcpy(self->cat_axis_position, "l");
+    strcpy(self->val_axis_position, "b");
 
     lxw_xml_start_tag(self->file, "c:barChart", NULL);
 
     /* Write the c:barDir element. */
-    _chart_write_bar_dir(self);
+    _chart_write_bar_dir(self, "bar");
 
     /* Write the c:grouping element. */
-    _chart_write_grouping(self);
+    _chart_write_grouping(self, self->grouping);
 
     STAILQ_FOREACH(series, self->series_list, list_pointers) {
         /* Write the c:ser element. */
         _chart_write_ser(self, series);
+    }
+
+    if (self->has_overlap) {
+        /* Write the c:overlap element. */
+        _chart_write_overlap(self, self->series_overlap_1);
+    }
+
+    /* Write the c:axId elements. */
+    _chart_write_axis_ids(self);
+
+    lxw_xml_end_tag(self->file, "c:barChart");
+}
+
+/*
+ * Write the <c:barChart> element for column charts.
+ */
+STATIC void
+_chart_write_column_chart(lxw_chart *self, uint8_t type)
+{
+    lxw_chart_series *series;
+
+    if (type == LXW_CHART_COLUMN_STACKED) {
+        strcpy(self->grouping, "stacked");
+        self->has_overlap = LXW_TRUE;
+        self->subtype = LXW_CHART_SUBTYPE_STACKED;
+    }
+
+    if (type == LXW_CHART_COLUMN_STACKED_PERCENT) {
+        strcpy(self->grouping, "percentStacked");
+        strcpy((&self->y_axis)->default_num_format, "0%");
+        self->has_overlap = LXW_TRUE;
+        self->subtype = LXW_CHART_SUBTYPE_STACKED;
+    }
+
+    lxw_xml_start_tag(self->file, "c:barChart", NULL);
+
+    /* Write the c:barDir element. */
+    _chart_write_bar_dir(self, "col");
+
+    /* Write the c:grouping element. */
+    _chart_write_grouping(self, self->grouping);
+
+    STAILQ_FOREACH(series, self->series_list, list_pointers) {
+        /* Write the c:ser element. */
+        _chart_write_ser(self, series);
+    }
+
+    if (self->has_overlap) {
+        /* Write the c:overlap element. */
+        _chart_write_overlap(self, self->series_overlap_1);
     }
 
     /* Write the c:axId elements. */
@@ -907,10 +1005,26 @@ _chart_write_bar_chart(lxw_chart *self)
  * Write the chart type element.
  */
 STATIC void
-_chart_write_chart_type(lxw_chart *self)
+_chart_write_chart_type(lxw_chart *self, uint8_t type)
 {
-    /* Write the c:barChart element. */
-    _chart_write_bar_chart(self);
+    switch (type) {
+        case LXW_CHART_BAR:
+        case LXW_CHART_BAR_STACKED:
+        case LXW_CHART_BAR_STACKED_PERCENT:
+            _chart_write_bar_chart(self, type);
+            break;
+
+        case LXW_CHART_COLUMN:
+        case LXW_CHART_COLUMN_STACKED:
+        case LXW_CHART_COLUMN_STACKED_PERCENT:
+            _chart_write_column_chart(self, type);
+            break;
+
+        default:
+            LXW_WARN_FORMAT("workbook_add_chart(): "
+                            "unhandled chart type '%d'", type);
+    }
+
 }
 
 /*
@@ -925,7 +1039,7 @@ _chart_write_plot_area(lxw_chart *self)
     _chart_write_layout(self);
 
     /* Write the subclass chart type elements for primary and secondary axes. */
-    _chart_write_chart_type(self);
+    _chart_write_chart_type(self, self->type);
 
 }
 
@@ -944,7 +1058,7 @@ _chart_write_chart(lxw_chart *self)
     _chart_write_cat_axis(self);
 
     /* Write the c:valAx element. */
-    _chart_write_val_ax(self);
+    _chart_write_val_axis(self);
 
     lxw_xml_end_tag(self->file, "c:plotArea");
 

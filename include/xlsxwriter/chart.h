@@ -17,6 +17,8 @@
 STAILQ_HEAD(lxw_chart_series_list, lxw_chart_series);
 STAILQ_HEAD(lxw_series_data_points, lxw_series_data_point);
 
+#define LXW_CHART_NUM_FORMAT_LEN 128
+
 /** Available chart types . */
 enum lxw_chart_types {
 
@@ -24,7 +26,31 @@ enum lxw_chart_types {
     LXW_CHART_NONE = 0,
 
     /** Bar chart. */
-    LXW_CHART_BAR
+    LXW_CHART_BAR,
+
+    /** Bar chart - stacked. */
+    LXW_CHART_BAR_STACKED,
+
+    /** Bar chart - percentage stacked. */
+    LXW_CHART_BAR_STACKED_PERCENT,
+
+    /** Column chart. */
+    LXW_CHART_COLUMN,
+
+    /** Column chart - stacked. */
+    LXW_CHART_COLUMN_STACKED,
+
+    /** Column chart - percentage stacked. */
+    LXW_CHART_COLUMN_STACKED_PERCENT,
+
+    LWX_CHART_END_REMOVEP_LATER
+};
+
+enum lxw_chart_subtypes {
+
+    LXW_CHART_SUBTYPE_NONE = 0,
+    LXW_CHART_SUBTYPE_STACKED,
+    LXW_CHART_SUBTYPE_STACKED_PERCENT
 };
 
 typedef struct lxw_series_range {
@@ -56,6 +82,13 @@ typedef struct lxw_chart_series {
 
 } lxw_chart_series;
 
+typedef struct lxw_axis {
+
+    char num_format[LXW_CHART_NUM_FORMAT_LEN];
+    char default_num_format[LXW_CHART_NUM_FORMAT_LEN];
+
+} lxw_axis;
+
 /*
  * Struct to represent a chart object.
  */
@@ -64,7 +97,11 @@ typedef struct lxw_chart {
     FILE *file;
 
     uint8_t type;
+    uint8_t subtype;
     uint16_t series_index;
+
+    lxw_axis x_axis;
+    lxw_axis y_axis;
 
     uint32_t id;
     uint32_t axis_id_1;
@@ -74,6 +111,13 @@ typedef struct lxw_chart {
 
     uint8_t in_use;
     uint8_t cat_has_num_fmt;
+
+    uint8_t has_overlap;
+    int series_overlap_1;
+
+    char grouping[32];
+    char cat_axis_position[2];
+    char val_axis_position[2];
 
     struct lxw_chart_series_list *series_list;
 

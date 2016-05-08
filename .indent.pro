@@ -45,6 +45,7 @@
 /* libxlsxwriter typedefs. */
 -T lxw_app
 -T lxw_autofilter
+-T lxw_axis
 -T lxw_border
 -T lxw_cell
 -T lxw_chart
