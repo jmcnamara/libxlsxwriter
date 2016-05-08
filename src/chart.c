@@ -403,6 +403,59 @@ _chart_write_num_ref(lxw_chart *self, lxw_series_range *range)
 }
 
 /*
+ * Write the <c:symbol> element.
+ */
+STATIC void
+_chart_write_symbol(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char val[] = "none";
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", val);
+
+    lxw_xml_empty_tag(self->file, "c:symbol", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:marker> element.
+ */
+STATIC void
+_chart_write_marker(lxw_chart *self)
+{
+    if (!self->has_markers)
+        return;
+
+    lxw_xml_start_tag(self->file, "c:marker", NULL);
+
+    /* Write the c:symbol element. */
+    _chart_write_symbol(self);
+
+    lxw_xml_end_tag(self->file, "c:marker");
+}
+
+/*
+ * Write the <c:marker> element.
+ */
+STATIC void
+_chart_write_marker_value(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char val[] = "1";
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", val);
+
+    lxw_xml_empty_tag(self->file, "c:marker", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <c:cat> element.
  */
 STATIC void
@@ -452,6 +505,9 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
 
     /* Write the c:order element. */
     _chart_write_order(self, index);
+
+    /* Write the c:marker element. */
+    _chart_write_marker(self);
 
     /* Write the c:cat element. */
     _chart_write_cat(self, series);
@@ -904,7 +960,7 @@ _chart_write_bar_dir(lxw_chart *self, char *type)
 }
 
 /*
- * Write the <c:barChart> element.
+ * Write a bar chart.
  */
 STATIC void
 _chart_write_bar_chart(lxw_chart *self, uint8_t type)
@@ -953,7 +1009,7 @@ _chart_write_bar_chart(lxw_chart *self, uint8_t type)
 }
 
 /*
- * Write the <c:barChart> element for column charts.
+ * Write a column chart.
  */
 STATIC void
 _chart_write_column_chart(lxw_chart *self, uint8_t type)
@@ -997,6 +1053,36 @@ _chart_write_column_chart(lxw_chart *self, uint8_t type)
     lxw_xml_end_tag(self->file, "c:barChart");
 }
 
+/*
+ * Write a column chart.
+ */
+STATIC void
+_chart_write_line_chart(lxw_chart *self)
+{
+    lxw_chart_series *series;
+
+    self->has_markers = LXW_TRUE;
+    strcpy(self->grouping, "standard");
+
+    lxw_xml_start_tag(self->file, "c:lineChart", NULL);
+
+    /* Write the c:grouping element. */
+    _chart_write_grouping(self, self->grouping);
+
+    STAILQ_FOREACH(series, self->series_list, list_pointers) {
+        /* Write the c:ser element. */
+        _chart_write_ser(self, series);
+    }
+
+    /* Write the c:marker element. */
+    _chart_write_marker_value(self);
+
+    /* Write the c:axId elements. */
+    _chart_write_axis_ids(self);
+
+    lxw_xml_end_tag(self->file, "c:lineChart");
+}
+
 /*****************************************************************************
  * End of sub chart functions.
  */
@@ -1018,6 +1104,10 @@ _chart_write_chart_type(lxw_chart *self, uint8_t type)
         case LXW_CHART_COLUMN_STACKED:
         case LXW_CHART_COLUMN_STACKED_PERCENT:
             _chart_write_column_chart(self, type);
+            break;
+
+        case LXW_CHART_LINE:
+            _chart_write_line_chart(self);
             break;
 
         default:

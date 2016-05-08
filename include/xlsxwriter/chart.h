@@ -43,6 +43,9 @@ enum lxw_chart_types {
     /** Column chart - percentage stacked. */
     LXW_CHART_COLUMN_STACKED_PERCENT,
 
+    /** Line chart. */
+    LXW_CHART_LINE,
+
     LWX_CHART_END_REMOVEP_LATER
 };
 
@@ -112,6 +115,7 @@ typedef struct lxw_chart {
     uint8_t in_use;
     uint8_t cat_has_num_fmt;
 
+    uint8_t has_markers;
     uint8_t has_overlap;
     int series_overlap_1;
 
