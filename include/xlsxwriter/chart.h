@@ -25,6 +25,15 @@ enum lxw_chart_types {
     /** None. */
     LXW_CHART_NONE = 0,
 
+    /** Area chart. */
+    LXW_CHART_AREA,
+
+    /** Area chart - stacked. */
+    LXW_CHART_AREA_STACKED,
+
+    /** Area chart - percentage stacked. */
+    LXW_CHART_AREA_STACKED_PERCENT,
+
     /** Bar chart. */
     LXW_CHART_BAR,
 
@@ -119,7 +128,8 @@ typedef struct lxw_chart {
     uint8_t has_overlap;
     int series_overlap_1;
 
-    char grouping[32];
+    char grouping[16];
+    char cross_between[16];
     char cat_axis_position[2];
     char val_axis_position[2];
 

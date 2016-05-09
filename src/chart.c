@@ -43,6 +43,8 @@ lxw_chart_new(uint8_t type)
     /* Set the default grouping. */
     strcpy(chart->grouping, "clustered");
 
+    strcpy(chart->cross_between, "between");
+
     strcpy(chart->x_axis.default_num_format, "General");
     strcpy(chart->y_axis.default_num_format, "General");
 
@@ -710,10 +712,9 @@ _chart_write_cross_between(lxw_chart *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "between";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+    LXW_PUSH_ATTRIBUTES_STR("val", self->cross_between);
 
     lxw_xml_empty_tag(self->file, "c:crossBetween", &attributes);
 
@@ -960,6 +961,49 @@ _chart_write_bar_dir(lxw_chart *self, char *type)
 }
 
 /*
+ * Write a area chart.
+ */
+STATIC void
+_chart_write_area_chart(lxw_chart *self, uint8_t type)
+{
+    lxw_chart_series *series;
+
+    strcpy(self->grouping, "standard");
+    strcpy(self->cross_between, "midCat");
+
+    if (type == LXW_CHART_AREA_STACKED) {
+        strcpy(self->grouping, "stacked");
+        self->subtype = LXW_CHART_SUBTYPE_STACKED;
+    }
+
+    if (type == LXW_CHART_AREA_STACKED_PERCENT) {
+        strcpy(self->grouping, "percentStacked");
+        strcpy((&self->y_axis)->default_num_format, "0%");
+        self->subtype = LXW_CHART_SUBTYPE_STACKED;
+    }
+
+    lxw_xml_start_tag(self->file, "c:areaChart", NULL);
+
+    /* Write the c:grouping element. */
+    _chart_write_grouping(self, self->grouping);
+
+    STAILQ_FOREACH(series, self->series_list, list_pointers) {
+        /* Write the c:ser element. */
+        _chart_write_ser(self, series);
+    }
+
+    if (self->has_overlap) {
+        /* Write the c:overlap element. */
+        _chart_write_overlap(self, self->series_overlap_1);
+    }
+
+    /* Write the c:axId elements. */
+    _chart_write_axis_ids(self);
+
+    lxw_xml_end_tag(self->file, "c:areaChart");
+}
+
+/*
  * Write a bar chart.
  */
 STATIC void
@@ -1054,7 +1098,7 @@ _chart_write_column_chart(lxw_chart *self, uint8_t type)
 }
 
 /*
- * Write a column chart.
+ * Write a line chart.
  */
 STATIC void
 _chart_write_line_chart(lxw_chart *self)
@@ -1094,6 +1138,13 @@ STATIC void
 _chart_write_chart_type(lxw_chart *self, uint8_t type)
 {
     switch (type) {
+
+        case LXW_CHART_AREA:
+        case LXW_CHART_AREA_STACKED:
+        case LXW_CHART_AREA_STACKED_PERCENT:
+            _chart_write_area_chart(self, type);
+            break;
+
         case LXW_CHART_BAR:
         case LXW_CHART_BAR_STACKED:
         case LXW_CHART_BAR_STACKED_PERCENT:
