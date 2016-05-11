@@ -232,6 +232,52 @@ _chart_write_idx(lxw_chart *self, uint16_t index)
 }
 
 /*
+ * Write the <a:noFill> element.
+ */
+STATIC void
+_chart_write_a_no_fill(lxw_chart *self)
+{
+    lxw_xml_empty_tag(self->file, "a:noFill", NULL);
+}
+
+/*
+ * Write the <a:ln> element.
+ */
+STATIC void
+_chart_write_a_ln(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char w[] = "28575";
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("w", w);
+
+    lxw_xml_start_tag(self->file, "a:ln", &attributes);
+
+    /* Write the a:noFill element. */
+    _chart_write_a_no_fill(self);
+
+    lxw_xml_end_tag(self->file, "a:ln");
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:spPr> element.
+ */
+STATIC void
+_chart_write_sp_pr(lxw_chart *self)
+{
+    lxw_xml_start_tag(self->file, "c:spPr", NULL);
+
+    /* Write the a:ln element. */
+    _chart_write_a_ln(self);
+
+    lxw_xml_end_tag(self->file, "c:spPr");
+}
+
+/*
  * Write the <c:order> element.
  */
 STATIC void
@@ -458,6 +504,46 @@ _chart_write_marker_value(lxw_chart *self)
 }
 
 /*
+ * Write the <c:smooth> element.
+ */
+STATIC void
+_chart_write_smooth(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char val[] = "1";
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", val);
+
+    lxw_xml_empty_tag(self->file, "c:smooth", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:scatterStyle> element.
+ */
+STATIC void
+_chart_write_scatter_style(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (self->type == LXW_CHART_SCATTER_SMOOTH
+        || self->type == LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS)
+        LXW_PUSH_ATTRIBUTES_STR("val", "smoothMarker");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "lineMarker");
+
+    lxw_xml_empty_tag(self->file, "c:scatterStyle", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <c:cat> element.
  */
 STATIC void
@@ -479,6 +565,20 @@ _chart_write_cat(lxw_chart *self, lxw_chart_series *series)
 }
 
 /*
+ * Write the <c:xVal> element.
+ */
+STATIC void
+_chart_write_x_val(lxw_chart *self, lxw_chart_series *series)
+{
+    lxw_xml_start_tag(self->file, "c:xVal", NULL);
+
+    /* Write the c:numRef element. */
+    _chart_write_num_ref(self, series->categories);
+
+    lxw_xml_end_tag(self->file, "c:xVal");
+}
+
+/*
  * Write the <c:val> element.
  */
 STATIC void
@@ -490,6 +590,20 @@ _chart_write_val(lxw_chart *self, lxw_chart_series *series)
     _chart_write_num_ref(self, series->values);
 
     lxw_xml_end_tag(self->file, "c:val");
+}
+
+/*
+ * Write the <c:yVal> element.
+ */
+STATIC void
+_chart_write_y_val(lxw_chart *self, lxw_chart_series *series)
+{
+    lxw_xml_start_tag(self->file, "c:yVal", NULL);
+
+    /* Write the c:numRef element. */
+    _chart_write_num_ref(self, series->values);
+
+    lxw_xml_end_tag(self->file, "c:yVal");
 }
 
 /*
@@ -516,6 +630,49 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
 
     /* Write the c:val element. */
     _chart_write_val(self, series);
+
+    lxw_xml_end_tag(self->file, "c:ser");
+}
+
+/*
+ * Write the <c:ser> element but with c:xVal/c:yVal instead of c:cat/c:val
+ * elements.
+ */
+STATIC void
+_chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
+{
+    uint16_t index = self->series_index++;
+
+    lxw_xml_start_tag(self->file, "c:ser", NULL);
+
+    /* Write the c:idx element. */
+    _chart_write_idx(self, index);
+
+    /* Write the c:order element. */
+    _chart_write_order(self, index);
+
+    if (self->type == LXW_CHART_SCATTER) {
+        /* Write the c:spPr element. */
+        _chart_write_sp_pr(self);
+    }
+
+    if (self->type == LXW_CHART_SCATTER_STRAIGHT
+        || self->type == LXW_CHART_SCATTER_SMOOTH) {
+        /* Write the c:marker element. */
+        _chart_write_marker(self);
+    }
+
+    /* Write the c:xVal element. */
+    _chart_write_x_val(self, series);
+
+    /* Write the yVal element. */
+    _chart_write_y_val(self, series);
+
+    if (self->type == LXW_CHART_SCATTER_SMOOTH
+        || self->type == LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS) {
+        /* Write the c:smooth element. */
+        _chart_write_smooth(self);
+    }
 
     lxw_xml_end_tag(self->file, "c:ser");
 }
@@ -939,6 +1096,42 @@ _chart_write_val_axis(lxw_chart *self)
     lxw_xml_end_tag(self->file, "c:valAx");
 }
 
+/*
+ * Write the <c:valAx> element. This is for the second valAx in scatter plots.
+ */
+STATIC void
+_chart_write_cat_val_axis(lxw_chart *self)
+{
+    char *position = self->cat_axis_position;
+
+    lxw_xml_start_tag(self->file, "c:valAx", NULL);
+
+    _chart_write_axis_id(self, self->axis_id_1);
+
+    /* Write the c:scaling element. */
+    _chart_write_scaling(self);
+
+    /* Write the c:axPos element. */
+    _chart_write_axis_pos(self, position);
+
+    /* Write the c:numFmt element. */
+    _chart_write_number_format(self, &self->y_axis);
+
+    /* Write the c:tickLblPos element. */
+    _chart_write_tick_lbl_pos(self);
+
+    /* Write the c:crossAx element. */
+    _chart_write_cross_axis(self, self->axis_id_2);
+
+    /* Write the c:crosses element. */
+    _chart_write_crosses(self);
+
+    /* Write the c:crossBetween element. */
+    _chart_write_cross_between(self);
+
+    lxw_xml_end_tag(self->file, "c:valAx");
+}
+
 /*****************************************************************************
  * Bar chart functions.
  */
@@ -1127,6 +1320,34 @@ _chart_write_line_chart(lxw_chart *self)
     lxw_xml_end_tag(self->file, "c:lineChart");
 }
 
+/*
+ * Write a scatter chart.
+ */
+STATIC void
+_chart_write_scatter_chart(lxw_chart *self)
+{
+    lxw_chart_series *series;
+
+    strcpy(self->cross_between, "midCat");
+    self->is_scatter = LXW_TRUE;
+    self->has_markers = LXW_TRUE;
+
+    lxw_xml_start_tag(self->file, "c:scatterChart", NULL);
+
+    /* Write the c:scatterStyle element. */
+    _chart_write_scatter_style(self);
+
+    STAILQ_FOREACH(series, self->series_list, list_pointers) {
+        /* Write the c:ser element. */
+        _chart_write_xval_ser(self, series);
+    }
+
+    /* Write the c:axId elements. */
+    _chart_write_axis_ids(self);
+
+    lxw_xml_end_tag(self->file, "c:scatterChart");
+}
+
 /*****************************************************************************
  * End of sub chart functions.
  */
@@ -1159,6 +1380,14 @@ _chart_write_chart_type(lxw_chart *self, uint8_t type)
 
         case LXW_CHART_LINE:
             _chart_write_line_chart(self);
+            break;
+
+        case LXW_CHART_SCATTER:
+        case LXW_CHART_SCATTER_STRAIGHT:
+        case LXW_CHART_SCATTER_STRAIGHT_WITH_MARKERS:
+        case LXW_CHART_SCATTER_SMOOTH:
+        case LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS:
+            _chart_write_scatter_chart(self);
             break;
 
         default:
@@ -1195,8 +1424,15 @@ _chart_write_chart(lxw_chart *self)
     /* Write the c:plotArea element. */
     _chart_write_plot_area(self);
 
-    /* Write the c:catAx element. */
-    _chart_write_cat_axis(self);
+    if (self->is_scatter) {
+        /* Write the c:catAx element. */
+        _chart_write_cat_val_axis(self);
+
+    }
+    else {
+        /* Write the c:catAx element. */
+        _chart_write_cat_axis(self);
+    }
 
     /* Write the c:valAx element. */
     _chart_write_val_axis(self);

@@ -55,6 +55,21 @@ enum lxw_chart_types {
     /** Line chart. */
     LXW_CHART_LINE,
 
+    /** Scatter chart. */
+    LXW_CHART_SCATTER,
+
+    /** Scatter chart - straight. */
+    LXW_CHART_SCATTER_STRAIGHT,
+
+    /** Scatter chart - straight with markers. */
+    LXW_CHART_SCATTER_STRAIGHT_WITH_MARKERS,
+
+    /** Scatter chart - smooth. */
+    LXW_CHART_SCATTER_SMOOTH,
+
+    /** Scatter chart - smooth with markers. */
+    LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS,
+
     LWX_CHART_END_REMOVEP_LATER
 };
 
@@ -122,6 +137,7 @@ typedef struct lxw_chart {
     uint32_t axis_id_4;
 
     uint8_t in_use;
+    uint8_t is_scatter;
     uint8_t cat_has_num_fmt;
 
     uint8_t has_markers;
