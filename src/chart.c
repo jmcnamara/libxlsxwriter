@@ -215,6 +215,144 @@ _chart_write_grouping(lxw_chart *self, char *grouping)
 }
 
 /*
+ * Write the <c:varyColors> element.
+ */
+STATIC void
+_chart_write_vary_colors(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:varyColors", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:firstSliceAng> element.
+ */
+STATIC void
+_chart_write_first_slice_ang(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "0");
+
+    lxw_xml_empty_tag(self->file, "c:firstSliceAng", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <a:endParaRPr> element.
+ */
+STATIC void
+_chart_write_a_end_para_rpr(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("lang", "en-US");
+
+    lxw_xml_empty_tag(self->file, "a:endParaRPr", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <a:defRPr> element.
+ */
+STATIC void
+_chart_write_a_def_rpr(lxw_chart *self)
+{
+    lxw_xml_empty_tag(self->file, "a:defRPr", NULL);
+}
+
+/*
+ * Write the <a:pPr> element.
+ */
+STATIC void
+_chart_write_a_p_pr(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char rtl[] = "0";
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("rtl", rtl);
+
+    lxw_xml_start_tag(self->file, "a:pPr", &attributes);
+
+    /* Write the a:defRPr element. */
+    _chart_write_a_def_rpr(self);
+
+    lxw_xml_end_tag(self->file, "a:pPr");
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <a:p> element.
+ */
+STATIC void
+_chart_write_a_p(lxw_chart *self)
+{
+    lxw_xml_start_tag(self->file, "a:p", NULL);
+
+    /* Write the a:pPr element. */
+    _chart_write_a_p_pr(self);
+
+    /* Write the a:endParaRPr element. */
+    _chart_write_a_end_para_rpr(self);
+
+    lxw_xml_end_tag(self->file, "a:p");
+}
+
+/*
+ * Write the <a:lstStyle> element.
+ */
+STATIC void
+_chart_write_a_lst_style(lxw_chart *self)
+{
+    lxw_xml_empty_tag(self->file, "a:lstStyle", NULL);
+}
+
+/*
+ * Write the <a:bodyPr> element.
+ */
+STATIC void
+_chart_write_a_body_pr(lxw_chart *self)
+{
+    lxw_xml_empty_tag(self->file, "a:bodyPr", NULL);
+}
+
+/*
+ * Write the <c:txPr> element.
+ */
+STATIC void
+_chart_write_tx_pr(lxw_chart *self)
+{
+    lxw_xml_start_tag(self->file, "c:txPr", NULL);
+
+    /* Write the a:bodyPr element. */
+    _chart_write_a_body_pr(self);
+
+    /* Write the a:lstStyle element. */
+    _chart_write_a_lst_style(self);
+
+    /* Write the a:p element. */
+    _chart_write_a_p(self);
+
+    lxw_xml_end_tag(self->file, "c:txPr");
+}
+
+/*
  * Write the <c:idx> element.
  */
 STATIC void
@@ -910,6 +1048,11 @@ _chart_write_legend(lxw_chart *self)
     /* Write the c:layout element. */
     _chart_write_layout(self);
 
+    if (self->type == LXW_CHART_PIE) {
+        /* Write the c:txPr element. */
+        _chart_write_tx_pr(self);
+    }
+
     lxw_xml_end_tag(self->file, "c:legend");
 }
 
@@ -1321,6 +1464,32 @@ _chart_write_line_chart(lxw_chart *self)
 }
 
 /*
+ * Write a pie chart.
+ */
+STATIC void
+_chart_write_pie_chart(lxw_chart *self)
+{
+    lxw_chart_series *series;
+
+    self->has_markers = LXW_FALSE;
+
+    lxw_xml_start_tag(self->file, "c:pieChart", NULL);
+
+    /* Write the c:varyColors element. */
+    _chart_write_vary_colors(self);
+
+    STAILQ_FOREACH(series, self->series_list, list_pointers) {
+        /* Write the c:ser element. */
+        _chart_write_ser(self, series);
+    }
+
+    /* Write the c:firstSliceAng element. */
+    _chart_write_first_slice_ang(self);
+
+    lxw_xml_end_tag(self->file, "c:pieChart");
+}
+
+/*
  * Write a scatter chart.
  */
 STATIC void
@@ -1382,6 +1551,10 @@ _chart_write_chart_type(lxw_chart *self, uint8_t type)
             _chart_write_line_chart(self);
             break;
 
+        case LXW_CHART_PIE:
+            _chart_write_pie_chart(self);
+            break;
+
         case LXW_CHART_SCATTER:
         case LXW_CHART_SCATTER_STRAIGHT:
         case LXW_CHART_SCATTER_STRAIGHT_WITH_MARKERS:
@@ -1408,7 +1581,7 @@ _chart_write_plot_area(lxw_chart *self)
     /* Write the c:layout element. */
     _chart_write_layout(self);
 
-    /* Write the subclass chart type elements for primary and secondary axes. */
+    /* Write subclass chart type elements for primary and secondary axes. */
     _chart_write_chart_type(self, self->type);
 
 }
@@ -1427,7 +1600,6 @@ _chart_write_chart(lxw_chart *self)
     if (self->is_scatter) {
         /* Write the c:catAx element. */
         _chart_write_cat_val_axis(self);
-
     }
     else {
         /* Write the c:catAx element. */
@@ -1436,6 +1608,28 @@ _chart_write_chart(lxw_chart *self)
 
     /* Write the c:valAx element. */
     _chart_write_val_axis(self);
+
+    lxw_xml_end_tag(self->file, "c:plotArea");
+
+    /* Write the c:legend element. */
+    _chart_write_legend(self);
+
+    /* Write the c:plotVisOnly element. */
+    _chart_write_plot_vis_only(self);
+
+    lxw_xml_end_tag(self->file, "c:chart");
+}
+
+/*
+ * Write the <c:chart> element. Special handling for pie/doughnut.
+ */
+STATIC void
+_chart_write_chart_pie(lxw_chart *self)
+{
+    lxw_xml_start_tag(self->file, "c:chart", NULL);
+
+    /* Write the c:plotArea element. */
+    _chart_write_plot_area(self);
 
     lxw_xml_end_tag(self->file, "c:plotArea");
 
@@ -1464,7 +1658,10 @@ lxw_chart_assemble_xml_file(lxw_chart *self)
     _chart_write_lang(self);
 
     /* Write the c:chart element. */
-    _chart_write_chart(self);
+    if (self->type == LXW_CHART_PIE)
+        _chart_write_chart_pie(self);
+    else
+        _chart_write_chart(self);
 
     /* Write the c:printSettings element. */
     _chart_write_print_settings(self);

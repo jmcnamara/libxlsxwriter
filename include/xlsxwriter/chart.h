@@ -55,6 +55,9 @@ enum lxw_chart_types {
     /** Line chart. */
     LXW_CHART_LINE,
 
+    /** Pie chart. */
+    LXW_CHART_PIE,
+
     /** Scatter chart. */
     LXW_CHART_SCATTER,
 
