@@ -76,7 +76,14 @@ enum lxw_chart_types {
     /** Scatter chart - smooth with markers. */
     LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS,
 
-    LWX_CHART_END_REMOVEP_LATER
+    /** RAdar chart. */
+    LXW_CHART_RADAR,
+
+    /** RAdar chart - with markers. */
+    LXW_CHART_RADAR_WITH_MARKERS,
+
+    /** RAdar chart - filled. */
+    LXW_CHART_RADAR_FILLED
 };
 
 enum lxw_chart_subtypes {
@@ -119,6 +126,9 @@ typedef struct lxw_axis {
 
     char num_format[LXW_CHART_NUM_FORMAT_LEN];
     char default_num_format[LXW_CHART_NUM_FORMAT_LEN];
+
+    uint8_t default_major_gridlines;
+    uint8_t major_tick_mark;
 
 } lxw_axis;
 

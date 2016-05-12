@@ -50,6 +50,9 @@ lxw_chart_new(uint8_t type)
     strcpy(chart->x_axis.default_num_format, "General");
     strcpy(chart->y_axis.default_num_format, "General");
 
+    chart->x_axis.default_major_gridlines = LXW_FALSE;
+    chart->y_axis.default_major_gridlines = LXW_TRUE;
+
     chart->series_overlap_1 = 100;
 
     return chart;
@@ -233,6 +236,27 @@ _chart_write_grouping(lxw_chart *self, char *grouping)
     LXW_PUSH_ATTRIBUTES_STR("val", grouping);
 
     lxw_xml_empty_tag(self->file, "c:grouping", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:radarStyle> element.
+ */
+STATIC void
+_chart_write_radar_style(lxw_chart *self, uint8_t type)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (type == LXW_CHART_RADAR_FILLED)
+        LXW_PUSH_ATTRIBUTES_STR("val", "filled");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "marker");
+
+    lxw_xml_empty_tag(self->file, "c:radarStyle", &attributes);
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -561,6 +585,26 @@ STATIC void
 _chart_write_format_code(lxw_chart *self)
 {
     lxw_xml_data_element(self->file, "c:formatCode", "General", NULL);
+}
+
+/*
+ * Write the <c:majorTickMark> element.
+ */
+STATIC void
+_chart_write_major_tick_mark(lxw_chart *self, lxw_axis *axis)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!axis->major_tick_mark)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "cross");
+
+    lxw_xml_empty_tag(self->file, "c:majorTickMark", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -1015,9 +1059,11 @@ _chart_write_lbl_offset(lxw_chart *self)
  * Write the <c:majorGridlines> element.
  */
 STATIC void
-_chart_write_major_gridlines(lxw_chart *self)
+_chart_write_major_gridlines(lxw_chart *self, lxw_axis *axis)
 {
-    lxw_xml_empty_tag(self->file, "c:majorGridlines", NULL);
+
+    if (axis->default_major_gridlines)
+        lxw_xml_empty_tag(self->file, "c:majorGridlines", NULL);
 }
 
 /*
@@ -1215,9 +1261,15 @@ _chart_write_cat_axis(lxw_chart *self)
     /* Write the c:axPos element. */
     _chart_write_axis_pos(self, position);
 
+    /* Write the c:majorGridlines element. */
+    _chart_write_major_gridlines(self, &self->x_axis);
+
     /* Write the c:numFmt element. */
     if (self->cat_has_num_fmt)
         _chart_write_number_format(self, &self->x_axis);
+
+    /* Write the c:majorTickMark element. */
+    _chart_write_major_tick_mark(self, &self->x_axis);
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
@@ -1259,10 +1311,13 @@ _chart_write_val_axis(lxw_chart *self)
     _chart_write_axis_pos(self, position);
 
     /* Write the c:majorGridlines element. */
-    _chart_write_major_gridlines(self);
+    _chart_write_major_gridlines(self, &self->y_axis);
 
     /* Write the c:numFmt element. */
     _chart_write_number_format(self, &self->y_axis);
+
+    /* Write the c:majorTickMark element. */
+    _chart_write_major_tick_mark(self, &self->y_axis);
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
@@ -1299,6 +1354,9 @@ _chart_write_cat_val_axis(lxw_chart *self)
 
     /* Write the c:numFmt element. */
     _chart_write_number_format(self, &self->y_axis);
+
+    /* Write the c:majorTickMark element. */
+    _chart_write_major_tick_mark(self, &self->y_axis);
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
@@ -1586,6 +1644,41 @@ _chart_write_scatter_chart(lxw_chart *self)
     lxw_xml_end_tag(self->file, "c:scatterChart");
 }
 
+/*
+ * Write a radar chart.
+ */
+STATIC void
+_chart_write_radar_chart(lxw_chart *self, uint8_t type)
+{
+    lxw_chart_series *series;
+
+    if (type == LXW_CHART_RADAR)
+        self->has_markers = LXW_TRUE;
+
+    self->x_axis.default_major_gridlines = LXW_TRUE;
+    self->y_axis.major_tick_mark = LXW_TRUE;
+
+    lxw_xml_start_tag(self->file, "c:radarChart", NULL);
+
+    /* Write the c:radarStyle element. */
+    _chart_write_radar_style(self, type);
+
+    STAILQ_FOREACH(series, self->series_list, list_pointers) {
+        /* Write the c:ser element. */
+        _chart_write_ser(self, series);
+    }
+
+    if (self->has_overlap) {
+        /* Write the c:overlap element. */
+        _chart_write_overlap(self, self->series_overlap_1);
+    }
+
+    /* Write the c:axId elements. */
+    _chart_write_axis_ids(self);
+
+    lxw_xml_end_tag(self->file, "c:radarChart");
+}
+
 /*****************************************************************************
  * End of sub chart functions.
  */
@@ -1634,6 +1727,12 @@ _chart_write_chart_type(lxw_chart *self, uint8_t type)
         case LXW_CHART_SCATTER_SMOOTH:
         case LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS:
             _chart_write_scatter_chart(self);
+            break;
+
+        case LXW_CHART_RADAR:
+        case LXW_CHART_RADAR_WITH_MARKERS:
+        case LXW_CHART_RADAR_FILLED:
+            _chart_write_radar_chart(self, type);
             break;
 
         default:
@@ -1851,11 +1950,11 @@ chart_set_style(lxw_chart *self, uint8_t style_id)
 void
 chart_set_rotation(lxw_chart *self, uint16_t rotation)
 {
-    if (rotation >= 0 && rotation <= 360)
+    if (rotation <= 360)
         self->rotation = rotation;
     else
-        LXW_WARN_FORMAT("chart_set_rotation(): Chart rotation '%d' outside"
-                        " range: 0 <= rotation <= 360", rotation);
+        LXW_WARN_FORMAT("chart_set_rotation(): Chart rotation '%d' outside "
+                        "range: 0 <= rotation <= 360", rotation);
 }
 
 /*
