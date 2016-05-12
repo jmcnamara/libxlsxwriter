@@ -52,6 +52,9 @@ enum lxw_chart_types {
     /** Column chart - percentage stacked. */
     LXW_CHART_COLUMN_STACKED_PERCENT,
 
+    /** Doughnut chart. */
+    LXW_CHART_DOUGHNUT,
+
     /** Line chart. */
     LXW_CHART_LINE,
 
@@ -142,6 +145,8 @@ typedef struct lxw_chart {
     uint8_t in_use;
     uint8_t is_scatter;
     uint8_t cat_has_num_fmt;
+    uint16_t rotation;
+    uint16_t hole_size;
 
     uint8_t has_markers;
     uint8_t has_overlap;
@@ -172,13 +177,16 @@ int lxw_chart_init_data_cache(lxw_series_range *range);
 lxw_chart_series *chart_add_series(lxw_chart *chart,
                                    char *categories, char *values);
 
+void chart_set_rotation(lxw_chart *chart, uint16_t rotation);
+void chart_set_hole_size(lxw_chart *chart, uint8_t size);
+
 int lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
                              uint16_t rows, uint8_t cols, uint8_t col);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING
 
-STATIC void _chart_xml_declaration(lxw_chart *self);
+STATIC void _chart_xml_declaration(lxw_chart *chart);
 
 #endif /* TESTING */
 

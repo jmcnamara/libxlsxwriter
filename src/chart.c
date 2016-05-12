@@ -35,6 +35,7 @@ lxw_chart_new(uint8_t type)
     STAILQ_INIT(chart->series_list);
 
     chart->type = type;
+    chart->hole_size = 50;
 
     /* Set the default axis positions. */
     strcpy(chart->cat_axis_position, "b");
@@ -241,9 +242,26 @@ _chart_write_first_slice_ang(lxw_chart *self)
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", "0");
+    LXW_PUSH_ATTRIBUTES_INT("val", self->rotation);
 
     lxw_xml_empty_tag(self->file, "c:firstSliceAng", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:holeSize> element.
+ */
+STATIC void
+_chart_write_hole_size(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("val", self->hole_size);
+
+    lxw_xml_empty_tag(self->file, "c:holeSize", &attributes);
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -1048,7 +1066,7 @@ _chart_write_legend(lxw_chart *self)
     /* Write the c:layout element. */
     _chart_write_layout(self);
 
-    if (self->type == LXW_CHART_PIE) {
+    if (self->type == LXW_CHART_PIE || self->type == LXW_CHART_DOUGHNUT) {
         /* Write the c:txPr element. */
         _chart_write_tx_pr(self);
     }
@@ -1434,6 +1452,35 @@ _chart_write_column_chart(lxw_chart *self, uint8_t type)
 }
 
 /*
+ * Write a doughnut chart.
+ */
+STATIC void
+_chart_write_doughnut_chart(lxw_chart *self)
+{
+    lxw_chart_series *series;
+
+    self->has_markers = LXW_FALSE;
+
+    lxw_xml_start_tag(self->file, "c:doughnutChart", NULL);
+
+    /* Write the c:varyColors element. */
+    _chart_write_vary_colors(self);
+
+    STAILQ_FOREACH(series, self->series_list, list_pointers) {
+        /* Write the c:ser element. */
+        _chart_write_ser(self, series);
+    }
+
+    /* Write the c:firstSliceAng element. */
+    _chart_write_first_slice_ang(self);
+
+    /* Write the c:holeSize element. */
+    _chart_write_hole_size(self);
+
+    lxw_xml_end_tag(self->file, "c:doughnutChart");
+}
+
+/*
  * Write a line chart.
  */
 STATIC void
@@ -1547,6 +1594,10 @@ _chart_write_chart_type(lxw_chart *self, uint8_t type)
             _chart_write_column_chart(self, type);
             break;
 
+        case LXW_CHART_DOUGHNUT:
+            _chart_write_doughnut_chart(self);
+            break;
+
         case LXW_CHART_LINE:
             _chart_write_line_chart(self);
             break;
@@ -1658,7 +1709,7 @@ lxw_chart_assemble_xml_file(lxw_chart *self)
     _chart_write_lang(self);
 
     /* Write the c:chart element. */
-    if (self->type == LXW_CHART_PIE)
+    if (self->type == LXW_CHART_PIE || self->type == LXW_CHART_DOUGHNUT)
         _chart_write_chart_pie(self);
     else
         _chart_write_chart(self);
@@ -1754,4 +1805,30 @@ chart_add_series(lxw_chart *self, char *categories, char *values)
 mem_error:
     lxw_chart_series_free(series);
     return NULL;
+}
+
+/*
+ * Set the Pie/Doughnut chart rotation: the angle of the first slice.
+ */
+void
+chart_set_rotation(lxw_chart *self, uint16_t rotation)
+{
+    if (rotation >= 0 && rotation <= 360)
+        self->rotation = rotation;
+    else
+        LXW_WARN_FORMAT("chart_set_rotation(): Chart rotation '%d' outside"
+                        " range: 0 <= rotation <= 360", rotation);
+}
+
+/*
+ * Set the Doughnut chart hole size.
+ */
+void
+chart_set_hole_size(lxw_chart *self, uint8_t size)
+{
+    if (size >= 10 && size <= 90)
+        self->hole_size = size;
+    else
+        LXW_WARN_FORMAT("chart_set_hole_size(): Hole size '%d' outside "
+                        "Excel range: 10 <= size <= 90", size);
 }
