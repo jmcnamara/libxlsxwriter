@@ -145,6 +145,8 @@ typedef struct lxw_chart {
     uint8_t in_use;
     uint8_t is_scatter;
     uint8_t cat_has_num_fmt;
+
+    uint8_t style_id;
     uint16_t rotation;
     uint16_t hole_size;
 
@@ -177,6 +179,7 @@ int lxw_chart_init_data_cache(lxw_series_range *range);
 lxw_chart_series *chart_add_series(lxw_chart *chart,
                                    char *categories, char *values);
 
+void chart_set_style(lxw_chart *chart, uint8_t style_id);
 void chart_set_rotation(lxw_chart *chart, uint16_t rotation);
 void chart_set_hole_size(lxw_chart *chart, uint8_t size);
 

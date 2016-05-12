@@ -35,6 +35,7 @@ lxw_chart_new(uint8_t type)
     STAILQ_INIT(chart->series_list);
 
     chart->type = type;
+    chart->style_id = 2;
     chart->hole_size = 50;
 
     /* Set the default axis positions. */
@@ -185,6 +186,27 @@ _chart_write_lang(lxw_chart *self)
     LXW_PUSH_ATTRIBUTES_STR("val", "en-US");
 
     lxw_xml_empty_tag(self->file, "c:lang", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:style> element.
+ */
+STATIC void
+_chart_write_style(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    /* Don"t write an element for the default style, 2. */
+    if (self->style_id == 2)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("val", self->style_id);
+
+    lxw_xml_empty_tag(self->file, "c:style", &attributes);
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -1708,6 +1730,9 @@ lxw_chart_assemble_xml_file(lxw_chart *self)
     /* Write the c:lang element. */
     _chart_write_lang(self);
 
+    /* Write the c:style element. */
+    _chart_write_style(self);
+
     /* Write the c:chart element. */
     if (self->type == LXW_CHART_PIE || self->type == LXW_CHART_DOUGHNUT)
         _chart_write_chart_pie(self);
@@ -1805,6 +1830,19 @@ chart_add_series(lxw_chart *self, char *categories, char *values)
 mem_error:
     lxw_chart_series_free(series);
     return NULL;
+}
+
+/*
+ * Set on of the 48 built-in Excel chart styles.
+ */
+void
+chart_set_style(lxw_chart *self, uint8_t style_id)
+{
+    /* The default style is 2. The range is 1 - 48 */
+    if (style_id < 1 || style_id > 48)
+        style_id = 2;
+
+    self->style_id = style_id;
 }
 
 /*
