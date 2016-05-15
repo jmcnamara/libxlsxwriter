@@ -134,8 +134,10 @@ typedef struct lxw_series_data_point {
 } lxw_series_data_point;
 
 typedef struct lxw_chart_series {
+
     lxw_series_range *categories;
     lxw_series_range *values;
+    char *name;
 
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
 
@@ -149,7 +151,22 @@ typedef struct lxw_chart_axis {
     uint8_t default_major_gridlines;
     uint8_t major_tick_mark;
 
-} lxw_axis;
+} lxw_chart_axis;
+
+typedef struct lxw_chart_font {
+
+    uint8_t bold;
+
+} lxw_chart_font;
+
+typedef struct lxw_chart_title {
+
+    char *name;
+    lxw_chart_font font;
+    uint8_t has_formula;
+    uint8_t none;
+
+} lxw_chart_title;
 
 /*
  * Struct to represent a chart object.
@@ -162,8 +179,9 @@ typedef struct lxw_chart {
     uint8_t subtype;
     uint16_t series_index;
 
-    lxw_axis x_axis;
-    lxw_axis y_axis;
+    lxw_chart_axis x_axis;
+    lxw_chart_axis y_axis;
+    lxw_chart_title title;
 
     uint32_t id;
     uint32_t axis_id_1;
@@ -179,6 +197,7 @@ typedef struct lxw_chart {
     uint16_t rotation;
     uint16_t hole_size;
 
+    uint8_t no_title;
     uint8_t has_markers;
     uint8_t has_overlap;
     int series_overlap_1;
@@ -208,7 +227,11 @@ int lxw_chart_init_data_cache(lxw_series_range *range);
 lxw_chart_series *chart_add_series(lxw_chart *chart,
                                    char *categories, char *values);
 
+void chart_set_series_name(lxw_chart_series *series, char *name);
+
 void chart_set_style(lxw_chart *chart, uint8_t style_id);
+void chart_set_title(lxw_chart *chart, lxw_chart_title *title);
+
 void chart_set_rotation(lxw_chart *chart, uint16_t rotation);
 void chart_set_hole_size(lxw_chart *chart, uint8_t size);
 

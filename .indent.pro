@@ -45,11 +45,13 @@
 /* libxlsxwriter typedefs. */
 -T lxw_app
 -T lxw_autofilter
--T lxw_axis
 -T lxw_border
 -T lxw_cell
 -T lxw_chart
+-T lxw_chart_axis
+-T lxw_chart_font
 -T lxw_chart_series
+-T lxw_chart_title
 -T lxw_col_options
 -T lxw_col_t
 -T lxw_color_t
