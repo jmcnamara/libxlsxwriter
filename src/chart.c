@@ -39,13 +39,8 @@ lxw_chart_new(uint8_t type)
     chart->hole_size = 50;
 
     /* Set the default axis positions. */
-    strcpy(chart->cat_axis_position, "b");
-    strcpy(chart->val_axis_position, "l");
-
-    /* Set the default grouping. */
-    strcpy(chart->grouping, "clustered");
-
-    strcpy(chart->cross_between, "between");
+    chart->cat_axis_position = LXW_CHART_BOTTOM;
+    chart->val_axis_position = LXW_CHART_LEFT;
 
     strcpy(chart->x_axis.default_num_format, "General");
     strcpy(chart->y_axis.default_num_format, "General");
@@ -227,13 +222,21 @@ _chart_write_layout(lxw_chart *self)
  * Write the <c:grouping> element.
  */
 STATIC void
-_chart_write_grouping(lxw_chart *self, char *grouping)
+_chart_write_grouping(lxw_chart *self, uint8_t grouping)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", grouping);
+
+    if (grouping == LXW_GROUPING_STANDARD)
+        LXW_PUSH_ATTRIBUTES_STR("val", "standard");
+    else if (grouping == LXW_GROUPING_PERCENTSTACKED)
+        LXW_PUSH_ATTRIBUTES_STR("val", "percentStacked");
+    else if (grouping == LXW_GROUPING_STACKED)
+        LXW_PUSH_ATTRIBUTES_STR("val", "stacked");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "clustered");
 
     lxw_xml_empty_tag(self->file, "c:grouping", &attributes);
 
@@ -935,13 +938,21 @@ _chart_write_scaling(lxw_chart *self)
  * Write the <c:axPos> element.
  */
 STATIC void
-_chart_write_axis_pos(lxw_chart *self, char *position)
+_chart_write_axis_pos(lxw_chart *self, uint8_t position)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", position);
+
+    if (position == LXW_CHART_RIGHT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "r");
+    else if (position == LXW_CHART_LEFT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "l");
+    else if (position == LXW_CHART_TOP)
+        LXW_PUSH_ATTRIBUTES_STR("val", "t");
+    else if (position == LXW_CHART_BOTTOM)
+        LXW_PUSH_ATTRIBUTES_STR("val", "b");
 
     lxw_xml_empty_tag(self->file, "c:axPos", &attributes);
 
@@ -1095,7 +1106,11 @@ _chart_write_cross_between(lxw_chart *self)
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", self->cross_between);
+
+    if (self->cross_between)
+        LXW_PUSH_ATTRIBUTES_STR("val", "midCat");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "between");
 
     lxw_xml_empty_tag(self->file, "c:crossBetween", &attributes);
 
@@ -1249,7 +1264,7 @@ _chart_write_overlap(lxw_chart *self, int overlap)
 STATIC void
 _chart_write_cat_axis(lxw_chart *self)
 {
-    char *position = self->cat_axis_position;
+    uint8_t position = self->cat_axis_position;
 
     lxw_xml_start_tag(self->file, "c:catAx", NULL);
 
@@ -1298,7 +1313,7 @@ _chart_write_cat_axis(lxw_chart *self)
 STATIC void
 _chart_write_val_axis(lxw_chart *self)
 {
-    char *position = self->val_axis_position;
+    uint8_t position = self->val_axis_position;
 
     lxw_xml_start_tag(self->file, "c:valAx", NULL);
 
@@ -1340,7 +1355,7 @@ _chart_write_val_axis(lxw_chart *self)
 STATIC void
 _chart_write_cat_val_axis(lxw_chart *self)
 {
-    char *position = self->cat_axis_position;
+    uint8_t position = self->cat_axis_position;
 
     lxw_xml_start_tag(self->file, "c:valAx", NULL);
 
@@ -1402,16 +1417,16 @@ _chart_write_area_chart(lxw_chart *self, uint8_t type)
 {
     lxw_chart_series *series;
 
-    strcpy(self->grouping, "standard");
-    strcpy(self->cross_between, "midCat");
+    self->grouping = LXW_GROUPING_STANDARD;
+    self->cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
 
     if (type == LXW_CHART_AREA_STACKED) {
-        strcpy(self->grouping, "stacked");
+        self->grouping = LXW_GROUPING_STACKED;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
 
     if (type == LXW_CHART_AREA_STACKED_PERCENT) {
-        strcpy(self->grouping, "percentStacked");
+        self->grouping = LXW_GROUPING_PERCENTSTACKED;
         strcpy((&self->y_axis)->default_num_format, "0%");
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
@@ -1446,21 +1461,21 @@ _chart_write_bar_chart(lxw_chart *self, uint8_t type)
     lxw_chart_series *series;
 
     if (type == LXW_CHART_BAR_STACKED) {
-        strcpy(self->grouping, "stacked");
+        self->grouping = LXW_GROUPING_STACKED;
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
 
     if (type == LXW_CHART_BAR_STACKED_PERCENT) {
-        strcpy(self->grouping, "percentStacked");
+        self->grouping = LXW_GROUPING_PERCENTSTACKED;
         strcpy((&self->y_axis)->default_num_format, "0%");
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
 
     /* Override the default axis positions for a bar chart. */
-    strcpy(self->cat_axis_position, "l");
-    strcpy(self->val_axis_position, "b");
+    self->cat_axis_position = LXW_CHART_LEFT;
+    self->val_axis_position = LXW_CHART_BOTTOM;
 
     lxw_xml_start_tag(self->file, "c:barChart", NULL);
 
@@ -1495,13 +1510,13 @@ _chart_write_column_chart(lxw_chart *self, uint8_t type)
     lxw_chart_series *series;
 
     if (type == LXW_CHART_COLUMN_STACKED) {
-        strcpy(self->grouping, "stacked");
+        self->grouping = LXW_GROUPING_STACKED;
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
 
     if (type == LXW_CHART_COLUMN_STACKED_PERCENT) {
-        strcpy(self->grouping, "percentStacked");
+        self->grouping = LXW_GROUPING_PERCENTSTACKED;
         strcpy((&self->y_axis)->default_num_format, "0%");
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
@@ -1569,7 +1584,7 @@ _chart_write_line_chart(lxw_chart *self)
     lxw_chart_series *series;
 
     self->has_markers = LXW_TRUE;
-    strcpy(self->grouping, "standard");
+    self->grouping = LXW_GROUPING_STANDARD;
 
     lxw_xml_start_tag(self->file, "c:lineChart", NULL);
 
@@ -1624,7 +1639,7 @@ _chart_write_scatter_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
 
-    strcpy(self->cross_between, "midCat");
+    self->cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
     self->is_scatter = LXW_TRUE;
     self->has_markers = LXW_TRUE;
 

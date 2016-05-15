@@ -93,6 +93,25 @@ enum lxw_chart_subtypes {
     LXW_CHART_SUBTYPE_STACKED_PERCENT
 };
 
+enum lxw_chart_groupings {
+    LXW_GROUPING_CLUSTERED,
+    LXW_GROUPING_STANDARD,
+    LXW_GROUPING_PERCENTSTACKED,
+    LXW_GROUPING_STACKED
+};
+
+enum lxw_chart_axis_positions {
+    LXW_CHART_AXIS_POSITION_BETWEEN,
+    LXW_CHART_AXIS_POSITION_ON_TICK
+};
+
+enum lxw_chart_positions {
+    LXW_CHART_RIGHT,
+    LXW_CHART_LEFT,
+    LXW_CHART_TOP,
+    LXW_CHART_BOTTOM
+};
+
 typedef struct lxw_series_range {
     char *formula;
     char *sheetname;
@@ -122,7 +141,7 @@ typedef struct lxw_chart_series {
 
 } lxw_chart_series;
 
-typedef struct lxw_axis {
+typedef struct lxw_chart_axis {
 
     char num_format[LXW_CHART_NUM_FORMAT_LEN];
     char default_num_format[LXW_CHART_NUM_FORMAT_LEN];
@@ -164,10 +183,10 @@ typedef struct lxw_chart {
     uint8_t has_overlap;
     int series_overlap_1;
 
-    char grouping[16];
-    char cross_between[16];
-    char cat_axis_position[2];
-    char val_axis_position[2];
+    uint8_t grouping;
+    uint8_t cross_between;
+    uint8_t cat_axis_position;
+    uint8_t val_axis_position;
 
     struct lxw_chart_series_list *series_list;
 
