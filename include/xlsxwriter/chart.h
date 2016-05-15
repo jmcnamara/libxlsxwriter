@@ -76,13 +76,13 @@ enum lxw_chart_types {
     /** Scatter chart - smooth with markers. */
     LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS,
 
-    /** RAdar chart. */
+    /** Radar chart. */
     LXW_CHART_RADAR,
 
-    /** RAdar chart - with markers. */
+    /** Radar chart - with markers. */
     LXW_CHART_RADAR_WITH_MARKERS,
 
-    /** RAdar chart - filled. */
+    /** Radar chart - filled. */
     LXW_CHART_RADAR_FILLED
 };
 
@@ -143,16 +143,6 @@ typedef struct lxw_chart_series {
 
 } lxw_chart_series;
 
-typedef struct lxw_chart_axis {
-
-    char num_format[LXW_CHART_NUM_FORMAT_LEN];
-    char default_num_format[LXW_CHART_NUM_FORMAT_LEN];
-
-    uint8_t default_major_gridlines;
-    uint8_t major_tick_mark;
-
-} lxw_chart_axis;
-
 typedef struct lxw_chart_font {
 
     uint8_t bold;
@@ -165,8 +155,21 @@ typedef struct lxw_chart_title {
     lxw_chart_font font;
     uint8_t has_formula;
     uint8_t none;
+    uint8_t is_horizontal;
 
 } lxw_chart_title;
+
+typedef struct lxw_chart_axis {
+
+    lxw_chart_title title;
+
+    char num_format[LXW_CHART_NUM_FORMAT_LEN];
+    char default_num_format[LXW_CHART_NUM_FORMAT_LEN];
+
+    uint8_t default_major_gridlines;
+    uint8_t major_tick_mark;
+
+} lxw_chart_axis;
 
 /*
  * Struct to represent a chart object.
@@ -192,6 +195,9 @@ typedef struct lxw_chart {
     uint8_t in_use;
     uint8_t is_scatter;
     uint8_t cat_has_num_fmt;
+
+    uint8_t has_horiz_cat_axis;
+    uint8_t has_horiz_val_axis;
 
     uint8_t style_id;
     uint16_t rotation;
@@ -228,6 +234,8 @@ lxw_chart_series *chart_add_series(lxw_chart *chart,
                                    char *categories, char *values);
 
 void chart_set_series_name(lxw_chart_series *series, char *name);
+
+void chart_set_axis_name(lxw_chart_axis *axis, char *name);
 
 void chart_set_style(lxw_chart *chart, uint8_t style_id);
 void chart_set_title(lxw_chart *chart, lxw_chart_title *title);

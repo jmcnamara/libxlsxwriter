@@ -584,7 +584,7 @@ mem_error:
  * list of points.
  *
  * Note, the data cache isn't strictly required by Excel but it helps if the
- * chart is embedded in another application such as Powerpoint and it also
+ * chart is embedded in another application such as PowerPoint and it also
  * helps with comparison testing.
  */
 STATIC void
@@ -1257,7 +1257,7 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     GOTO_LABEL_ON_MEM_ERROR(workbook->worksheets, mem_error);
     STAILQ_INIT(workbook->worksheets);
 
-    /* Add the worksheet mames tree. */
+    /* Add the worksheet names tree. */
     workbook->worksheet_names = calloc(1, sizeof(struct lxw_worksheet_names));
     GOTO_LABEL_ON_MEM_ERROR(workbook->worksheet_names, mem_error);
     RB_INIT(workbook->worksheet_names);

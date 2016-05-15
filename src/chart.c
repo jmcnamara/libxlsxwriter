@@ -50,6 +50,9 @@ lxw_chart_new(uint8_t type)
 
     chart->series_overlap_1 = 100;
 
+    chart->has_horiz_cat_axis = LXW_FALSE;
+    chart->has_horiz_val_axis = LXW_TRUE;
+
     return chart;
 
 mem_error:
@@ -120,6 +123,8 @@ lxw_chart_free(lxw_chart *chart)
     }
 
     free(chart->title.name);
+    free(chart->x_axis.title.name);
+    free(chart->y_axis.title.name);
 
     free(chart);
 }
@@ -472,21 +477,33 @@ _chart_write_a_lst_style(lxw_chart *self)
  * Write the <a:bodyPr> element.
  */
 STATIC void
-_chart_write_a_body_pr(lxw_chart *self)
+_chart_write_a_body_pr(lxw_chart *self, lxw_chart_title *title)
 {
-    lxw_xml_empty_tag(self->file, "a:bodyPr", NULL);
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (title && title->is_horizontal) {
+        LXW_PUSH_ATTRIBUTES_STR("rot", "-5400000");
+        LXW_PUSH_ATTRIBUTES_STR("vert", "horz");
+    }
+
+    lxw_xml_empty_tag(self->file, "a:bodyPr", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
  * Write the <c:txPr> element.
  */
 STATIC void
-_chart_write_tx_pr(lxw_chart *self)
+_chart_write_tx_pr(lxw_chart *self, lxw_chart_title *title)
 {
     lxw_xml_start_tag(self->file, "c:txPr", NULL);
 
     /* Write the a:bodyPr element. */
-    _chart_write_a_body_pr(self);
+    _chart_write_a_body_pr(self, title);
 
     /* Write the a:lstStyle element. */
     _chart_write_a_lst_style(self);
@@ -501,18 +518,18 @@ _chart_write_tx_pr(lxw_chart *self)
  * Write the <c:rich> element.
  */
 STATIC void
-_chart_write_rich(lxw_chart *self, char *name)
+_chart_write_rich(lxw_chart *self, lxw_chart_title *title)
 {
     lxw_xml_start_tag(self->file, "c:rich", NULL);
 
     /* Write the a:bodyPr element. */
-    _chart_write_a_body_pr(self);
+    _chart_write_a_body_pr(self, title);
 
     /* Write the a:lstStyle element. */
     _chart_write_a_lst_style(self);
 
     /* Write the a:p element. */
-    _chart_write_a_p_rich(self, name);
+    _chart_write_a_p_rich(self, title->name);
 
     lxw_xml_end_tag(self->file, "c:rich");
 }
@@ -521,12 +538,12 @@ _chart_write_rich(lxw_chart *self, char *name)
  * Write the <c:tx> element.
  */
 STATIC void
-_chart_write_tx_rich(lxw_chart *self, char *name)
+_chart_write_tx_rich(lxw_chart *self, lxw_chart_title *title)
 {
     lxw_xml_start_tag(self->file, "c:tx", NULL);
 
     /* Write the c:rich element. */
-    _chart_write_rich(self, name);
+    _chart_write_rich(self, title);
 
     lxw_xml_end_tag(self->file, "c:tx");
 }
@@ -535,12 +552,12 @@ _chart_write_tx_rich(lxw_chart *self, char *name)
  * Write the <c:title> element for rich strings.
  */
 STATIC void
-_chart_write_title_rich(lxw_chart *self)
+_chart_write_title_rich(lxw_chart *self, lxw_chart_title *title)
 {
     lxw_xml_start_tag(self->file, "c:title", NULL);
 
     /* Write the c:tx element. */
-    _chart_write_tx_rich(self, self->title.name);
+    _chart_write_tx_rich(self, title);
 
     /* Write the c:layout element. */
     _chart_write_layout(self);
@@ -1335,7 +1352,7 @@ _chart_write_legend(lxw_chart *self)
 
     if (self->type == LXW_CHART_PIE || self->type == LXW_CHART_DOUGHNUT) {
         /* Write the c:txPr element. */
-        _chart_write_tx_pr(self);
+        _chart_write_tx_pr(self, NULL);
     }
 
     lxw_xml_end_tag(self->file, "c:legend");
@@ -1443,6 +1460,34 @@ _chart_write_overlap(lxw_chart *self, int overlap)
 }
 
 /*
+ * Write the <c:title> element.
+ */
+STATIC void
+_chart_write_title(lxw_chart *self, lxw_chart_title *title)
+{
+    if (title->name) {
+        /* Write the c:title element. */
+        _chart_write_title_rich(self, title);
+    }
+}
+
+/*
+ * Write the <c:title> element.
+ */
+STATIC void
+_chart_write_chart_title(lxw_chart *self)
+{
+    if (self->title.none) {
+        /* Write the c:autoTitleDeleted element. */
+        _chart_write_auto_title_deleted(self);
+    }
+    else {
+        /* Write the c:title element. */
+        _chart_write_title(self, &self->title);
+    }
+}
+
+/*
  * Write the <c:catAx> element. Usually the X axis.
  */
 STATIC void
@@ -1462,6 +1507,10 @@ _chart_write_cat_axis(lxw_chart *self)
 
     /* Write the c:majorGridlines element. */
     _chart_write_major_gridlines(self, &self->x_axis);
+
+    /* Write the axis title elements. */
+    self->x_axis.title.is_horizontal = self->has_horiz_cat_axis;
+    _chart_write_title(self, &self->x_axis.title);
 
     /* Write the c:numFmt element. */
     if (self->cat_has_num_fmt)
@@ -1512,6 +1561,10 @@ _chart_write_val_axis(lxw_chart *self)
     /* Write the c:majorGridlines element. */
     _chart_write_major_gridlines(self, &self->y_axis);
 
+    /* Write the axis title elements. */
+    self->y_axis.title.is_horizontal = self->has_horiz_val_axis;
+    _chart_write_title(self, &self->y_axis.title);
+
     /* Write the c:numFmt element. */
     _chart_write_number_format(self, &self->y_axis);
 
@@ -1550,6 +1603,10 @@ _chart_write_cat_val_axis(lxw_chart *self)
 
     /* Write the c:axPos element. */
     _chart_write_axis_pos(self, position);
+
+    /* Write the axis title elements. */
+    self->x_axis.title.is_horizontal = self->has_horiz_val_axis;
+    _chart_write_title(self, &self->x_axis.title);
 
     /* Write the c:numFmt element. */
     _chart_write_number_format(self, &self->y_axis);
@@ -1643,6 +1700,18 @@ STATIC void
 _chart_write_bar_chart(lxw_chart *self, uint8_t type)
 {
     lxw_chart_series *series;
+    lxw_chart_axis tmp;
+
+    /* Reverse the X and Y axes for Bar charts. */
+    tmp = self->x_axis;
+    self->x_axis = self->y_axis;
+    self->y_axis = tmp;
+
+    /*Also reverse some of the defaults. */
+    self->x_axis.default_major_gridlines = LXW_FALSE;
+    self->y_axis.default_major_gridlines = LXW_TRUE;
+    self->has_horiz_cat_axis = LXW_TRUE;
+    self->has_horiz_val_axis = LXW_FALSE;
 
     if (type == LXW_CHART_BAR_STACKED) {
         self->grouping = LXW_GROUPING_STACKED;
@@ -1958,25 +2027,6 @@ _chart_write_plot_area(lxw_chart *self)
 }
 
 /*
- * Write the <c:title> element.
- */
-STATIC void
-_chart_write_title(lxw_chart *self)
-{
-    if (self->title.none) {
-        /* Write the c:autoTitleDeleted element. */
-        _chart_write_auto_title_deleted(self);
-    }
-    else {
-
-        if (self->title.name) {
-            /* Write the c:title element. */
-            _chart_write_title_rich(self);
-        }
-    }
-}
-
-/*
  * Write the <c:chart> element.
  */
 STATIC void
@@ -1985,7 +2035,7 @@ _chart_write_chart(lxw_chart *self)
     lxw_xml_start_tag(self->file, "c:chart", NULL);
 
     /* Write the c:title element. */
-    _chart_write_title(self);
+    _chart_write_chart_title(self);
 
     /* Write the c:plotArea element. */
     _chart_write_plot_area(self);
@@ -2153,15 +2203,6 @@ mem_error:
 }
 
 /*
- * Set a user defined name for a seies.
- */
-void
-chart_set_series_name(lxw_chart_series *series, char *name)
-{
-    series->name = lxw_strdup(name);
-}
-
-/*
  * Set on of the 48 built-in Excel chart styles.
  */
 void
@@ -2182,6 +2223,24 @@ chart_set_title(lxw_chart *self, lxw_chart_title *title)
 {
     self->title.none = title->none;
     self->title.name = lxw_strdup(title->name);
+}
+
+/*
+ * Set a user defined name for a series.
+ */
+void
+chart_set_series_name(lxw_chart_series *series, char *name)
+{
+    series->name = lxw_strdup(name);
+}
+
+/*
+ * Set a user defined name for a series.
+ */
+void
+chart_set_axis_name(lxw_chart_axis *axis, char *name)
+{
+    axis->title.name = lxw_strdup(name);
 }
 
 /*
