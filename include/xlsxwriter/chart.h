@@ -182,8 +182,8 @@ typedef struct lxw_chart {
     uint8_t subtype;
     uint16_t series_index;
 
-    lxw_chart_axis x_axis;
-    lxw_chart_axis y_axis;
+    lxw_chart_axis *x_axis;
+    lxw_chart_axis *y_axis;
     lxw_chart_title title;
 
     uint32_t id;

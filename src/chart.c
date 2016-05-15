@@ -34,6 +34,12 @@ lxw_chart_new(uint8_t type)
     GOTO_LABEL_ON_MEM_ERROR(chart->series_list, mem_error);
     STAILQ_INIT(chart->series_list);
 
+    chart->x_axis = calloc(1, sizeof(struct lxw_chart_axis));
+    GOTO_LABEL_ON_MEM_ERROR(chart->x_axis, mem_error);
+
+    chart->y_axis = calloc(1, sizeof(struct lxw_chart_axis));
+    GOTO_LABEL_ON_MEM_ERROR(chart->y_axis, mem_error);
+
     chart->type = type;
     chart->style_id = 2;
     chart->hole_size = 50;
@@ -42,11 +48,11 @@ lxw_chart_new(uint8_t type)
     chart->cat_axis_position = LXW_CHART_BOTTOM;
     chart->val_axis_position = LXW_CHART_LEFT;
 
-    strcpy(chart->x_axis.default_num_format, "General");
-    strcpy(chart->y_axis.default_num_format, "General");
+    strcpy(chart->x_axis->default_num_format, "General");
+    strcpy(chart->y_axis->default_num_format, "General");
 
-    chart->x_axis.default_major_gridlines = LXW_FALSE;
-    chart->y_axis.default_major_gridlines = LXW_TRUE;
+    chart->x_axis->default_major_gridlines = LXW_FALSE;
+    chart->y_axis->default_major_gridlines = LXW_TRUE;
 
     chart->series_overlap_1 = 100;
 
@@ -123,9 +129,10 @@ lxw_chart_free(lxw_chart *chart)
     }
 
     free(chart->title.name);
-    free(chart->x_axis.title.name);
-    free(chart->y_axis.title.name);
-
+    free(chart->x_axis->title.name);
+    free(chart->y_axis->title.name);
+    free(chart->x_axis);
+    free(chart->y_axis);
     free(chart);
 }
 
@@ -1506,18 +1513,18 @@ _chart_write_cat_axis(lxw_chart *self)
     _chart_write_axis_pos(self, position);
 
     /* Write the c:majorGridlines element. */
-    _chart_write_major_gridlines(self, &self->x_axis);
+    _chart_write_major_gridlines(self, self->x_axis);
 
     /* Write the axis title elements. */
-    self->x_axis.title.is_horizontal = self->has_horiz_cat_axis;
-    _chart_write_title(self, &self->x_axis.title);
+    self->x_axis->title.is_horizontal = self->has_horiz_cat_axis;
+    _chart_write_title(self, &self->x_axis->title);
 
     /* Write the c:numFmt element. */
     if (self->cat_has_num_fmt)
-        _chart_write_number_format(self, &self->x_axis);
+        _chart_write_number_format(self, self->x_axis);
 
     /* Write the c:majorTickMark element. */
-    _chart_write_major_tick_mark(self, &self->x_axis);
+    _chart_write_major_tick_mark(self, self->x_axis);
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
@@ -1559,17 +1566,17 @@ _chart_write_val_axis(lxw_chart *self)
     _chart_write_axis_pos(self, position);
 
     /* Write the c:majorGridlines element. */
-    _chart_write_major_gridlines(self, &self->y_axis);
+    _chart_write_major_gridlines(self, self->y_axis);
 
     /* Write the axis title elements. */
-    self->y_axis.title.is_horizontal = self->has_horiz_val_axis;
-    _chart_write_title(self, &self->y_axis.title);
+    self->y_axis->title.is_horizontal = self->has_horiz_val_axis;
+    _chart_write_title(self, &self->y_axis->title);
 
     /* Write the c:numFmt element. */
-    _chart_write_number_format(self, &self->y_axis);
+    _chart_write_number_format(self, self->y_axis);
 
     /* Write the c:majorTickMark element. */
-    _chart_write_major_tick_mark(self, &self->y_axis);
+    _chart_write_major_tick_mark(self, self->y_axis);
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
@@ -1605,14 +1612,14 @@ _chart_write_cat_val_axis(lxw_chart *self)
     _chart_write_axis_pos(self, position);
 
     /* Write the axis title elements. */
-    self->x_axis.title.is_horizontal = self->has_horiz_val_axis;
-    _chart_write_title(self, &self->x_axis.title);
+    self->x_axis->title.is_horizontal = self->has_horiz_val_axis;
+    _chart_write_title(self, &self->x_axis->title);
 
     /* Write the c:numFmt element. */
-    _chart_write_number_format(self, &self->y_axis);
+    _chart_write_number_format(self, self->y_axis);
 
     /* Write the c:majorTickMark element. */
-    _chart_write_major_tick_mark(self, &self->y_axis);
+    _chart_write_major_tick_mark(self, self->y_axis);
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
@@ -1668,7 +1675,7 @@ _chart_write_area_chart(lxw_chart *self, uint8_t type)
 
     if (type == LXW_CHART_AREA_STACKED_PERCENT) {
         self->grouping = LXW_GROUPING_PERCENTSTACKED;
-        strcpy((&self->y_axis)->default_num_format, "0%");
+        strcpy((self->y_axis)->default_num_format, "0%");
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
 
@@ -1703,13 +1710,13 @@ _chart_write_bar_chart(lxw_chart *self, uint8_t type)
     lxw_chart_axis tmp;
 
     /* Reverse the X and Y axes for Bar charts. */
-    tmp = self->x_axis;
-    self->x_axis = self->y_axis;
-    self->y_axis = tmp;
+    tmp = *self->x_axis;
+    *self->x_axis = *self->y_axis;
+    *self->y_axis = tmp;
 
     /*Also reverse some of the defaults. */
-    self->x_axis.default_major_gridlines = LXW_FALSE;
-    self->y_axis.default_major_gridlines = LXW_TRUE;
+    self->x_axis->default_major_gridlines = LXW_FALSE;
+    self->y_axis->default_major_gridlines = LXW_TRUE;
     self->has_horiz_cat_axis = LXW_TRUE;
     self->has_horiz_val_axis = LXW_FALSE;
 
@@ -1721,7 +1728,7 @@ _chart_write_bar_chart(lxw_chart *self, uint8_t type)
 
     if (type == LXW_CHART_BAR_STACKED_PERCENT) {
         self->grouping = LXW_GROUPING_PERCENTSTACKED;
-        strcpy((&self->y_axis)->default_num_format, "0%");
+        strcpy((self->y_axis)->default_num_format, "0%");
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
@@ -1770,7 +1777,7 @@ _chart_write_column_chart(lxw_chart *self, uint8_t type)
 
     if (type == LXW_CHART_COLUMN_STACKED_PERCENT) {
         self->grouping = LXW_GROUPING_PERCENTSTACKED;
-        strcpy((&self->y_axis)->default_num_format, "0%");
+        strcpy((self->y_axis)->default_num_format, "0%");
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
@@ -1923,8 +1930,8 @@ _chart_write_radar_chart(lxw_chart *self, uint8_t type)
     if (type == LXW_CHART_RADAR)
         self->has_markers = LXW_TRUE;
 
-    self->x_axis.default_major_gridlines = LXW_TRUE;
-    self->y_axis.major_tick_mark = LXW_TRUE;
+    self->x_axis->default_major_gridlines = LXW_TRUE;
+    self->y_axis->major_tick_mark = LXW_TRUE;
 
     lxw_xml_start_tag(self->file, "c:radarChart", NULL);
 
