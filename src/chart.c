@@ -1769,6 +1769,8 @@ _chart_write_column_chart(lxw_chart *self, uint8_t type)
 {
     lxw_chart_series *series;
 
+    self->has_horiz_val_axis = LXW_FALSE;
+
     if (type == LXW_CHART_COLUMN_STACKED) {
         self->grouping = LXW_GROUPING_STACKED;
         self->has_overlap = LXW_TRUE;
@@ -1899,6 +1901,7 @@ _chart_write_scatter_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
 
+    self->has_horiz_val_axis = LXW_FALSE;
     self->cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
     self->is_scatter = LXW_TRUE;
     self->has_markers = LXW_TRUE;
@@ -2021,6 +2024,48 @@ _chart_write_chart_type(lxw_chart *self, uint8_t type)
  * Write the <c:plotArea> element.
  */
 STATIC void
+_chart_write_line_plot_area(lxw_chart *self)
+{
+    lxw_xml_start_tag(self->file, "c:plotArea", NULL);
+
+    /* Write the c:layout element. */
+    _chart_write_layout(self);
+
+    /* Write subclass chart type elements for primary and secondary axes. */
+    _chart_write_chart_type(self, self->type);
+
+    /* Write the c:catAx element. */
+    _chart_write_cat_val_axis(self);
+
+    self->has_horiz_val_axis = LXW_TRUE;
+
+    /* Write the c:valAx element. */
+    _chart_write_val_axis(self);
+
+    lxw_xml_end_tag(self->file, "c:plotArea");
+}
+
+/*
+ * Write the <c:plotArea> element. Special handling for pie/doughnut.
+ */
+STATIC void
+_chart_write_pie_plot_area(lxw_chart *self)
+{
+    lxw_xml_start_tag(self->file, "c:plotArea", NULL);
+
+    /* Write the c:layout element. */
+    _chart_write_layout(self);
+
+    /* Write subclass chart type elements for primary and secondary axes. */
+    _chart_write_chart_type(self, self->type);
+
+    lxw_xml_end_tag(self->file, "c:plotArea");
+}
+
+/*
+ * Write the <c:plotArea> element.
+ */
+STATIC void
 _chart_write_plot_area(lxw_chart *self)
 {
     lxw_xml_start_tag(self->file, "c:plotArea", NULL);
@@ -2031,6 +2076,13 @@ _chart_write_plot_area(lxw_chart *self)
     /* Write subclass chart type elements for primary and secondary axes. */
     _chart_write_chart_type(self, self->type);
 
+    /* Write the c:catAx element. */
+    _chart_write_cat_axis(self);
+
+    /* Write the c:valAx element. */
+    _chart_write_val_axis(self);
+
+    lxw_xml_end_tag(self->file, "c:plotArea");
 }
 
 /*
@@ -2045,21 +2097,13 @@ _chart_write_chart(lxw_chart *self)
     _chart_write_chart_title(self);
 
     /* Write the c:plotArea element. */
-    _chart_write_plot_area(self);
-
-    if (self->is_scatter) {
-        /* Write the c:catAx element. */
-        _chart_write_cat_val_axis(self);
+    if (self->type >= LXW_CHART_SCATTER
+        && self->type <= LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS) {
+        _chart_write_line_plot_area(self);
     }
     else {
-        /* Write the c:catAx element. */
-        _chart_write_cat_axis(self);
+        _chart_write_plot_area(self);
     }
-
-    /* Write the c:valAx element. */
-    _chart_write_val_axis(self);
-
-    lxw_xml_end_tag(self->file, "c:plotArea");
 
     /* Write the c:legend element. */
     _chart_write_legend(self);
@@ -2078,10 +2122,11 @@ _chart_write_chart_pie(lxw_chart *self)
 {
     lxw_xml_start_tag(self->file, "c:chart", NULL);
 
-    /* Write the c:plotArea element. */
-    _chart_write_plot_area(self);
+    /* Write the c:title element. */
+    _chart_write_chart_title(self);
 
-    lxw_xml_end_tag(self->file, "c:plotArea");
+    /* Write the c:plotArea element. */
+    _chart_write_pie_plot_area(self);
 
     /* Write the c:legend element. */
     _chart_write_legend(self);
