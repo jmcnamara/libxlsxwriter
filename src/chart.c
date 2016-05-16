@@ -262,14 +262,14 @@ _chart_write_grouping(lxw_chart *self, uint8_t grouping)
  * Write the <c:radarStyle> element.
  */
 STATIC void
-_chart_write_radar_style(lxw_chart *self, uint8_t type)
+_chart_write_radar_style(lxw_chart *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
 
-    if (type == LXW_CHART_RADAR_FILLED)
+    if (self->type == LXW_CHART_RADAR_FILLED)
         LXW_PUSH_ATTRIBUTES_STR("val", "filled");
     else
         LXW_PUSH_ATTRIBUTES_STR("val", "marker");
@@ -1636,10 +1636,6 @@ _chart_write_cat_val_axis(lxw_chart *self)
     lxw_xml_end_tag(self->file, "c:valAx");
 }
 
-/*****************************************************************************
- * Bar chart functions.
- */
-
 /*
  * Write the <c:barDir> element.
  */
@@ -1661,23 +1657,9 @@ _chart_write_bar_dir(lxw_chart *self, char *type)
  * Write a area chart.
  */
 STATIC void
-_chart_write_area_chart(lxw_chart *self, uint8_t type)
+_chart_write_area_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
-
-    self->grouping = LXW_GROUPING_STANDARD;
-    self->cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
-
-    if (type == LXW_CHART_AREA_STACKED) {
-        self->grouping = LXW_GROUPING_STACKED;
-        self->subtype = LXW_CHART_SUBTYPE_STACKED;
-    }
-
-    if (type == LXW_CHART_AREA_STACKED_PERCENT) {
-        self->grouping = LXW_GROUPING_PERCENTSTACKED;
-        strcpy((self->y_axis)->default_num_format, "0%");
-        self->subtype = LXW_CHART_SUBTYPE_STACKED;
-    }
 
     lxw_xml_start_tag(self->file, "c:areaChart", NULL);
 
@@ -1704,38 +1686,9 @@ _chart_write_area_chart(lxw_chart *self, uint8_t type)
  * Write a bar chart.
  */
 STATIC void
-_chart_write_bar_chart(lxw_chart *self, uint8_t type)
+_chart_write_bar_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
-    lxw_chart_axis tmp;
-
-    /* Reverse the X and Y axes for Bar charts. */
-    tmp = *self->x_axis;
-    *self->x_axis = *self->y_axis;
-    *self->y_axis = tmp;
-
-    /*Also reverse some of the defaults. */
-    self->x_axis->default_major_gridlines = LXW_FALSE;
-    self->y_axis->default_major_gridlines = LXW_TRUE;
-    self->has_horiz_cat_axis = LXW_TRUE;
-    self->has_horiz_val_axis = LXW_FALSE;
-
-    if (type == LXW_CHART_BAR_STACKED) {
-        self->grouping = LXW_GROUPING_STACKED;
-        self->has_overlap = LXW_TRUE;
-        self->subtype = LXW_CHART_SUBTYPE_STACKED;
-    }
-
-    if (type == LXW_CHART_BAR_STACKED_PERCENT) {
-        self->grouping = LXW_GROUPING_PERCENTSTACKED;
-        strcpy((self->y_axis)->default_num_format, "0%");
-        self->has_overlap = LXW_TRUE;
-        self->subtype = LXW_CHART_SUBTYPE_STACKED;
-    }
-
-    /* Override the default axis positions for a bar chart. */
-    self->cat_axis_position = LXW_CHART_LEFT;
-    self->val_axis_position = LXW_CHART_BOTTOM;
 
     lxw_xml_start_tag(self->file, "c:barChart", NULL);
 
@@ -1765,24 +1718,9 @@ _chart_write_bar_chart(lxw_chart *self, uint8_t type)
  * Write a column chart.
  */
 STATIC void
-_chart_write_column_chart(lxw_chart *self, uint8_t type)
+_chart_write_column_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
-
-    self->has_horiz_val_axis = LXW_FALSE;
-
-    if (type == LXW_CHART_COLUMN_STACKED) {
-        self->grouping = LXW_GROUPING_STACKED;
-        self->has_overlap = LXW_TRUE;
-        self->subtype = LXW_CHART_SUBTYPE_STACKED;
-    }
-
-    if (type == LXW_CHART_COLUMN_STACKED_PERCENT) {
-        self->grouping = LXW_GROUPING_PERCENTSTACKED;
-        strcpy((self->y_axis)->default_num_format, "0%");
-        self->has_overlap = LXW_TRUE;
-        self->subtype = LXW_CHART_SUBTYPE_STACKED;
-    }
 
     lxw_xml_start_tag(self->file, "c:barChart", NULL);
 
@@ -1816,8 +1754,6 @@ _chart_write_doughnut_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
 
-    self->has_markers = LXW_FALSE;
-
     lxw_xml_start_tag(self->file, "c:doughnutChart", NULL);
 
     /* Write the c:varyColors element. */
@@ -1844,9 +1780,6 @@ STATIC void
 _chart_write_line_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
-
-    self->has_markers = LXW_TRUE;
-    self->grouping = LXW_GROUPING_STANDARD;
 
     lxw_xml_start_tag(self->file, "c:lineChart", NULL);
 
@@ -1875,8 +1808,6 @@ _chart_write_pie_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
 
-    self->has_markers = LXW_FALSE;
-
     lxw_xml_start_tag(self->file, "c:pieChart", NULL);
 
     /* Write the c:varyColors element. */
@@ -1901,11 +1832,6 @@ _chart_write_scatter_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
 
-    self->has_horiz_val_axis = LXW_FALSE;
-    self->cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
-    self->is_scatter = LXW_TRUE;
-    self->has_markers = LXW_TRUE;
-
     lxw_xml_start_tag(self->file, "c:scatterChart", NULL);
 
     /* Write the c:scatterStyle element. */
@@ -1926,20 +1852,14 @@ _chart_write_scatter_chart(lxw_chart *self)
  * Write a radar chart.
  */
 STATIC void
-_chart_write_radar_chart(lxw_chart *self, uint8_t type)
+_chart_write_radar_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
-
-    if (type == LXW_CHART_RADAR)
-        self->has_markers = LXW_TRUE;
-
-    self->x_axis->default_major_gridlines = LXW_TRUE;
-    self->y_axis->major_tick_mark = LXW_TRUE;
 
     lxw_xml_start_tag(self->file, "c:radarChart", NULL);
 
     /* Write the c:radarStyle element. */
-    _chart_write_radar_style(self, type);
+    _chart_write_radar_style(self);
 
     STAILQ_FOREACH(series, self->series_list, list_pointers) {
         /* Write the c:ser element. */
@@ -1957,74 +1877,11 @@ _chart_write_radar_chart(lxw_chart *self, uint8_t type)
     lxw_xml_end_tag(self->file, "c:radarChart");
 }
 
-/*****************************************************************************
- * End of sub chart functions.
- */
-
-/*
- * Write the chart type element.
- */
-STATIC void
-_chart_write_chart_type(lxw_chart *self, uint8_t type)
-{
-    switch (type) {
-
-        case LXW_CHART_AREA:
-        case LXW_CHART_AREA_STACKED:
-        case LXW_CHART_AREA_STACKED_PERCENT:
-            _chart_write_area_chart(self, type);
-            break;
-
-        case LXW_CHART_BAR:
-        case LXW_CHART_BAR_STACKED:
-        case LXW_CHART_BAR_STACKED_PERCENT:
-            _chart_write_bar_chart(self, type);
-            break;
-
-        case LXW_CHART_COLUMN:
-        case LXW_CHART_COLUMN_STACKED:
-        case LXW_CHART_COLUMN_STACKED_PERCENT:
-            _chart_write_column_chart(self, type);
-            break;
-
-        case LXW_CHART_DOUGHNUT:
-            _chart_write_doughnut_chart(self);
-            break;
-
-        case LXW_CHART_LINE:
-            _chart_write_line_chart(self);
-            break;
-
-        case LXW_CHART_PIE:
-            _chart_write_pie_chart(self);
-            break;
-
-        case LXW_CHART_SCATTER:
-        case LXW_CHART_SCATTER_STRAIGHT:
-        case LXW_CHART_SCATTER_STRAIGHT_WITH_MARKERS:
-        case LXW_CHART_SCATTER_SMOOTH:
-        case LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS:
-            _chart_write_scatter_chart(self);
-            break;
-
-        case LXW_CHART_RADAR:
-        case LXW_CHART_RADAR_WITH_MARKERS:
-        case LXW_CHART_RADAR_FILLED:
-            _chart_write_radar_chart(self, type);
-            break;
-
-        default:
-            LXW_WARN_FORMAT("workbook_add_chart(): "
-                            "unhandled chart type '%d'", type);
-    }
-
-}
-
 /*
  * Write the <c:plotArea> element.
  */
 STATIC void
-_chart_write_line_plot_area(lxw_chart *self)
+_chart_write_scatter_plot_area(lxw_chart *self)
 {
     lxw_xml_start_tag(self->file, "c:plotArea", NULL);
 
@@ -2032,7 +1889,7 @@ _chart_write_line_plot_area(lxw_chart *self)
     _chart_write_layout(self);
 
     /* Write subclass chart type elements for primary and secondary axes. */
-    _chart_write_chart_type(self, self->type);
+    self->write_chart_type(self);
 
     /* Write the c:catAx element. */
     _chart_write_cat_val_axis(self);
@@ -2057,7 +1914,7 @@ _chart_write_pie_plot_area(lxw_chart *self)
     _chart_write_layout(self);
 
     /* Write subclass chart type elements for primary and secondary axes. */
-    _chart_write_chart_type(self, self->type);
+    self->write_chart_type(self);
 
     lxw_xml_end_tag(self->file, "c:plotArea");
 }
@@ -2074,7 +1931,7 @@ _chart_write_plot_area(lxw_chart *self)
     _chart_write_layout(self);
 
     /* Write subclass chart type elements for primary and secondary axes. */
-    _chart_write_chart_type(self, self->type);
+    self->write_chart_type(self);
 
     /* Write the c:catAx element. */
     _chart_write_cat_axis(self);
@@ -2097,13 +1954,7 @@ _chart_write_chart(lxw_chart *self)
     _chart_write_chart_title(self);
 
     /* Write the c:plotArea element. */
-    if (self->type >= LXW_CHART_SCATTER
-        && self->type <= LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS) {
-        _chart_write_line_plot_area(self);
-    }
-    else {
-        _chart_write_plot_area(self);
-    }
+    self->write_plot_area(self);
 
     /* Write the c:legend element. */
     _chart_write_legend(self);
@@ -2115,26 +1966,226 @@ _chart_write_chart(lxw_chart *self)
 }
 
 /*
- * Write the <c:chart> element. Special handling for pie/doughnut.
+ * Initialize a area chart.
  */
 STATIC void
-_chart_write_chart_pie(lxw_chart *self)
+_chart_initialize_area_chart(lxw_chart *self, uint8_t type)
 {
-    lxw_xml_start_tag(self->file, "c:chart", NULL);
+    self->grouping = LXW_GROUPING_STANDARD;
+    self->cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
 
-    /* Write the c:title element. */
-    _chart_write_chart_title(self);
+    if (type == LXW_CHART_AREA_STACKED) {
+        self->grouping = LXW_GROUPING_STACKED;
+        self->subtype = LXW_CHART_SUBTYPE_STACKED;
+    }
 
-    /* Write the c:plotArea element. */
-    _chart_write_pie_plot_area(self);
+    if (type == LXW_CHART_AREA_STACKED_PERCENT) {
+        self->grouping = LXW_GROUPING_PERCENTSTACKED;
+        strcpy((self->y_axis)->default_num_format, "0%");
+        self->subtype = LXW_CHART_SUBTYPE_STACKED;
+    }
 
-    /* Write the c:legend element. */
-    _chart_write_legend(self);
+    /* Initialize the function pointers for this chart type. */
+    self->write_chart_type = _chart_write_area_chart;
+    self->write_plot_area = _chart_write_plot_area;
+}
 
-    /* Write the c:plotVisOnly element. */
-    _chart_write_plot_vis_only(self);
+/*
+ * Initialize a bar chart.
+ */
+STATIC void
+_chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
+{
+    lxw_chart_axis *tmp;
 
-    lxw_xml_end_tag(self->file, "c:chart");
+    /* Reverse the X and Y axes for Bar charts. */
+    tmp = self->x_axis;
+    self->x_axis = self->y_axis;
+    self->y_axis = tmp;
+
+    /*Also reverse some of the defaults. */
+    self->x_axis->default_major_gridlines = LXW_FALSE;
+    self->y_axis->default_major_gridlines = LXW_TRUE;
+    self->has_horiz_cat_axis = LXW_TRUE;
+    self->has_horiz_val_axis = LXW_FALSE;
+
+    if (type == LXW_CHART_BAR_STACKED) {
+        self->grouping = LXW_GROUPING_STACKED;
+        self->has_overlap = LXW_TRUE;
+        self->subtype = LXW_CHART_SUBTYPE_STACKED;
+    }
+
+    if (type == LXW_CHART_BAR_STACKED_PERCENT) {
+        self->grouping = LXW_GROUPING_PERCENTSTACKED;
+        strcpy((self->y_axis)->default_num_format, "0%");
+        self->has_overlap = LXW_TRUE;
+        self->subtype = LXW_CHART_SUBTYPE_STACKED;
+    }
+
+    /* Override the default axis positions for a bar chart. */
+    self->cat_axis_position = LXW_CHART_LEFT;
+    self->val_axis_position = LXW_CHART_BOTTOM;
+
+    /* Initialize the function pointers for this chart type. */
+    self->write_chart_type = _chart_write_bar_chart;
+    self->write_plot_area = _chart_write_plot_area;
+}
+
+/*
+ * Initialize a column chart.
+ */
+STATIC void
+_chart_initialize_column_chart(lxw_chart *self, uint8_t type)
+{
+    self->has_horiz_val_axis = LXW_FALSE;
+
+    if (type == LXW_CHART_COLUMN_STACKED) {
+        self->grouping = LXW_GROUPING_STACKED;
+        self->has_overlap = LXW_TRUE;
+        self->subtype = LXW_CHART_SUBTYPE_STACKED;
+    }
+
+    if (type == LXW_CHART_COLUMN_STACKED_PERCENT) {
+        self->grouping = LXW_GROUPING_PERCENTSTACKED;
+        strcpy((self->y_axis)->default_num_format, "0%");
+        self->has_overlap = LXW_TRUE;
+        self->subtype = LXW_CHART_SUBTYPE_STACKED;
+    }
+
+    /* Initialize the function pointers for this chart type. */
+    self->write_chart_type = _chart_write_column_chart;
+    self->write_plot_area = _chart_write_plot_area;
+}
+
+/*
+ * Initialize a doughnut chart.
+ */
+STATIC void
+_chart_initialize_doughnut_chart(lxw_chart *self)
+{
+    self->has_markers = LXW_FALSE;
+
+    /* Initialize the function pointers for this chart type. */
+    self->write_chart_type = _chart_write_doughnut_chart;
+    self->write_plot_area = _chart_write_pie_plot_area;
+}
+
+/*
+ * Initialize a line chart.
+ */
+STATIC void
+_chart_initialize_line_chart(lxw_chart *self)
+{
+    self->has_markers = LXW_TRUE;
+    self->grouping = LXW_GROUPING_STANDARD;
+
+    /* Initialize the function pointers for this chart type. */
+    self->write_chart_type = _chart_write_line_chart;
+    self->write_plot_area = _chart_write_plot_area;
+}
+
+/*
+ * Initialize a pie chart.
+ */
+STATIC void
+_chart_initialize_pie_chart(lxw_chart *self)
+{
+    self->has_markers = LXW_FALSE;
+
+    /* Initialize the function pointers for this chart type. */
+    self->write_chart_type = _chart_write_pie_chart;
+    self->write_plot_area = _chart_write_pie_plot_area;
+}
+
+/*
+ * Initialize a scatter chart.
+ */
+STATIC void
+_chart_initialize_scatter_chart(lxw_chart *self)
+{
+    self->has_horiz_val_axis = LXW_FALSE;
+    self->cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
+    self->is_scatter = LXW_TRUE;
+    self->has_markers = LXW_TRUE;
+
+    /* Initialize the function pointers for this chart type. */
+    self->write_chart_type = _chart_write_scatter_chart;
+    self->write_plot_area = _chart_write_scatter_plot_area;
+}
+
+/*
+ * Initialize a radar chart.
+ */
+STATIC void
+_chart_initialize_radar_chart(lxw_chart *self, uint8_t type)
+{
+    if (type == LXW_CHART_RADAR)
+        self->has_markers = LXW_TRUE;
+
+    self->x_axis->default_major_gridlines = LXW_TRUE;
+    self->y_axis->major_tick_mark = LXW_TRUE;
+
+    /* Initialize the function pointers for this chart type. */
+    self->write_chart_type = _chart_write_radar_chart;
+    self->write_plot_area = _chart_write_plot_area;
+}
+
+/*
+ * Initialize the chart specific properties.
+ */
+STATIC void
+_chart_initialize(lxw_chart *self, uint8_t type)
+{
+    switch (type) {
+
+        case LXW_CHART_AREA:
+        case LXW_CHART_AREA_STACKED:
+        case LXW_CHART_AREA_STACKED_PERCENT:
+            _chart_initialize_area_chart(self, type);
+            break;
+
+        case LXW_CHART_BAR:
+        case LXW_CHART_BAR_STACKED:
+        case LXW_CHART_BAR_STACKED_PERCENT:
+            _chart_initialize_bar_chart(self, type);
+            break;
+
+        case LXW_CHART_COLUMN:
+        case LXW_CHART_COLUMN_STACKED:
+        case LXW_CHART_COLUMN_STACKED_PERCENT:
+            _chart_initialize_column_chart(self, type);
+            break;
+
+        case LXW_CHART_DOUGHNUT:
+            _chart_initialize_doughnut_chart(self);
+            break;
+
+        case LXW_CHART_LINE:
+            _chart_initialize_line_chart(self);
+            break;
+
+        case LXW_CHART_PIE:
+            _chart_initialize_pie_chart(self);
+            break;
+
+        case LXW_CHART_SCATTER:
+        case LXW_CHART_SCATTER_STRAIGHT:
+        case LXW_CHART_SCATTER_STRAIGHT_WITH_MARKERS:
+        case LXW_CHART_SCATTER_SMOOTH:
+        case LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS:
+            _chart_initialize_scatter_chart(self);
+            break;
+
+        case LXW_CHART_RADAR:
+        case LXW_CHART_RADAR_WITH_MARKERS:
+        case LXW_CHART_RADAR_FILLED:
+            _chart_initialize_radar_chart(self, type);
+            break;
+
+        default:
+            LXW_WARN_FORMAT("workbook_add_chart(): "
+                            "unhandled chart type '%d'", type);
+    }
 }
 
 /*
@@ -2143,6 +2194,9 @@ _chart_write_chart_pie(lxw_chart *self)
 void
 lxw_chart_assemble_xml_file(lxw_chart *self)
 {
+    /* Initialize the chart specific properties. */
+    _chart_initialize(self, self->type);
+
     /* Write the XML declaration. */
     _chart_xml_declaration(self);
 
@@ -2156,10 +2210,7 @@ lxw_chart_assemble_xml_file(lxw_chart *self)
     _chart_write_style(self);
 
     /* Write the c:chart element. */
-    if (self->type == LXW_CHART_PIE || self->type == LXW_CHART_DOUGHNUT)
-        _chart_write_chart_pie(self);
-    else
-        _chart_write_chart(self);
+    _chart_write_chart(self);
 
     /* Write the c:printSettings element. */
     _chart_write_print_settings(self);
