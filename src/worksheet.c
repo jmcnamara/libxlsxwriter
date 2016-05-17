@@ -448,7 +448,8 @@ _new_number_cell(lxw_row_t row_num,
  */
 STATIC lxw_cell *
 _new_string_cell(lxw_row_t row_num,
-                 lxw_col_t col_num, int32_t string_id, lxw_format *format)
+                 lxw_col_t col_num, int32_t string_id, char *sst_string,
+                 lxw_format *format)
 {
     lxw_cell *cell = calloc(1, sizeof(lxw_cell));
     RETURN_ON_MEM_ERROR(cell, cell);
@@ -458,6 +459,7 @@ _new_string_cell(lxw_row_t row_num,
     cell->type = STRING_CELL;
     cell->format = format;
     cell->u.string_id = string_id;
+    cell->sst_string = sst_string;
 
     return cell;
 }
@@ -3363,6 +3365,7 @@ worksheet_write_string(lxw_worksheet *self,
     lxw_cell *cell;
     int32_t string_id;
     char *string_copy;
+    struct sst_element *sst_element;
     int8_t err;
 
     if (!string || !*string) {
@@ -3382,13 +3385,15 @@ worksheet_write_string(lxw_worksheet *self,
         return -LXW_ERROR_WORKSHEET_MAX_STRING_LENGTH_EXCEEDED;
 
     if (!self->optimize) {
-        /* Get the SST string ID for the string. */
-        string_id = lxw_get_sst_index(self->sst, string);
+        /* Get the SST element and string id. */
+        sst_element = lxw_get_sst_index(self->sst, string);
+        string_id = sst_element->index;
 
         if (string_id < 0)
             return -LXW_ERROR_WORKSHEET_STRING_HASH_NOT_FOUND;
 
-        cell = _new_string_cell(row_num, col_num, string_id, format);
+        cell = _new_string_cell(row_num, col_num, string_id,
+                                sst_element->string, format);
     }
     else {
         /* Look for and escape control chars in the string. */

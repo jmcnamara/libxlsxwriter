@@ -649,10 +649,18 @@ _populate_range_data_cache(lxw_workbook *self, lxw_series_range *range)
 
             if (cell_obj) {
                 if (cell_obj->type == NUMBER_CELL)
-                    number = cell_obj->u.number;
+                    data_point->number = cell_obj->u.number;
+
+                if (cell_obj->type == STRING_CELL) {
+                    data_point->string = lxw_strdup(cell_obj->sst_string);
+                    data_point->is_string = LXW_TRUE;
+                    range->has_string_cache = LXW_TRUE;
+                }
+            }
+            else {
+                data_point->number = 0;
             }
 
-            data_point->number = number;
             STAILQ_INSERT_TAIL(range->data_cache, data_point, list_pointers);
             num_data_points++;
         }

@@ -56,6 +56,7 @@ lxw_chart_new(uint8_t type)
 
     chart->series_overlap_1 = 100;
 
+    chart->cat_has_string_fmt = LXW_TRUE;
     chart->has_horiz_cat_axis = LXW_FALSE;
     chart->has_horiz_val_axis = LXW_TRUE;
 
@@ -79,6 +80,7 @@ lxw_chart_free_range(lxw_series_range *range)
 
     while (!STAILQ_EMPTY(range->data_cache)) {
         data_point = STAILQ_FIRST(range->data_cache);
+        free(data_point->string);
         STAILQ_REMOVE_HEAD(range->data_cache, list_pointers);
 
         free(data_point);
@@ -128,11 +130,15 @@ lxw_chart_free(lxw_chart *chart)
         free(chart->series_list);
     }
 
-    free(chart->title.name);
-    free(chart->x_axis->title.name);
-    free(chart->y_axis->title.name);
+    if (chart->x_axis)
+        free(chart->x_axis->title.name);
+    if (chart->y_axis)
+        free(chart->y_axis->title.name);
+
     free(chart->x_axis);
     free(chart->y_axis);
+
+    free(chart->title.name);
     free(chart);
 }
 
@@ -768,7 +774,8 @@ _chart_write_series_name(lxw_chart *self, lxw_chart_series *series)
  * Write the <c:pt> element.
  */
 STATIC void
-_chart_write_pt(lxw_chart *self, uint16_t index, double number)
+_chart_write_pt(lxw_chart *self, uint16_t index,
+                lxw_series_data_point *data_point)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -778,8 +785,10 @@ _chart_write_pt(lxw_chart *self, uint16_t index, double number)
 
     lxw_xml_start_tag(self->file, "c:pt", &attributes);
 
-    /* Write the c:v element. */
-    _chart_write_v_num(self, number);
+    if (data_point->is_string && data_point->string)
+        _chart_write_v_str(self, data_point->string);
+    else
+        _chart_write_v_num(self, data_point->number);
 
     lxw_xml_end_tag(self->file, "c:pt");
 
@@ -834,7 +843,7 @@ _chart_write_num_cache(lxw_chart *self, lxw_series_range *range)
 
     STAILQ_FOREACH(data_point, range->data_cache, list_pointers) {
         /* Write the c:pt element. */
-        _chart_write_pt(self, index, data_point->number);
+        _chart_write_pt(self, index, data_point);
         index++;
     }
 
@@ -842,14 +851,26 @@ _chart_write_num_cache(lxw_chart *self, lxw_series_range *range)
 }
 
 /*
- * Write the cached data elements.
+ * Write the <c:strCache> element.
  */
 STATIC void
-_chart_write_data_cache(lxw_chart *self, lxw_series_range *range)
+_chart_write_str_cache(lxw_chart *self, lxw_series_range *range)
 {
-    /* Only number cache is supported, for now. TODO: add string support. */
-    /* Write the c:numCache element. */
-    _chart_write_num_cache(self, range);
+    lxw_series_data_point *data_point;
+    uint16_t index = 0;
+
+    lxw_xml_start_tag(self->file, "c:strCache", NULL);
+
+    /* Write the c:ptCount element. */
+    _chart_write_pt_count(self, range->num_data_points);
+
+    STAILQ_FOREACH(data_point, range->data_cache, list_pointers) {
+        /* Write the c:pt element. */
+        _chart_write_pt(self, index, data_point);
+        index++;
+    }
+
+    lxw_xml_end_tag(self->file, "c:strCache");
 }
 
 /*
@@ -874,10 +895,45 @@ _chart_write_num_ref(lxw_chart *self, lxw_series_range *range)
 
     if (!STAILQ_EMPTY(range->data_cache)) {
         /* Write the c:numCache element. */
-        _chart_write_data_cache(self, range);
+        _chart_write_num_cache(self, range);
     }
 
     lxw_xml_end_tag(self->file, "c:numRef");
+}
+
+/*
+ * Write the <c:strRef> element.
+ */
+STATIC void
+_chart_write_str_ref(lxw_chart *self, lxw_series_range *range)
+{
+    lxw_xml_start_tag(self->file, "c:strRef", NULL);
+
+    /* Write the c:f element. */
+    _chart_write_f(self, range->formula);
+
+    if (!STAILQ_EMPTY(range->data_cache)) {
+        /* Write the c:strCache element. */
+        _chart_write_str_cache(self, range);
+    }
+
+    lxw_xml_end_tag(self->file, "c:strRef");
+}
+
+/*
+ * Write the cached data elements.
+ */
+STATIC void
+_chart_write_data_cache(lxw_chart *self, lxw_series_range *range)
+{
+    if (range->has_string_cache) {
+        /* Write the c:strRef element. */
+        _chart_write_str_ref(self, range);
+    }
+    else {
+        /* Write the c:numRef element. */
+        _chart_write_num_ref(self, range);
+    }
 }
 
 /*
@@ -983,13 +1039,12 @@ _chart_write_cat(lxw_chart *self, lxw_chart_series *series)
     if (!series->categories->formula)
         return;
 
-    /* TODO */
-    self->cat_has_num_fmt = LXW_TRUE;
+    self->cat_has_string_fmt = series->categories->has_string_cache;
 
     lxw_xml_start_tag(self->file, "c:cat", NULL);
 
     /* Write the c:numRef element. */
-    _chart_write_num_ref(self, series->categories);
+    _chart_write_data_cache(self, series->categories);
 
     lxw_xml_end_tag(self->file, "c:cat");
 }
@@ -1002,8 +1057,8 @@ _chart_write_x_val(lxw_chart *self, lxw_chart_series *series)
 {
     lxw_xml_start_tag(self->file, "c:xVal", NULL);
 
-    /* Write the c:numRef element. */
-    _chart_write_num_ref(self, series->categories);
+    /* Write the data cache elements. */
+    _chart_write_data_cache(self, series->categories);
 
     lxw_xml_end_tag(self->file, "c:xVal");
 }
@@ -1016,8 +1071,8 @@ _chart_write_val(lxw_chart *self, lxw_chart_series *series)
 {
     lxw_xml_start_tag(self->file, "c:val", NULL);
 
-    /* Write the c:numRef element. */
-    _chart_write_num_ref(self, series->values);
+    /* Write the data cache elements. */
+    _chart_write_data_cache(self, series->values);
 
     lxw_xml_end_tag(self->file, "c:val");
 }
@@ -1030,8 +1085,8 @@ _chart_write_y_val(lxw_chart *self, lxw_chart_series *series)
 {
     lxw_xml_start_tag(self->file, "c:yVal", NULL);
 
-    /* Write the c:numRef element. */
-    _chart_write_num_ref(self, series->values);
+    /* Write the data cache elements. */
+    _chart_write_data_cache(self, series->values);
 
     lxw_xml_end_tag(self->file, "c:yVal");
 }
@@ -1520,7 +1575,7 @@ _chart_write_cat_axis(lxw_chart *self)
     _chart_write_title(self, &self->x_axis->title);
 
     /* Write the c:numFmt element. */
-    if (self->cat_has_num_fmt)
+    if (!self->cat_has_string_fmt)
         _chart_write_number_format(self, self->x_axis);
 
     /* Write the c:majorTickMark element. */

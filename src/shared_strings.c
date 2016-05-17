@@ -227,7 +227,7 @@ lxw_sst_assemble_xml_file(lxw_sst *self)
 /*
  * Add to or find a string in the SST SharedString table and return it's index.
  */
-int32_t
+struct sst_element *
 lxw_get_sst_index(lxw_sst *sst, const char *string)
 {
     struct sst_element *element;
@@ -251,7 +251,7 @@ lxw_get_sst_index(lxw_sst *sst, const char *string)
         free(element->string);
         free(element);
         sst->string_count++;
-        return existing_element->index;
+        return existing_element;
     }
 
     /* If it didn't exist, also add it to the insertion order linked list. */
@@ -260,5 +260,5 @@ lxw_get_sst_index(lxw_sst *sst, const char *string)
     /* Update SST string counts. */
     sst->string_count++;
     sst->unique_count++;
-    return element->index;
+    return element;
 }

@@ -67,7 +67,7 @@ extern "C" {
 
 lxw_sst *lxw_sst_new();
 void lxw_sst_free(lxw_sst *sst);
-int32_t lxw_get_sst_index(lxw_sst *sst, const char *string);
+struct sst_element *lxw_get_sst_index(lxw_sst *sst, const char *string);
 void lxw_sst_assemble_xml_file(lxw_sst *self);
 
 /* Declarations required for unit testing. */

@@ -531,6 +531,7 @@ typedef struct lxw_cell {
     double formula_result;
     char *user_data1;
     char *user_data2;
+    char *sst_string;
 
     /* List pointers for tree.h. */
     RB_ENTRY (lxw_cell) tree_pointers;
