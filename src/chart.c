@@ -56,7 +56,6 @@ lxw_chart_new(uint8_t type)
 
     chart->series_overlap_1 = 100;
 
-    chart->cat_has_string_fmt = LXW_TRUE;
     chart->has_horiz_cat_axis = LXW_FALSE;
     chart->has_horiz_val_axis = LXW_TRUE;
 
@@ -796,6 +795,28 @@ _chart_write_pt(lxw_chart *self, uint16_t index,
 }
 
 /*
+ * Write the <c:pt> element.
+ */
+STATIC void
+_chart_write_num_pt(lxw_chart *self, uint16_t index,
+                    lxw_series_data_point *data_point)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("idx", index);
+
+    lxw_xml_start_tag(self->file, "c:pt", &attributes);
+
+    _chart_write_v_num(self, data_point->number);
+
+    lxw_xml_end_tag(self->file, "c:pt");
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <c:formatCode> element.
  */
 STATIC void
@@ -843,7 +864,7 @@ _chart_write_num_cache(lxw_chart *self, lxw_series_range *range)
 
     STAILQ_FOREACH(data_point, range->data_cache, list_pointers) {
         /* Write the c:pt element. */
-        _chart_write_pt(self, index, data_point);
+        _chart_write_num_pt(self, index, data_point);
         index++;
     }
 
@@ -926,13 +947,13 @@ _chart_write_str_ref(lxw_chart *self, lxw_series_range *range)
 STATIC void
 _chart_write_data_cache(lxw_chart *self, lxw_series_range *range)
 {
-    if (range->has_string_cache) {
-        /* Write the c:strRef element. */
-        _chart_write_str_ref(self, range);
-    }
-    else {
+    if (range->has_number_cache) {
         /* Write the c:numRef element. */
         _chart_write_num_ref(self, range);
+    }
+    else {
+        /* Write the c:strRef element. */
+        _chart_write_str_ref(self, range);
     }
 }
 
@@ -1039,7 +1060,7 @@ _chart_write_cat(lxw_chart *self, lxw_chart_series *series)
     if (!series->categories->formula)
         return;
 
-    self->cat_has_string_fmt = series->categories->has_string_cache;
+    self->cat_has_num_fmt = series->categories->has_number_cache;
 
     lxw_xml_start_tag(self->file, "c:cat", NULL);
 
@@ -1575,7 +1596,7 @@ _chart_write_cat_axis(lxw_chart *self)
     _chart_write_title(self, &self->x_axis->title);
 
     /* Write the c:numFmt element. */
-    if (!self->cat_has_string_fmt)
+    if (self->cat_has_num_fmt)
         _chart_write_number_format(self, self->x_axis);
 
     /* Write the c:majorTickMark element. */
@@ -2291,6 +2312,7 @@ lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
 
     range->ignore_cache = LXW_TRUE;
     range->num_data_points = rows;
+    range->has_number_cache = LXW_TRUE;
 
     /* Initialize the series range data cache. */
     for (i = 0; i < rows; i++) {

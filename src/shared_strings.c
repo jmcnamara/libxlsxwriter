@@ -236,7 +236,7 @@ lxw_get_sst_index(lxw_sst *sst, const char *string)
     /* Create an sst element to potentially add to the table. */
     element = calloc(1, sizeof(struct sst_element));
     if (!element)
-        return -1;
+        return NULL;
 
     /* Create potential new element with the string and its index. */
     element->index = sst->unique_count;

@@ -121,7 +121,7 @@ typedef struct lxw_series_range {
     lxw_col_t last_col;
     uint8_t ignore_cache;
 
-    uint8_t has_string_cache;
+    uint8_t has_number_cache;
     uint16_t num_data_points;
     struct lxw_series_data_points *data_cache;
 
@@ -200,7 +200,7 @@ typedef struct lxw_chart {
 
     uint8_t in_use;
     uint8_t is_scatter;
-    uint8_t cat_has_string_fmt;
+    uint8_t cat_has_num_fmt;
 
     uint8_t has_horiz_cat_axis;
     uint8_t has_horiz_val_axis;

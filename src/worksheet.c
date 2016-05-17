@@ -3387,11 +3387,11 @@ worksheet_write_string(lxw_worksheet *self,
     if (!self->optimize) {
         /* Get the SST element and string id. */
         sst_element = lxw_get_sst_index(self->sst, string);
-        string_id = sst_element->index;
 
-        if (string_id < 0)
+        if (!sst_element)
             return -LXW_ERROR_WORKSHEET_STRING_HASH_NOT_FOUND;
 
+        string_id = sst_element->index;
         cell = _new_string_cell(row_num, col_num, string_id,
                                 sst_element->string, format);
     }
