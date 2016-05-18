@@ -648,12 +648,12 @@ _populate_range_data_cache(lxw_workbook *self, lxw_series_range *range)
             if (cell_obj) {
                 if (cell_obj->type == NUMBER_CELL) {
                     data_point->number = cell_obj->u.number;
-                    range->has_number_cache = LXW_TRUE;
                 }
 
                 if (cell_obj->type == STRING_CELL) {
                     data_point->string = lxw_strdup(cell_obj->sst_string);
                     data_point->is_string = LXW_TRUE;
+                    range->has_string_cache = LXW_TRUE;
                 }
             }
             else {

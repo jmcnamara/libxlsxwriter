@@ -945,15 +945,16 @@ _chart_write_str_ref(lxw_chart *self, lxw_series_range *range)
  * Write the cached data elements.
  */
 STATIC void
-_chart_write_data_cache(lxw_chart *self, lxw_series_range *range)
+_chart_write_data_cache(lxw_chart *self, lxw_series_range *range,
+                        uint8_t has_string_cache)
 {
-    if (range->has_number_cache) {
-        /* Write the c:numRef element. */
-        _chart_write_num_ref(self, range);
-    }
-    else {
+    if (has_string_cache) {
         /* Write the c:strRef element. */
         _chart_write_str_ref(self, range);
+    }
+    else {
+        /* Write the c:numRef element. */
+        _chart_write_num_ref(self, range);
     }
 }
 
@@ -1056,16 +1057,18 @@ _chart_write_scatter_style(lxw_chart *self)
 STATIC void
 _chart_write_cat(lxw_chart *self, lxw_chart_series *series)
 {
+    uint8_t has_string_cache = series->categories->has_string_cache;
+
     /* Ignore <c:cat> elements for charts without category values. */
     if (!series->categories->formula)
         return;
 
-    self->cat_has_num_fmt = series->categories->has_number_cache;
+    self->cat_has_num_fmt = !has_string_cache;
 
     lxw_xml_start_tag(self->file, "c:cat", NULL);
 
     /* Write the c:numRef element. */
-    _chart_write_data_cache(self, series->categories);
+    _chart_write_data_cache(self, series->categories, has_string_cache);
 
     lxw_xml_end_tag(self->file, "c:cat");
 }
@@ -1076,10 +1079,12 @@ _chart_write_cat(lxw_chart *self, lxw_chart_series *series)
 STATIC void
 _chart_write_x_val(lxw_chart *self, lxw_chart_series *series)
 {
+    uint8_t has_string_cache = series->categories->has_string_cache;
+
     lxw_xml_start_tag(self->file, "c:xVal", NULL);
 
     /* Write the data cache elements. */
-    _chart_write_data_cache(self, series->categories);
+    _chart_write_data_cache(self, series->categories, has_string_cache);
 
     lxw_xml_end_tag(self->file, "c:xVal");
 }
@@ -1092,8 +1097,9 @@ _chart_write_val(lxw_chart *self, lxw_chart_series *series)
 {
     lxw_xml_start_tag(self->file, "c:val", NULL);
 
-    /* Write the data cache elements. */
-    _chart_write_data_cache(self, series->values);
+    /* Write the data cache elements. The string_cache is set to false since
+     * this should always be a number series. */
+    _chart_write_data_cache(self, series->values, LXW_FALSE);
 
     lxw_xml_end_tag(self->file, "c:val");
 }
@@ -1106,8 +1112,9 @@ _chart_write_y_val(lxw_chart *self, lxw_chart_series *series)
 {
     lxw_xml_start_tag(self->file, "c:yVal", NULL);
 
-    /* Write the data cache elements. */
-    _chart_write_data_cache(self, series->values);
+    /* Write the data cache elements. The string_cache is set to false since
+     * this should always be a number series. */
+    _chart_write_data_cache(self, series->values, LXW_FALSE);
 
     lxw_xml_end_tag(self->file, "c:yVal");
 }
@@ -2312,7 +2319,6 @@ lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
 
     range->ignore_cache = LXW_TRUE;
     range->num_data_points = rows;
-    range->has_number_cache = LXW_TRUE;
 
     /* Initialize the series range data cache. */
     for (i = 0; i < rows; i++) {
