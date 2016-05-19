@@ -208,6 +208,7 @@ typedef struct lxw_workbook {
     struct lxw_worksheets *worksheets;
     struct lxw_worksheet_names *worksheet_names;
     struct lxw_charts *charts;
+    struct lxw_charts *ordered_charts;
     struct lxw_formats *formats;
     struct lxw_defined_names *defined_names;
     lxw_sst *sst;

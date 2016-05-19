@@ -290,6 +290,7 @@ typedef struct lxw_image_options {
     char *extension;
     double x_dpi;
     double y_dpi;
+    lxw_chart *chart;
 
     STAILQ_ENTRY (lxw_image_options) list_pointers;
 

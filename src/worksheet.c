@@ -4901,6 +4901,9 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
     if (!options->y_scale)
         options->y_scale = 1;
 
+    /* Store chart references so they can be ordered in the workbook. */
+    options->chart = chart;
+
     STAILQ_INSERT_TAIL(self->chart_data, options, list_pointers);
 
     chart->in_use = LXW_TRUE;

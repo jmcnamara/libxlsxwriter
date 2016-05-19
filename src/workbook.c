@@ -92,6 +92,12 @@ lxw_workbook_free(lxw_workbook *workbook)
         lxw_chart_free(chart);
     }
 
+    /* Free the corder charts list. The charts are already freed above. */
+    while (!STAILQ_EMPTY(workbook->ordered_charts)) {
+        chart = STAILQ_FIRST(workbook->ordered_charts);
+        STAILQ_REMOVE_HEAD(workbook->ordered_charts, list_pointers);
+    }
+
     /* Free the formats in the workbook. */
     while (!STAILQ_EMPTY(workbook->formats)) {
         format = STAILQ_FIRST(workbook->formats);
@@ -125,6 +131,7 @@ lxw_workbook_free(lxw_workbook *workbook)
     lxw_sst_free(workbook->sst);
     free(workbook->worksheets);
     free(workbook->charts);
+    free(workbook->ordered_charts);
     free(workbook->formats);
     free(workbook->defined_names);
     free(workbook);
@@ -742,14 +749,12 @@ _populate_range_dimensions(lxw_workbook *self, lxw_series_range *range)
  * series and title/axis ranges.
  */
 STATIC void
-_add_chart_data(lxw_workbook *self)
+_add_chart_cache_data(lxw_workbook *self)
 {
     lxw_chart *chart;
     lxw_chart_series *series;
 
-    STAILQ_FOREACH(chart, self->charts, list_pointers) {
-        if (!chart->in_use)
-            continue;
+    STAILQ_FOREACH(chart, self->ordered_charts, list_pointers) {
 
         if (STAILQ_EMPTY(chart->series_list))
             continue;
@@ -787,6 +792,9 @@ _prepare_drawings(lxw_workbook *self)
             chart_ref_id++;
             lxw_worksheet_prepare_chart(worksheet, chart_ref_id, drawing_id,
                                         image_options);
+            if (image_options->chart)
+                STAILQ_INSERT_TAIL(self->ordered_charts, image_options->chart,
+                                   list_pointers);
         }
 
         STAILQ_FOREACH(image_options, worksheet->image_data, list_pointers) {
@@ -1274,6 +1282,11 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     GOTO_LABEL_ON_MEM_ERROR(workbook->charts, mem_error);
     STAILQ_INIT(workbook->charts);
 
+    /* Add the ordered charts list to track chart insertion order. */
+    workbook->ordered_charts = calloc(1, sizeof(struct lxw_charts));
+    GOTO_LABEL_ON_MEM_ERROR(workbook->ordered_charts, mem_error);
+    STAILQ_INIT(workbook->ordered_charts);
+
     /* Add the formats list. */
     workbook->formats = calloc(1, sizeof(struct lxw_formats));
     GOTO_LABEL_ON_MEM_ERROR(workbook->formats, mem_error);
@@ -1455,7 +1468,7 @@ workbook_close(lxw_workbook *self)
     _prepare_drawings(self);
 
     /* Add cached data to charts. */
-    _add_chart_data(self);
+    _add_chart_cache_data(self);
 
     /* Create a packager object to assemble sub-elements into a zip file. */
     packager = lxw_packager_new(self->filename);
