@@ -92,12 +92,6 @@ lxw_workbook_free(lxw_workbook *workbook)
         lxw_chart_free(chart);
     }
 
-    /* Free the corder charts list. The charts are already freed above. */
-    while (!STAILQ_EMPTY(workbook->ordered_charts)) {
-        chart = STAILQ_FIRST(workbook->ordered_charts);
-        STAILQ_REMOVE_HEAD(workbook->ordered_charts, list_pointers);
-    }
-
     /* Free the formats in the workbook. */
     while (!STAILQ_EMPTY(workbook->formats)) {
         format = STAILQ_FIRST(workbook->formats);
@@ -754,7 +748,7 @@ _add_chart_cache_data(lxw_workbook *self)
     lxw_chart *chart;
     lxw_chart_series *series;
 
-    STAILQ_FOREACH(chart, self->ordered_charts, list_pointers) {
+    STAILQ_FOREACH(chart, self->ordered_charts, ordered_list_pointers) {
 
         if (STAILQ_EMPTY(chart->series_list))
             continue;
@@ -794,7 +788,7 @@ _prepare_drawings(lxw_workbook *self)
                                         image_options);
             if (image_options->chart)
                 STAILQ_INSERT_TAIL(self->ordered_charts, image_options->chart,
-                                   list_pointers);
+                                   ordered_list_pointers);
         }
 
         STAILQ_FOREACH(image_options, worksheet->image_data, list_pointers) {

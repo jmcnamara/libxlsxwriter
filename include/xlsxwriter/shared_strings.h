@@ -15,14 +15,11 @@
 
 #include "common.h"
 
-/* STAILQ_HEAD() declaration. */
-struct sst_order_list {
-    struct sst_element *stqh_first;
-    struct sst_element **stqh_last;
-};
-
 /* Define a tree.h RB structure for storing shared strings. */
 RB_HEAD(sst_rb_tree, sst_element);
+
+/* Define a queue.h structure for storing shared strings in insertion order. */
+STAILQ_HEAD(sst_order_list, sst_element);
 
 /* Wrapper around RB_GENERATE_STATIC from tree.h to avoid unused function
  * warnings and to avoid portability issues with the _unused attribute. */

@@ -214,13 +214,10 @@ _write_chart_files(lxw_packager *self)
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
 
-    STAILQ_FOREACH(chart, workbook->ordered_charts, list_pointers) {
+    STAILQ_FOREACH(chart, workbook->ordered_charts, ordered_list_pointers) {
 
         lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
                      "xl/charts/chart%d.xml", index++);
-
-        printf("xl/charts/chart%d.xml ", index - 1);
-        printf("%s\n", chart->series_list->stqh_first->values->formula);
 
         chart->file = lxw_tmpfile();
 

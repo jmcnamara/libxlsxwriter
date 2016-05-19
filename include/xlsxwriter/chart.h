@@ -221,6 +221,7 @@ typedef struct lxw_chart {
 
     struct lxw_chart_series_list *series_list;
 
+    STAILQ_ENTRY (lxw_chart) ordered_list_pointers;
     STAILQ_ENTRY (lxw_chart) list_pointers;
 
 } lxw_chart;
