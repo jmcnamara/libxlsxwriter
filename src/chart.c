@@ -779,6 +779,10 @@ _chart_write_pt(lxw_chart *self, uint16_t index,
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
+    /* Ignore chart points that have no data. */
+    if (data_point->no_data)
+        return;
+
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_INT("idx", index);
 
@@ -803,6 +807,10 @@ _chart_write_num_pt(lxw_chart *self, uint16_t index,
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
+
+    /* Ignore chart points that have no data. */
+    if (data_point->no_data)
+        return;
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_INT("idx", index);

@@ -131,6 +131,7 @@ typedef struct lxw_series_data_point {
     uint8_t is_string;
     double number;
     char *string;
+    uint8_t no_data;
 
     STAILQ_ENTRY (lxw_series_data_point) list_pointers;
 

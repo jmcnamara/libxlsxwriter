@@ -658,7 +658,7 @@ _populate_range_data_cache(lxw_workbook *self, lxw_series_range *range)
                 }
             }
             else {
-                data_point->number = 0;
+                data_point->no_data = LXW_TRUE;
             }
 
             STAILQ_INSERT_TAIL(range->data_cache, data_point, list_pointers);
@@ -678,7 +678,7 @@ STATIC void
 _populate_range_dimensions(lxw_workbook *self, lxw_series_range *range)
 {
 
-    char formula[128] = { 0 };
+    char formula[LXW_MAX_FORMULA_RANGE_LENGTH] = { 0 };
     char *tmp_str;
     char *sheetname;
 
@@ -690,51 +690,54 @@ _populate_range_dimensions(lxw_workbook *self, lxw_series_range *range)
         return;
     }
 
-    if (!range->sheetname) {
-        /* The sheetname hasn't been defined but formula has. */
+    /* If the sheetname is already defined it was already set via
+     * chart_series_set_categories() or  chart_series_set_values().
+     */
+    if (range->sheetname)
+        return;
 
-        /* Ignore non-contiguous like (Sheet1!$A$1:$A$2,Sheet1!$A$4:$A$5) */
-        if (range->formula[0] == '(') {
+    /* Ignore non-contiguous range like (Sheet1!$A$1:$A$2,Sheet1!$A$4:$A$5) */
+    if (range->formula[0] == '(') {
+        range->ignore_cache = LXW_TRUE;
+        return;
+    }
+
+    /* Create a copy of the formula to modify and parse into parts. */
+    lxw_snprintf(formula, LXW_MAX_FORMULA_RANGE_LENGTH, "%s", range->formula);
+
+    /* Check for valid formula. TODO. This needs stronger validation. */
+    tmp_str = strchr(formula, '!');
+
+    if (tmp_str == NULL) {
+        range->ignore_cache = LXW_TRUE;
+        return;
+    }
+    else {
+        /* Split the formulas into sheetname and row-col data. */
+        *tmp_str = '\0';
+        tmp_str++;
+        sheetname = formula;
+
+        /* Remove any worksheet quoting. */
+        if (sheetname[0] == '\'')
+            sheetname++;
+        if (sheetname[strlen(sheetname) - 1] == '\'')
+            sheetname[strlen(sheetname) - 1] = '\0';
+
+        /* Check that the sheetname exists. */
+        if (!workbook_get_worksheet_by_name(self, sheetname)) {
+            LXW_WARN_FORMAT2("workbook_add_chart(): worksheet name '%s' "
+                             "in chart formula '%s' doesn't exist.",
+                             sheetname, range->formula);
             range->ignore_cache = LXW_TRUE;
             return;
         }
 
-        lxw_snprintf(formula, 128, "%s", range->formula);
-
-        /* Check for valid formula. TODO. This needs stronger validation. */
-        tmp_str = strchr(formula, '!');
-
-        if (tmp_str == NULL) {
-            range->ignore_cache = LXW_TRUE;
-            return;
-        }
-        else {
-            /* Split the formulas into sheetname and row-col data. */
-            *tmp_str = '\0';
-            tmp_str++;
-            sheetname = formula;
-
-            /* Remove any worksheet quoting. */
-            if (sheetname[0] == '\'')
-                sheetname++;
-            if (sheetname[strlen(sheetname) - 1] == '\'')
-                sheetname[strlen(sheetname) - 1] = '\0';
-
-            /* Check that the sheetname exists. */
-            if (!workbook_get_worksheet_by_name(self, sheetname)) {
-                LXW_WARN_FORMAT2("workbook_add_chart(): worksheet name '%s' "
-                                 "in chart formula '%s' doesn't exist.",
-                                 sheetname, range->formula);
-                range->ignore_cache = LXW_TRUE;
-                return;
-            }
-
-            range->sheetname = lxw_strdup(sheetname);
-            range->first_row = lxw_name_to_row(tmp_str);
-            range->first_col = lxw_name_to_col(tmp_str);
-            range->last_row = lxw_name_to_row_2(tmp_str);
-            range->last_col = lxw_name_to_col_2(tmp_str);
-        }
+        range->sheetname = lxw_strdup(sheetname);
+        range->first_row = lxw_name_to_row(tmp_str);
+        range->first_col = lxw_name_to_col(tmp_str);
+        range->last_row = lxw_name_to_row_2(tmp_str);
+        range->last_col = lxw_name_to_col_2(tmp_str);
     }
 }
 
