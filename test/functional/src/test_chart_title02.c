@@ -15,8 +15,6 @@ int main() {
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_COLUMN);
 
-    lxw_chart_title title = {.name = "Title!"};
-
     /* For testing, copy the randomly generated axis ids in the target file. */
     chart->axis_id_1 = 73655040;
     chart->axis_id_2 = 73656576;
@@ -36,7 +34,7 @@ int main() {
 
     chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
 
-    chart_set_title(chart, &title);
+    chart_title_set_name(chart, "Title!");
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

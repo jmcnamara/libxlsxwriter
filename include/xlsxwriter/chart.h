@@ -254,7 +254,9 @@ void chart_series_set_values(lxw_chart_series *series, char *sheetname,
 void chart_axis_set_name(lxw_chart_axis *axis, char *name);
 
 void chart_set_style(lxw_chart *chart, uint8_t style_id);
-void chart_set_title(lxw_chart *chart, lxw_chart_title *title);
+
+void chart_title_set_name(lxw_chart *chart, char *name);
+void chart_title_off(lxw_chart *chart);
 
 void chart_set_rotation(lxw_chart *chart, uint16_t rotation);
 void chart_set_hole_size(lxw_chart *chart, uint8_t size);

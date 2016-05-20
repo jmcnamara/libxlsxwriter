@@ -15,8 +15,6 @@ int main() {
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_PIE);
 
-    lxw_chart_title title = {.name = "Title"};
-
     uint8_t data[3][2] = {
         {2,  60},
         {4,  30},
@@ -33,7 +31,7 @@ int main() {
          "=Sheet1!$B$1:$B$3"
     );
 
-    chart_set_title(chart, &title);
+    chart_title_set_name(chart, "Title");
 
     /* Axis formatting should be igmored. */
     chart_axis_set_name(chart->x_axis, "XXX");

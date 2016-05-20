@@ -154,6 +154,34 @@ _chart_add_axis_ids(lxw_chart *self)
     self->axis_id_2 = self->axis_id_1 + 1;
 }
 
+/*
+ * Set the range for a series. Used in the chart_series_set_categories()
+ * and chart_series_set_values() functions.
+ */
+void
+_chart_series_set_range(lxw_series_range *range, char *sheetname,
+                        lxw_row_t first_row, lxw_col_t first_col,
+                        lxw_row_t last_row, lxw_col_t last_col)
+{
+    char formula[LXW_MAX_FORMULA_RANGE_LENGTH] = { 0 };
+
+    /* Set the range properties. */
+    range->sheetname = lxw_strdup(sheetname);
+    range->first_row = first_row;
+    range->first_col = first_col;
+    range->last_row = last_row;
+    range->last_col = last_col;
+
+    /* Free any existing range. */
+    free(range->formula);
+
+    /* Convert the range properties to a formula like: Sheet1!$A$1:$A$5. */
+    lxw_rowcol_to_formula_abs(formula, sheetname,
+                              first_row, first_col, last_row, last_col);
+
+    range->formula = lxw_strdup(formula);
+}
+
 /*****************************************************************************
  *
  * XML functions.
@@ -744,10 +772,10 @@ _chart_write_v_str(lxw_chart *self, char *str)
 }
 
 /*
- * Write the <c:tx> element.
+ * Write the <c:tx> element with a simple value such as for series names.
  */
 STATIC void
-_chart_write_tx(lxw_chart *self, char *name)
+_chart_write_tx_value(lxw_chart *self, char *name)
 {
     lxw_xml_start_tag(self->file, "c:tx", NULL);
 
@@ -765,7 +793,7 @@ _chart_write_series_name(lxw_chart *self, lxw_chart_series *series)
 {
     if (series->name) {
         /* Write the c:tx element. */
-        _chart_write_tx(self, series->name);
+        _chart_write_tx_value(self, series->name);
     }
 }
 
@@ -2410,13 +2438,21 @@ chart_set_style(lxw_chart *self, uint8_t style_id)
 }
 
 /*
- * Set the properties of the chart title.
+ * Set the chart title.
  */
 void
-chart_set_title(lxw_chart *self, lxw_chart_title *title)
+chart_title_set_name(lxw_chart *self, char *name)
 {
-    self->title.none = title->none;
-    self->title.name = lxw_strdup(title->name);
+    self->title.name = lxw_strdup(name);
+}
+
+/*
+ * Turn off the chart title.
+ */
+void
+chart_title_off(lxw_chart *self)
+{
+    self->title.none = LXW_TRUE;
 }
 
 /*
@@ -2426,33 +2462,6 @@ void
 chart_series_set_name(lxw_chart_series *series, char *name)
 {
     series->name = lxw_strdup(name);
-}
-
-/*
- * Set the range for a series. Used in the following functions.
- */
-void
-_chart_series_set_range(lxw_series_range *range, char *sheetname,
-                        lxw_row_t first_row, lxw_col_t first_col,
-                        lxw_row_t last_row, lxw_col_t last_col)
-{
-    char formula[LXW_MAX_FORMULA_RANGE_LENGTH] = { 0 };
-
-    /* Set the range properties. */
-    range->sheetname = lxw_strdup(sheetname);
-    range->first_row = first_row;
-    range->first_col = first_col;
-    range->last_row = last_row;
-    range->last_col = last_col;
-
-    /* Free any existing range. */
-    free(range->formula);
-
-    /* Convert the range properties to a formula like: Sheet1!$A$1:$A$5. */
-    lxw_rowcol_to_formula_abs(formula, sheetname,
-                              first_row, first_col, last_row, last_col);
-
-    range->formula = lxw_strdup(formula);
 }
 
 /*
