@@ -43,6 +43,11 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_chart_bar11(self):
         self.run_exe_test('test_chart_bar11')
 
+    # Tests 12 - 18 are chartsheets. 
+
+    # def test_chart_bar19(self):
+    #     self.run_exe_test('test_chart_bar19')
+
     def test_chart_bar51(self):
         self.run_exe_test('test_chart_bar51')
 
@@ -57,3 +62,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chart_bar55(self):
         self.run_exe_test('test_chart_bar55', 'chart_bar05.xlsx')
+
+    def test_chart_bar61(self):
+        self.run_exe_test('test_chart_bar61', 'chart_bar01.xlsx')
+
+    def test_chart_bar65(self):
+        self.run_exe_test('test_chart_bar65', 'chart_bar05.xlsx')

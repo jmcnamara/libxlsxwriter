@@ -36,8 +36,8 @@ int main() {
     chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5");
     chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
 
-    chart_set_axis_name(chart->x_axis, "XXX");
-    chart_set_axis_name(chart->y_axis, "YYY");
+    chart_axis_set_name(chart->x_axis, "XXX");
+    chart_axis_set_name(chart->y_axis, "YYY");
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

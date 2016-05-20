@@ -45,8 +45,27 @@ enum lxw_boolean {
     LXW_TRUE
 };
 
+/* Excel sheetname max of 31 chars + \0. */
 #define LXW_SHEETNAME_MAX     32
-#define LXW_SHEETNAME_LENGTH  65
+
+/* Every worksheet char doubled + start and end quotes + \0. */
+#define LXW_MAX_SHEETNAME_LENGTH  65
+
+/* Max col: $XFD\0 */
+#define LXW_MAX_COL_NAME_LENGTH   5
+
+/* Max cell: $XFWD$1048576\0 */
+#define LXW_MAX_CELL_NAME_LENGTH  14
+
+/* Max range: $XFWD$1048576:$XFWD$1048576\0 */
+#define LXW_MAX_CELL_RANGE_LENGTH (LXW_MAX_CELL_NAME_LENGTH * 2)
+
+/* Max range formula Sheet1!$A$1:$C$5$ style. */
+#define LXW_MAX_FORMULA_RANGE_LENGTH (LXW_MAX_SHEETNAME_LENGTH + LXW_MAX_CELL_RANGE_LENGTH)
+
+#define LXW_EPOCH_1900            0
+#define LXW_EPOCH_1904            1
+
 #define LXW_UINT32_T_LENGTH   11        /* Length of 4294967296\0. */
 #define LXW_IGNORE            1
 #define LXW_FILENAME_LENGTH   128

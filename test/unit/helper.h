@@ -74,6 +74,11 @@
     ASSERT_STR(exp, got);
 
 
+#define TEST_ROWCOL_TO_FORMULA_ABS(sheet, row1, col1, row2, col2, exp) \
+    lxw_rowcol_to_formula_abs(got, sheet, row1, col1, row2, col2);  \
+    ASSERT_STR(exp, got);
+
+
 #define TEST_DATETIME_TIME(_hour, _min, _sec, exp)                  \
     datetime = (lxw_datetime*)calloc(1, sizeof(lxw_datetime));      \
     datetime->hour  = _hour;                                        \

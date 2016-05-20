@@ -36,8 +36,8 @@ int main() {
     chart_set_title(chart, &title);
 
     /* Axis formatting should be igmored. */
-    chart_set_axis_name(chart->x_axis, "XXX");
-    chart_set_axis_name(chart->y_axis, "YYY");
+    chart_axis_set_name(chart->x_axis, "XXX");
+    chart_axis_set_name(chart->y_axis, "YYY");
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

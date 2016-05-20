@@ -19,18 +19,6 @@
 #include <stdint.h>
 #include "common.h"
 
-/* Max col: $XFD\0 */
-#define LXW_MAX_COL_NAME_LENGTH   5
-
-/* Max cell: $XFWD$1048576\0 */
-#define LXW_MAX_CELL_NAME_LENGTH  14
-
-/* Max range: $XFWD$1048576:$XFWD$1048576\0 */
-#define LXW_MAX_CELL_RANGE_LENGTH (LXW_MAX_CELL_NAME_LENGTH * 2)
-
-#define LXW_EPOCH_1900            0
-#define LXW_EPOCH_1904            1
-
 /**
  * @brief Convert an Excel `A1` cell string into a `(row, col)` pair.
  *
@@ -130,12 +118,16 @@ void lxw_rowcol_to_cell_abs(char *cell_name,
                             lxw_col_t col, uint8_t abs_row, uint8_t abs_col);
 
 void lxw_rowcol_to_range(char *range,
-                         int first_row, int first_col, int last_row,
-                         int last_col);
+                         lxw_row_t first_row, lxw_col_t first_col,
+                         lxw_row_t last_row, lxw_col_t last_col);
 
 void lxw_rowcol_to_range_abs(char *range,
-                             int first_row, int first_col, int last_row,
-                             int last_col);
+                             lxw_row_t first_row, lxw_col_t first_col,
+                             lxw_row_t last_row, lxw_col_t last_col);
+
+void lxw_rowcol_to_formula_abs(char *formula, char *sheetname,
+                               lxw_row_t first_row, lxw_col_t first_col,
+                               lxw_row_t last_row, lxw_col_t last_col);
 
 uint32_t lxw_name_to_row(const char *row_str);
 uint16_t lxw_name_to_col(const char *col_str);

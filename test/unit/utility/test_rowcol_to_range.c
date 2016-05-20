@@ -10,7 +10,7 @@
 
 #include "xlsxwriter/utility.h"
 
-// Test xl_range().
+// Test lxw_rowcol_to_range().
 CTEST(utility, lxw_rowcol_to_range) {
 
     char got[LXW_MAX_CELL_RANGE_LENGTH];
@@ -31,7 +31,7 @@ CTEST(utility, lxw_rowcol_to_range) {
 
 }
 
-// Test xl_range_abs().
+// Test lxw_rowcol_to_range_abs().
 CTEST(utility, lxw_rowcol_to_range_abs) {
 
     char got[LXW_MAX_CELL_RANGE_LENGTH];

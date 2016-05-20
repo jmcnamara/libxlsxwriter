@@ -240,9 +240,17 @@ int lxw_chart_init_data_cache(lxw_series_range *range);
 lxw_chart_series *chart_add_series(lxw_chart *chart,
                                    char *categories, char *values);
 
-void chart_set_series_name(lxw_chart_series *series, char *name);
+void chart_series_set_name(lxw_chart_series *series, char *name);
 
-void chart_set_axis_name(lxw_chart_axis *axis, char *name);
+void chart_series_set_categories(lxw_chart_series *series, char *sheetname,
+                                 lxw_row_t first_row, lxw_col_t first_col,
+                                 lxw_row_t last_row, lxw_col_t last_col);
+
+void chart_series_set_values(lxw_chart_series *series, char *sheetname,
+                             lxw_row_t first_row, lxw_col_t first_col,
+                             lxw_row_t last_row, lxw_col_t last_col);
+
+void chart_axis_set_name(lxw_chart_axis *axis, char *name);
 
 void chart_set_style(lxw_chart *chart, uint8_t style_id);
 void chart_set_title(lxw_chart *chart, lxw_chart_title *title);

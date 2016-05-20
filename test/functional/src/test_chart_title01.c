@@ -38,7 +38,7 @@ int main() {
     series = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
 
     chart_set_title(chart, &title);
-    chart_set_series_name(series, "Foo");
+    chart_series_set_name(series, "Foo");
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

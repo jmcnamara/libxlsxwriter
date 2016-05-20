@@ -104,8 +104,9 @@ lxw_rowcol_to_cell_abs(char *cell_name, lxw_row_t row, lxw_col_t col,
  * range reference.
  */
 void
-lxw_rowcol_to_range(char *range, int first_row, int first_col, int last_row,
-                    int last_col)
+lxw_rowcol_to_range(char *range,
+                    lxw_row_t first_row, lxw_col_t first_col,
+                    lxw_row_t last_row, lxw_col_t last_col)
 {
     uint8_t pos;
 
@@ -127,12 +128,13 @@ lxw_rowcol_to_range(char *range, int first_row, int first_col, int last_row,
 }
 
 /*
- * Convert zero indexed row and column pair to an Excel style $A$1:$C$5
+ * Convert zero indexed row and column pairs to an Excel style $A$1:$C$5
  * range reference with absolute values.
  */
 void
-lxw_rowcol_to_range_abs(char *range, int first_row, int first_col,
-                        int last_row, int last_col)
+lxw_rowcol_to_range_abs(char *range,
+                        lxw_row_t first_row, lxw_col_t first_col,
+                        lxw_row_t last_row, lxw_col_t last_col)
 {
     uint8_t pos;
 
@@ -151,6 +153,44 @@ lxw_rowcol_to_range_abs(char *range, int first_row, int first_col,
 
     /* Add the first cell to the range. */
     lxw_rowcol_to_cell_abs(&range[pos], last_row, last_col, 1, 1);
+}
+
+/*
+ * Convert sheetname and zero indexed row and column pairs to an Excel style
+ * Sheet1!$A$1:$C$5 formula reference with absolute values.
+ */
+void
+lxw_rowcol_to_formula_abs(char *formula, char *sheetname,
+                          lxw_row_t first_row, lxw_col_t first_col,
+                          lxw_row_t last_row, lxw_col_t last_col)
+{
+    uint8_t pos;
+    char *quoted_name = lxw_quote_sheetname(sheetname);
+
+    strcpy(formula, quoted_name);
+    free(quoted_name);
+
+    /* Get the end of the sheetname. */
+    pos = strlen(formula);
+
+    /* Add the range separator. */
+    formula[pos++] = '!';
+
+    /* Add the first cell to the range. */
+    lxw_rowcol_to_cell_abs(&formula[pos], first_row, first_col, 1, 1);
+
+    /* If the start and end cells are the same just return a single cell. */
+    if (first_row == last_row && first_col == last_col)
+        return;
+
+    /* Get the end of the cell. */
+    pos = strlen(formula);
+
+    /* Add the range separator. */
+    formula[pos++] = ':';
+
+    /* Add the first cell to the range. */
+    lxw_rowcol_to_cell_abs(&formula[pos], last_row, last_col, 1, 1);
 }
 
 /*

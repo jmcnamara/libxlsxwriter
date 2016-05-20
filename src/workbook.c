@@ -1344,10 +1344,10 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     }
     else {
         /* Use the default SheetN name. */
-        new_name = malloc(LXW_SHEETNAME_LENGTH);
+        new_name = malloc(LXW_MAX_SHEETNAME_LENGTH);
         GOTO_LABEL_ON_MEM_ERROR(new_name, mem_error);
 
-        lxw_snprintf(new_name, LXW_SHEETNAME_LENGTH, "Sheet%d",
+        lxw_snprintf(new_name, LXW_MAX_SHEETNAME_LENGTH, "Sheet%d",
                      self->num_sheets + 1);
         init_data.name = new_name;
         init_data.quoted_name = lxw_strdup(new_name);

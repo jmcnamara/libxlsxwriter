@@ -2415,16 +2415,78 @@ chart_set_title(lxw_chart *self, lxw_chart_title *title)
  * Set a user defined name for a series.
  */
 void
-chart_set_series_name(lxw_chart_series *series, char *name)
+chart_series_set_name(lxw_chart_series *series, char *name)
 {
     series->name = lxw_strdup(name);
+}
+
+/*
+ * Set the range for a series. Used in the following functions.
+ */
+void
+_chart_series_set_range(lxw_series_range *range, char *sheetname,
+                        lxw_row_t first_row, lxw_col_t first_col,
+                        lxw_row_t last_row, lxw_col_t last_col)
+{
+    char formula[LXW_MAX_FORMULA_RANGE_LENGTH] = { 0 };
+
+    /* Set the range properties. */
+    range->sheetname = lxw_strdup(sheetname);
+    range->first_row = first_row;
+    range->first_col = first_col;
+    range->last_row = last_row;
+    range->last_col = last_col;
+
+    /* Free any existing range. */
+    free(range->formula);
+
+    /* Convert the range properties to a formula like: Sheet1!$A$1:$A$5. */
+    lxw_rowcol_to_formula_abs(formula, sheetname,
+                              first_row, first_col, last_row, last_col);
+
+    range->formula = lxw_strdup(formula);
+}
+
+/*
+ * Set the categories range for a series.
+ */
+void
+chart_series_set_categories(lxw_chart_series *series, char *sheetname,
+                            lxw_row_t first_row, lxw_col_t first_col,
+                            lxw_row_t last_row, lxw_col_t last_col)
+{
+    if (!sheetname) {
+        LXW_WARN("chart_series_set_categories(): "
+                 "sheetname must be specified");
+        return;
+    }
+
+    _chart_series_set_range(series->categories, sheetname,
+                            first_row, first_col, last_row, last_col);
+}
+
+/*
+ * Set the values range for a series.
+ */
+void
+chart_series_set_values(lxw_chart_series *series, char *sheetname,
+                        lxw_row_t first_row, lxw_col_t first_col,
+                        lxw_row_t last_row, lxw_col_t last_col)
+{
+    if (!sheetname) {
+        LXW_WARN("chart_series_set_values(): sheetname must be specified");
+        return;
+    }
+
+    _chart_series_set_range(series->values, sheetname,
+                            first_row, first_col, last_row, last_col);
 }
 
 /*
  * Set a user defined name for a series.
  */
 void
-chart_set_axis_name(lxw_chart_axis *axis, char *name)
+chart_axis_set_name(lxw_chart_axis *axis, char *name)
 {
     axis->title.name = lxw_strdup(name);
 }
