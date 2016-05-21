@@ -55,10 +55,12 @@ _chart_series_free(lxw_chart_series *series)
     if (!series)
         return;
 
+    free(series->title.name);
+
     _chart_free_range(series->categories);
     _chart_free_range(series->values);
+    _chart_free_range(series->title.range);
 
-    free(series->name);
     free(series);
 }
 
@@ -1088,9 +1090,14 @@ _chart_write_axis_ids(lxw_chart *self)
 STATIC void
 _chart_write_series_name(lxw_chart *self, lxw_chart_series *series)
 {
-    if (series->name) {
+    if (series->title.name) {
         /* Write the c:tx element. */
-        _chart_write_tx_value(self, series->name);
+        _chart_write_tx_value(self, series->title.name);
+    }
+    else if (series->title.range->formula) {
+        /* Write the c:tx element. */
+        _chart_write_tx_formula(self, &series->title);
+
     }
 }
 
@@ -2508,6 +2515,9 @@ chart_add_series(lxw_chart *self, char *categories, char *values)
     series->values = calloc(1, sizeof(lxw_series_range));
     GOTO_LABEL_ON_MEM_ERROR(series->values, mem_error);
 
+    series->title.range = calloc(1, sizeof(lxw_series_range));
+    GOTO_LABEL_ON_MEM_ERROR(series->title.range, mem_error);
+
     if (categories) {
         if (categories[0] == '=')
             series->categories->formula = lxw_strdup(categories + 1);
@@ -2526,6 +2536,9 @@ chart_add_series(lxw_chart *self, char *categories, char *values)
         goto mem_error;
 
     if (_chart_init_data_cache(series->values) != LXW_NO_ERROR)
+        goto mem_error;
+
+    if (_chart_init_data_cache(series->title.range) != LXW_NO_ERROR)
         goto mem_error;
 
     STAILQ_INSERT_TAIL(self->series_list, series, list_pointers);
@@ -2556,7 +2569,30 @@ chart_set_style(lxw_chart *self, uint8_t style_id)
 void
 chart_series_set_name(lxw_chart_series *series, char *name)
 {
-    series->name = lxw_strdup(name);
+    if (!name)
+        return;
+
+    if (name[0] == '=')
+        series->title.range->formula = lxw_strdup(name + 1);
+    else
+        series->title.name = lxw_strdup(name);
+}
+
+/*
+ * Set an axis caption, with a range instead or a formula..
+ */
+void
+chart_series_set_name_range(lxw_chart_series *series, char *sheetname,
+                            lxw_row_t row, lxw_col_t col)
+{
+    if (!sheetname) {
+        LXW_WARN("chart_series_set_name_range(): "
+                 "sheetname must be specified");
+        return;
+    }
+
+    /* Start and end row, col are the same for single cell range. */
+    _chart_set_range(series->title.range, sheetname, row, col, row, col);
 }
 
 /*

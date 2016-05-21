@@ -751,6 +751,15 @@ _populate_range_dimensions(lxw_workbook *self, lxw_series_range *range)
     }
 }
 
+/* Set the range dimensions and set the data cache.
+ */
+STATIC void
+_populate_range(lxw_workbook *self, lxw_series_range *range)
+{
+    _populate_range_dimensions(self, range);
+    _populate_range_data_cache(self, range);
+}
+
 /*
  * Add "cached" data to charts to provide the numCache and strCache data for
  * series and title/axis ranges.
@@ -763,21 +772,17 @@ _add_chart_cache_data(lxw_workbook *self)
 
     STAILQ_FOREACH(chart, self->ordered_charts, ordered_list_pointers) {
 
-        _populate_range_dimensions(self, chart->title.range);
-        _populate_range_data_cache(self, chart->title.range);
-        _populate_range_dimensions(self, chart->x_axis->title.range);
-        _populate_range_data_cache(self, chart->x_axis->title.range);
-        _populate_range_dimensions(self, chart->y_axis->title.range);
-        _populate_range_data_cache(self, chart->y_axis->title.range);
+        _populate_range(self, chart->title.range);
+        _populate_range(self, chart->x_axis->title.range);
+        _populate_range(self, chart->y_axis->title.range);
 
         if (STAILQ_EMPTY(chart->series_list))
             continue;
 
         STAILQ_FOREACH(series, chart->series_list, list_pointers) {
-            _populate_range_dimensions(self, series->categories);
-            _populate_range_dimensions(self, series->values);
-            _populate_range_data_cache(self, series->categories);
-            _populate_range_data_cache(self, series->values);
+            _populate_range(self, series->categories);
+            _populate_range(self, series->values);
+            _populate_range(self, series->title.range);
         }
     }
 }

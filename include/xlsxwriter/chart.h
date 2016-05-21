@@ -137,16 +137,6 @@ typedef struct lxw_series_data_point {
 
 } lxw_series_data_point;
 
-typedef struct lxw_chart_series {
-
-    lxw_series_range *categories;
-    lxw_series_range *values;
-    char *name;
-
-    STAILQ_ENTRY (lxw_chart_series) list_pointers;
-
-} lxw_chart_series;
-
 typedef struct lxw_chart_font {
 
     uint8_t bold;
@@ -170,6 +160,16 @@ typedef struct lxw_chart_title {
     struct lxw_series_data_point data_point;
 
 } lxw_chart_title;
+
+typedef struct lxw_chart_series {
+
+    lxw_series_range *categories;
+    lxw_series_range *values;
+    lxw_chart_title title;
+
+    STAILQ_ENTRY (lxw_chart_series) list_pointers;
+
+} lxw_chart_series;
 
 typedef struct lxw_chart_axis {
 
@@ -249,6 +249,8 @@ lxw_chart_series *chart_add_series(lxw_chart *chart,
                                    char *categories, char *values);
 
 void chart_series_set_name(lxw_chart_series *series, char *name);
+void chart_series_set_name_range(lxw_chart_series *series, char *sheetname,
+                                 lxw_row_t row, lxw_col_t col);
 
 void chart_series_set_categories(lxw_chart_series *series, char *sheetname,
                                  lxw_row_t first_row, lxw_col_t first_col,

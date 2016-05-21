@@ -43,10 +43,21 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_chart_bar11(self):
         self.run_exe_test('test_chart_bar11')
 
-    # Tests 12 - 18 are chartsheets. 
+    # Tests 12 - 18 are chartsheets.
 
     def test_chart_bar19(self):
         self.run_exe_test('test_chart_bar19')
+
+    def test_chart_bar20(self):
+        self.run_exe_test('test_chart_bar20')
+
+    def test_chart_bar21(self):
+        self.run_exe_test('test_chart_bar21')
+
+    def test_chart_bar22(self):
+        self.run_exe_test('test_chart_bar22')
+
+    # 23 is a duplicate of 22 without explicit cache data.
 
     # Some of the following tests use the same target excel files as the tests
     # above but test variations of the interface.
@@ -74,3 +85,6 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chart_bar69(self):
         self.run_exe_test('test_chart_bar69', 'chart_bar19.xlsx')
+
+    def test_chart_bar70(self):
+        self.run_exe_test('test_chart_bar70', 'chart_bar20.xlsx')
