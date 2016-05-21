@@ -22,6 +22,100 @@
  ****************************************************************************/
 
 /*
+ * Free a series range object.
+ */
+void
+_chart_free_range(lxw_series_range *range)
+{
+    struct lxw_series_data_point *data_point;
+
+    if (!range)
+        return;
+
+    while (!STAILQ_EMPTY(range->data_cache)) {
+        data_point = STAILQ_FIRST(range->data_cache);
+        free(data_point->string);
+        STAILQ_REMOVE_HEAD(range->data_cache, list_pointers);
+
+        free(data_point);
+    }
+
+    free(range->data_cache);
+    free(range->formula);
+    free(range->sheetname);
+    free(range);
+}
+
+/*
+ * Free a series object.
+ */
+void
+_chart_series_free(lxw_chart_series *series)
+{
+    if (!series)
+        return;
+
+    _chart_free_range(series->categories);
+    _chart_free_range(series->values);
+
+    free(series->name);
+    free(series);
+}
+
+/*
+ * Initialize the data cache in a range object.
+ */
+int
+_chart_init_data_cache(lxw_series_range *range)
+{
+    /* Initialize the series range data cache. */
+    range->data_cache = calloc(1, sizeof(struct lxw_series_data_points));
+    RETURN_ON_MEM_ERROR(range->data_cache, -1);
+    STAILQ_INIT(range->data_cache);
+
+    return 0;
+}
+
+/*
+ * Free a chart object.
+ */
+void
+lxw_chart_free(lxw_chart *chart)
+{
+    lxw_chart_series *series;
+
+    if (!chart)
+        return;
+
+    if (chart->series_list) {
+        while (!STAILQ_EMPTY(chart->series_list)) {
+            series = STAILQ_FIRST(chart->series_list);
+            STAILQ_REMOVE_HEAD(chart->series_list, list_pointers);
+
+            _chart_series_free(series);
+        }
+
+        free(chart->series_list);
+    }
+
+    if (chart->x_axis)
+        free(chart->x_axis->title.name);
+
+    if (chart->y_axis)
+        free(chart->y_axis->title.name);
+
+    _chart_free_range(chart->title.range);
+    _chart_free_range(chart->x_axis->title.range);
+    _chart_free_range(chart->y_axis->title.range);
+
+    free(chart->x_axis);
+    free(chart->y_axis);
+
+    free(chart->title.name);
+    free(chart);
+}
+
+/*
  * Create a new chart object.
  */
 lxw_chart *
@@ -39,6 +133,25 @@ lxw_chart_new(uint8_t type)
 
     chart->y_axis = calloc(1, sizeof(struct lxw_chart_axis));
     GOTO_LABEL_ON_MEM_ERROR(chart->y_axis, mem_error);
+
+    chart->title.range = calloc(1, sizeof(lxw_series_range));
+    GOTO_LABEL_ON_MEM_ERROR(chart->title.range, mem_error);
+
+    chart->x_axis->title.range = calloc(1, sizeof(lxw_series_range));
+    GOTO_LABEL_ON_MEM_ERROR(chart->x_axis->title.range, mem_error);
+
+    chart->y_axis->title.range = calloc(1, sizeof(lxw_series_range));
+    GOTO_LABEL_ON_MEM_ERROR(chart->y_axis->title.range, mem_error);
+
+    /* Initialize the ranges in the chart titles. */
+    if (_chart_init_data_cache(chart->title.range) != LXW_NO_ERROR)
+        goto mem_error;
+
+    if (_chart_init_data_cache(chart->x_axis->title.range) != LXW_NO_ERROR)
+        goto mem_error;
+
+    if (_chart_init_data_cache(chart->y_axis->title.range) != LXW_NO_ERROR)
+        goto mem_error;
 
     chart->type = type;
     chart->style_id = 2;
@@ -67,81 +180,6 @@ mem_error:
 }
 
 /*
- * Free a series range object.
- */
-void
-lxw_chart_free_range(lxw_series_range *range)
-{
-    struct lxw_series_data_point *data_point;
-
-    if (!range)
-        return;
-
-    while (!STAILQ_EMPTY(range->data_cache)) {
-        data_point = STAILQ_FIRST(range->data_cache);
-        free(data_point->string);
-        STAILQ_REMOVE_HEAD(range->data_cache, list_pointers);
-
-        free(data_point);
-    }
-
-    free(range->data_cache);
-    free(range->formula);
-    free(range->sheetname);
-    free(range);
-}
-
-/*
- * Free a series object.
- */
-void
-lxw_chart_series_free(lxw_chart_series *series)
-{
-    if (!series)
-        return;
-
-    lxw_chart_free_range(series->categories);
-    lxw_chart_free_range(series->values);
-
-    free(series->name);
-    free(series);
-}
-
-/*
- * Free a chart object.
- */
-void
-lxw_chart_free(lxw_chart *chart)
-{
-    lxw_chart_series *series;
-
-    if (!chart)
-        return;
-
-    if (chart->series_list) {
-        while (!STAILQ_EMPTY(chart->series_list)) {
-            series = STAILQ_FIRST(chart->series_list);
-            STAILQ_REMOVE_HEAD(chart->series_list, list_pointers);
-
-            lxw_chart_series_free(series);
-        }
-
-        free(chart->series_list);
-    }
-
-    if (chart->x_axis)
-        free(chart->x_axis->title.name);
-    if (chart->y_axis)
-        free(chart->y_axis->title.name);
-
-    free(chart->x_axis);
-    free(chart->y_axis);
-
-    free(chart->title.name);
-    free(chart);
-}
-
-/*
  * Add unique ids for primary or secondary axes.
  */
 STATIC void
@@ -155,13 +193,12 @@ _chart_add_axis_ids(lxw_chart *self)
 }
 
 /*
- * Set the range for a series. Used in the chart_series_set_categories()
- * and chart_series_set_values() functions.
+ * Utility function to set a chart range.
  */
 void
-_chart_series_set_range(lxw_series_range *range, char *sheetname,
-                        lxw_row_t first_row, lxw_col_t first_col,
-                        lxw_row_t last_row, lxw_col_t last_col)
+_chart_set_range(lxw_series_range *range, char *sheetname,
+                 lxw_row_t first_row, lxw_col_t first_col,
+                 lxw_row_t last_row, lxw_col_t last_col)
 {
     char formula[LXW_MAX_FORMULA_RANGE_LENGTH] = { 0 };
 
@@ -439,12 +476,25 @@ _chart_write_a_r(lxw_chart *self, char *name)
 STATIC void
 _chart_write_a_p_pr(lxw_chart *self)
 {
+    lxw_xml_start_tag(self->file, "a:pPr", NULL);
+
+    /* Write the a:defRPr element. */
+    _chart_write_a_def_rpr(self);
+
+    lxw_xml_end_tag(self->file, "a:pPr");
+}
+
+/*
+ * Write the <a:pPr> element for pie chart legends.
+ */
+STATIC void
+_chart_write_a_p_pr_pie(lxw_chart *self)
+{
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char rtl[] = "0";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("rtl", rtl);
+    LXW_PUSH_ATTRIBUTES_STR("rtl", "0");
 
     lxw_xml_start_tag(self->file, "a:pPr", &attributes);
 
@@ -480,6 +530,23 @@ _chart_write_a_p(lxw_chart *self)
 
     /* Write the a:pPr element. */
     _chart_write_a_p_pr(self);
+
+    /* Write the a:endParaRPr element. */
+    _chart_write_a_end_para_rpr(self);
+
+    lxw_xml_end_tag(self->file, "a:p");
+}
+
+/*
+ * Write the <a:p> element for pie chart legends.
+ */
+STATIC void
+_chart_write_a_p_pie(lxw_chart *self)
+{
+    lxw_xml_start_tag(self->file, "a:p", NULL);
+
+    /* Write the a:pPr element. */
+    _chart_write_a_p_pr_pie(self);
 
     /* Write the a:endParaRPr element. */
     _chart_write_a_end_para_rpr(self);
@@ -535,6 +602,249 @@ _chart_write_a_body_pr(lxw_chart *self, lxw_chart_title *title)
 }
 
 /*
+ * Write the <c:ptCount> element.
+ */
+STATIC void
+_chart_write_pt_count(lxw_chart *self, uint16_t num_data_points)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("val", num_data_points);
+
+    lxw_xml_empty_tag(self->file, "c:ptCount", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:v> element.
+ */
+STATIC void
+_chart_write_v_num(lxw_chart *self, double number)
+{
+    char data[LXW_ATTR_32];
+
+    lxw_snprintf(data, LXW_ATTR_32, "%.16g", number);
+
+    lxw_xml_data_element(self->file, "c:v", data, NULL);
+}
+
+/*
+ * Write the <c:v> element.
+ */
+STATIC void
+_chart_write_v_str(lxw_chart *self, char *str)
+{
+    lxw_xml_data_element(self->file, "c:v", str, NULL);
+}
+
+/*
+ * Write the <c:f> element.
+ */
+STATIC void
+_chart_write_f(lxw_chart *self, char *formula)
+{
+    lxw_xml_data_element(self->file, "c:f", formula, NULL);
+}
+
+/*
+ * Write the <c:pt> element.
+ */
+STATIC void
+_chart_write_pt(lxw_chart *self, uint16_t index,
+                lxw_series_data_point *data_point)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    /* Ignore chart points that have no data. */
+    if (data_point->no_data)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("idx", index);
+
+    lxw_xml_start_tag(self->file, "c:pt", &attributes);
+
+    if (data_point->is_string && data_point->string)
+        _chart_write_v_str(self, data_point->string);
+    else
+        _chart_write_v_num(self, data_point->number);
+
+    lxw_xml_end_tag(self->file, "c:pt");
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:pt> element.
+ */
+STATIC void
+_chart_write_num_pt(lxw_chart *self, uint16_t index,
+                    lxw_series_data_point *data_point)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    /* Ignore chart points that have no data. */
+    if (data_point->no_data)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("idx", index);
+
+    lxw_xml_start_tag(self->file, "c:pt", &attributes);
+
+    _chart_write_v_num(self, data_point->number);
+
+    lxw_xml_end_tag(self->file, "c:pt");
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:formatCode> element.
+ */
+STATIC void
+_chart_write_format_code(lxw_chart *self)
+{
+    lxw_xml_data_element(self->file, "c:formatCode", "General", NULL);
+}
+
+/*
+ * Write the <c:numCache> element.
+ */
+STATIC void
+_chart_write_num_cache(lxw_chart *self, lxw_series_range *range)
+{
+    lxw_series_data_point *data_point;
+    uint16_t index = 0;
+
+    lxw_xml_start_tag(self->file, "c:numCache", NULL);
+
+    /* Write the c:formatCode element. */
+    _chart_write_format_code(self);
+
+    /* Write the c:ptCount element. */
+    _chart_write_pt_count(self, range->num_data_points);
+
+    STAILQ_FOREACH(data_point, range->data_cache, list_pointers) {
+        /* Write the c:pt element. */
+        _chart_write_num_pt(self, index, data_point);
+        index++;
+    }
+
+    lxw_xml_end_tag(self->file, "c:numCache");
+}
+
+/*
+ * Write the <c:strCache> element.
+ */
+STATIC void
+_chart_write_str_cache(lxw_chart *self, lxw_series_range *range)
+{
+    lxw_series_data_point *data_point;
+    uint16_t index = 0;
+
+    lxw_xml_start_tag(self->file, "c:strCache", NULL);
+
+    /* Write the c:ptCount element. */
+    _chart_write_pt_count(self, range->num_data_points);
+
+    STAILQ_FOREACH(data_point, range->data_cache, list_pointers) {
+        /* Write the c:pt element. */
+        _chart_write_pt(self, index, data_point);
+        index++;
+    }
+
+    lxw_xml_end_tag(self->file, "c:strCache");
+}
+
+/*
+ * Write the <c:numRef> element.
+ */
+STATIC void
+_chart_write_num_ref(lxw_chart *self, lxw_series_range *range)
+{
+    lxw_xml_start_tag(self->file, "c:numRef", NULL);
+
+    /* Write the c:f element. */
+    _chart_write_f(self, range->formula);
+
+    if (!STAILQ_EMPTY(range->data_cache)) {
+        /* Write the c:numCache element. */
+        _chart_write_num_cache(self, range);
+    }
+
+    lxw_xml_end_tag(self->file, "c:numRef");
+}
+
+/*
+ * Write the <c:strRef> element.
+ */
+STATIC void
+_chart_write_str_ref(lxw_chart *self, lxw_series_range *range)
+{
+    lxw_xml_start_tag(self->file, "c:strRef", NULL);
+
+    /* Write the c:f element. */
+    _chart_write_f(self, range->formula);
+
+    if (!STAILQ_EMPTY(range->data_cache)) {
+        /* Write the c:strCache element. */
+        _chart_write_str_cache(self, range);
+    }
+
+    lxw_xml_end_tag(self->file, "c:strRef");
+}
+
+/*
+ * Write the cached data elements.
+ */
+STATIC void
+_chart_write_data_cache(lxw_chart *self, lxw_series_range *range,
+                        uint8_t has_string_cache)
+{
+    if (has_string_cache) {
+        /* Write the c:strRef element. */
+        _chart_write_str_ref(self, range);
+    }
+    else {
+        /* Write the c:numRef element. */
+        _chart_write_num_ref(self, range);
+    }
+}
+
+/*
+ * Write the <c:tx> element with a simple value such as for series names.
+ */
+STATIC void
+_chart_write_tx_value(lxw_chart *self, char *name)
+{
+    lxw_xml_start_tag(self->file, "c:tx", NULL);
+
+    /* Write the c:v element. */
+    _chart_write_v_str(self, name);
+
+    lxw_xml_end_tag(self->file, "c:tx");
+}
+
+/*
+ * Write the <c:tx> element with a simple value such as for series names.
+ */
+STATIC void
+_chart_write_tx_formula(lxw_chart *self, lxw_chart_title *title)
+{
+    lxw_xml_start_tag(self->file, "c:tx", NULL);
+
+    _chart_write_str_ref(self, title->range);
+
+    lxw_xml_end_tag(self->file, "c:tx");
+}
+
+/*
  * Write the <c:txPr> element.
  */
 STATIC void
@@ -550,6 +860,26 @@ _chart_write_tx_pr(lxw_chart *self, lxw_chart_title *title)
 
     /* Write the a:p element. */
     _chart_write_a_p(self);
+
+    lxw_xml_end_tag(self->file, "c:txPr");
+}
+
+/*
+ * Write the <c:txPr> element for pie chart legends.
+ */
+STATIC void
+_chart_write_tx_pr_pie(lxw_chart *self, lxw_chart_title *title)
+{
+    lxw_xml_start_tag(self->file, "c:txPr", NULL);
+
+    /* Write the a:bodyPr element. */
+    _chart_write_a_body_pr(self, title);
+
+    /* Write the a:lstStyle element. */
+    _chart_write_a_lst_style(self);
+
+    /* Write the a:p element. */
+    _chart_write_a_p_pie(self);
 
     lxw_xml_end_tag(self->file, "c:txPr");
 }
@@ -601,6 +931,26 @@ _chart_write_title_rich(lxw_chart *self, lxw_chart_title *title)
 
     /* Write the c:layout element. */
     _chart_write_layout(self);
+
+    lxw_xml_end_tag(self->file, "c:title");
+}
+
+/*
+ * Write the <c:title> element for a formula style title
+ */
+STATIC void
+_chart_write_title_formula(lxw_chart *self, lxw_chart_title *title)
+{
+    lxw_xml_start_tag(self->file, "c:title", NULL);
+
+    /* Write the c:tx element. */
+    _chart_write_tx_formula(self, title);
+
+    /* Write the c:layout element. */
+    _chart_write_layout(self);
+
+    /* Write the c:txPr element. */
+    _chart_write_tx_pr(self, title);
 
     lxw_xml_end_tag(self->file, "c:title");
 }
@@ -733,59 +1083,6 @@ _chart_write_axis_ids(lxw_chart *self)
 }
 
 /*
- * Write the <c:ptCount> element.
- */
-STATIC void
-_chart_write_pt_count(lxw_chart *self, uint16_t num_data_points)
-{
-    struct xml_attribute_list attributes;
-    struct xml_attribute *attribute;
-
-    LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_INT("val", num_data_points);
-
-    lxw_xml_empty_tag(self->file, "c:ptCount", &attributes);
-
-    LXW_FREE_ATTRIBUTES();
-}
-
-/*
- * Write the <c:v> element.
- */
-STATIC void
-_chart_write_v_num(lxw_chart *self, double number)
-{
-    char data[LXW_ATTR_32];
-
-    lxw_snprintf(data, LXW_ATTR_32, "%.16g", number);
-
-    lxw_xml_data_element(self->file, "c:v", data, NULL);
-}
-
-/*
- * Write the <c:v> element.
- */
-STATIC void
-_chart_write_v_str(lxw_chart *self, char *str)
-{
-    lxw_xml_data_element(self->file, "c:v", str, NULL);
-}
-
-/*
- * Write the <c:tx> element with a simple value such as for series names.
- */
-STATIC void
-_chart_write_tx_value(lxw_chart *self, char *name)
-{
-    lxw_xml_start_tag(self->file, "c:tx", NULL);
-
-    /* Write the c:v element. */
-    _chart_write_v_str(self, name);
-
-    lxw_xml_end_tag(self->file, "c:tx");
-}
-
-/*
  * Write the series name.
  */
 STATIC void
@@ -795,70 +1092,6 @@ _chart_write_series_name(lxw_chart *self, lxw_chart_series *series)
         /* Write the c:tx element. */
         _chart_write_tx_value(self, series->name);
     }
-}
-
-/*
- * Write the <c:pt> element.
- */
-STATIC void
-_chart_write_pt(lxw_chart *self, uint16_t index,
-                lxw_series_data_point *data_point)
-{
-    struct xml_attribute_list attributes;
-    struct xml_attribute *attribute;
-
-    /* Ignore chart points that have no data. */
-    if (data_point->no_data)
-        return;
-
-    LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_INT("idx", index);
-
-    lxw_xml_start_tag(self->file, "c:pt", &attributes);
-
-    if (data_point->is_string && data_point->string)
-        _chart_write_v_str(self, data_point->string);
-    else
-        _chart_write_v_num(self, data_point->number);
-
-    lxw_xml_end_tag(self->file, "c:pt");
-
-    LXW_FREE_ATTRIBUTES();
-}
-
-/*
- * Write the <c:pt> element.
- */
-STATIC void
-_chart_write_num_pt(lxw_chart *self, uint16_t index,
-                    lxw_series_data_point *data_point)
-{
-    struct xml_attribute_list attributes;
-    struct xml_attribute *attribute;
-
-    /* Ignore chart points that have no data. */
-    if (data_point->no_data)
-        return;
-
-    LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_INT("idx", index);
-
-    lxw_xml_start_tag(self->file, "c:pt", &attributes);
-
-    _chart_write_v_num(self, data_point->number);
-
-    lxw_xml_end_tag(self->file, "c:pt");
-
-    LXW_FREE_ATTRIBUTES();
-}
-
-/*
- * Write the <c:formatCode> element.
- */
-STATIC void
-_chart_write_format_code(lxw_chart *self)
-{
-    lxw_xml_data_element(self->file, "c:formatCode", "General", NULL);
 }
 
 /*
@@ -879,119 +1112,6 @@ _chart_write_major_tick_mark(lxw_chart *self, lxw_chart_axis *axis)
     lxw_xml_empty_tag(self->file, "c:majorTickMark", &attributes);
 
     LXW_FREE_ATTRIBUTES();
-}
-
-/*
- * Write the <c:numCache> element.
- */
-STATIC void
-_chart_write_num_cache(lxw_chart *self, lxw_series_range *range)
-{
-    lxw_series_data_point *data_point;
-    uint16_t index = 0;
-
-    lxw_xml_start_tag(self->file, "c:numCache", NULL);
-
-    /* Write the c:formatCode element. */
-    _chart_write_format_code(self);
-
-    /* Write the c:ptCount element. */
-    _chart_write_pt_count(self, range->num_data_points);
-
-    STAILQ_FOREACH(data_point, range->data_cache, list_pointers) {
-        /* Write the c:pt element. */
-        _chart_write_num_pt(self, index, data_point);
-        index++;
-    }
-
-    lxw_xml_end_tag(self->file, "c:numCache");
-}
-
-/*
- * Write the <c:strCache> element.
- */
-STATIC void
-_chart_write_str_cache(lxw_chart *self, lxw_series_range *range)
-{
-    lxw_series_data_point *data_point;
-    uint16_t index = 0;
-
-    lxw_xml_start_tag(self->file, "c:strCache", NULL);
-
-    /* Write the c:ptCount element. */
-    _chart_write_pt_count(self, range->num_data_points);
-
-    STAILQ_FOREACH(data_point, range->data_cache, list_pointers) {
-        /* Write the c:pt element. */
-        _chart_write_pt(self, index, data_point);
-        index++;
-    }
-
-    lxw_xml_end_tag(self->file, "c:strCache");
-}
-
-/*
- * Write the <c:f> element.
- */
-STATIC void
-_chart_write_f(lxw_chart *self, char *formula)
-{
-    lxw_xml_data_element(self->file, "c:f", formula, NULL);
-}
-
-/*
- * Write the <c:numRef> element.
- */
-STATIC void
-_chart_write_num_ref(lxw_chart *self, lxw_series_range *range)
-{
-    lxw_xml_start_tag(self->file, "c:numRef", NULL);
-
-    /* Write the c:f element. */
-    _chart_write_f(self, range->formula);
-
-    if (!STAILQ_EMPTY(range->data_cache)) {
-        /* Write the c:numCache element. */
-        _chart_write_num_cache(self, range);
-    }
-
-    lxw_xml_end_tag(self->file, "c:numRef");
-}
-
-/*
- * Write the <c:strRef> element.
- */
-STATIC void
-_chart_write_str_ref(lxw_chart *self, lxw_series_range *range)
-{
-    lxw_xml_start_tag(self->file, "c:strRef", NULL);
-
-    /* Write the c:f element. */
-    _chart_write_f(self, range->formula);
-
-    if (!STAILQ_EMPTY(range->data_cache)) {
-        /* Write the c:strCache element. */
-        _chart_write_str_cache(self, range);
-    }
-
-    lxw_xml_end_tag(self->file, "c:strRef");
-}
-
-/*
- * Write the cached data elements.
- */
-STATIC void
-_chart_write_data_cache(lxw_chart *self, lxw_series_range *range,
-                        uint8_t has_string_cache)
-{
-    if (has_string_cache) {
-        /* Write the c:strRef element. */
-        _chart_write_str_ref(self, range);
-    }
-    else {
-        /* Write the c:numRef element. */
-        _chart_write_num_ref(self, range);
-    }
 }
 
 /*
@@ -1478,7 +1598,7 @@ _chart_write_legend(lxw_chart *self)
 
     if (self->type == LXW_CHART_PIE || self->type == LXW_CHART_DOUGHNUT) {
         /* Write the c:txPr element. */
-        _chart_write_tx_pr(self, NULL);
+        _chart_write_tx_pr_pie(self, NULL);
     }
 
     lxw_xml_end_tag(self->file, "c:legend");
@@ -1595,6 +1715,10 @@ _chart_write_title(lxw_chart *self, lxw_chart_title *title)
         /* Write the c:title element. */
         _chart_write_title_rich(self, title);
     }
+    else if (title->range->formula) {
+        /* Write the c:title element. */
+        _chart_write_title_formula(self, title);
+    }
 }
 
 /*
@@ -1603,7 +1727,7 @@ _chart_write_title(lxw_chart *self, lxw_chart_title *title)
 STATIC void
 _chart_write_chart_title(lxw_chart *self)
 {
-    if (self->title.none) {
+    if (self->title.off) {
         /* Write the c:autoTitleDeleted element. */
         _chart_write_auto_title_deleted(self);
     }
@@ -2367,20 +2491,6 @@ lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
 }
 
 /*
- * Initialize the data cache in a range object.
- */
-int
-lxw_chart_init_data_cache(lxw_series_range *range)
-{
-    /* Initialize the series range data cache. */
-    range->data_cache = calloc(1, sizeof(struct lxw_series_data_points));
-    RETURN_ON_MEM_ERROR(range->data_cache, -1);
-    STAILQ_INIT(range->data_cache);
-
-    return 0;
-}
-
-/*
  * Insert an image into the worksheet.
  */
 lxw_chart_series *
@@ -2412,15 +2522,18 @@ chart_add_series(lxw_chart *self, char *categories, char *values)
             series->values->formula = lxw_strdup(values);
     }
 
-    lxw_chart_init_data_cache(series->categories);
-    lxw_chart_init_data_cache(series->values);
+    if (_chart_init_data_cache(series->categories) != LXW_NO_ERROR)
+        goto mem_error;
+
+    if (_chart_init_data_cache(series->values) != LXW_NO_ERROR)
+        goto mem_error;
 
     STAILQ_INSERT_TAIL(self->series_list, series, list_pointers);
 
     return series;
 
 mem_error:
-    lxw_chart_series_free(series);
+    _chart_series_free(series);
     return NULL;
 }
 
@@ -2435,24 +2548,6 @@ chart_set_style(lxw_chart *self, uint8_t style_id)
         style_id = 2;
 
     self->style_id = style_id;
-}
-
-/*
- * Set the chart title.
- */
-void
-chart_title_set_name(lxw_chart *self, char *name)
-{
-    self->title.name = lxw_strdup(name);
-}
-
-/*
- * Turn off the chart title.
- */
-void
-chart_title_off(lxw_chart *self)
-{
-    self->title.none = LXW_TRUE;
 }
 
 /*
@@ -2478,8 +2573,8 @@ chart_series_set_categories(lxw_chart_series *series, char *sheetname,
         return;
     }
 
-    _chart_series_set_range(series->categories, sheetname,
-                            first_row, first_col, last_row, last_col);
+    _chart_set_range(series->categories, sheetname,
+                     first_row, first_col, last_row, last_col);
 }
 
 /*
@@ -2495,8 +2590,8 @@ chart_series_set_values(lxw_chart_series *series, char *sheetname,
         return;
     }
 
-    _chart_series_set_range(series->values, sheetname,
-                            first_row, first_col, last_row, last_col);
+    _chart_set_range(series->values, sheetname,
+                     first_row, first_col, last_row, last_col);
 }
 
 /*
@@ -2505,7 +2600,37 @@ chart_series_set_values(lxw_chart_series *series, char *sheetname,
 void
 chart_axis_set_name(lxw_chart_axis *axis, char *name)
 {
-    axis->title.name = lxw_strdup(name);
+    if (!name)
+        return;
+
+    if (name[0] == '=')
+        axis->title.range->formula = lxw_strdup(name + 1);
+    else
+        axis->title.name = lxw_strdup(name);
+}
+
+/*
+ * Set the chart title.
+ */
+void
+chart_title_set_name(lxw_chart *self, char *name)
+{
+    if (!name)
+        return;
+
+    if (name[0] == '=')
+        self->title.range->formula = lxw_strdup(name + 1);
+    else
+        self->title.name = lxw_strdup(name);
+}
+
+/*
+ * Turn off the chart title.
+ */
+void
+chart_title_off(lxw_chart *self)
+{
+    self->title.off = LXW_TRUE;
 }
 
 /*

@@ -736,8 +736,18 @@ _populate_range_dimensions(lxw_workbook *self, lxw_series_range *range)
         range->sheetname = lxw_strdup(sheetname);
         range->first_row = lxw_name_to_row(tmp_str);
         range->first_col = lxw_name_to_col(tmp_str);
-        range->last_row = lxw_name_to_row_2(tmp_str);
-        range->last_col = lxw_name_to_col_2(tmp_str);
+
+        if (strchr(tmp_str, ':')) {
+            /* 2D range. */
+            range->last_row = lxw_name_to_row_2(tmp_str);
+            range->last_col = lxw_name_to_col_2(tmp_str);
+        }
+        else {
+            /* 1D range. */
+            range->last_row = range->first_row;
+            range->last_col = range->first_col;
+        }
+
     }
 }
 
@@ -752,6 +762,13 @@ _add_chart_cache_data(lxw_workbook *self)
     lxw_chart_series *series;
 
     STAILQ_FOREACH(chart, self->ordered_charts, ordered_list_pointers) {
+
+        _populate_range_dimensions(self, chart->title.range);
+        _populate_range_data_cache(self, chart->title.range);
+        _populate_range_dimensions(self, chart->x_axis->title.range);
+        _populate_range_data_cache(self, chart->x_axis->title.range);
+        _populate_range_dimensions(self, chart->y_axis->title.range);
+        _populate_range_data_cache(self, chart->y_axis->title.range);
 
         if (STAILQ_EMPTY(chart->series_list))
             continue;

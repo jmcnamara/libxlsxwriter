@@ -156,10 +156,18 @@ typedef struct lxw_chart_font {
 typedef struct lxw_chart_title {
 
     char *name;
+    lxw_row_t row;
+    lxw_col_t col;
     lxw_chart_font font;
-    uint8_t has_formula;
-    uint8_t none;
+    uint8_t off;
     uint8_t is_horizontal;
+    uint8_t ignore_cache;
+
+    /* We use a range to hold the title formula properties even though it
+     * will only have 1 point in order to re-use similar functions.*/
+    lxw_series_range *range;
+
+    struct lxw_series_data_point data_point;
 
 } lxw_chart_title;
 
@@ -237,7 +245,6 @@ extern "C" {
 lxw_chart *lxw_chart_new(uint8_t type);
 void lxw_chart_free(lxw_chart *chart);
 void lxw_chart_assemble_xml_file(lxw_chart *chart);
-int lxw_chart_init_data_cache(lxw_series_range *range);
 lxw_chart_series *chart_add_series(lxw_chart *chart,
                                    char *categories, char *values);
 

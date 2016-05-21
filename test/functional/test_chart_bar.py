@@ -45,8 +45,11 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     # Tests 12 - 18 are chartsheets. 
 
-    # def test_chart_bar19(self):
-    #     self.run_exe_test('test_chart_bar19')
+    def test_chart_bar19(self):
+        self.run_exe_test('test_chart_bar19')
+
+    # Some of the following tests use the same target excel files as the tests
+    # above but test variations of the interface.
 
     def test_chart_bar51(self):
         self.run_exe_test('test_chart_bar51')
