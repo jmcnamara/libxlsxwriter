@@ -259,10 +259,13 @@ void chart_series_set_values(lxw_chart_series *series, char *sheetname,
                              lxw_row_t last_row, lxw_col_t last_col);
 
 void chart_axis_set_name(lxw_chart_axis *axis, char *name);
-
+void chart_axis_set_name_range(lxw_chart_axis *axis, char *sheetname,
+                               lxw_row_t row, lxw_col_t col);
 void chart_set_style(lxw_chart *chart, uint8_t style_id);
 
 void chart_title_set_name(lxw_chart *chart, char *name);
+void chart_title_set_name_range(lxw_chart *chart, char *sheetname,
+                                lxw_row_t row, lxw_col_t col);
 void chart_title_off(lxw_chart *chart);
 
 void chart_set_rotation(lxw_chart *chart, uint16_t rotation);

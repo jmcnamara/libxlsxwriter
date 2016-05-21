@@ -2595,7 +2595,7 @@ chart_series_set_values(lxw_chart_series *series, char *sheetname,
 }
 
 /*
- * Set a user defined name for a series.
+ * Set an axis caption.
  */
 void
 chart_axis_set_name(lxw_chart_axis *axis, char *name)
@@ -2607,6 +2607,22 @@ chart_axis_set_name(lxw_chart_axis *axis, char *name)
         axis->title.range->formula = lxw_strdup(name + 1);
     else
         axis->title.name = lxw_strdup(name);
+}
+
+/*
+ * Set an axis caption, with a range instead or a formula..
+ */
+void
+chart_axis_set_name_range(lxw_chart_axis *axis, char *sheetname,
+                          lxw_row_t row, lxw_col_t col)
+{
+    if (!sheetname) {
+        LXW_WARN("chart_axis_set_name_range(): sheetname must be specified");
+        return;
+    }
+
+    /* Start and end row, col are the same for single cell range. */
+    _chart_set_range(axis->title.range, sheetname, row, col, row, col);
 }
 
 /*
@@ -2622,6 +2638,22 @@ chart_title_set_name(lxw_chart *self, char *name)
         self->title.range->formula = lxw_strdup(name + 1);
     else
         self->title.name = lxw_strdup(name);
+}
+
+/*
+ * Set the chart title, with a range instead or a formula.
+ */
+void
+chart_title_set_name_range(lxw_chart *self, char *sheetname,
+                           lxw_row_t row, lxw_col_t col)
+{
+    if (!sheetname) {
+        LXW_WARN("chart_title_set_name_range(): sheetname must be specified");
+        return;
+    }
+
+    /* Start and end row, col are the same for single cell range. */
+    _chart_set_range(self->title.range, sheetname, row, col, row, col);
 }
 
 /*
