@@ -763,6 +763,7 @@ INPUT                  = src/mainpage.dox                  \
                          ../include/xlsxwriter/workbook.h  \
                          ../include/xlsxwriter/worksheet.h \
                          ../include/xlsxwriter/format.h    \
+                         ../include/xlsxwriter/chart.h     \
                          ../include/xlsxwriter/utility.h   \
                          ../include/xlsxwriter/common.h    \
                          src/working_with_formats.dox      \

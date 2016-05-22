@@ -1,5 +1,5 @@
 /*
- * An example of creating Excel bar charts using the libxlsxwriter library.
+ * An example of creating Excel column charts using the libxlsxwriter library.
  *
  * Copyright 2014-2016, John McNamara, jmcnamara@cpan.org
  *
@@ -37,7 +37,7 @@ void write_worksheet_data(lxw_worksheet *worksheet, lxw_format *bold) {
  */
 int main() {
 
-    lxw_workbook     *workbook  = new_workbook("chart_bar.xlsx");
+    lxw_workbook     *workbook  = new_workbook("chart_column.xlsx");
     lxw_worksheet    *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_chart_series *series;
 
@@ -50,9 +50,9 @@ int main() {
 
 
     /*
-     * Create a bar chart.
+     * Create a column chart.
      */
-    lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_BAR);
+    lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_COLUMN);
 
     /* Add the first series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
@@ -82,9 +82,9 @@ int main() {
 
 
     /*
-     * Create a stacked bar chart.
+     * Create a stacked column chart.
      */
-    chart = workbook_add_chart(workbook, LXW_CHART_BAR_STACKED);
+    chart = workbook_add_chart(workbook, LXW_CHART_COLUMN_STACKED);
 
     /* Add the first series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
@@ -111,9 +111,9 @@ int main() {
 
 
     /*
-     * Create a percent stacked bar chart.
+     * Create a percent stacked column chart.
      */
-    chart = workbook_add_chart(workbook, LXW_CHART_BAR_STACKED_PERCENT);
+    chart = workbook_add_chart(workbook, LXW_CHART_COLUMN_STACKED_PERCENT);
 
     /* Add the first series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");

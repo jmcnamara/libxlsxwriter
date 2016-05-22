@@ -43,7 +43,7 @@ int main() {
      * A simple example to start
      */
     lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, "Simple");
-    char header1[] = "&CHere is some centred text.";
+    char header1[] = "&CHere is some centered text.";
     char footer1[] = "&LHere is some left aligned text.";
 
     worksheet_set_header(worksheet1, header1);

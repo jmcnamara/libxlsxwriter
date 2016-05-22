@@ -192,8 +192,134 @@ Next example: @ref panes.c
 @example panes.c
 An example of how to create panes in a worksheet, both "freeze" panes and "split" panes.
 
-Back to @ref examples
+Next example: @ref chart.c
 @image html panes.png
+
+
+@example chart.c
+An example of creating a simple column chart with 3 data series.
+
+Next example: @ref chart_area.c
+@image html chart_simple.png
+
+
+@example chart_area.c
+Example of creating Excel Area charts. Three types of area chart are shown.
+
+The default area chart:
+@image html chart_area1.png
+
+Stacked area chart:
+@image html chart_area2.png
+
+Percent stacked area chart:
+@image html chart_area3.png
+
+Next example: @ref chart_bar.c
+
+
+@example chart_bar.c
+Example of creating Excel Bar charts. Three types of bar chart are shown.
+
+The default bar chart:
+@image html chart_bar1.png
+
+Stacked bar chart:
+@image html chart_bar2.png
+
+Percent stacked bar chart:
+@image html chart_bar3.png
+
+Next example: @ref chart_column.c
+
+
+@example chart_column.c
+Example of creating Excel Column charts. Three types of column chart are shown.
+
+The default column chart:
+@image html chart_column1.png
+
+Stacked column chart:
+@image html chart_column2.png
+
+Percent stacked column chart:
+@image html chart_column3.png
+
+Next example: @ref chart_line.c
+
+
+@example chart_line.c
+Example of creating an Excel Line chart.
+
+The default line chart:
+@image html chart_line1.png
+
+Next example: @ref chart_scatter.c
+
+
+@example chart_scatter.c
+Example of creating Excel Scatter charts. Five types of scatter chart are shown.
+
+The default scatter chart:
+@image html chart_scatter1.png
+
+Straight scatter chart with markers:
+@image html chart_scatter2.png
+
+Straight scatter chart:
+@image html chart_scatter3.png
+
+Smooth scatter chart with markers:
+@image html chart_scatter4.png
+
+Smooth scatter chart:
+@image html chart_scatter5.png
+
+Next example: @ref chart_radar.c
+
+
+@example chart_radar.c
+Example of creating Excel Radar charts. Three types of radar chart are shown.
+
+The default radar chart:
+@image html chart_radar1.png
+
+Radar chart with markers:
+@image html chart_radar2.png
+
+Filled radar chart:
+@image html chart_radar3.png
+
+Next example: @ref chart_pie.c
+
+
+@example chart_pie.c
+Example of creating an Excel Pie chart.
+
+The default pie chart:
+@image html chart_pie1.png
+
+Next example: @ref chart_doughnut.c
+
+
+@example chart_doughnut.c
+Example of creating an Excel Doughnut chart.
+
+The default doughnut chart:
+@image html chart_doughnut1.png
+
+Next example: @ref chart_styles.c
+
+
+@example chart_styles.c
+
+An example showing all 48 default chart styles available in Excel 2007 using
+the chart chart_set_style() method.
+
+@image html chart_styles.png
+
+
+Back to @ref examples
 
 
 */

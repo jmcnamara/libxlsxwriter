@@ -37,6 +37,16 @@ my @examples = (
     [ 'worksheet_protection.c', 'Example of enabling worksheet protection' ],
     [ 'hide_row_col.c',         'Example of hiding worksheet rows and columns' ],
     [ 'panes.c',                'Example of how to create worksheet panes' ],
+    [ 'chart.c',                'Example of a simple column chart' ],
+    [ 'chart_area.c',           'Examples of area charts' ],
+    [ 'chart_bar.c',            'Examples of bar charts' ],
+    [ 'chart_column.c',         'Examples of column charts' ],
+    [ 'chart_line.c',           'Example of a line chart' ],
+    [ 'chart_scatter.c',        'Examples of scatter charts' ],
+    [ 'chart_radar.c',          'Examples of radar charts' ],
+    [ 'chart_pie.c',            'Examples of pie charts' ],
+    [ 'chart_doughnut.c',       'Examples of doughnut charts' ],
+    [ 'chart_styles.c',         'Examples of built-in charts styles' ],
 );
 
 # Convert the array refs to a hash for lookups.

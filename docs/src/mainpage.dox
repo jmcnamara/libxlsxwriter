@@ -18,6 +18,7 @@ features such as:
 - Merged cells.
 - Defined names.
 - Autofilters.
+- Charts.
 - Worksheet PNG/JPEG images.
 - Memory optimization mode for writing large files.
 - Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter).
@@ -41,6 +42,7 @@ following sections for more information:
 - @ref workbook.h  "The Workbook object"
 - @ref worksheet.h "The Worksheet object"
 - @ref format.h    "The Format object"
+- @ref chart.h    "The Chart object"
 
 - @ref working_with_formats
 - @ref working_with_colors

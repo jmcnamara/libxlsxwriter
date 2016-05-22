@@ -304,9 +304,9 @@ lxw_workbook *new_workbook_opt(const char *filename,
  * @param workbook  Pointer to a lxw_workbook instance.
  * @param sheetname Optional worksheet name, defaults to Sheet1, etc.
  *
- * @return A lxw_worksheet instance.
+ * @return A lxw_worksheet object.
  *
- * The `%workbook_add_worksheet()` method adds a new worksheet to a workbook:
+ * The `%workbook_add_worksheet()` function adds a new worksheet to a workbook:
  *
  * At least one worksheet should be added to a new workbook: The @ref
  * worksheet.h "Worksheet" object is used to write data and configure a
@@ -337,8 +337,6 @@ lxw_workbook *new_workbook_opt(const char *filename,
 lxw_worksheet *workbook_add_worksheet(lxw_workbook *workbook,
                                       const char *sheetname);
 
-lxw_chart *workbook_add_chart(lxw_workbook *workbook, uint8_t chart_type);
-
 /**
  * @brief Create a new @ref format.h "Format" object to formats cells in
  *        worksheets.
@@ -367,6 +365,62 @@ lxw_chart *workbook_add_chart(lxw_workbook *workbook, uint8_t chart_type);
  *
  */
 lxw_format *workbook_add_format(lxw_workbook *workbook);
+
+/**
+ * @brief Create a new chart to be added to a worksheet:
+ *
+ * @param workbook   Pointer to a lxw_workbook instance.
+ * @param chart_type The type of chart to be created. See #lxw_chart_types.
+ *
+ * @return A lxw_chart object.
+ *
+ * The `%workbook_add_chart()` function creates a new chart object that can
+ * be added to a worksheet:
+ *
+ * @code
+ *     // Create a chart object.
+ *     lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_COLUMN);
+ *
+ *     // Add data series to the chart.
+ *     chart_add_series(chart, NULL, "Sheet1!$A$1:$A$5");
+ *     chart_add_series(chart, NULL, "Sheet1!$B$1:$B$5");
+ *     chart_add_series(chart, NULL, "Sheet1!$C$1:$C$5");
+ *
+ *     // Insert the chart into the worksheet
+ *     worksheet_insert_chart(worksheet, CELL("B7"), chart);
+ * @endcode
+ *
+ * The available chart types are defined in #lxw_chart_types. The types of
+ * charts that are supported are:
+ *
+ * | Chart type                               | Description                            |
+ * | :--------------------------------------- | :------------------------------------  |
+ * | #LXW_CHART_AREA                          | Area chart.                            |
+ * | #LXW_CHART_AREA_STACKED                  | Area chart - stacked.                  |
+ * | #LXW_CHART_AREA_STACKED_PERCENT          | Area chart - percentage stacked.       |
+ * | #LXW_CHART_BAR                           | Bar chart.                             |
+ * | #LXW_CHART_BAR_STACKED                   | Bar chart - stacked.                   |
+ * | #LXW_CHART_BAR_STACKED_PERCENT           | Bar chart - percentage stacked.        |
+ * | #LXW_CHART_COLUMN                        | Column chart.                          |
+ * | #LXW_CHART_COLUMN_STACKED                | Column chart - stacked.                |
+ * | #LXW_CHART_COLUMN_STACKED_PERCENT        | Column chart - percentage stacked.     |
+ * | #LXW_CHART_DOUGHNUT                      | Doughnut chart.                        |
+ * | #LXW_CHART_LINE                          | Line chart.                            |
+ * | #LXW_CHART_PIE                           | Pie chart.                             |
+ * | #LXW_CHART_SCATTER                       | Scatter chart.                         |
+ * | #LXW_CHART_SCATTER_STRAIGHT              | Scatter chart - straight.              |
+ * | #LXW_CHART_SCATTER_STRAIGHT_WITH_MARKERS | Scatter chart - straight with markers. |
+ * | #LXW_CHART_SCATTER_SMOOTH                | Scatter chart - smooth.                |
+ * | #LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS   | Scatter chart - smooth with markers.   |
+ * | #LXW_CHART_RADAR                         | Radar chart.                           |
+ * | #LXW_CHART_RADAR_WITH_MARKERS            | Radar chart - with markers.            |
+ * | #LXW_CHART_RADAR_FILLED                  | Radar chart - filled.                  |
+ *
+ *
+ *
+ * See @ref chart.h for details.
+ */
+lxw_chart *workbook_add_chart(lxw_workbook *workbook, uint8_t  chart_type);
 
 /**
  * @brief Close the Workbook object and write the XLSX file.
