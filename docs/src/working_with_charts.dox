@@ -1,0 +1,49 @@
+/**
+@page working_with_charts Working with Charts
+
+This section explains how to work with some of the options and features of
+@ref chart.h "The Chart object".
+
+
+Chart Value and Category Axes
+-----------------------------
+
+When working with charts it is important to understand how Excel
+differentiates between a chart axis that is used for series categories and a
+chart axis that is used for series values.
+
+In the example above the X axis is the **category** axis and each of the values
+is evenly spaced and sequential. The Y axis is the **value** axis and points
+are displayed according to their value.
+
+Excel treats these two types of axis differently and exposes different
+properties for each.
+
+As such some of the `libxlsxwriter`` axis properties can be set for a value
+axis, some can be set for a category axis and some properties can be set for
+both. The documentation calls out the type of axis to which functions apply.
+
+
+Chart Limitations
+-----------------
+
+The following chart features aren't currently supported in libxlsxwriter but
+will be in time:
+
+- Chart formatting.
+- Chart markers.
+- Secondary axis.
+- Combined charts.
+- Chart legend formatting.
+- Chart area and plot area formatting.
+- Chart tables.
+- Up down lines.
+- Drop boxes.
+
+If required these features are all available in the Perl and Python versions
+of this library.
+
+
+Next: @ref working_with_memory
+
+*/

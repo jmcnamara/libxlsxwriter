@@ -57,7 +57,7 @@ int main() {
     /* Add the first series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
 
-    /* Set the name for the series instead of the default "Series1". */
+    /* Set the name for the series instead of the default "Series 1". */
     chart_series_set_name(series, "=Sheet1!$B1$1");
 
     /* Add a second series but leave the categories and values undefined. They

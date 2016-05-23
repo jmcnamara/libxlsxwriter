@@ -23,7 +23,8 @@
  * adding data series to the chart and for configuring the chart.
  *
  * A Chart object isn't created directly. Instead a chart is created by
- * calling the workbook_add_chart() function from a Workbook object:
+ * calling the `workbook_add_chart()` function from a Workbook object. For
+ * example:
  *
  * @code
  *
@@ -342,7 +343,8 @@ void lxw_chart_assemble_xml_file(lxw_chart *chart);
  * @return A lxw_chart_series object pointer.
  *
  * In Excel a chart **series** is a collection of information that defines
- * which data is plotted such as values, axis labels and formatting.
+ * which data is plotted such as the categories and values. It is also used to
+ * define the formatting for the data.
  *
  * For an libxlsxwriter chart object the `%chart_add_series()` function is
  * used to set the categories and values of the series:
@@ -368,11 +370,11 @@ void lxw_chart_assemble_xml_file(lxw_chart *chart);
  *    only mandatory option for every chart object. This parameter links the
  *    chart with the worksheet data that it displays.
  *
- * The `categories` and `values` should be a string formula like it is
- * represented in Excel such as `"=Sheet1!$A$2:$A$7"`. This is convenient when
- * recreating a chart from an example in Excel or when the range is
- * particularly complex but it is trickier to generate programmatically. For
- * these cases set the `categories` and `values` to `NULL` and use the
+ * The `categories` and `values` should be a string formula like
+ * `"=Sheet1!$A$2:$A$7"` in the same way it is represented in Excel. This is
+ * convenient when recreating a chart from an example in Excel but it is
+ * trickier to generate programmatically. For these cases you can set the
+ * `categories` and `values` to `NULL` and use the
  * `chart_series_set_categories()` and `chart_series_set_values()` functions:
  *
  * @code
@@ -383,7 +385,7 @@ void lxw_chart_assemble_xml_file(lxw_chart *chart);
  *     chart_series_set_values(    series, "Sheet1", 1, 2, 6, 2); // "=Sheet1!$C$2:$C$7"
  * @endcode
  *
- * As shown in the previous example the return values from
+ * As shown in the previous example the return value from
  * `%chart_add_series()` is a lxw_chart_series pointer. This can be used in
  * other functions that configure a series.
  *
@@ -642,8 +644,8 @@ void chart_title_off(lxw_chart *chart);
  * @param chart    Pointer to a lxw_chart instance to be configured.
  * @param style_id An index representing the chart style, 1 - 48.
  *
- * The `%chart_set_style()` method is used to set the style of the chart to one
- * of the 48 built-in styles available on the "Design" tab in Excel 2007:
+ * The `%chart_set_style()` function is used to set the style of the chart to
+ * one of the 48 built-in styles available on the "Design" tab in Excel 2007:
  *
  * @code
  *     chart_set_style(chart, 37)
@@ -660,7 +662,7 @@ void chart_title_off(lxw_chart *chart);
  * were referred to as "Layouts" in previous versions of Excel. These layouts
  * are not defined in the file format. They are a collection of modifications
  * to the base chart type. They can not be defined by the `chart_set_style()``
- * method.
+ * function.
  *
  *
  */

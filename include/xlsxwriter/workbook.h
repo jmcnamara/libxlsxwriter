@@ -420,7 +420,7 @@ lxw_format *workbook_add_format(lxw_workbook *workbook);
  *
  * See @ref chart.h for details.
  */
-lxw_chart *workbook_add_chart(lxw_workbook *workbook, uint8_t  chart_type);
+lxw_chart *workbook_add_chart(lxw_workbook *workbook, uint8_t chart_type);
 
 /**
  * @brief Close the Workbook object and write the XLSX file.

@@ -1292,7 +1292,7 @@ int worksheet_insert_image(lxw_worksheet *worksheet,
  * #lxw_image_options struct to scale and position the image:
  *
  * @code
- *    lxw_image_options options = {.x_offset = 30,   .y_offset = 10,
+ *    lxw_image_options options = {.x_offset = 30,  .y_offset = 10,
  *                                 .x_scale  = 0.5, .y_scale  = 0.5};
  *
  *    worksheet_insert_image_opt(worksheet, 2, 1, "logo.png", &options);
@@ -1308,11 +1308,6 @@ int worksheet_insert_image_opt(lxw_worksheet *worksheet,
                                lxw_row_t row, lxw_col_t col,
                                const char *filename,
                                lxw_image_options *options);
-
-int worksheet_insert_chart_opt(lxw_worksheet *worksheet,
-                               lxw_row_t row_num, lxw_col_t col_num,
-                               lxw_chart *chart,
-                               lxw_image_options *user_options);
 /**
  * @brief Insert a chart object into a worksheet.
  *
@@ -1324,8 +1319,9 @@ int worksheet_insert_chart_opt(lxw_worksheet *worksheet,
  * @return 0 for success, non-zero on error.
  *
  * The `%worksheet_insert_chart()` can be used to insert a chart into a
- * worksheet. A chart object is created via the `workbook_add_chart()`
- * function:
+ * worksheet. The chart object must be created first using the
+ * `workbook_add_chart()` function and configured using the @ref chart.h
+ * functions.
  *
  * @code
  *     // Create a chart object.
@@ -1343,14 +1339,47 @@ int worksheet_insert_chart_opt(lxw_worksheet *worksheet,
  *
  * **Note:**
  *
- * A chart can only be inserted into a worksheet once. If several similar
+ * A chart may only be inserted into a worksheet once. If several similar
  * charts are required then each one must be created separately with
  * `%worksheet_insert_chart()`.
  *
  */
 int worksheet_insert_chart(lxw_worksheet *worksheet,
-                           lxw_row_t row, lxw_col_t col,
-                           lxw_chart *chart);
+                           lxw_row_t row, lxw_col_t col, lxw_chart *chart);
+
+/**
+ * @brief Insert a chart object into a worksheet, with options.
+ *
+ * @param worksheet    Pointer to a lxw_worksheet instance to be updated.
+ * @param row          The zero indexed row number.
+ * @param col          The zero indexed column number.
+ * @param chart        A #lxw_chart object created via workbook_add_chart().
+ * @param user_options Optional chart parameters.
+ *
+ * @return 0 for success, non-zero on error.
+ *
+ * The `%worksheet_insert_chart_opt()` function is like
+ * `worksheet_insert_chart()` function except that it takes an optional
+ * #lxw_image_options struct to scale and position the image of the chart:
+ *
+ * @code
+ *    lxw_image_options options = {.x_offset = 30,  .y_offset = 10,
+ *                                 .x_scale  = 0.5, .y_scale  = 0.75};
+ *
+ *    worksheet_insert_chart_opt(worksheet, 0, 2, chart, &options);
+ *
+ * @endcode
+ *
+ * @image html chart_line_opt.png
+ *
+ * The #lxw_image_options struct is the same struct used in
+ * `worksheet_insert_image_opt()` to position and scale images.
+ *
+ */
+int worksheet_insert_chart_opt(lxw_worksheet *worksheet,
+                               lxw_row_t row, lxw_col_t col,
+                               lxw_chart *chart,
+                               lxw_image_options *user_options);
 
 /**
  * @brief Merge a range of cells.
