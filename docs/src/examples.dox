@@ -1,209 +1,459 @@
 /**
 @page examples Example Programs
 
-
 @example hello.c
-The simplest possible program and spreadsheet. This is a good place to
-start to see if the libxlsxwriter library is installed and working
-correctly.
 
-Next example: @ref anatomy.c
+<table  width="600">
+<tr>
+  <td>@ref examples "&lt;&lt; Examples page"</td>
+  <td align="right">@ref anatomy.c "anatomy.c &gt;&gt;"</td>
+</tr>
+</table>
+
+The simplest possible program and spreadsheet. This is a good place to start
+to see if the libxlsxwriter library is installed and working correctly.
+
 @image html hello01.png
 
 
-@example anatomy.c
-Anatomy of a simple libxlsxwriter program where the program is
-explained line by line with comments.
 
-Next example: @ref demo.c
+
+@example anatomy.c
+
+<table  width="600">
+<tr>
+  <td>@ref hello.c "&lt;&lt; hello.c"</td>
+  <td align="right">@ref demo.c "demo.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Anatomy of a simple libxlsxwriter program where the program is explained line
+by line with comments.
+
 @image html anatomy.png
 
 
+
+
 @example demo.c
+
+<table  width="600">
+<tr>
+  <td>@ref anatomy.c "&lt;&lt; anatomy.c"</td>
+  <td align="right">@ref format_font.c "format_font.c &gt;&gt;"</td>
+</tr>
+</table>
+
 A simple example of some of the features of the libxlsxwriter library.
 
-Next example: @ref format_font.c
 @image html demo.png
 
 
+
+
 @example format_font.c
+
+<table  width="600">
+<tr>
+  <td>@ref demo.c "&lt;&lt; demo.c"</td>
+  <td align="right">@ref format_num_format.c "format_num_format.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of writing some data with font formatting to a simple Excel
 file using libxlsxwriter.
 
-Next example: @ref format_num_format.c
 @image html format_font.png
 
 
+
+
 @example format_num_format.c
+
+<table  width="600">
+<tr>
+  <td>@ref format_font.c "&lt;&lt; format_font.c"</td>
+  <td align="right">@ref tutorial1.c "tutorial1.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of writing some data with numeric formatting to a simple Excel
 file using libxlsxwriter.
 
-Next example: @ref tutorial1.c
 @image html format_set_num_format.png
 
 
+
+
 @example tutorial1.c
+
+<table  width="600">
+<tr>
+  <td>@ref format_num_format.c "&lt;&lt; format_num_format.c"</td>
+  <td align="right">@ref tutorial2.c "tutorial2.c &gt;&gt;"</td>
+</tr>
+</table>
+
 A tutorial program which is shown, with explanations, in @ref tutorial01.
 
-Next example: @ref tutorial2.c
 @image html tutorial01.png
 
 
+
+
 @example tutorial2.c
+
+<table  width="600">
+<tr>
+  <td>@ref tutorial1.c "&lt;&lt; tutorial1.c"</td>
+  <td align="right">@ref tutorial3.c "tutorial3.c &gt;&gt;"</td>
+</tr>
+</table>
+
 A tutorial program which is shown, with explanations, in @ref tutorial02.
 
-Next example: @ref tutorial3.c
 @image html tutorial02.png
 
 
+
+
 @example tutorial3.c
+
+<table  width="600">
+<tr>
+  <td>@ref tutorial2.c "&lt;&lt; tutorial2.c"</td>
+  <td align="right">@ref dates_and_times01.c "dates_and_times01.c &gt;&gt;"</td>
+</tr>
+</table>
+
 A tutorial program which is shown, with explanations, in @ref tutorial03.
 
-Next example: @ref dates_and_times01.c
 @image html tutorial03.png
 
 
-@example dates_and_times01.c Example of writing a dates and time in Excel
-using a number with date formatting. This demonstrates that dates and times in
-Excel are just formatted real numbers. An easier approach using a lxw_datetime
-struct is shown in the next example.
 
-Next example: @ref dates_and_times02.c.
+
+@example dates_and_times01.c
+
+<table  width="600">
+<tr>
+  <td>@ref tutorial3.c "&lt;&lt; tutorial3.c"</td>
+  <td align="right">@ref dates_and_times02.c "dates_and_times02.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of writing a dates and time in Excel using a number with date
+formatting. This demonstrates that dates and times in Excel are just formatted
+real numbers. An easier approach using a lxw_datetime struct is shown in the
+next example.
+
 @image html date_example01.png
 
 
+
+
 @example dates_and_times02.c
+
+<table  width="600">
+<tr>
+  <td>@ref dates_and_times01.c "&lt;&lt; dates_and_times01.c"</td>
+  <td align="right">@ref dates_and_times03.c "dates_and_times03.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of writing dates and times in Excel using an lxw_datetime struct and
 date formatting.
 
-Next example: @ref dates_and_times03.c
 @image html date_example02.png
 
 
+
+
 @example dates_and_times03.c
+
+<table  width="600">
+<tr>
+  <td>@ref dates_and_times02.c "&lt;&lt; dates_and_times02.c"</td>
+  <td align="right">@ref hyperlinks.c "hyperlinks.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of writing dates and times in Excel using different date formats.
 
-Next example: @ref hyperlinks.c
 @image html date_example03.png
 
 
+
+
 @example hyperlinks.c
+
+<table  width="600">
+<tr>
+  <td>@ref dates_and_times03.c "&lt;&lt; dates_and_times03.c"</td>
+  <td align="right">@ref array_formula.c "array_formula.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of writing urls/hyperlinks to a worksheet.
 
-Next example: @ref array_formula.c
 @image html hyperlinks.png
 
 
+
+
 @example array_formula.c
+
+<table  width="600">
+<tr>
+  <td>@ref hyperlinks.c "&lt;&lt; hyperlinks.c"</td>
+  <td align="right">@ref utf8.c "utf8.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of writing array formulas to a worksheet.
 
-Next example: @ref utf8.c
 @image html array_formula.png
 
 
+
+
 @example utf8.c
+
+<table  width="600">
+<tr>
+  <td>@ref array_formula.c "&lt;&lt; array_formula.c"</td>
+  <td align="right">@ref constant_memory.c "constant_memory.c &gt;&gt;"</td>
+</tr>
+</table>
 A simple Unicode UTF-8 example. Note, the source file is UTF-8 encoded.
 
-Next example: @ref constant_memory.c
 @image html utf8.png
 
 
+
+
 @example constant_memory.c
+
+<table  width="600">
+<tr>
+  <td>@ref utf8.c "&lt;&lt; utf8.c"</td>
+  <td align="right">@ref merge_range.c "merge_range.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of using libxlsxwriter for writing large files in constant memory
 mode.
 
-Next example: @ref merge_range.c
 @image html constant_memory.png
 
 
+
+
 @example merge_range.c
+
+<table  width="600">
+<tr>
+  <td>@ref constant_memory.c "&lt;&lt; constant_memory.c"</td>
+  <td align="right">@ref autofilter.c "autofilter.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of merging cells in a worksheet.
 
-Next example: @ref autofilter.c
 @image html merge_range.png
 
 
+
+
 @example autofilter.c
+
+<table  width="600">
+<tr>
+  <td>@ref merge_range.c "&lt;&lt; merge_range.c"</td>
+  <td align="right">@ref images.c "images.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of adding an autofilter to a worksheet.
 
-Next example: @ref images.c
 @image html autofilter.png
 
 
+
+
 @example images.c
+
+<table  width="600">
+<tr>
+  <td>@ref autofilter.c "&lt;&lt; autofilter.c"</td>
+  <td align="right">@ref headers_footers.c "headers_footers.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of adding images to a worksheet.
 
-Next example: @ref headers_footers.c
 @image html images.png
 
 
+
+
 @example headers_footers.c
+
+<table  width="600">
+<tr>
+  <td>@ref images.c "&lt;&lt; images.c"</td>
+  <td align="right">@ref defined_name.c "defined_name.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of adding worksheet headers and footers to worksheets.
 
-Next example: @ref defined_name.c
 @image html headers_footers.png
 
 
+
+
 @example defined_name.c
+
+<table  width="600">
+<tr>
+  <td>@ref headers_footers.c "&lt;&lt; headers_footers.c"</td>
+  <td align="right">@ref tab_colors.c "tab_colors.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of how to create defined names (named ranges) using libxlsxwriter.
 
 Defined names are used to define descriptive names to represent a value, a
 single cell or a range of cells in a workbook or worksheet.
 
-Next example: @ref tab_colors.c
 @image html defined_name.png
 
 
+
+
 @example tab_colors.c
+
+<table  width="600">
+<tr>
+  <td>@ref defined_name.c "&lt;&lt; defined_name.c"</td>
+  <td align="right">@ref hide_sheet.c "hide_sheet.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of how to set Excel worksheet tab colors.
 
-Next example: @ref hide_sheet.c
 @image html tab_colors.png
 
 
+
+
 @example hide_sheet.c
+
+<table  width="600">
+<tr>
+  <td>@ref tab_colors.c "&lt;&lt; tab_colors.c"</td>
+  <td align="right">@ref doc_properties.c "doc_properties.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of how to hide an Excel worksheet.
 
-Next example: @ref doc_properties.c
 @image html hide_sheet.png
 
 
+
+
 @example doc_properties.c
+
+<table  width="600">
+<tr>
+  <td>@ref hide_sheet.c "&lt;&lt; hide_sheet.c"</td>
+  <td align="right">@ref worksheet_protection.c "worksheet_protection.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of setting Excel document properties.
 
-Next example: @ref worksheet_protection.c
 @image html doc_properties.png
 
 
+
+
 @example worksheet_protection.c
+
+<table  width="600">
+<tr>
+  <td>@ref doc_properties.c "&lt;&lt; doc_properties.c"</td>
+  <td align="right">@ref hide_row_col.c "hide_row_col.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of setting Excel worksheet protection.
 
-Next example: @ref hide_row_col.c
 @image html worksheet_protection.png
 
 
+
+
 @example hide_row_col.c
+
+<table  width="600">
+<tr>
+  <td>@ref worksheet_protection.c "&lt;&lt; worksheet_protection.c"</td>
+  <td align="right">@ref panes.c "panes.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of hiding rows and columns in an Excel worksheet.
 
-Next example: @ref panes.c
 @image html hide_row_col.png
 
 
-@example panes.c
-An example of how to create panes in a worksheet, both "freeze" panes and "split" panes.
 
-Next example: @ref chart.c
+
+@example panes.c
+
+<table  width="600">
+<tr>
+  <td>@ref hide_row_col.c "&lt;&lt; hide_row_col.c"</td>
+  <td align="right">@ref chart.c "chart.c &gt;&gt;"</td>
+</tr>
+</table>
+
+An example of how to create panes in a worksheet, both "freeze" panes and
+"split" panes.
+
 @image html panes.png
 
 
+
+
 @example chart.c
+
+<table  width="600">
+<tr>
+  <td>@ref panes.c "&lt;&lt; panes.c"</td>
+  <td align="right">@ref chart_area.c "chart_area.c &gt;&gt;"</td>
+</tr>
+</table>
+
 An example of creating a simple column chart with 3 data series.
 
-Next example: @ref chart_area.c
 @image html chart_simple.png
 
 
+
+
 @example chart_area.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart.c "&lt;&lt; chart.c"</td>
+  <td align="right">@ref chart_bar.c "chart_bar.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of creating Excel Area charts. Three types of area chart are shown.
 
 The default area chart:
@@ -215,10 +465,19 @@ Stacked area chart:
 Percent stacked area chart:
 @image html chart_area3.png
 
-Next example: @ref chart_bar.c
+
+
 
 
 @example chart_bar.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_area.c "&lt;&lt; chart_area.c"</td>
+  <td align="right">@ref chart_column.c "chart_column.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of creating Excel Bar charts. Three types of bar chart are shown.
 
 The default bar chart:
@@ -230,10 +489,19 @@ Stacked bar chart:
 Percent stacked bar chart:
 @image html chart_bar3.png
 
-Next example: @ref chart_column.c
+
+
 
 
 @example chart_column.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_bar.c "&lt;&lt; chart_bar.c"</td>
+  <td align="right">@ref chart_line.c "chart_line.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of creating Excel Column charts. Three types of column chart are shown.
 
 The default column chart:
@@ -245,19 +513,37 @@ Stacked column chart:
 Percent stacked column chart:
 @image html chart_column3.png
 
-Next example: @ref chart_line.c
+
+
 
 
 @example chart_line.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_column.c "&lt;&lt; chart_column.c"</td>
+  <td align="right">@ref chart_scatter.c "chart_scatter.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of creating an Excel Line chart.
 
 The default line chart:
 @image html chart_line1.png
 
-Next example: @ref chart_scatter.c
+
+
 
 
 @example chart_scatter.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_line.c "&lt;&lt; chart_line.c"</td>
+  <td align="right">@ref chart_radar.c "chart_radar.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of creating Excel Scatter charts. Five types of scatter chart are shown.
 
 The default scatter chart:
@@ -275,10 +561,19 @@ Smooth scatter chart with markers:
 Smooth scatter chart:
 @image html chart_scatter5.png
 
-Next example: @ref chart_radar.c
+
+
 
 
 @example chart_radar.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_scatter.c "&lt;&lt; chart_scatter.c"</td>
+  <td align="right">@ref chart_pie.c "chart_pie.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of creating Excel Radar charts. Three types of radar chart are shown.
 
 The default radar chart:
@@ -290,36 +585,61 @@ Radar chart with markers:
 Filled radar chart:
 @image html chart_radar3.png
 
-Next example: @ref chart_pie.c
+
+
 
 
 @example chart_pie.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_radar.c "&lt;&lt; chart_radar.c"</td>
+  <td align="right">@ref chart_doughnut.c "chart_doughnut.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of creating an Excel Pie chart.
 
 The default pie chart:
 @image html chart_pie1.png
 
-Next example: @ref chart_doughnut.c
+
+
 
 
 @example chart_doughnut.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_pie.c "&lt;&lt; chart_pie.c"</td>
+  <td align="right">@ref chart_styles.c "chart_styles.c &gt;&gt;"</td>
+</tr>
+</table>
+
 Example of creating an Excel Doughnut chart.
 
 The default doughnut chart:
 @image html chart_doughnut1.png
 
-Next example: @ref chart_styles.c
+
+
 
 
 @example chart_styles.c
 
+<table  width="600">
+<tr>
+  <td>@ref chart_doughnut.c "&lt;&lt; chart_doughnut.c"</td>
+  <td align="right">@ref examples "Examples page &gt;&gt;"</td>
+</tr>
+</table>
+
 An example showing all 48 default chart styles available in Excel 2007 using
-the chart chart_set_style() method.
+the chart `chart_set_style()` method.
 
 @image html chart_styles.png
 
 
-Back to @ref examples
 
 
 */

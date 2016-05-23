@@ -20,6 +20,7 @@ clean :
 
 # Build the doxygen docs.
 docs:
+	$(Q)perl ../dev/release/fix_example_links.pl src/examples.txt > src/examples.dox
 	$(Q)doxygen
 	$(Q)../dev/release/fix_dox.sh
 

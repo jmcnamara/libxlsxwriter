@@ -1,0 +1,316 @@
+##############################################################
+@example hello.c
+
+The simplest possible program and spreadsheet. This is a good place to start
+to see if the libxlsxwriter library is installed and working correctly.
+
+@image html hello01.png
+
+##############################################################
+@example anatomy.c
+
+Anatomy of a simple libxlsxwriter program where the program is explained line
+by line with comments.
+
+@image html anatomy.png
+
+##############################################################
+@example demo.c
+
+A simple example of some of the features of the libxlsxwriter library.
+
+@image html demo.png
+
+##############################################################
+@example format_font.c
+
+Example of writing some data with font formatting to a simple Excel
+file using libxlsxwriter.
+
+@image html format_font.png
+
+##############################################################
+@example format_num_format.c
+
+Example of writing some data with numeric formatting to a simple Excel
+file using libxlsxwriter.
+
+@image html format_set_num_format.png
+
+##############################################################
+@example tutorial1.c
+
+A tutorial program which is shown, with explanations, in @ref tutorial01.
+
+@image html tutorial01.png
+
+##############################################################
+@example tutorial2.c
+
+A tutorial program which is shown, with explanations, in @ref tutorial02.
+
+@image html tutorial02.png
+
+##############################################################
+@example tutorial3.c
+
+A tutorial program which is shown, with explanations, in @ref tutorial03.
+
+@image html tutorial03.png
+
+##############################################################
+@example dates_and_times01.c
+
+Example of writing a dates and time in Excel using a number with date
+formatting. This demonstrates that dates and times in Excel are just formatted
+real numbers. An easier approach using a lxw_datetime struct is shown in the
+next example.
+
+@image html date_example01.png
+
+##############################################################
+@example dates_and_times02.c
+
+Example of writing dates and times in Excel using an lxw_datetime struct and
+date formatting.
+
+@image html date_example02.png
+
+##############################################################
+@example dates_and_times03.c
+
+Example of writing dates and times in Excel using different date formats.
+
+@image html date_example03.png
+
+##############################################################
+@example hyperlinks.c
+
+Example of writing urls/hyperlinks to a worksheet.
+
+@image html hyperlinks.png
+
+##############################################################
+@example array_formula.c
+
+Example of writing array formulas to a worksheet.
+
+@image html array_formula.png
+
+##############################################################
+@example utf8.c
+A simple Unicode UTF-8 example. Note, the source file is UTF-8 encoded.
+
+@image html utf8.png
+
+##############################################################
+@example constant_memory.c
+
+Example of using libxlsxwriter for writing large files in constant memory
+mode.
+
+@image html constant_memory.png
+
+##############################################################
+@example merge_range.c
+
+Example of merging cells in a worksheet.
+
+@image html merge_range.png
+
+##############################################################
+@example autofilter.c
+
+Example of adding an autofilter to a worksheet.
+
+@image html autofilter.png
+
+##############################################################
+@example images.c
+
+Example of adding images to a worksheet.
+
+@image html images.png
+
+##############################################################
+@example headers_footers.c
+
+Example of adding worksheet headers and footers to worksheets.
+
+@image html headers_footers.png
+
+##############################################################
+@example defined_name.c
+
+Example of how to create defined names (named ranges) using libxlsxwriter.
+
+Defined names are used to define descriptive names to represent a value, a
+single cell or a range of cells in a workbook or worksheet.
+
+@image html defined_name.png
+
+##############################################################
+@example tab_colors.c
+
+Example of how to set Excel worksheet tab colors.
+
+@image html tab_colors.png
+
+##############################################################
+@example hide_sheet.c
+
+Example of how to hide an Excel worksheet.
+
+@image html hide_sheet.png
+
+##############################################################
+@example doc_properties.c
+
+Example of setting Excel document properties.
+
+@image html doc_properties.png
+
+##############################################################
+@example worksheet_protection.c
+
+Example of setting Excel worksheet protection.
+
+@image html worksheet_protection.png
+
+##############################################################
+@example hide_row_col.c
+
+Example of hiding rows and columns in an Excel worksheet.
+
+@image html hide_row_col.png
+
+##############################################################
+@example panes.c
+
+An example of how to create panes in a worksheet, both "freeze" panes and
+"split" panes.
+
+@image html panes.png
+
+##############################################################
+@example chart.c
+
+An example of creating a simple column chart with 3 data series.
+
+@image html chart_simple.png
+
+##############################################################
+@example chart_area.c
+
+Example of creating Excel Area charts. Three types of area chart are shown.
+
+The default area chart:
+@image html chart_area1.png
+
+Stacked area chart:
+@image html chart_area2.png
+
+Percent stacked area chart:
+@image html chart_area3.png
+
+
+##############################################################
+@example chart_bar.c
+
+Example of creating Excel Bar charts. Three types of bar chart are shown.
+
+The default bar chart:
+@image html chart_bar1.png
+
+Stacked bar chart:
+@image html chart_bar2.png
+
+Percent stacked bar chart:
+@image html chart_bar3.png
+
+
+##############################################################
+@example chart_column.c
+
+Example of creating Excel Column charts. Three types of column chart are shown.
+
+The default column chart:
+@image html chart_column1.png
+
+Stacked column chart:
+@image html chart_column2.png
+
+Percent stacked column chart:
+@image html chart_column3.png
+
+
+##############################################################
+@example chart_line.c
+
+Example of creating an Excel Line chart.
+
+The default line chart:
+@image html chart_line1.png
+
+
+##############################################################
+@example chart_scatter.c
+
+Example of creating Excel Scatter charts. Five types of scatter chart are shown.
+
+The default scatter chart:
+@image html chart_scatter1.png
+
+Straight scatter chart with markers:
+@image html chart_scatter2.png
+
+Straight scatter chart:
+@image html chart_scatter3.png
+
+Smooth scatter chart with markers:
+@image html chart_scatter4.png
+
+Smooth scatter chart:
+@image html chart_scatter5.png
+
+
+##############################################################
+@example chart_radar.c
+
+Example of creating Excel Radar charts. Three types of radar chart are shown.
+
+The default radar chart:
+@image html chart_radar1.png
+
+Radar chart with markers:
+@image html chart_radar2.png
+
+Filled radar chart:
+@image html chart_radar3.png
+
+
+##############################################################
+@example chart_pie.c
+
+Example of creating an Excel Pie chart.
+
+The default pie chart:
+@image html chart_pie1.png
+
+
+##############################################################
+@example chart_doughnut.c
+
+Example of creating an Excel Doughnut chart.
+
+The default doughnut chart:
+@image html chart_doughnut1.png
+
+
+##############################################################
+@example chart_styles.c
+
+An example showing all 48 default chart styles available in Excel 2007 using
+the chart `chart_set_style()` method.
+
+@image html chart_styles.png
