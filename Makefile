@@ -92,6 +92,7 @@ spellcheck:
 	$(Q)for f in docs/src/*.dox;         do aspell --lang=en_US --check $$f; done
 	$(Q)for f in include/xlsxwriter/*.h; do aspell --lang=en_US --check $$f; done
 	$(Q)for f in src/*.c;                do aspell --lang=en_US --check $$f; done
+	$(Q)for f in examples/*.c;           do aspell --lang=en_US --check $$f; done
 	$(Q)aspell --lang=en_US --check Changes.txt
 	$(Q)aspell --lang=en_US --check Readme.md
 

@@ -1,6 +1,26 @@
 /**
 @page changes Changes
 
+## 0.3.3 April 23 2016
+
+- Added support for charts via the @ref chart.h "The Chart object". See the
+  examples of the supported chart types:
+
+  - @ref chart_area.c       "Area chart"
+  - @ref chart_bar.c        "Bar chart"
+  - @ref chart_column.c     "Column chart"
+  - @ref chart_line.c       "Line chart"
+  - @ref chart_scatter.c    "Scatter chart"
+  - @ref chart_radar.c      "Radar chart"
+  - @ref chart_pie.c        "Pie chart"
+  - @ref chart_doughnut.c   "Doughnut chart"
+  - @ref chart_styles.c     "Built-in charts styles"
+
+  Feature request [#36][gh_36].
+
+  [gh_36]: https://github.com/jmcnamara/libxlsxwriter/issues/36
+
+
 ## 0.3.2 April 8 2016
 
 - Added the `worksheet_write_boolean()` function to write Excel boolean

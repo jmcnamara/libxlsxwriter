@@ -18,6 +18,7 @@ It supports features such as:
 - Merged cells.
 - Defined names.
 - Autofilters.
+- Charts.
 - Worksheet PNG/JPEG images.
 - Memory optimization mode for writing large files.
 - Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter).
