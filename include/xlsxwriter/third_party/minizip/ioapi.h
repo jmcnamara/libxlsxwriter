@@ -20,7 +20,9 @@
 
 
 /* Pragma added by libxlsxwriter to avoid warnings with -pedantic -ansi. */
+#ifndef _WIN32
 #pragma GCC system_header
+#endif
 
 #ifndef _ZLIBIOAPI64_H
 #define _ZLIBIOAPI64_H

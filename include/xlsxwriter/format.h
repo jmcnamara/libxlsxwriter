@@ -356,7 +356,7 @@ typedef struct lxw_format {
     char num_format[LXW_FORMAT_FIELD_LEN];
     char font_name[LXW_FORMAT_FIELD_LEN];
     char font_scheme[LXW_FORMAT_FIELD_LEN];
-    uint8_t num_format_index;
+    uint16_t num_format_index;
     uint16_t font_index;
     uint8_t has_font;
     uint8_t has_dxf_font;

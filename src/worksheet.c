@@ -793,7 +793,7 @@ _cell_cmp(lxw_cell *cell1, lxw_cell *cell2)
 uint16_t
 _hash_password(char *password)
 {
-    uint8_t count;
+    size_t count;
     uint8_t i;
     uint16_t hash = 0x0000;
 
@@ -816,6 +816,33 @@ _hash_password(char *password)
     hash ^= 0xCE4B;
 
     return hash;
+}
+
+/*
+ * Simple replacement for libgen.h basename() for compatibility with MSVC. It
+ * handles forward and back slashes. Not exactly the same return format as
+ * basename and also creates a new malloced string.
+ */
+char *
+lxw_basename(const char *path)
+{
+
+    char *forward_slash;
+    char *back_slash;
+
+    if (!path)
+        return NULL;
+
+    forward_slash = strrchr(path, '/');
+    back_slash = strrchr(path, '\\');
+
+    if (!forward_slash && !back_slash)
+        return lxw_strdup(path);
+
+    if (forward_slash > back_slash)
+        return lxw_strdup(forward_slash + 1);
+    else
+        return lxw_strdup(back_slash + 1);
 }
 
 /*****************************************************************************
@@ -1359,7 +1386,7 @@ _worksheet_write_sheet_data(lxw_worksheet *self)
 STATIC void
 _worksheet_write_optimized_sheet_data(lxw_worksheet *self)
 {
-    uint16_t read_size = 1;
+    size_t read_size = 1;
     char buffer[LXW_BUFFER_SIZE];
 
     if (self->dim_rowmin == LXW_ROW_MAX) {
@@ -1898,8 +1925,8 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
     _worksheet_position_object_emus(self, image_data, drawing_object);
 
     /* Convert from pixels to emus. */
-    drawing_object->width = 0.5 + width * 9525;
-    drawing_object->height = 0.5 + height * 9525;
+    drawing_object->width = (uint32_t) (0.5 + width * 9525);
+    drawing_object->height = (uint32_t) (0.5 + height * 9525);
 
     lxw_add_drawing_object(self->drawing, drawing_object);
 
@@ -1981,8 +2008,8 @@ lxw_worksheet_prepare_chart(lxw_worksheet *self,
     _worksheet_position_object_emus(self, image_data, drawing_object);
 
     /* Convert from pixels to emus. */
-    drawing_object->width = 0.5 + width * 9525;
-    drawing_object->height = 0.5 + height * 9525;
+    drawing_object->width = (uint32_t) (0.5 + width * 9525);
+    drawing_object->height = (uint32_t) (0.5 + height * 9525);
 
     lxw_add_drawing_object(self->drawing, drawing_object);
 
@@ -4789,7 +4816,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     }
 
     /* Get the filename from the full path to add to the Drawing object. */
-    short_name = basename((char *) filename);
+    short_name = lxw_basename(filename);
     if (!short_name) {
         LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
                         "couldn't get basename for file: %s.", filename);

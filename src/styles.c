@@ -100,7 +100,7 @@ _write_style_sheet(lxw_styles *self)
  * Write the <numFmt> element.
  */
 STATIC void
-_write_num_fmt(lxw_styles *self, uint8_t num_fmt_id, char *format_code)
+_write_num_fmt(lxw_styles *self, uint16_t num_fmt_id, char *format_code)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;

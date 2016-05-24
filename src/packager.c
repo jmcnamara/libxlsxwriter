@@ -36,7 +36,7 @@ _open_zipfile_win32(const char *filename)
     wchar_t wide_filename[_MAX_PATH + 1] = L"";
 
     /* Build a UTF-16 filename for Win32. */
-    n = MultiByteToWideChar(CP_UTF8, 0, filename, strlen(filename),
+    n = MultiByteToWideChar(CP_UTF8, 0, filename, (int) strlen(filename),
                             wide_filename, _MAX_PATH);
 
     if (n == 0) {

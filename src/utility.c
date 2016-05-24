@@ -21,7 +21,7 @@ void
 lxw_col_to_name(char col_name[], lxw_col_t col_num, uint8_t absolute)
 {
     uint8_t pos = 0;
-    uint8_t len;
+    size_t len;
     uint8_t i;
 
     /* Change from 0 index to 1 index. */
@@ -64,7 +64,7 @@ lxw_col_to_name(char col_name[], lxw_col_t col_num, uint8_t absolute)
 void
 lxw_rowcol_to_cell(char *cell_name, lxw_row_t row, lxw_col_t col)
 {
-    uint8_t pos;
+    size_t pos;
 
     /* Add the column to the cell. */
     lxw_col_to_name(cell_name, col, 0);
@@ -84,7 +84,7 @@ void
 lxw_rowcol_to_cell_abs(char *cell_name, lxw_row_t row, lxw_col_t col,
                        uint8_t abs_row, uint8_t abs_col)
 {
-    uint8_t pos;
+    size_t pos;
 
     /* Add the column to the cell. */
     lxw_col_to_name(cell_name, col, abs_col);
@@ -108,7 +108,7 @@ lxw_rowcol_to_range(char *range,
                     lxw_row_t first_row, lxw_col_t first_col,
                     lxw_row_t last_row, lxw_col_t last_col)
 {
-    uint8_t pos;
+    size_t pos;
 
     /* Add the first cell to the range. */
     lxw_rowcol_to_cell(range, first_row, first_col);
@@ -136,7 +136,7 @@ lxw_rowcol_to_range_abs(char *range,
                         lxw_row_t first_row, lxw_col_t first_col,
                         lxw_row_t last_row, lxw_col_t last_col)
 {
-    uint8_t pos;
+    size_t pos;
 
     /* Add the first cell to the range. */
     lxw_rowcol_to_cell_abs(range, first_row, first_col, 1, 1);
@@ -164,7 +164,7 @@ lxw_rowcol_to_formula_abs(char *formula, char *sheetname,
                           lxw_row_t first_row, lxw_col_t first_col,
                           lxw_row_t last_row, lxw_col_t last_col)
 {
-    uint8_t pos;
+    size_t pos;
     char *quoted_name = lxw_quote_sheetname(sheetname);
 
     strcpy(formula, quoted_name);
