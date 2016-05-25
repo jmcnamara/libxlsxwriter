@@ -4835,7 +4835,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
 
     /* Copy other options or set defaults. */
     options->filename = lxw_strdup(filename);
-    options->short_name = lxw_strdup(short_name);
+    options->short_name = short_name;
     options->stream = image_stream;
     options->row = row_num;
     options->col = col_num;
