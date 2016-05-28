@@ -3,18 +3,31 @@
 
 
 Here are some instructions to get you up and running with the libxlsxwriter
-library on a Unix system.
-
-For FreeBSD use `gmake` instead of `make`.
-
-For Windows see the @ref faq "FAQ".
+library on different OSes.
 
 
-## Installation
+
+## Installation on Linux and FreeBSD
+
+### Quick-start on Linux
+
+If you prefer to assemble Ikea furniture first and only read the instructions
+when you have parts left over then the following minimal set of commands
+should get you up and running on a Debian like system:
+
+    sudo apt-get install -y zlib1g-dev
+    git clone https://github.com/jmcnamara/libxlsxwriter.git
+    cd libxlsxwriter
+    make
+    sudo make install
+
+If you read instructions first and then assemble the furniture you will know
+how to proceed.
 
 ### Install the dependencies
 
-[Zlib](http://www.zlib.net) version 1.2.8 is the only (non-testing) dependency.
+The only dependency (apart from @ref running_the_tests "testing dependencies")
+is [Zlib](http://www.zlib.net) version 1.2.8.
 
 The easiest way to install `zlib` is from the source code:
 
@@ -27,25 +40,29 @@ The easiest way to install `zlib` is from the source code:
 
     sudo make install
 
-On recent Debian Linux systems you can install the `zlib` development
-libraries using `apt-get` as follows:
+Alternatively, you can use your OS packager to install the `zlib` development
+libraries. For example:
 
     sudo apt-get install -y zlib1g-dev
 
-However, you need to ensure that the version is 1.2.8 or you will get zlib
-related compilation issues.
+However, you need to ensure that the version installed is 1.2.8 or you will
+get zlib related compilation issues.
 
 
-### Clone the libxlsxwriter repository
+### Get the source code via Git
 
-Clone the libxlsxwriter source code repository from GitHub as follows (or
-using your preferred protocol):
+Clone the libxlsxwriter source code repository from GitHub as follows:
 
     git clone https://github.com/jmcnamara/libxlsxwriter.git
+    # Or use your preferred protocol instead of https.
 
-If you prefer you can get a tarball of the latest code:
+
+### Get the source code as a tarball
+
+If you prefer you can get a tarball of the latest code as follows:
 
     curl -O -L http://github.com/jmcnamara/libxlsxwriter/archive/master.tar.gz
+
 
 ### Build the source code
 
@@ -53,6 +70,7 @@ Build the source code as follows:
 
     cd libxlsxwriter
     make
+
     # For FreeBSD use gmake instead of make
 
 This will create a static and dynamic library in the local `./lib` directory:
@@ -65,21 +83,6 @@ To see a verbose summary of the compilation steps use `V=1`:
     make V=1
 
 
-### Install using Cocoa Pods for Xcode
-
-For iOS and OS X projects in Xcode you can install libxlsxwriter using
-[CocoaPods](https://cocoapods.org).
-
-For a sample Xcode project that uses the libxlsxwriter cocoapod for iOS and OS
-X with Objective-C and Swift see [libxlsxwriter Cocoa
-Examples](https://github.com/lrossi/libxlsxwriterCocoaExamples), provided by
-Ludovico Rossi.
-
-Note: if you are using the `"use_frameworks!"` directive in your Podfile then
-see the following
-[discussion](https://github.com/jmcnamara/libxlsxwriter/pull/13) for a
-workaround.
-
 ### Try an example
 
 If there weren't any warnings or errors in the previous step (and there
@@ -90,12 +93,8 @@ directory and try one of them out:
     ./examples/hello
 
 This will create a `hello_world.xlsx` file in your current directory. Open the
-file as follows, or directly from a spreadsheet application:
-
-     xdg-open hello_world.xlsx  # Linux. Usually.
-     open hello_world.xlsx      # Mac OS X if Excel is installed.
-
-The output should look like this: @image html hello01.png
+file in a spreadsheet application. The output should look like this: @image
+html hello01.png
 
 There is a large range of tests that you can run but they have some additional
 dependencies. If you are interested see @ref running_the_tests.
@@ -113,21 +112,9 @@ This isn't fool proof but if it fails on your system you will probably know
 exactly how to fix it or have no idea how to fix it. I'm hoping for the
 former.
 
-## TL;DR
+### Using the library
 
-If you prefer to assemble Ikea furniture first and read the instructions later
-then the following minimal set of commands should get you up and going on a
-Debian like system:
-
-    sudo apt-get install -y zlib1g-dev
-    git clone https://github.com/jmcnamara/libxlsxwriter.git
-    cd libxlsxwriter
-    make
-    sudo make install
-
-# Using the library
-
-Using you favourite editor Emacs create a file like the following called
+Using you favourite editor create a file like the following called
 `myexcel.c`:
 
 @code
@@ -151,7 +138,8 @@ should be able to compile the program as follows:
 
     cc myexcel.c -o myexcel -lxlsxwriter
 
-This will create an executable that you can run to generate an Excel spreadsheet:
+This will create an executable that you can run to generate an Excel
+spreadsheet:
 
     ./myexcel
     xdg-open myexcel.xlsx
@@ -159,10 +147,108 @@ This will create an executable that you can run to generate an Excel spreadsheet
 If the installation didn't work for you then you can link against the static
 library you created in the "Build the source code" step:
 
-    cc myexcel.c -o myexcel -I /path/to/libxlsxwriter/include /path/to/libxlsxwriter/lib/libxlsxwriter.a -lz
+    cc myexcel.c -o myexcel -I /path/to/libxlsxwriter/include \
+                               /path/to/libxlsxwriter/lib/libxlsxwriter.a -lz
 
-And that's it! In the next sections we will look at some more detailed
-examples.
+
+## Installation on Mac OS X and iOS
+
+The instructions for installing on Linux, shown above, will also work on Mac
+OS X.
+
+To install for Xcode and iOS use the Cocoa Pods method shown in the next
+section.
+
+### Install using Cocoa Pods for Xcode
+
+For iOS and OS X projects in Xcode you can install libxlsxwriter using
+[CocoaPods](https://cocoapods.org).
+
+For a sample Xcode project that uses the libxlsxwriter cocoapod for iOS and OS
+X with Objective-C and Swift see [libxlsxwriter Cocoa
+Examples](https://github.com/lrossi/libxlsxwriterCocoaExamples), provided by
+Ludovico Rossi.
+
+Note: if you are using the `"use_frameworks!"` directive in your Podfile then
+see the following
+[discussion](https://github.com/jmcnamara/libxlsxwriter/pull/13) for a
+workaround.
+
+
+## Installation on Windows using Microsoft Visual Studio
+
+There is a sample Microsoft Visual Studio (MSVC) project on GitHub called
+[MSVCLibXlsxWriter](https://github.com/jmcnamara/MSVCLibXlsxWriter).
+
+The allows you to build a DLL of libxlsxwriter and also a sample application
+that uses it to create an Excel output file.
+
+### Building a Windows DLL of libxlsxwriter
+
+The MSVCLibXlsxWriter repository contains 3 directories:
+
+- **LibXlsxWriterProj**: A MSVC project to build a `LibXlsxWriter.dll` from
+    the libxlsxwriter source code. The directory also contains a pre-built
+    `Zlib.dll` file.
+
+- **ExampleExe**: A libxlsxwriter sample application built as a console
+    application that requires the `LibXlsxWriter.dll` and `Zlib.dll` files.
+
+- **libxlsxwriter**: The libxlsxwriter source code in a git submodule, see
+    below.
+
+The `libxlsxwriter` directory is a Git submodule. This means that it isn't
+included when you do a standard Git clone of MSVCLibXlsxWriter. In order to
+get the submodule as well as the project code you must clone the project
+recursively as follows:
+
+    git clone --recursive https://github.com/jmcnamara/MSVCLibXlsxWriter.git
+
+Or update it explicitly as follows:
+
+    git clone https://github.com/jmcnamara/MSVCLibXlsxWriter.git
+    cd MSVCLibXlsxWriter/
+    git submodule init
+    git submodule update
+
+To build the DLL of the library open the `LibXlsxWriterProj/LibXlsxWriter.sln`
+project in MS Visual Studio and build the solution using the "Build -> Build
+Solution" menu item.
+
+In the default configuration this will build an x64 debug LibXlsxWriter `.lib`
+and `.dll` in:
+
+    MSVCLibXlsxWriter\LibXlsxWriterProj\x64\Debug
+
+
+### Building a console application using the LibXlsxWriter.lib
+
+Ensure that `LibXlsxWriter.lib` was built correctly in the previous steps.
+
+To build the example executable open the `ExampleExe/ExampleExe.sln` project
+in MS Visual Studio and build the solution using the "Build -> Build Solution"
+menu item.
+
+In the default configuration this will build the following x64 exe file:
+
+    MSVCLibXlsxWriter\ExampleExe\x64\Debug\ExampleExe.exe
+
+To run the application copy the `LibXlsxWriter.dll` and `Zlib.dll` files from
+the `MSVCLibXlsxWriter\LibXlsxWriterProj` sub-directories to the same
+directory as the executable. You can then run the application by double
+clicking on it in File Explorer or by opening a CMD console and running it
+from the directory.
+
+Once the program has run it will create a `chart_column.xlsx` file based on
+the default sample application in ExampleExe.cpp. You can run other
+libxlsxwriter example programs by copying the code from one of the
+`libxlsxwriter\example\*.c` programs.
+
+
+## Next steps
+
+If you got libxlsxwriter built and working then the next sections will look at
+some more detailed examples.
 
 Next: @ref tutorial01
 

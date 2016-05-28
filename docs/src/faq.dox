@@ -4,12 +4,14 @@
 
 The section outlines some answers to some frequently asked questions.
 
+
 ### Q. Can Libxlsxwriter use an existing Excel file as a template?
 
 No.
 
 Libxlsxwriter is designed only as a file *writer*. It cannot read or modify
 an existing Excel file.
+
 
 ### Q. Why do my formulas show a zero result in some, non-Excel applications?
 
@@ -36,13 +38,7 @@ and data to be written separately.
 
 ### Q. Is Visual C++ on Windows supported?
 
-There is currently no supplied MSVC project files to build the `libxlsxwriter`
-library. However, the source code is ANSI C so it should work with current and
-older versions of MSVC with very minor modifications. (Building the `zlib`
-dependency should also be possible).
-
-If you would like to add MSVC support to libxlsxwriter then open a GitHub
-issue to get a discussion going and send a Pull Request.
+Yes. See @ref getting_started.
 
 
 ### Q. Is feature X supported or will it be supported?
@@ -51,12 +47,14 @@ All supported features are documented. In time the feature set may expand to
 include more of the functionality of the [Python
 XlsxWriter](http://xlsxwriter.readthedocs.org) module.
 
+
 ### Q. Is there an "AutoFit" option for columns?
 
 Unfortunately, there is no way to specify "AutoFit" for a column in the
 Excel file format. This feature is only available at runtime from within
 Excel. It is possible to simulate "AutoFit" by tracking the width of the
 data in the column as your write it.
+
 
 ### Q. Do people actually ask these questions frequently, or at all?
 
