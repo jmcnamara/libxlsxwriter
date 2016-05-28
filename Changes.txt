@@ -1,7 +1,16 @@
 /**
 @page changes Changes
 
-## 0.3.3 April 23 2016
+
+## 0.3.4 May 28 2016
+
+- Updated the @ref getting_started docs with instructions on how to build
+  libxlsxwriter for Windows using Microsoft Visual Studio and added links to
+  the example MSVC project:
+  [MSVCLibXlsxWriter](https://github.com/jmcnamara/MSVCLibXlsxWriter).
+
+
+## 0.3.3 May 23 2016
 
 - Added support for charts via the @ref chart.h "The Chart object". See the
   examples of the supported chart types:

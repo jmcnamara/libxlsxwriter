@@ -177,7 +177,7 @@ workaround.
 
 ## Installation on Windows using Microsoft Visual Studio
 
-There is a sample Microsoft Visual Studio (MSVC) project on GitHub called
+There is a sample Microsoft Visual Studio project on GitHub called
 [MSVCLibXlsxWriter](https://github.com/jmcnamara/MSVCLibXlsxWriter).
 
 The allows you to build a DLL of libxlsxwriter and also a sample application
