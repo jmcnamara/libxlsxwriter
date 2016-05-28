@@ -820,8 +820,8 @@ _hash_password(char *password)
 
 /*
  * Simple replacement for libgen.h basename() for compatibility with MSVC. It
- * handles forward and back slashes. Not exactly the same return format as
- * basename and also creates a new malloced string.
+ * handles forward and back slashes. It doesn't copy exactly the return
+ * format of basename().
  */
 char *
 lxw_basename(const char *path)
@@ -837,12 +837,12 @@ lxw_basename(const char *path)
     back_slash = strrchr(path, '\\');
 
     if (!forward_slash && !back_slash)
-        return lxw_strdup(path);
+        return (char *) path;
 
     if (forward_slash > back_slash)
-        return lxw_strdup(forward_slash + 1);
+        return forward_slash + 1;
     else
-        return lxw_strdup(back_slash + 1);
+        return back_slash + 1;
 }
 
 /*****************************************************************************
@@ -4835,7 +4835,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
 
     /* Copy other options or set defaults. */
     options->filename = lxw_strdup(filename);
-    options->short_name = short_name;
+    options->short_name = lxw_strdup(short_name);
     options->stream = image_stream;
     options->row = row_num;
     options->col = col_num;
