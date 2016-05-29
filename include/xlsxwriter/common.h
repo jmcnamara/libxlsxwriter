@@ -103,6 +103,10 @@ enum lxw_boolean {
         return;                                 \
     }
 
+#define RETURN_ON_ERROR(error)                  \
+    if (error)                                  \
+        return error;
+
 #define LXW_WARN(message)                       \
     fprintf(stderr, "[WARNING]: " message "\n")
 

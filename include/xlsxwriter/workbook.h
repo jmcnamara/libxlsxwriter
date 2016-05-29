@@ -135,6 +135,9 @@ enum lxw_workbook_error {
     /** Error encountered when creating a packager object */
     LXW_ERROR_WORKBOOK_PACKAGER,
 
+    /** Error encountered when creating tmpfile */
+    LXW_ERROR_WORKBOOK_TMPFILE,
+
     /** Error encountered when creating file zip container */
     LXW_ERROR_WORKBOOK_ZIP,
 

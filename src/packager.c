@@ -12,8 +12,7 @@
 #include "xlsxwriter/hash_table.h"
 #include "xlsxwriter/utility.h"
 
-int16_t _add_file_to_zip(lxw_packager *self, FILE * file,
-                         const char *filename);
+int _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename);
 
 /*
  * Forward declarations.
@@ -123,16 +122,20 @@ lxw_packager_free(lxw_packager *packager)
 /*
  * Write the workbook.xml file.
  */
-STATIC uint8_t
+STATIC int
 _write_workbook_file(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
+    int err;
 
     workbook->file = lxw_tmpfile();
+    if (!workbook->file)
+        return LXW_ERROR_PACKAGER_TMPFILE;
 
     lxw_workbook_assemble_xml_file(workbook);
 
-    _add_file_to_zip(self, workbook->file, "xl/workbook.xml");
+    err = _add_file_to_zip(self, workbook->file, "xl/workbook.xml");
+    RETURN_ON_ERROR(err);
 
     fclose(workbook->file);
 
@@ -142,13 +145,14 @@ _write_workbook_file(lxw_packager *self)
 /*
  * Write the worksheet files.
  */
-STATIC uint8_t
+STATIC int
 _write_worksheet_files(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
+    int err;
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
         lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
@@ -158,10 +162,13 @@ _write_worksheet_files(lxw_packager *self)
             lxw_worksheet_write_single_row(worksheet);
 
         worksheet->file = lxw_tmpfile();
+        if (!worksheet->file)
+            return LXW_ERROR_PACKAGER_TMPFILE;
 
         lxw_worksheet_assemble_xml_file(worksheet);
 
-        _add_file_to_zip(self, worksheet->file, sheetname);
+        err = _add_file_to_zip(self, worksheet->file, sheetname);
+        RETURN_ON_ERROR(err);
 
         fclose(worksheet->file);
     }
@@ -172,12 +179,13 @@ _write_worksheet_files(lxw_packager *self)
 /*
  * Write the /xl/media/image?.xml files.
  */
-STATIC uint8_t
+STATIC int
 _write_image_files(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
     lxw_image_options *image;
+    int err;
 
     char filename[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
@@ -194,7 +202,8 @@ _write_image_files(lxw_packager *self)
 
             rewind(image->stream);
 
-            _add_file_to_zip(self, image->stream, filename);
+            err = _add_file_to_zip(self, image->stream, filename);
+            RETURN_ON_ERROR(err);
 
             fclose(image->stream);
         }
@@ -206,13 +215,14 @@ _write_image_files(lxw_packager *self)
 /*
  * Write the chart files.
  */
-STATIC uint8_t
+STATIC int
 _write_chart_files(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
     lxw_chart *chart;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
+    int err;
 
     STAILQ_FOREACH(chart, workbook->ordered_charts, ordered_list_pointers) {
 
@@ -220,10 +230,13 @@ _write_chart_files(lxw_packager *self)
                      "xl/charts/chart%d.xml", index++);
 
         chart->file = lxw_tmpfile();
+        if (!chart->file)
+            return LXW_ERROR_PACKAGER_TMPFILE;
 
         lxw_chart_assemble_xml_file(chart);
 
-        _add_file_to_zip(self, chart->file, sheetname);
+        err = _add_file_to_zip(self, chart->file, sheetname);
+        RETURN_ON_ERROR(err);
 
         self->chart_count++;
 
@@ -236,7 +249,7 @@ _write_chart_files(lxw_packager *self)
 /*
  * Write the drawing files.
  */
-STATIC uint8_t
+STATIC int
 _write_drawing_files(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
@@ -244,6 +257,7 @@ _write_drawing_files(lxw_packager *self)
     lxw_drawing *drawing;
     char filename[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
+    int err;
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
         drawing = worksheet->drawing;
@@ -253,8 +267,12 @@ _write_drawing_files(lxw_packager *self)
                          "xl/drawings/drawing%d.xml", index++);
 
             drawing->file = lxw_tmpfile();
+            if (!drawing->file)
+                return LXW_ERROR_PACKAGER_TMPFILE;
+
             lxw_drawing_assemble_xml_file(drawing);
-            _add_file_to_zip(self, drawing->file, filename);
+            err = _add_file_to_zip(self, drawing->file, filename);
+            RETURN_ON_ERROR(err);
 
             fclose(drawing->file);
 
@@ -268,20 +286,24 @@ _write_drawing_files(lxw_packager *self)
 /*
  * Write the sharedStrings.xml file.
  */
-STATIC uint8_t
+STATIC int
 _write_shared_strings_file(lxw_packager *self)
 {
     lxw_sst *sst = self->workbook->sst;
+    int err;
 
     /* Skip the sharedStrings file if there are no shared strings. */
     if (!sst->string_count)
         return 0;
 
     sst->file = lxw_tmpfile();
+    if (!sst->file)
+        return LXW_ERROR_PACKAGER_TMPFILE;
 
     lxw_sst_assemble_xml_file(sst);
 
-    _add_file_to_zip(self, sst->file, "xl/sharedStrings.xml");
+    err = _add_file_to_zip(self, sst->file, "xl/sharedStrings.xml");
+    RETURN_ON_ERROR(err);
 
     fclose(sst->file);
 
@@ -291,7 +313,7 @@ _write_shared_strings_file(lxw_packager *self)
 /*
  * Write the app.xml file.
  */
-STATIC uint8_t
+STATIC int
 _write_app_file(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
@@ -302,8 +324,11 @@ _write_app_file(lxw_packager *self)
     char *autofilter;
     char *has_range;
     char number[LXW_ATTR_32] = { 0 };
+    int err;
 
     app->file = lxw_tmpfile();
+    if (!app->file)
+        return LXW_ERROR_PACKAGER_TMPFILE;
 
     lxw_snprintf(number, LXW_ATTR_32, "%d", self->workbook->num_sheets);
 
@@ -337,7 +362,8 @@ _write_app_file(lxw_packager *self)
 
     lxw_app_assemble_xml_file(app);
 
-    _add_file_to_zip(self, app->file, "docProps/app.xml");
+    err = _add_file_to_zip(self, app->file, "docProps/app.xml");
+    RETURN_ON_ERROR(err);
 
     fclose(app->file);
 
@@ -349,18 +375,22 @@ _write_app_file(lxw_packager *self)
 /*
  * Write the core.xml file.
  */
-STATIC uint8_t
+STATIC int
 _write_core_file(lxw_packager *self)
 {
     lxw_core *core = lxw_core_new();
+    int err;
 
     core->file = lxw_tmpfile();
+    if (!core->file)
+        return LXW_ERROR_PACKAGER_TMPFILE;
 
     core->properties = self->workbook->properties;
 
     lxw_core_assemble_xml_file(core);
 
-    _add_file_to_zip(self, core->file, "docProps/core.xml");
+    err = _add_file_to_zip(self, core->file, "docProps/core.xml");
+    RETURN_ON_ERROR(err);
 
     fclose(core->file);
 
@@ -372,16 +402,20 @@ _write_core_file(lxw_packager *self)
 /*
  * Write the theme.xml file.
  */
-STATIC uint8_t
+STATIC int
 _write_theme_file(lxw_packager *self)
 {
     lxw_theme *theme = lxw_theme_new();
+    int err;
 
     theme->file = lxw_tmpfile();
+    if (!theme->file)
+        return LXW_ERROR_PACKAGER_TMPFILE;
 
     lxw_theme_assemble_xml_file(theme);
 
-    _add_file_to_zip(self, theme->file, "xl/theme/theme1.xml");
+    err = _add_file_to_zip(self, theme->file, "xl/theme/theme1.xml");
+    RETURN_ON_ERROR(err);
 
     fclose(theme->file);
 
@@ -393,11 +427,12 @@ _write_theme_file(lxw_packager *self)
 /*
  * Write the styles.xml file.
  */
-STATIC uint8_t
+STATIC int
 _write_styles_file(lxw_packager *self)
 {
     lxw_styles *styles = lxw_styles_new();
     lxw_hash_element *hash_element;
+    int err;
 
     /* Copy the unique and in-use formats from the workbook to the styles
      * xf_format list. */
@@ -415,10 +450,13 @@ _write_styles_file(lxw_packager *self)
     styles->xf_count = self->workbook->used_xf_formats->unique_count;
 
     styles->file = lxw_tmpfile();
+    if (!styles->file)
+        return LXW_ERROR_PACKAGER_TMPFILE;
 
     lxw_styles_assemble_xml_file(styles);
 
-    _add_file_to_zip(self, styles->file, "xl/styles.xml");
+    err = _add_file_to_zip(self, styles->file, "xl/styles.xml");
+    RETURN_ON_ERROR(err);
 
     fclose(styles->file);
 
@@ -430,7 +468,7 @@ _write_styles_file(lxw_packager *self)
 /*
  * Write the ContentTypes.xml file.
  */
-STATIC uint8_t
+STATIC int
 _write_content_types_file(lxw_packager *self)
 {
     lxw_content_types *content_types = lxw_content_types_new();
@@ -438,8 +476,11 @@ _write_content_types_file(lxw_packager *self)
     lxw_worksheet *worksheet;
     char filename[LXW_MAX_ATTRIBUTE_LENGTH] = { 0 };
     uint16_t index = 1;
+    int err;
 
     content_types->file = lxw_tmpfile();
+    if (!content_types->file)
+        return LXW_ERROR_PACKAGER_TMPFILE;
 
     if (workbook->has_png)
         lxw_ct_add_default(content_types, "png", "image/png");
@@ -473,7 +514,8 @@ _write_content_types_file(lxw_packager *self)
 
     lxw_content_types_assemble_xml_file(content_types);
 
-    _add_file_to_zip(self, content_types->file, "[Content_Types].xml");
+    err = _add_file_to_zip(self, content_types->file, "[Content_Types].xml");
+    RETURN_ON_ERROR(err);
 
     fclose(content_types->file);
 
@@ -485,7 +527,7 @@ _write_content_types_file(lxw_packager *self)
 /*
  * Write the workbook .rels xml file.
  */
-STATIC uint8_t
+STATIC int
 _write_workbook_rels_file(lxw_packager *self)
 {
     lxw_relationships *rels = lxw_relationships_new();
@@ -493,8 +535,11 @@ _write_workbook_rels_file(lxw_packager *self)
     lxw_worksheet *worksheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
+    int err;
 
     rels->file = lxw_tmpfile();
+    if (!rels->file)
+        return LXW_ERROR_PACKAGER_TMPFILE;
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
         lxw_snprintf(sheetname, LXW_FILENAME_LENGTH, "worksheets/sheet%d.xml",
@@ -511,7 +556,8 @@ _write_workbook_rels_file(lxw_packager *self)
 
     lxw_relationships_assemble_xml_file(rels);
 
-    _add_file_to_zip(self, rels->file, "xl/_rels/workbook.xml.rels");
+    err = _add_file_to_zip(self, rels->file, "xl/_rels/workbook.xml.rels");
+    RETURN_ON_ERROR(err);
 
     fclose(rels->file);
     lxw_free_relationships(rels);
@@ -523,7 +569,7 @@ _write_workbook_rels_file(lxw_packager *self)
  * Write the worksheet .rels files for worksheets that contain links to
  * external data such as hyperlinks or drawings.
  */
-STATIC uint8_t
+STATIC int
 _write_worksheet_rels_file(lxw_packager *self)
 {
     lxw_relationships *rels;
@@ -532,6 +578,7 @@ _write_worksheet_rels_file(lxw_packager *self)
     lxw_worksheet *worksheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 0;
+    int err;
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
 
@@ -543,6 +590,8 @@ _write_worksheet_rels_file(lxw_packager *self)
 
         rels = lxw_relationships_new();
         rels->file = lxw_tmpfile();
+        if (!rels->file)
+            return LXW_ERROR_PACKAGER_TMPFILE;
 
         STAILQ_FOREACH(rel, worksheet->external_hyperlinks, list_pointers) {
             lxw_add_worksheet_relationship(rels, rel->type, rel->target,
@@ -559,7 +608,8 @@ _write_worksheet_rels_file(lxw_packager *self)
 
         lxw_relationships_assemble_xml_file(rels);
 
-        _add_file_to_zip(self, rels->file, sheetname);
+        err = _add_file_to_zip(self, rels->file, sheetname);
+        RETURN_ON_ERROR(err);
 
         fclose(rels->file);
         lxw_free_relationships(rels);
@@ -572,7 +622,7 @@ _write_worksheet_rels_file(lxw_packager *self)
  * Write the drawing .rels files for worksheets that contain charts or
  * drawings.
  */
-STATIC uint8_t
+STATIC int
 _write_drawing_rels_file(lxw_packager *self)
 {
     lxw_relationships *rels;
@@ -581,6 +631,7 @@ _write_drawing_rels_file(lxw_packager *self)
     lxw_worksheet *worksheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
+    int err;
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
 
@@ -589,6 +640,8 @@ _write_drawing_rels_file(lxw_packager *self)
 
         rels = lxw_relationships_new();
         rels->file = lxw_tmpfile();
+        if (!rels->file)
+            return LXW_ERROR_PACKAGER_TMPFILE;
 
         STAILQ_FOREACH(rel, worksheet->drawing_links, list_pointers) {
             lxw_add_worksheet_relationship(rels, rel->type, rel->target,
@@ -601,7 +654,8 @@ _write_drawing_rels_file(lxw_packager *self)
 
         lxw_relationships_assemble_xml_file(rels);
 
-        _add_file_to_zip(self, rels->file, sheetname);
+        err = _add_file_to_zip(self, rels->file, sheetname);
+        RETURN_ON_ERROR(err);
 
         fclose(rels->file);
         lxw_free_relationships(rels);
@@ -613,12 +667,15 @@ _write_drawing_rels_file(lxw_packager *self)
 /*
  * Write the _rels/.rels xml file.
  */
-STATIC uint8_t
+STATIC int
 _write_root_rels_file(lxw_packager *self)
 {
     lxw_relationships *rels = lxw_relationships_new();
+    int err;
 
     rels->file = lxw_tmpfile();
+    if (!rels->file)
+        return LXW_ERROR_PACKAGER_TMPFILE;
 
     lxw_add_document_relationship(rels, "/officeDocument", "xl/workbook.xml");
     lxw_add_package_relationship(rels, "/metadata/core-properties",
@@ -628,7 +685,8 @@ _write_root_rels_file(lxw_packager *self)
 
     lxw_relationships_assemble_xml_file(rels);
 
-    _add_file_to_zip(self, rels->file, "_rels/.rels");
+    err = _add_file_to_zip(self, rels->file, "_rels/.rels");
+    RETURN_ON_ERROR(err);
 
     fclose(rels->file);
 
@@ -643,7 +701,7 @@ _write_root_rels_file(lxw_packager *self)
  *
  ****************************************************************************/
 
-int16_t
+int
 _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
 {
     int16_t error = ZIP_OK;
@@ -704,27 +762,58 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
 /*
  * Write the xml files that make up the XLXS OPC package.
  */
-uint8_t
+int
 lxw_create_package(lxw_packager *self)
 {
+    uint8_t err;
 
-    _write_worksheet_files(self);
-    _write_workbook_file(self);
-    _write_chart_files(self);
-    _write_drawing_files(self);
-    _write_shared_strings_file(self);
-    _write_app_file(self);
-    _write_core_file(self);
-    _write_theme_file(self);
-    _write_styles_file(self);
-    _write_content_types_file(self);
-    _write_workbook_rels_file(self);
-    _write_worksheet_rels_file(self);
-    _write_drawing_rels_file(self);
-    _write_image_files(self);
-    _write_root_rels_file(self);
+    err = _write_worksheet_files(self);
+    RETURN_ON_ERROR(err);
 
-    zipClose(self->zipfile, NULL);
+    err = _write_workbook_file(self);
+    RETURN_ON_ERROR(err);
+
+    err = _write_chart_files(self);
+    RETURN_ON_ERROR(err);
+
+    err = _write_drawing_files(self);
+    RETURN_ON_ERROR(err);
+
+    err = _write_shared_strings_file(self);
+    RETURN_ON_ERROR(err);
+
+    err = _write_app_file(self);
+    RETURN_ON_ERROR(err);
+
+    err = _write_core_file(self);
+    RETURN_ON_ERROR(err);
+
+    err = _write_theme_file(self);
+    RETURN_ON_ERROR(err);
+
+    err = _write_styles_file(self);
+    RETURN_ON_ERROR(err);
+
+    err = _write_content_types_file(self);
+    RETURN_ON_ERROR(err);
+
+    err = _write_workbook_rels_file(self);
+    RETURN_ON_ERROR(err);
+
+    err = _write_worksheet_rels_file(self);
+    RETURN_ON_ERROR(err);
+
+    err = _write_drawing_rels_file(self);
+    RETURN_ON_ERROR(err);
+
+    err = _write_image_files(self);
+    RETURN_ON_ERROR(err);;
+
+    err = _write_root_rels_file(self);
+    RETURN_ON_ERROR(err);
+
+    err = zipClose(self->zipfile, NULL);
+    RETURN_ON_ERROR(err);
 
     return 0;
 }

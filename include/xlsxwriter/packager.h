@@ -45,6 +45,14 @@ typedef struct lxw_packager {
 
 } lxw_packager;
 
+enum lxw_packager_error {
+    /** No error */
+    LXW_ERROR_PACKAGER_NONE = 0,
+
+    /** Error encountered when creating tmpfile */
+    LXW_ERROR_PACKAGER_TMPFILE
+};
+
 
 /* *INDENT-OFF* */
 #ifdef __cplusplus
@@ -54,7 +62,7 @@ extern "C" {
 
 lxw_packager *lxw_packager_new(const char *filename);
 void lxw_packager_free(lxw_packager *packager);
-uint8_t lxw_create_package(lxw_packager *self);
+int lxw_create_package(lxw_packager *self);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

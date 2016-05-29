@@ -1461,7 +1461,7 @@ workbook_close(lxw_workbook *self)
 {
     lxw_worksheet *worksheet = NULL;
     lxw_packager *packager = NULL;
-    uint8_t error = LXW_ERROR_WORKBOOK_NONE;
+    int error = LXW_ERROR_WORKBOOK_NONE;
 
     /* Add a default worksheet if non have been added. */
     if (!self->num_sheets)
@@ -1494,8 +1494,8 @@ workbook_close(lxw_workbook *self)
 
     /* If the packager fails it is generally due to a zip permission error. */
     if (packager == NULL) {
-        fprintf(stderr, "[ERROR] Error creating '%s': %s\n", self->filename,
-                strerror(errno));
+        fprintf(stderr, "[ERROR] Error creating '%s'. Error = %s\n",
+                self->filename, strerror(errno));
 
         error = LXW_ERROR_WORKBOOK_FILE_CREATE;
         goto mem_error;
@@ -1504,7 +1504,22 @@ workbook_close(lxw_workbook *self)
     /* Set the workbook object in the packager. */
     packager->workbook = self;
 
+    /* Assemble all the sub-file in the xlsx package. */
     error = lxw_create_package(packager);
+
+    if (error == LXW_ERROR_PACKAGER_TMPFILE) {
+        fprintf(stderr, "[ERROR] Error creating tmpfile(s) to assemble '%s'. "
+                "Error = %s\n", self->filename, strerror(errno));
+
+        error = LXW_ERROR_WORKBOOK_TMPFILE;
+    }
+
+    if (error == ZIP_ERRNO) {
+        fprintf(stderr, "[ERROR] zipClose error while creating '%s'.",
+                self->filename);
+
+        error = LXW_ERROR_WORKBOOK_TMPFILE;
+    }
 
 mem_error:
     lxw_packager_free(packager);
