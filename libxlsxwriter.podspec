@@ -38,4 +38,9 @@ Pod::Spec.new do |s|
   s.header_mappings_dir   = "include/xlsxwriter"
   s.library               = "z"
   s.compiler_flags        = "-DNOCRYPT=1", "-DNOUNCRYPT=1"
+  s.pod_target_xcconfig   = { 'USER_HEADER_SEARCH_PATHS' => '${PODS_ROOT}/libxlsxwriter/include' }
+  s.module_map            = "cocoapods/libxlsxwriter.modulemap"
+  s.prepare_command       = <<-CMD
+                            cp cocoapods/libxlsxwriter-umbrella.h include/xlsxwriter/libxlsxwriter-umbrella.h
+                          CMD
 end
