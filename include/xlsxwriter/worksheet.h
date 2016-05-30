@@ -72,30 +72,6 @@
 /** Default row height in Excel */
 #define LXW_DEF_ROW_HEIGHT 15.0
 
-/** Error codes from worksheet functions. */
-enum lxw_worksheet_error {
-    /** No error. */
-    LXW_ERROR_WORKSHEET_NONE = 0,
-
-    /** Row or column index out of range. */
-    LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE,
-
-    /** String exceeds Excel's LXW_STR_MAX limit. */
-    LXW_ERROR_WORKSHEET_MAX_STRING_LENGTH_EXCEEDED,
-
-    /** NULL String ignored as function parameter. */
-    LXW_ERROR_WORKSHEET_NULL_STRING_IGNORED,
-
-    /** Maximum number of worksheet URLs (65530) exceeded. */
-    LXW_ERROR_WORKSHEET_MAX_NUMBER_URLS_EXCEEDED,
-
-    /** Error finding string index. */
-    LXW_ERROR_WORKSHEET_STRING_HASH_NOT_FOUND,
-
-    /** Memory error. */
-    LXW_ERROR_WORKSHEET_MEMORY_ERROR
-};
-
 /** Gridline options using in `worksheet_gridlines()`. */
 enum lxw_gridlines {
     /** Hide screen and print gridlines. */
@@ -552,7 +528,7 @@ extern "C" {
  * @param number    The number to write to the cell.
  * @param format    A pointer to a Format instance or NULL.
  *
- * @return A #lxw_worksheet_error code.
+ * @return A #lxw_error code.
  *
  * The `worksheet_write_number()` function writes numeric types to the cell
  * specified by `row` and `column`:
@@ -595,7 +571,7 @@ int8_t worksheet_write_number(lxw_worksheet *worksheet,
  * @param string    String to write to cell.
  * @param format    A pointer to a Format instance or NULL.
  *
- * @return A #lxw_worksheet_error code.
+ * @return A #lxw_error code.
  *
  * The `%worksheet_write_string()` function writes a string to the cell
  * specified by `row` and `column`:
@@ -643,7 +619,7 @@ int8_t worksheet_write_string(lxw_worksheet *worksheet,
  * @param formula   Formula string to write to cell.
  * @param format    A pointer to a Format instance or NULL.
  *
- * @return A #lxw_worksheet_error code.
+ * @return A #lxw_error code.
  *
  * The `%worksheet_write_formula()` function writes a formula or function to
  * the cell specified by `row` and `column`:
@@ -697,7 +673,7 @@ int8_t worksheet_write_formula(lxw_worksheet *worksheet,
  * @param formula     Array formula to write to cell.
  * @param format      A pointer to a Format instance or NULL.
  *
- * @return A #lxw_worksheet_error code.
+ * @return A #lxw_error code.
  *
   * The `%worksheet_write_array_formula()` function writes an array formula to
  * a cell range. In Excel an array formula is a formula that performs a
@@ -752,7 +728,7 @@ int8_t worksheet_write_array_formula_num(lxw_worksheet *worksheet,
  * @param datetime  The datetime to write to the cell.
  * @param format    A pointer to a Format instance or NULL.
  *
- * @return A #lxw_worksheet_error code.
+ * @return A #lxw_error code.
  *
  * The `worksheet_write_datetime()` function can be used to write a date or
  * time to the cell specified by `row` and `column`:
@@ -788,7 +764,7 @@ int8_t worksheet_write_url_opt(lxw_worksheet *worksheet,
  * @param url       The url to write to the cell.
  * @param format    A pointer to a Format instance or NULL.
  *
- * @return A #lxw_worksheet_error code.
+ * @return A #lxw_error code.
  *
  *
  * The `%worksheet_write_url()` function is used to write a URL/hyperlink to a
@@ -924,7 +900,7 @@ int8_t worksheet_write_url(lxw_worksheet *worksheet,
  * @param value     The boolean value to write to the cell.
  * @param format    A pointer to a Format instance or NULL.
  *
- * @return A #lxw_worksheet_error code.
+ * @return A #lxw_error code.
  *
  * Write an Excel boolean to the cell specified by `row` and `column`:
  *
@@ -945,7 +921,7 @@ int8_t worksheet_write_boolean(lxw_worksheet *worksheet,
  * @param col       The zero indexed column number.
  * @param format    A pointer to a Format instance or NULL.
  *
- * @return A #lxw_worksheet_error code.
+ * @return A #lxw_error code.
  *
  * Write a blank cell specified by `row` and `column`:
  *
@@ -978,7 +954,7 @@ int8_t worksheet_write_blank(lxw_worksheet *worksheet,
  * @param format    A pointer to a Format instance or NULL.
  * @param result    A user defined result for a formula.
  *
- * @return A #lxw_worksheet_error code.
+ * @return A #lxw_error code.
  *
  * The `%worksheet_write_formula_num()` function writes a formula or Excel
  * function to the cell specified by `row` and `column` with a user defined

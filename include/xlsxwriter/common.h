@@ -45,6 +45,53 @@ enum lxw_boolean {
     LXW_TRUE
 };
 
+/**
+ * @brief Error codes from libxlsxwriter functions.
+ *
+ * See the `lxw_strerror()` function for an example of how to convert the
+ * enum number to a descriptive error message string.
+ */
+enum lxw_error {
+
+    /** No error. */
+    LXW_NO_ERROR = 0,
+
+    /** Memory error, failed to malloc() required memory. */
+    LXW_ERROR_MEMORY_MALLOC_FAILED,
+
+    /** Error creating output xlsx file. Usually a permissions error. */
+    LXW_ERROR_CREATING_XLSX_FILE,
+
+    /** Error encountered when creating a tmpfile during file assembly. */
+    LXW_ERROR_CREATING_TMPFILE,
+
+    /** Zlib error with a file operation while creating xlsx file. */
+    LXW_ERROR_ZIP_FILE_OPERATION,
+
+    /** Zlib error when adding sub file to xlsx file. */
+    LXW_ERROR_ZIP_FILE_ADD,
+
+    /** Zlib error when closing xlsx file. */
+    LXW_ERROR_ZIP_CLOSE,
+
+    /** NULL string ignored as function parameter. */
+    LXW_ERROR_NULL_STRING_IGNORED,
+
+    /** String exceeds Excel's limit of 32,767 characters. */
+    LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED,
+
+    /** Error finding internal string index. */
+    LXW_ERROR_SHARED_STRING_INDEX_NOT_FOUND,
+
+    /** Worksheet row or column index out of range. */
+    LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE,
+
+    /** Maximum number of worksheet URLs (65530) exceeded. */
+    LXW_ERROR_WORKSHEET_MAX_NUMBER_URLS_EXCEEDED,
+
+    LXW_MAX_ERRNO
+};
+
 /* Excel sheetname max of 31 chars + \0. */
 #define LXW_SHEETNAME_MAX     32
 
@@ -69,7 +116,6 @@ enum lxw_boolean {
 #define LXW_UINT32_T_LENGTH   11        /* Length of 4294967296\0. */
 #define LXW_IGNORE            1
 #define LXW_FILENAME_LENGTH   128
-#define LXW_NO_ERROR          0
 
 #define LXW_SCHEMA_ROOT      "http://schemas.openxmlformats.org"
 #define LXW_SCHEMA_DRAWING   LXW_SCHEMA_ROOT "/drawingml/2006"

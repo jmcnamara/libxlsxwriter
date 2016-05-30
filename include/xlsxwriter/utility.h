@@ -100,6 +100,35 @@ typedef struct lxw_datetime {
 
 } lxw_datetime;
 
+/**
+ * @brief Converts a libxlsxwriter error number to a string.
+ *
+ * The `%lxw_strerror` function converts a libxlsxwriter error number defined
+ * by #lxw_error to a pointer to a string description of the error.
+ * Similar to the standard library strerror(3) function.
+ *
+ * For example:
+ *
+ * @code
+ *     uint8_t error = workbook_close(workbook);
+ *
+ *     if (error)
+ *         printf("Error in workbook_close().\n"
+ *                "Error %d = %s\n", error, lxw_strerror(error));
+ * @endcode
+ *
+ * This would produce output like the following if the target file wasn't
+ * writable:
+ *
+ *     Error in workbook_close().
+ *     Error 2 = Error creating output xlsx file. Usually a permissions error.
+ *
+ * @param error_num The error number returned by a libxlsxwriter function.
+ *
+ * @return A pointer to a statically allocated string. Do not free.
+ */
+char *lxw_strerror(uint8_t error_num);
+
 /* Create a quoted version of the worksheet name */
 char *lxw_quote_sheetname(char *str);
 

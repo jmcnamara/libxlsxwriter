@@ -14,6 +14,31 @@
 #include <stdlib.h>
 #include "xlsxwriter/utility.h"
 
+char *error_strings[LXW_MAX_ERRNO + 1] = {
+    "No error.",
+    "Memory error, failed to malloc() required memory.",
+    "Error creating output xlsx file. Usually a permissions error.",
+    "Error encountered when creating a tmpfile during file assembly.",
+    "Zlib error with a file operation while creating xlsx file.",
+    "Zlib error when adding sub file to xlsx file.",
+    "Zlib error when closing xlsx file.",
+    "NULL string ignored as function parameter.",
+    "String exceeds Excel's limit of 32,767 characters.",
+    "Error finding internal string index.",
+    "Worksheet row or column index out of range.",
+    "Maximum number of worksheet URLs (65530) exceeded.",
+    "Unknown error number."
+};
+
+char *
+lxw_strerror(uint8_t error_num)
+{
+    if (error_num > LXW_MAX_ERRNO)
+        error_num = LXW_MAX_ERRNO;
+
+    return error_strings[error_num];
+}
+
 /*
  * Convert Excel A-XFD style column name to zero based number.
  */

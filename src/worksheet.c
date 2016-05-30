@@ -135,7 +135,15 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     STAILQ_INIT(worksheet->drawing_links);
 
     if (init_data && init_data->optimize) {
-        worksheet->optimize_tmpfile = lxw_tmpfile();
+        FILE *tmpfile = lxw_tmpfile();
+        if (!tmpfile) {
+            LXW_ERROR("Error creating tmpfile() for worksheet in "
+                      "'constant_memory' mode.");
+            goto mem_error;
+        }
+
+        worksheet->optimize_tmpfile = tmpfile;
+        GOTO_LABEL_ON_MEM_ERROR(worksheet->optimize_tmpfile, mem_error);
         worksheet->file = worksheet->optimize_tmpfile;
     }
 
@@ -725,22 +733,22 @@ _next_power_of_two(uint16_t col)
  * The ignore_row/ignore_col flags are used to indicate that we wish to
  * perform the dimension check without storing the value.
  */
-STATIC int8_t
+STATIC uint8_t
 _check_dimensions(lxw_worksheet *self,
                   lxw_row_t row_num,
                   lxw_col_t col_num, int8_t ignore_row, int8_t ignore_col)
 {
     if (row_num >= LXW_ROW_MAX)
-        return -LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE;
+        return LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE;
 
     if (col_num >= LXW_COL_MAX)
-        return -LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE;
+        return LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE;
 
     /* In optimization mode we don't change dimensions for rows that are */
     /* already written. */
     if (!ignore_row && !ignore_col && self->optimize) {
         if (row_num < self->optimize_row->row_num)
-            return -LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE;
+            return LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE;
     }
 
     if (!ignore_row) {
@@ -3401,7 +3409,7 @@ worksheet_write_string(lxw_worksheet *self,
         if (format)
             return worksheet_write_blank(self, row_num, col_num, format);
         else
-            return -LXW_ERROR_WORKSHEET_NULL_STRING_IGNORED;
+            return LXW_ERROR_NULL_STRING_IGNORED;
     }
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
@@ -3409,14 +3417,14 @@ worksheet_write_string(lxw_worksheet *self,
         return err;
 
     if (strlen(string) > LXW_STR_MAX)
-        return -LXW_ERROR_WORKSHEET_MAX_STRING_LENGTH_EXCEEDED;
+        return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
 
     if (!self->optimize) {
         /* Get the SST element and string id. */
         sst_element = lxw_get_sst_index(self->sst, string);
 
         if (!sst_element)
-            return -LXW_ERROR_WORKSHEET_STRING_HASH_NOT_FOUND;
+            return LXW_ERROR_SHARED_STRING_INDEX_NOT_FOUND;
 
         string_id = sst_element->index;
         cell = _new_string_cell(row_num, col_num, string_id,
@@ -3455,7 +3463,7 @@ worksheet_write_formula_num(lxw_worksheet *self,
     int8_t err;
 
     if (!formula)
-        return -LXW_ERROR_WORKSHEET_NULL_STRING_IGNORED;
+        return LXW_ERROR_NULL_STRING_IGNORED;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
@@ -3520,7 +3528,7 @@ worksheet_write_array_formula_num(lxw_worksheet *self,
     }
 
     if (!formula)
-        return -LXW_ERROR_WORKSHEET_NULL_STRING_IGNORED;
+        return LXW_ERROR_NULL_STRING_IGNORED;
 
     /* Check that column number is valid and store the max value */
     err = _check_dimensions(self, last_row, last_col, LXW_FALSE, LXW_FALSE);
@@ -3688,11 +3696,11 @@ worksheet_write_url_opt(lxw_worksheet *self,
     enum cell_types link_type = HYPERLINK_URL;
 
     if (!url || !*url)
-        return -LXW_ERROR_WORKSHEET_NULL_STRING_IGNORED;
+        return LXW_ERROR_NULL_STRING_IGNORED;
 
     /* Check the Excel limit of URLS per worksheet. */
     if (self->hlink_count > LXW_MAX_NUMBER_URLS)
-        return -LXW_ERROR_WORKSHEET_MAX_NUMBER_URLS_EXCEEDED;
+        return LXW_ERROR_WORKSHEET_MAX_NUMBER_URLS_EXCEEDED;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
@@ -3875,7 +3883,7 @@ mem_error:
     free(url_external);
     free(url_string);
     free(tooltip_copy);
-    return -LXW_ERROR_WORKSHEET_MEMORY_ERROR;
+    return LXW_ERROR_MEMORY_MALLOC_FAILED;
 }
 
 /*
@@ -3954,7 +3962,7 @@ worksheet_set_column_opt(lxw_worksheet *self,
             self->col_options_max = new_size;
         }
         else {
-            return -LXW_ERROR_WORKSHEET_MEMORY_ERROR;
+            return LXW_ERROR_MEMORY_MALLOC_FAILED;
         }
     }
 
@@ -3974,13 +3982,13 @@ worksheet_set_column_opt(lxw_worksheet *self,
             self->col_formats_max = new_size;
         }
         else {
-            return -LXW_ERROR_WORKSHEET_MEMORY_ERROR;
+            return LXW_ERROR_MEMORY_MALLOC_FAILED;
         }
     }
 
     /* Store the column options. */
     copied_options = calloc(1, sizeof(lxw_col_options));
-    RETURN_ON_MEM_ERROR(copied_options, -LXW_ERROR_WORKSHEET_MEMORY_ERROR);
+    RETURN_ON_MEM_ERROR(copied_options, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     copied_options->firstcol = firstcol;
     copied_options->lastcol = lastcol;

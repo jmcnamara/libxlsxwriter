@@ -123,29 +123,6 @@ typedef struct lxw_defined_name {
 } lxw_defined_name;
 
 /**
- * @brief Error codes from workbook functions.
- */
-enum lxw_workbook_error {
-    /** No error */
-    LXW_ERROR_WORKBOOK_NONE = 0,
-
-    /** Error encountered when creating file */
-    LXW_ERROR_WORKBOOK_FILE_CREATE,
-
-    /** Error encountered when creating a packager object */
-    LXW_ERROR_WORKBOOK_PACKAGER,
-
-    /** Error encountered when creating tmpfile */
-    LXW_ERROR_WORKBOOK_TMPFILE,
-
-    /** Error encountered when creating file zip container */
-    LXW_ERROR_WORKBOOK_ZIP,
-
-    /** Memory error. */
-    LXW_ERROR_WORKBOOK_MEMORY_ERROR
-};
-
-/**
  * Workbook document properties.
  */
 typedef struct lxw_doc_properties {
@@ -430,7 +407,7 @@ lxw_chart *workbook_add_chart(lxw_workbook *workbook, uint8_t chart_type);
  *
  * @param workbook Pointer to a lxw_workbook instance.
  *
- * @return A #lxw_workbook_error.
+ * @return A #lxw_error.
  *
  * The `%workbook_close()` function closes a Workbook object, writes the Excel
  * file to disk, frees any memory allocated internally to the Workbook and
@@ -440,7 +417,7 @@ lxw_chart *workbook_add_chart(lxw_workbook *workbook, uint8_t chart_type);
  *     workbook_close(workbook);
  * @endcode
  *
- * The `%workbook_close()` function returns any #lxw_workbook_error error codes
+ * The `%workbook_close()` function returns any #lxw_error error codes
  * encountered when creating the Excel file. The error code can be returned
  * from the program main or the calling function:
  *

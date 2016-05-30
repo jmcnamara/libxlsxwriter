@@ -303,13 +303,13 @@ CTEST(worksheet, spans06) {
     worksheet_select(worksheet);
 
     err = worksheet_write_number(worksheet, 0, 16384, 123, NULL);
-    ASSERT_EQUAL(-LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE, err);
+    ASSERT_EQUAL(LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE, err);
 
     err = worksheet_write_number(worksheet, 1048576, 0, 123, NULL);
-    ASSERT_EQUAL(-LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE, err);
+    ASSERT_EQUAL(LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE, err);
 
     err = worksheet_write_number(worksheet, 1048576, 16384, 123, NULL);
-    ASSERT_EQUAL(-LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE, err);
+    ASSERT_EQUAL(LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE, err);
 
     lxw_worksheet_assemble_xml_file(worksheet);
 

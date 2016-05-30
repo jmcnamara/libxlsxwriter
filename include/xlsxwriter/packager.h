@@ -26,6 +26,14 @@
 
 #define LXW_ZIP_BUFFER_SIZE (16384)
 
+/*  * If zlib returns Z_ERRNO then errno is set and we can trap that. Otherwise
+ * return a default libxlsxwriter error. */
+#define RETURN_ON_ZIP_ERROR(err, default_err)   \
+    if (err == Z_ERRNO)                         \
+        return LXW_ERROR_ZIP_FILE_OPERATION;    \
+    else                                        \
+        return default_err;
+
 /*
  * Struct to represent a packager.
  */
@@ -45,14 +53,6 @@ typedef struct lxw_packager {
 
 } lxw_packager;
 
-enum lxw_packager_error {
-    /** No error */
-    LXW_ERROR_PACKAGER_NONE = 0,
-
-    /** Error encountered when creating tmpfile */
-    LXW_ERROR_PACKAGER_TMPFILE
-};
-
 
 /* *INDENT-OFF* */
 #ifdef __cplusplus
@@ -62,7 +62,7 @@ extern "C" {
 
 lxw_packager *lxw_packager_new(const char *filename);
 void lxw_packager_free(lxw_packager *packager);
-int lxw_create_package(lxw_packager *self);
+uint8_t lxw_create_package(lxw_packager *self);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

@@ -1461,7 +1461,7 @@ workbook_close(lxw_workbook *self)
 {
     lxw_worksheet *worksheet = NULL;
     lxw_packager *packager = NULL;
-    int error = LXW_ERROR_WORKBOOK_NONE;
+    uint8_t error = LXW_NO_ERROR;
 
     /* Add a default worksheet if non have been added. */
     if (!self->num_sheets)
@@ -1494,31 +1494,44 @@ workbook_close(lxw_workbook *self)
 
     /* If the packager fails it is generally due to a zip permission error. */
     if (packager == NULL) {
-        fprintf(stderr, "[ERROR] Error creating '%s'. Error = %s\n",
-                self->filename, strerror(errno));
+        fprintf(stderr, "[ERROR] workbook_close(): "
+                "Error creating '%s'. "
+                "Error = %s\n", self->filename, strerror(errno));
 
-        error = LXW_ERROR_WORKBOOK_FILE_CREATE;
+        error = LXW_ERROR_CREATING_XLSX_FILE;
         goto mem_error;
     }
 
     /* Set the workbook object in the packager. */
     packager->workbook = self;
 
-    /* Assemble all the sub-file in the xlsx package. */
+    /* Assemble all the sub-files in the xlsx package. */
     error = lxw_create_package(packager);
 
-    if (error == LXW_ERROR_PACKAGER_TMPFILE) {
-        fprintf(stderr, "[ERROR] Error creating tmpfile(s) to assemble '%s'. "
+    /* Error and non-error conditions fall through to the cleanup code. */
+    if (error == LXW_ERROR_CREATING_TMPFILE) {
+        fprintf(stderr, "[ERROR] workbook_close(): "
+                "Error creating tmpfile(s) to assemble '%s'. "
                 "Error = %s\n", self->filename, strerror(errno));
-
-        error = LXW_ERROR_WORKBOOK_TMPFILE;
     }
 
-    if (error == ZIP_ERRNO) {
-        fprintf(stderr, "[ERROR] zipClose error while creating '%s'.",
-                self->filename);
+    /* If LXW_ERROR_ZIP_FILE_OPERATION then errno is set by zlib. */
+    if (error == LXW_ERROR_ZIP_FILE_OPERATION) {
+        fprintf(stderr, "[ERROR] workbook_close(): "
+                "Zlib error while creating xlsx file '%s'. "
+                "Error = %s\n", self->filename, strerror(errno));
+    }
 
-        error = LXW_ERROR_WORKBOOK_TMPFILE;
+    /* The next 2 error conditions don't set errno. */
+    if (error == LXW_ERROR_ZIP_FILE_ADD) {
+        fprintf(stderr, "[ERROR] workbook_close(): "
+                "Zlib error adding file to xlsx file '%s'.\n",
+                self->filename);
+    }
+
+    if (error == LXW_ERROR_ZIP_CLOSE) {
+        fprintf(stderr, "[ERROR] workbook_close(): "
+                "Zlib error closing xlsx file '%s'.\n", self->filename);
     }
 
 mem_error:

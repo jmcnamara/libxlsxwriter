@@ -52,7 +52,12 @@ int main() {
 
 
     /* Close the workbook, save the file and free any memory. */
-    workbook_close(workbook);
+    uint8_t error = workbook_close(workbook);
 
-    return 0;
+    /* Check if there was any error creating the xlsx file. */
+    if (error)
+        printf("Error in workbook_close().\n"
+               "Error %d = %s\n", error, lxw_strerror(error));
+
+    return error;
 }
