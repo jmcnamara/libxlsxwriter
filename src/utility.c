@@ -474,8 +474,36 @@ lxw_quote_sheetname(char *str)
  * Thin wrapper for tmpfile() so it can be over-ridden with a safer version if
  * required.
  */
+#ifndef USE_TMPFILE2
 FILE *
 lxw_tmpfile(void)
 {
     return tmpfile();
 }
+#else
+/* This variant allows you to define the tmpfile directory and format.
+ * Requires that -ansi is turned off on some systems. */
+#include <unistd.h>
+FILE *
+lxw_tmpfile(void)
+{
+    char template[] = "/tmp/libxlsxwriter.XXXXXX";
+    FILE *tempfile;
+    int fd;
+    int err;
+
+    fd = mkstemp(template);
+    if (fd == -1)
+        return NULL;
+
+    tempfile = fdopen(fd, "w+");
+    if (!tempfile)
+        return NULL;
+
+    err = unlink(template);
+    if (err == -1)
+        return NULL;
+
+    return tempfile;
+}
+#endif
