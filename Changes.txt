@@ -2,6 +2,11 @@
 @page changes Changes
 
 
+## 0.3.6 June 1 2016
+
+- Fix for `worksheet_insert_image()` issue when handling images with zero dpi.
+
+
 ## 0.3.5 May 31 2016
 
 - Refactored the error handling and reporting for when the file creation
