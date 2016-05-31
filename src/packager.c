@@ -12,8 +12,8 @@
 #include "xlsxwriter/hash_table.h"
 #include "xlsxwriter/utility.h"
 
-uint8_t _add_file_to_zip(lxw_packager *self, FILE * file,
-                         const char *filename);
+STATIC uint8_t _add_file_to_zip(lxw_packager *self, FILE * file,
+                                const char *filename);
 
 /*
  * Forward declarations.
@@ -702,7 +702,7 @@ _write_root_rels_file(lxw_packager *self)
  *
  ****************************************************************************/
 
-uint8_t
+STATIC uint8_t
 _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
 {
     int16_t error = ZIP_OK;

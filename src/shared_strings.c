@@ -114,7 +114,7 @@ _sst_xml_declaration(lxw_sst *self)
 /*
  * Write the <t> element.
  */
-void
+STATIC void
 _write_t(lxw_sst *self, char *string)
 {
     struct xml_attribute_list attributes;
@@ -135,7 +135,7 @@ _write_t(lxw_sst *self, char *string)
 /*
  * Write the <si> element.
  */
-void
+STATIC void
 _write_si(lxw_sst *self, char *string)
 {
     uint8_t escaped_string = LXW_FALSE;
@@ -162,7 +162,7 @@ _write_si(lxw_sst *self, char *string)
 /*
  * Write the <sst> element.
  */
-void
+STATIC void
 _write_sst(lxw_sst *self)
 {
     struct xml_attribute_list attributes;
@@ -189,7 +189,7 @@ _write_sst(lxw_sst *self)
 /*
  * Assemble and write the XML file.
  */
-void
+STATIC void
 _write_sst_strings(lxw_sst *self)
 {
     struct sst_element *sst_element;

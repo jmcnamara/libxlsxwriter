@@ -39,7 +39,7 @@ _name_cmp(lxw_worksheet_name *name1, lxw_worksheet_name *name2)
 /*
  * Free workbook properties.
  */
-void
+STATIC void
 _free_doc_properties(lxw_doc_properties *properties)
 {
     if (properties) {

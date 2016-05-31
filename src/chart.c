@@ -24,7 +24,7 @@
 /*
  * Free a series range object.
  */
-void
+STATIC void
 _chart_free_range(lxw_series_range *range)
 {
     struct lxw_series_data_point *data_point;
@@ -49,7 +49,7 @@ _chart_free_range(lxw_series_range *range)
 /*
  * Free a series object.
  */
-void
+STATIC void
 _chart_series_free(lxw_chart_series *series)
 {
     if (!series)
@@ -67,7 +67,7 @@ _chart_series_free(lxw_chart_series *series)
 /*
  * Initialize the data cache in a range object.
  */
-int
+STATIC int
 _chart_init_data_cache(lxw_series_range *range)
 {
     /* Initialize the series range data cache. */
@@ -197,7 +197,7 @@ _chart_add_axis_ids(lxw_chart *self)
 /*
  * Utility function to set a chart range.
  */
-void
+STATIC void
 _chart_set_range(lxw_series_range *range, char *sheetname,
                  lxw_row_t first_row, lxw_col_t first_col,
                  lxw_row_t last_row, lxw_col_t last_col)

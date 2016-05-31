@@ -16,14 +16,14 @@
 #define LXW_MAX_ENCODED_ATTRIBUTE_LENGTH (LXW_MAX_ATTRIBUTE_LENGTH*6)
 
 /* Forward declarations. */
-char *_escape_attributes(struct xml_attribute *attribute);
+STATIC char *_escape_attributes(struct xml_attribute *attribute);
 
 char *lxw_escape_data(const char *data);
 
-void _fprint_escaped_attributes(FILE * xmlfile,
-                                struct xml_attribute_list *attributes);
+STATIC void _fprint_escaped_attributes(FILE * xmlfile,
+                                       struct xml_attribute_list *attributes);
 
-void _fprint_escaped_data(FILE * xmlfile, const char *data);
+STATIC void _fprint_escaped_data(FILE * xmlfile, const char *data);
 
 /*
  * Write the XML declaration.
@@ -138,7 +138,7 @@ lxw_xml_data_element(FILE * xmlfile,
 /*
  * Escape XML characters in attributes.
  */
-char *
+STATIC char *
 _escape_attributes(struct xml_attribute *attribute)
 {
     char *encoded = (char *) calloc(LXW_MAX_ENCODED_ATTRIBUTE_LENGTH, 1);
@@ -270,7 +270,7 @@ lxw_escape_control_characters(const char *string)
 }
 
 /* Write out escaped attributes. */
-void
+STATIC void
 _fprint_escaped_attributes(FILE * xmlfile,
                            struct xml_attribute_list *attributes)
 {
@@ -297,7 +297,7 @@ _fprint_escaped_attributes(FILE * xmlfile,
 }
 
 /* Write out escaped XML data. */
-void
+STATIC void
 _fprint_escaped_data(FILE * xmlfile, const char *data)
 {
     /* Escape the data section of the XML element. */

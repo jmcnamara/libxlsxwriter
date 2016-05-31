@@ -119,7 +119,7 @@ lxw_format_free(lxw_format *format)
 /*
  * Check a user input color.
  */
-lxw_color_t
+STATIC lxw_color_t
 _check_color(lxw_color_t color)
 {
     if (color == LXW_COLOR_UNSET)
@@ -131,7 +131,7 @@ _check_color(lxw_color_t color)
 /*
  * Check a user input border.
  */
-uint8_t
+STATIC uint8_t
 _check_border(uint8_t border)
 {
     if (border >= LXW_BORDER_THIN && border <= LXW_BORDER_SLANT_DASH_DOT)
@@ -150,7 +150,7 @@ _check_border(uint8_t border)
  * Returns a format struct suitable for hashing as a lookup key. This is
  * mainly a memcpy with any pointer members set to NULL.
  */
-lxw_format *
+STATIC lxw_format *
 _get_format_key(lxw_format *self)
 {
     lxw_format *key = calloc(1, sizeof(lxw_format));

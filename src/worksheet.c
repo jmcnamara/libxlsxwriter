@@ -206,7 +206,7 @@ mem_error:
 /*
  * Free a worksheet cell.
  */
-void
+STATIC void
 _free_cell(lxw_cell *cell)
 {
     if (!cell)
@@ -227,7 +227,7 @@ _free_cell(lxw_cell *cell)
 /*
  * Free a worksheet row.
  */
-void
+STATIC void
 _free_row(lxw_row *row)
 {
     lxw_cell *cell;
@@ -249,7 +249,7 @@ _free_row(lxw_row *row)
 /*
  * Free a worksheet image_options.
  */
-void
+STATIC void
 _free_image_options(lxw_image_options *image)
 {
     if (!image)
@@ -798,7 +798,7 @@ _cell_cmp(lxw_cell *cell1, lxw_cell *cell2)
  * Hash a worksheet password. Based on the algorithm provided by Daniel Rentz
  * of OpenOffice.
  */
-uint16_t
+STATIC uint16_t
 _hash_password(char *password)
 {
     size_t count;
