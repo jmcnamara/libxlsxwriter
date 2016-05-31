@@ -2138,8 +2138,8 @@ _process_png(lxw_image_options *image_options)
     image_options->image_type = LXW_IMAGE_PNG;
     image_options->width = width;
     image_options->height = height;
-    image_options->x_dpi = x_dpi;
-    image_options->y_dpi = y_dpi;
+    image_options->x_dpi = x_dpi ? x_dpi : 96;
+    image_options->y_dpi = y_dpi ? x_dpi : 96;
     image_options->extension = lxw_strdup("png");
 
     return 0;
@@ -2249,8 +2249,8 @@ _process_jpeg(lxw_image_options *image_options)
     image_options->image_type = LXW_IMAGE_JPEG;
     image_options->width = width;
     image_options->height = height;
-    image_options->x_dpi = x_dpi;
-    image_options->y_dpi = y_dpi;
+    image_options->x_dpi = x_dpi ? x_dpi : 96;
+    image_options->y_dpi = y_dpi ? x_dpi : 96;
     image_options->extension = lxw_strdup("jpeg");
 
     return 0;

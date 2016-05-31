@@ -103,3 +103,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_image33(self):
         self.run_exe_test('test_image33')
+
+    def test_image34(self):
+        self.run_exe_test('test_image34')
+
+    def test_image35(self):
+        self.run_exe_test('test_image35')
