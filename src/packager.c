@@ -766,7 +766,7 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
 uint8_t
 lxw_create_package(lxw_packager *self)
 {
-    int16_t error;
+    int8_t error;
 
     error = _write_worksheet_files(self);
     RETURN_ON_ERROR(error);
