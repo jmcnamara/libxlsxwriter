@@ -2,6 +2,18 @@
 @page changes Changes
 
 
+## 0.3.5 May 31 2016
+
+- Refactored the error handling and reporting for when the file creation
+  subsystem fails due to file permissions or other issues. The new error codes
+  are in `#lxw_error` and the codes can be converted to strings, for reporting,
+  using the new `lxw_strerror()` function.
+
+  Issue [#49][gh_49].
+
+  [gh_49]: https://github.com/jmcnamara/libxlsxwriter/issues/49
+
+
 ## 0.3.4 May 28 2016
 
 - Updated the @ref getting_started docs with instructions on how to build
