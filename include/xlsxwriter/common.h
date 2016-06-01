@@ -93,16 +93,16 @@ enum lxw_error {
 };
 
 /* Excel sheetname max of 31 chars + \0. */
-#define LXW_SHEETNAME_MAX     32
+#define LXW_SHEETNAME_MAX         32
 
 /* Every worksheet char doubled + start and end quotes + \0. */
 #define LXW_MAX_SHEETNAME_LENGTH  65
 
-/* Max col: $XFD\0 */
-#define LXW_MAX_COL_NAME_LENGTH   5
+/* Max col string length. */
+#define LXW_MAX_COL_NAME_LENGTH   sizeof("$XFD")
 
-/* Max cell: $XFWD$1048576\0 */
-#define LXW_MAX_CELL_NAME_LENGTH  14
+/* Max cell string lenght. */
+#define LXW_MAX_CELL_NAME_LENGTH  sizeof("$XFWD$1048576")
 
 /* Max range: $XFWD$1048576:$XFWD$1048576\0 */
 #define LXW_MAX_CELL_RANGE_LENGTH (LXW_MAX_CELL_NAME_LENGTH * 2)
@@ -113,9 +113,9 @@ enum lxw_error {
 #define LXW_EPOCH_1900            0
 #define LXW_EPOCH_1904            1
 
-#define LXW_UINT32_T_LENGTH   11        /* Length of 4294967296\0. */
-#define LXW_IGNORE            1
-#define LXW_FILENAME_LENGTH   128
+#define LXW_UINT32_T_LENGTH       sizeof("4294967296")
+#define LXW_FILENAME_LENGTH       128
+#define LXW_IGNORE                1
 
 #define LXW_SCHEMA_ROOT      "http://schemas.openxmlformats.org"
 #define LXW_SCHEMA_DRAWING   LXW_SCHEMA_ROOT "/drawingml/2006"
