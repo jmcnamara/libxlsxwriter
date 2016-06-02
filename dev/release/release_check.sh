@@ -121,6 +121,34 @@ function check_docs {
 
 #############################################################
 #
+# Generate the cocoapods umbrella file.
+#
+function gen_umbrella_file {
+
+    echo
+    echo -n     "Is the umbrella file up to date?       [y/N]: "
+    read RESPONSE
+
+
+    if [ "$RESPONSE" != "y" ]; then
+
+        echo -n "    Update umbrella file now?          [y/N]: "
+        read RESPONSE
+
+        if [ "$RESPONSE" != "y" ]; then
+            echo
+            echo -e "Please update cocoapods/libxlsxwriter-umbrella.h\n";
+            exit 1
+        else
+            echo "    Updating file...";
+            perl dev/release/gen_umbrella_file.pl > cocoapods/libxlsxwriter-umbrella.h
+         fi
+    fi
+}
+
+
+#############################################################
+#
 # Check the cocoapods spec file.
 #
 function check_pod_spec {
@@ -216,6 +244,7 @@ clear
 check_docs
 check_changefile
 clear
+gen_umbrella_file
 check_pod_spec
 clear
 update_pod_repo
