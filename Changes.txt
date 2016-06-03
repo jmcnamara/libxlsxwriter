@@ -1,6 +1,16 @@
 /**
 @page changes Changes
 
+# 0.3.7 June 2 2016
+
+- Added updated Cocoapods file for Cocoapods 1.0.0. This also add support for
+  the "use_frameworks" directive. Thanks to Ludovico Rossi. See @ref
+  getting_started for instructions on how to use the cocoapod.
+
+  Pull request [#50][gh_50].
+
+  [gh_50]: https://github.com/jmcnamara/libxlsxwriter/issues/50
+
 
 ## 0.3.6 June 1 2016
 

@@ -101,7 +101,7 @@ enum lxw_error {
 /* Max col string length. */
 #define LXW_MAX_COL_NAME_LENGTH   sizeof("$XFD")
 
-/* Max cell string lenght. */
+/* Max cell string length. */
 #define LXW_MAX_CELL_NAME_LENGTH  sizeof("$XFWD$1048576")
 
 /* Max range: $XFWD$1048576:$XFWD$1048576\0 */

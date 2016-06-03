@@ -169,11 +169,6 @@ X with Objective-C and Swift see [libxlsxwriter Cocoa
 Examples](https://github.com/lrossi/libxlsxwriterCocoaExamples), provided by
 Ludovico Rossi.
 
-Note: if you are using the `"use_frameworks!"` directive in your Podfile then
-see the following
-[discussion](https://github.com/jmcnamara/libxlsxwriter/pull/13) for a
-workaround.
-
 
 ## Installation on Windows using Microsoft Visual Studio
 
