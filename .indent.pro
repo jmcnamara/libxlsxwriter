@@ -52,11 +52,13 @@
 -T lxw_chart_font
 -T lxw_chart_series
 -T lxw_chart_title
+-T lxw_chart_types
 -T lxw_col_options
 -T lxw_col_t
 -T lxw_color_t
 -T lxw_content_types
 -T lxw_core
+-T lxw_custom
 -T lxw_datetime
 -T lxw_defined_name
 -T lxw_doc_properties
