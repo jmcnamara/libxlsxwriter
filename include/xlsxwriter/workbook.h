@@ -193,6 +193,8 @@ typedef struct lxw_workbook {
     struct lxw_defined_names *defined_names;
     lxw_sst *sst;
     lxw_doc_properties *properties;
+    struct lxw_custom_properties *custom_properties;
+
     char *filename;
     lxw_workbook_options options;
 
@@ -480,6 +482,9 @@ uint8_t workbook_close(lxw_workbook *workbook);
  */
 uint8_t workbook_set_properties(lxw_workbook *workbook,
                                 lxw_doc_properties *properties);
+
+uint8_t workbook_set_custom_property_string(lxw_workbook *workbook,
+                                            char *name, char *value);
 
 /**
  * @brief Create a defined name in the workbook to use as a variable.

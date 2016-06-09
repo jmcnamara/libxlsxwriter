@@ -59,6 +59,7 @@
 -T lxw_content_types
 -T lxw_core
 -T lxw_custom
+-T lxw_custom_property
 -T lxw_datetime
 -T lxw_defined_name
 -T lxw_doc_properties

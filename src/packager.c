@@ -401,6 +401,38 @@ _write_core_file(lxw_packager *self)
 }
 
 /*
+ * Write the custom.xml file.
+ */
+STATIC uint8_t
+_write_custom_file(lxw_packager *self)
+{
+    lxw_custom *custom;
+    int err;
+
+    if (STAILQ_EMPTY(self->workbook->custom_properties))
+        return 0;
+
+    custom = lxw_custom_new();
+
+    custom->file = lxw_tmpfile();
+    if (!custom->file)
+        return LXW_ERROR_CREATING_TMPFILE;
+
+    custom->custom_properties = self->workbook->custom_properties;
+
+    lxw_custom_assemble_xml_file(custom);
+
+    err = _add_file_to_zip(self, custom->file, "docProps/custom.xml");
+    RETURN_ON_ERROR(err);
+
+    fclose(custom->file);
+
+    lxw_custom_free(custom);
+
+    return 0;
+}
+
+/*
  * Write the theme.xml file.
  */
 STATIC uint8_t
@@ -512,6 +544,9 @@ _write_content_types_file(lxw_packager *self)
 
     if (workbook->sst->string_count)
         lxw_ct_add_shared_strings(content_types);
+
+    if (!STAILQ_EMPTY(self->workbook->custom_properties))
+        lxw_ct_add_custom_properties(content_types);
 
     lxw_content_types_assemble_xml_file(content_types);
 
@@ -679,10 +714,18 @@ _write_root_rels_file(lxw_packager *self)
         return LXW_ERROR_CREATING_TMPFILE;
 
     lxw_add_document_relationship(rels, "/officeDocument", "xl/workbook.xml");
-    lxw_add_package_relationship(rels, "/metadata/core-properties",
+
+    lxw_add_package_relationship(rels,
+                                 "/metadata/core-properties",
                                  "docProps/core.xml");
-    lxw_add_document_relationship(rels, "/extended-properties",
-                                  "docProps/app.xml");
+
+    lxw_add_document_relationship(rels,
+                                  "/extended-properties", "docProps/app.xml");
+
+    if (!STAILQ_EMPTY(self->workbook->custom_properties))
+        lxw_add_document_relationship(rels,
+                                      "/custom-properties",
+                                      "docProps/custom.xml");
 
     lxw_relationships_assemble_xml_file(rels);
 
@@ -787,6 +830,9 @@ lxw_create_package(lxw_packager *self)
     RETURN_ON_ERROR(error);
 
     error = _write_core_file(self);
+    RETURN_ON_ERROR(error);
+
+    error = _write_custom_file(self);
     RETURN_ON_ERROR(error);
 
     error = _write_theme_file(self);

@@ -190,6 +190,7 @@ STAILQ_HEAD(lxw_formats, lxw_format);
 
 /* Define the queue.h structs for the generic data structs. */
 STAILQ_HEAD(lxw_tuples, lxw_tuple);
+STAILQ_HEAD(lxw_custom_properties, lxw_custom_property);
 
 typedef struct lxw_tuple {
     char *key;
@@ -197,6 +198,17 @@ typedef struct lxw_tuple {
 
     STAILQ_ENTRY (lxw_tuple) list_pointers;
 } lxw_tuple;
+
+/* Define custom property used in workbook.c and custom.c. */
+typedef struct lxw_custom_property {
+
+    char *name;
+    char *value;
+
+    STAILQ_ENTRY (lxw_custom_property) list_pointers;
+
+} lxw_custom_property;
+
 
 
  /* *INDENT-OFF* */

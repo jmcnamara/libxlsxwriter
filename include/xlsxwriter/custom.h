@@ -3,7 +3,7 @@
  *
  * Copyright 2014-2016, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  *
- * custom - A libxlsxwriter library for creating Excel XLSX custom files.
+ * custom - A libxlsxwriter library for creating Excel custom property files.
  *
  */
 #ifndef __LXW_CUSTOM_H__
@@ -14,11 +14,14 @@
 #include "common.h"
 
 /*
- * Struct to represent a custom object.
+ * Struct to represent a custom property file object.
  */
 typedef struct lxw_custom {
 
     FILE *file;
+
+    struct lxw_custom_properties *custom_properties;
+    uint32_t pid;
 
 } lxw_custom;
 

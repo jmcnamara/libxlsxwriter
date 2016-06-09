@@ -39,16 +39,20 @@ extern "C" {
 
 lxw_content_types *lxw_content_types_new();
 void lxw_content_types_free(lxw_content_types *content_types);
-void lxw_content_types_assemble_xml_file(lxw_content_types *self);
-void lxw_ct_add_default(lxw_content_types *self, const char *key,
+void lxw_content_types_assemble_xml_file(lxw_content_types *content_types);
+void lxw_ct_add_default(lxw_content_types *content_types, const char *key,
                         const char *value);
-void lxw_ct_add_override(lxw_content_types *self, const char *key,
+void lxw_ct_add_override(lxw_content_types *content_types, const char *key,
                          const char *value);
-void lxw_ct_add_worksheet_name(lxw_content_types *self, const char *name);
-void lxw_ct_add_chart_name(lxw_content_types *self, const char *name);
-void lxw_ct_add_drawing_name(lxw_content_types *self, const char *name);
-void lxw_ct_add_shared_strings(lxw_content_types *self);
-void lxw_ct_add_calc_chain(lxw_content_types *self);
+void lxw_ct_add_worksheet_name(lxw_content_types *content_types,
+                               const char *name);
+void lxw_ct_add_chart_name(lxw_content_types *content_types,
+                           const char *name);
+void lxw_ct_add_drawing_name(lxw_content_types *content_types,
+                             const char *name);
+void lxw_ct_add_shared_strings(lxw_content_types *content_types);
+void lxw_ct_add_calc_chain(lxw_content_types *content_types);
+void lxw_ct_add_custom_properties(lxw_content_types *content_types);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

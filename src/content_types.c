@@ -329,3 +329,13 @@ lxw_ct_add_calc_chain(lxw_content_types *self)
     lxw_ct_add_override(self, "/xl/calcChain.xml",
                         LXW_APP_DOCUMENT "spreadsheetml.calcChain+xml");
 }
+
+/*
+ * Add the custom properties to the ContentTypes overrides.
+ */
+void
+lxw_ct_add_custom_properties(lxw_content_types *self)
+{
+    lxw_ct_add_override(self, "/docProps/custom.xml",
+                        LXW_APP_DOCUMENT "custom-properties+xml");
+}

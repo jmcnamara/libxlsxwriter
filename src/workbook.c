@@ -59,6 +59,20 @@ _free_doc_properties(lxw_doc_properties *properties)
 }
 
 /*
+ * Free workbook custom property.
+ */
+STATIC void
+_free_custom_doc_property(lxw_custom_property *custom_property)
+{
+    if (custom_property) {
+        free(custom_property->name);
+        free(custom_property->value);
+    }
+
+    free(custom_property);
+}
+
+/*
  * Free a workbook object.
  */
 void
@@ -70,6 +84,7 @@ lxw_workbook_free(lxw_workbook *workbook)
     lxw_chart *chart;
     lxw_format *format;
     lxw_defined_name *defined_name;
+    lxw_custom_property *custom_property;
 
     if (!workbook)
         return;
@@ -106,6 +121,13 @@ lxw_workbook_free(lxw_workbook *workbook)
         free(defined_name);
     }
 
+    /* Free the custom_properties in the workbook. */
+    while (!STAILQ_EMPTY(workbook->custom_properties)) {
+        custom_property = STAILQ_FIRST(workbook->custom_properties);
+        STAILQ_REMOVE_HEAD(workbook->custom_properties, list_pointers);
+        _free_custom_doc_property(custom_property);
+    }
+
     if (workbook->worksheet_names) {
         for (worksheet_name =
              RB_MIN(lxw_worksheet_names, workbook->worksheet_names);
@@ -128,6 +150,7 @@ lxw_workbook_free(lxw_workbook *workbook)
     free(workbook->ordered_charts);
     free(workbook->formats);
     free(workbook->defined_names);
+    free(workbook->custom_properties);
     free(workbook);
 }
 
@@ -471,7 +494,7 @@ _store_defined_name(lxw_workbook *self, const char *name,
 
     /* Allocate a new defined_name to be added to the linked list of names. */
     defined_name = calloc(1, sizeof(struct lxw_defined_name));
-    RETURN_ON_MEM_ERROR(defined_name, 1);
+    RETURN_ON_MEM_ERROR(defined_name, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     /* Copy the user input string. */
     strcpy(name_copy, name);
@@ -1328,6 +1351,12 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     workbook->used_xf_formats = lxw_hash_new(128, 1, 0);
     GOTO_LABEL_ON_MEM_ERROR(workbook->used_xf_formats, mem_error);
 
+    /* Add the worksheets list. */
+    workbook->custom_properties =
+        calloc(1, sizeof(struct lxw_custom_properties));
+    GOTO_LABEL_ON_MEM_ERROR(workbook->custom_properties, mem_error);
+    STAILQ_INIT(workbook->custom_properties);
+
     /* Add the default cell format. */
     format = workbook_add_format(workbook);
     GOTO_LABEL_ON_MEM_ERROR(format, mem_error);
@@ -1384,8 +1413,8 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
 
     /* Check if the worksheet name is already in use. */
     if (workbook_get_worksheet_by_name(self, init_data.name)) {
-        LXW_WARN_FORMAT("workbook_add_worksheet(): worksheet name "
-                        "'%s' already exists.", init_data.name);
+        LXW_WARN_FORMAT2("%s(): worksheet name '%s' already exists.",
+                         __func__, init_data.name);
         goto mem_error;
     }
 
@@ -1623,6 +1652,38 @@ workbook_set_properties(lxw_workbook *self, lxw_doc_properties *user_props)
 mem_error:
     _free_doc_properties(doc_props);
     return -1;
+}
+
+/*
+ * Set the document properties such as Title, Author etc.
+ */
+uint8_t
+workbook_set_custom_property_string(lxw_workbook *self, char *name,
+                                    char *value)
+{
+    lxw_custom_property *custom_property;
+
+    if (!name) {
+        LXW_WARN_FORMAT("%s(): parameter 'name' cannot be NULL.", __func__);
+        return LXW_ERROR_NULL_STRING_IGNORED;
+    }
+
+    if (!value) {
+        LXW_WARN_FORMAT("%s(): parameter 'value' cannot be NULL.", __func__);
+        return LXW_ERROR_NULL_STRING_IGNORED;
+    }
+
+    /* Create a struct to hold the custom property. */
+    custom_property = calloc(1, sizeof(struct lxw_custom_property));
+    RETURN_ON_MEM_ERROR(custom_property, LXW_ERROR_MEMORY_MALLOC_FAILED);
+
+    custom_property->name = lxw_strdup(name);
+    custom_property->value = lxw_strdup(value);
+
+    STAILQ_INSERT_TAIL(self->custom_properties, custom_property,
+                       list_pointers);
+
+    return 0;
 }
 
 lxw_worksheet *
