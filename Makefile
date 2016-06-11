@@ -111,7 +111,7 @@ release: releasecheck
 
 	@echo
 	@echo "Pushing the cocoapod ..."
-	$(Q)pod trunk push libxlsxwriter.podspec
+	$(Q)pod trunk push libxlsxwriter.podspec --use-libraries
 
 	@echo
 	@echo "Finished. Opening files."

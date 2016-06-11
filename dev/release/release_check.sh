@@ -169,7 +169,7 @@ function check_pod_spec {
             exit 1
         else
             echo "    Running lint...";
-            pod spec lint libxlsxwriter.podspec
+            pod spec lint libxlsxwriter.podspec --use-libraries
             check_pod_spec
          fi
     fi

@@ -6,6 +6,7 @@
 #import "common.h"
 #import "content_types.h"
 #import "core.h"
+#import "custom.h"
 #import "drawing.h"
 #import "format.h"
 #import "hash_table.h"

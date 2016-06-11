@@ -1,6 +1,13 @@
 /**
 @page changes Changes
 
+
+# 0.3.8 June 11 2016
+
+- Added workbook functions to set custom document properties. See
+  `workbook_set_custom_property_string()` and @ref doc_custom_properties.c.
+
+
 # 0.3.7 June 2 2016
 
 - Added updated Cocoapods file for Cocoapods 1.0.0. This also add support for
