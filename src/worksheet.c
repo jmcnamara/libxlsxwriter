@@ -3409,7 +3409,7 @@ worksheet_write_string(lxw_worksheet *self,
         if (format)
             return worksheet_write_blank(self, row_num, col_num, format);
         else
-            return LXW_ERROR_NULL_STRING_IGNORED;
+            return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
@@ -3463,7 +3463,7 @@ worksheet_write_formula_num(lxw_worksheet *self,
     int8_t err;
 
     if (!formula)
-        return LXW_ERROR_NULL_STRING_IGNORED;
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
@@ -3528,7 +3528,7 @@ worksheet_write_array_formula_num(lxw_worksheet *self,
     }
 
     if (!formula)
-        return LXW_ERROR_NULL_STRING_IGNORED;
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
     /* Check that column number is valid and store the max value */
     err = _check_dimensions(self, last_row, last_col, LXW_FALSE, LXW_FALSE);
@@ -3696,7 +3696,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
     enum cell_types link_type = HYPERLINK_URL;
 
     if (!url || !*url)
-        return LXW_ERROR_NULL_STRING_IGNORED;
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
     /* Check the Excel limit of URLS per worksheet. */
     if (self->hlink_count > LXW_MAX_NUMBER_URLS)

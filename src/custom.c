@@ -74,6 +74,59 @@ _chart_write_vt_lpwstr(lxw_custom *self, char *value)
 }
 
 /*
+ * Write the <vt:r8> element.
+ */
+STATIC void
+_chart_write_vt_r_8(lxw_custom *self, double value)
+{
+    char data[LXW_ATTR_32];
+
+    lxw_snprintf(data, LXW_ATTR_32, "%.16g", value);
+
+    lxw_xml_data_element(self->file, "vt:r8", data, NULL);
+}
+
+/*
+ * Write the <vt:i4> element.
+ */
+STATIC void
+_custom_write_vt_i_4(lxw_custom *self, int32_t value)
+{
+    char data[LXW_ATTR_32];
+
+    lxw_snprintf(data, LXW_ATTR_32, "%d", value);
+
+    lxw_xml_data_element(self->file, "vt:i4", data, NULL);
+}
+
+/*
+ * Write the <vt:bool> element.
+ */
+STATIC void
+_custom_write_vt_bool(lxw_custom *self, uint8_t value)
+{
+    if (value)
+        lxw_xml_data_element(self->file, "vt:bool", "true", NULL);
+    else
+        lxw_xml_data_element(self->file, "vt:bool", "false", NULL);
+}
+
+/*
+ * Write the <vt:filetime> element.
+ */
+STATIC void
+_custom_write_vt_filetime(lxw_custom *self, lxw_datetime *datetime)
+{
+    char data[LXW_DATETIME_LENGTH];
+
+    lxw_snprintf(data, LXW_ATTR_32, "%4d-%02d-%02dT%02d:%02d:%02dZ",
+                 datetime->year, datetime->month, datetime->day,
+                 datetime->hour, datetime->min, (int) datetime->sec);
+
+    lxw_xml_data_element(self->file, "vt:filetime", data, NULL);
+}
+
+/*
  * Write the <property> element.
  */
 STATIC void
@@ -93,8 +146,26 @@ _chart_write_custom_property(lxw_custom *self,
 
     lxw_xml_start_tag(self->file, "property", &attributes);
 
-    /* Write the vt:lpwstr element. */
-    _chart_write_vt_lpwstr(self, custom_property->value);
+    if (custom_property->type == LXW_CUSTOM_STRING) {
+        /* Write the vt:lpwstr element. */
+        _chart_write_vt_lpwstr(self, custom_property->u.string);
+    }
+    else if (custom_property->type == LXW_CUSTOM_DOUBLE) {
+        /* Write the vt:r8 element. */
+        _chart_write_vt_r_8(self, custom_property->u.number);
+    }
+    else if (custom_property->type == LXW_CUSTOM_INTEGER) {
+        /* Write the vt:i4 element. */
+        _custom_write_vt_i_4(self, custom_property->u.integer);
+    }
+    else if (custom_property->type == LXW_CUSTOM_BOOLEAN) {
+        /* Write the vt:bool element. */
+        _custom_write_vt_bool(self, custom_property->u.boolean);
+    }
+    else if (custom_property->type == LXW_CUSTOM_DATETIME) {
+        /* Write the vt:filetime element. */
+        _custom_write_vt_filetime(self, &custom_property->u.datetime);
+    }
 
     lxw_xml_end_tag(self->file, "property");
 

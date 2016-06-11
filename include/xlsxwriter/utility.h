@@ -79,27 +79,6 @@
     lxw_name_to_row(range), lxw_name_to_col(range), \
     lxw_name_to_row_2(range), lxw_name_to_col_2(range)
 
-/** @brief Struct to represent a date and time in Excel.
- *
- * Struct to represent a date and time in Excel. See @ref working_with_dates.
- */
-typedef struct lxw_datetime {
-
-    /** Year     : 1900 - 9999 */
-    int year;
-    /** Month    : 1 - 12 */
-    int month;
-    /** Day      : 1 - 31 */
-    int day;
-    /** Hour     : 0 - 23 */
-    int hour;
-    /** Minute   : 0 - 59 */
-    int min;
-    /** Seconds  : 0 - 59.999 */
-    double sec;
-
-} lxw_datetime;
-
 /**
  * @brief Converts a libxlsxwriter error number to a string.
  *

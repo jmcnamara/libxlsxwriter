@@ -66,7 +66,8 @@ _free_custom_doc_property(lxw_custom_property *custom_property)
 {
     if (custom_property) {
         free(custom_property->name);
-        free(custom_property->value);
+        if (custom_property->type == LXW_CUSTOM_STRING)
+            free(custom_property->u.string);
     }
 
     free(custom_property);
@@ -1655,7 +1656,7 @@ mem_error:
 }
 
 /*
- * Set the document properties such as Title, Author etc.
+ * Set a string custom document property.
  */
 uint8_t
 workbook_set_custom_property_string(lxw_workbook *self, char *name,
@@ -1665,12 +1666,24 @@ workbook_set_custom_property_string(lxw_workbook *self, char *name,
 
     if (!name) {
         LXW_WARN_FORMAT("%s(): parameter 'name' cannot be NULL.", __func__);
-        return LXW_ERROR_NULL_STRING_IGNORED;
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
     if (!value) {
         LXW_WARN_FORMAT("%s(): parameter 'value' cannot be NULL.", __func__);
-        return LXW_ERROR_NULL_STRING_IGNORED;
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (strlen(name) > 255) {
+        LXW_WARN_FORMAT("%s(): parameter 'name' exceeds Excel length "
+                        "limit of 255.", __func__);
+        return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
+    }
+
+    if (strlen(value) > 255) {
+        LXW_WARN_FORMAT("%s(): parameter 'value' exceeds Excel length "
+                        "limit of 255.", __func__);
+        return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
     }
 
     /* Create a struct to hold the custom property. */
@@ -1678,7 +1691,151 @@ workbook_set_custom_property_string(lxw_workbook *self, char *name,
     RETURN_ON_MEM_ERROR(custom_property, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     custom_property->name = lxw_strdup(name);
-    custom_property->value = lxw_strdup(value);
+    custom_property->u.string = lxw_strdup(value);
+    custom_property->type = LXW_CUSTOM_STRING;
+
+    STAILQ_INSERT_TAIL(self->custom_properties, custom_property,
+                       list_pointers);
+
+    return 0;
+}
+
+/*
+ * Set a double number custom document property.
+ */
+uint8_t
+workbook_set_custom_property_number(lxw_workbook *self, char *name,
+                                    double value)
+{
+    lxw_custom_property *custom_property;
+
+    if (!name) {
+        LXW_WARN_FORMAT("%s(): parameter 'name' cannot be NULL.", __func__);
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (strlen(name) > 255) {
+        LXW_WARN_FORMAT("%s(): parameter 'name' exceeds Excel length "
+                        "limit of 255.", __func__);
+        return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
+    }
+
+    /* Create a struct to hold the custom property. */
+    custom_property = calloc(1, sizeof(struct lxw_custom_property));
+    RETURN_ON_MEM_ERROR(custom_property, LXW_ERROR_MEMORY_MALLOC_FAILED);
+
+    custom_property->name = lxw_strdup(name);
+    custom_property->u.number = value;
+    custom_property->type = LXW_CUSTOM_DOUBLE;
+
+    STAILQ_INSERT_TAIL(self->custom_properties, custom_property,
+                       list_pointers);
+
+    return 0;
+}
+
+/*
+ * Set a integer number custom document property.
+ */
+uint8_t
+workbook_set_custom_property_integer(lxw_workbook *self, char *name,
+                                     int32_t value)
+{
+    lxw_custom_property *custom_property;
+
+    if (!name) {
+        LXW_WARN_FORMAT("%s(): parameter 'name' cannot be NULL.", __func__);
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (strlen(name) > 255) {
+        LXW_WARN_FORMAT("%s(): parameter 'name' exceeds Excel length "
+                        "limit of 255.", __func__);
+        return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
+    }
+
+    /* Create a struct to hold the custom property. */
+    custom_property = calloc(1, sizeof(struct lxw_custom_property));
+    RETURN_ON_MEM_ERROR(custom_property, LXW_ERROR_MEMORY_MALLOC_FAILED);
+
+    custom_property->name = lxw_strdup(name);
+    custom_property->u.integer = value;
+    custom_property->type = LXW_CUSTOM_INTEGER;
+
+    STAILQ_INSERT_TAIL(self->custom_properties, custom_property,
+                       list_pointers);
+
+    return 0;
+}
+
+/*
+ * Set a boolean custom document property.
+ */
+uint8_t
+workbook_set_custom_property_boolean(lxw_workbook *self, char *name,
+                                     uint8_t value)
+{
+    lxw_custom_property *custom_property;
+
+    if (!name) {
+        LXW_WARN_FORMAT("%s(): parameter 'name' cannot be NULL.", __func__);
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (strlen(name) > 255) {
+        LXW_WARN_FORMAT("%s(): parameter 'name' exceeds Excel length "
+                        "limit of 255.", __func__);
+        return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
+    }
+
+    /* Create a struct to hold the custom property. */
+    custom_property = calloc(1, sizeof(struct lxw_custom_property));
+    RETURN_ON_MEM_ERROR(custom_property, LXW_ERROR_MEMORY_MALLOC_FAILED);
+
+    custom_property->name = lxw_strdup(name);
+    custom_property->u.boolean = value;
+    custom_property->type = LXW_CUSTOM_BOOLEAN;
+
+    STAILQ_INSERT_TAIL(self->custom_properties, custom_property,
+                       list_pointers);
+
+    return 0;
+}
+
+/*
+ * Set a datetime custom document property.
+ */
+uint8_t
+workbook_set_custom_property_datetime(lxw_workbook *self, char *name,
+                                      lxw_datetime *datetime)
+{
+    lxw_custom_property *custom_property;
+
+    if (!name) {
+        LXW_WARN_FORMAT("%s(): parameter 'name' cannot be NULL.", __func__);
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (strlen(name) > 255) {
+        LXW_WARN_FORMAT("%s(): parameter 'name' exceeds Excel length "
+                        "limit of 255.", __func__);
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (!datetime) {
+        LXW_WARN_FORMAT("%s(): parameter 'datetime' cannot be NULL.",
+                        __func__);
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    /* Create a struct to hold the custom property. */
+    custom_property = calloc(1, sizeof(struct lxw_custom_property));
+    RETURN_ON_MEM_ERROR(custom_property, LXW_ERROR_MEMORY_MALLOC_FAILED);
+
+    custom_property->name = lxw_strdup(name);
+
+    memcpy(&custom_property->u.datetime, datetime, sizeof(lxw_datetime));
+    custom_property->type = LXW_CUSTOM_DATETIME;
 
     STAILQ_INSERT_TAIL(self->custom_properties, custom_property,
                        list_pointers);

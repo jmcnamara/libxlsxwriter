@@ -486,6 +486,19 @@ uint8_t workbook_set_properties(lxw_workbook *workbook,
 uint8_t workbook_set_custom_property_string(lxw_workbook *workbook,
                                             char *name, char *value);
 
+uint8_t workbook_set_custom_property_number(lxw_workbook *workbook,
+                                            char *name, double value);
+
+uint8_t workbook_set_custom_property_integer(lxw_workbook *workbook,
+                                             char *name, int32_t value);
+
+uint8_t workbook_set_custom_property_boolean(lxw_workbook *workbook,
+                                             char *name, uint8_t value);
+
+uint8_t workbook_set_custom_property_datetime(lxw_workbook *workbook,
+                                              char *name,
+                                              lxw_datetime *datetime);
+
 /**
  * @brief Create a defined name in the workbook to use as a variable.
  *

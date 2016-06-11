@@ -74,11 +74,14 @@ enum lxw_error {
     /** Zlib error when closing xlsx file. */
     LXW_ERROR_ZIP_CLOSE,
 
-    /** NULL string ignored as function parameter. */
-    LXW_ERROR_NULL_STRING_IGNORED,
+    /** NULL function parameter ignored. */
+    LXW_ERROR_NULL_PARAMETER_IGNORED,
 
     /** String exceeds Excel's limit of 32,767 characters. */
     LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED,
+
+    /** Parameter exceeds Excel's limit of 255 characters. */
+    LXW_ERROR_255_STRING_LENGTH_EXCEEDED,
 
     /** Error finding internal string index. */
     LXW_ERROR_SHARED_STRING_INDEX_NOT_FOUND,
@@ -90,6 +93,36 @@ enum lxw_error {
     LXW_ERROR_WORKSHEET_MAX_NUMBER_URLS_EXCEEDED,
 
     LXW_MAX_ERRNO
+};
+
+/** @brief Struct to represent a date and time in Excel.
+ *
+ * Struct to represent a date and time in Excel. See @ref working_with_dates.
+ */
+typedef struct lxw_datetime {
+
+    /** Year     : 1900 - 9999 */
+    int year;
+    /** Month    : 1 - 12 */
+    int month;
+    /** Day      : 1 - 31 */
+    int day;
+    /** Hour     : 0 - 23 */
+    int hour;
+    /** Minute   : 0 - 59 */
+    int min;
+    /** Seconds  : 0 - 59.999 */
+    double sec;
+
+} lxw_datetime;
+
+enum lxw_custom_property_types {
+    LXW_CUSTOM_NONE,
+    LXW_CUSTOM_STRING,
+    LXW_CUSTOM_DOUBLE,
+    LXW_CUSTOM_INTEGER,
+    LXW_CUSTOM_BOOLEAN,
+    LXW_CUSTOM_DATETIME
 };
 
 /* Excel sheetname max of 31 chars + \0. */
@@ -109,6 +142,9 @@ enum lxw_error {
 
 /* Max range formula Sheet1!$A$1:$C$5$ style. */
 #define LXW_MAX_FORMULA_RANGE_LENGTH (LXW_MAX_SHEETNAME_LENGTH + LXW_MAX_CELL_RANGE_LENGTH)
+
+/* Datetime string length. */
+#define LXW_DATETIME_LENGTH       sizeof("2016-12-12T23:00:00Z")
 
 #define LXW_EPOCH_1900            0
 #define LXW_EPOCH_1904            1
@@ -202,8 +238,16 @@ typedef struct lxw_tuple {
 /* Define custom property used in workbook.c and custom.c. */
 typedef struct lxw_custom_property {
 
+    enum lxw_custom_property_types type;
     char *name;
-    char *value;
+
+    union {
+        char *string;
+        double number;
+        int32_t integer;
+        uint8_t boolean;
+        lxw_datetime datetime;
+    } u;
 
     STAILQ_ENTRY (lxw_custom_property) list_pointers;
 
