@@ -1,7 +1,7 @@
 /*
  * Example of how to set Excel worksheet tab colors using libxlsxwriter.
  *
- * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2016, John McNamara, jmcnamara@cpan.org
  *
  */
 

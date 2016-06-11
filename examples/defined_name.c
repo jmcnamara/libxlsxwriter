@@ -3,7 +3,7 @@
  * used to define a user friendly name to represent a value, a single cell or
  * a range of cells in a workbook.
  *
- * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2016, John McNamara, jmcnamara@cpan.org
  *
  */
 

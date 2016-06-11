@@ -2,7 +2,7 @@
  * Example of cell locking and formula hiding in an Excel worksheet using
  * libxlsxwriter.
  *
- * Copyright 2014-2015, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2016, John McNamara, jmcnamara@cpan.org
  *
  */
 
