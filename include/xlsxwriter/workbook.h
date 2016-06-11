@@ -436,6 +436,8 @@ uint8_t workbook_close(lxw_workbook *workbook);
  * @param workbook   Pointer to a lxw_workbook instance.
  * @param properties Document properties to set.
  *
+ * @return 0 for success, non-zero on error.
+ *
  * The `%workbook_set_properties` method can be used to set the document
  * properties of the Excel file created by `libxlsxwriter`. These properties
  * are visible when you use the `Office Button -> Prepare -> Properties`
@@ -478,23 +480,106 @@ uint8_t workbook_close(lxw_workbook *workbook);
  *
  * @image html doc_properties.png
  *
- * @return 0 for success, non-zero on error.
  */
 uint8_t workbook_set_properties(lxw_workbook *workbook,
                                 lxw_doc_properties *properties);
 
+/**
+ * @brief Set a custom document text property.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param name     The name of the custom property.
+ * @param value    The value of the custom property.
+ *
+ * @return 0 for success, non-zero on error.
+ *
+ * The `%workbook_set_custom_property_string()` method can be used to set one
+ * or more custom document text properties not covered by the standard
+ * properties in the `workbook_set_properties()` method above.
+ *
+ *  For example:
+ *
+ * @code
+ *     workbook_set_custom_property_string(workbook, "Checked by", "Eve");
+ * @endcode
+ *
+ * @image html custom_properties.png
+ *
+ * There are 4 `workbook_set_custom_property_string_*()` functions for each
+ * of the custom property types supported by Excel:
+ *
+ * - text/string: `workbook_set_custom_property_string()`
+ * - number:      `workbook_set_custom_property_number()`
+ * - datetime:    `workbook_set_custom_property_datetime()`
+ * - boolean:     `workbook_set_custom_property_boolean()`
+ *
+ * **Note**: the name and value parameters are limited to 255 characters
+ * by Excel.
+ *
+ */
 uint8_t workbook_set_custom_property_string(lxw_workbook *workbook,
                                             char *name, char *value);
-
+/**
+ * @brief Set a custom document number property.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param name     The name of the custom property.
+ * @param value    The value of the custom property.
+ *
+ * @return 0 for success, non-zero on error.
+ *
+ * Set a custom document number property.
+ * See `workbook_set_custom_property_string()` above for details.
+ *
+ * @code
+ *     workbook_set_custom_property_number(workbook, "Document number", 12345);
+ * @endcode
+ */
 uint8_t workbook_set_custom_property_number(lxw_workbook *workbook,
                                             char *name, double value);
 
+/* Undocumented since the user can use workbook_set_custom_property_number().
+ * Only implemented for file format completeness and testing.
+ */
 uint8_t workbook_set_custom_property_integer(lxw_workbook *workbook,
                                              char *name, int32_t value);
 
+/**
+ * @brief Set a custom document boolean property.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param name     The name of the custom property.
+ * @param value    The value of the custom property.
+ *
+ * @return 0 for success, non-zero on error.
+ *
+ * Set a custom document boolean property.
+ * See `workbook_set_custom_property_string()` above for details.
+ *
+ * @code
+ *     workbook_set_custom_property_boolean (workbook, "Has Review", 1);
+ * @endcode
+ */
 uint8_t workbook_set_custom_property_boolean(lxw_workbook *workbook,
                                              char *name, uint8_t value);
-
+/**
+ * @brief Set a custom document date or time property.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param name     The name of the custom property.
+ * @param datetime The value of the custom property.
+ *
+ * @return 0 for success, non-zero on error.
+ *
+ * Set a custom date or time number property.
+ * See `workbook_set_custom_property_string()` above for details.
+ *
+ * @code
+ *     lxw_datetime datetime  = {2016, 12, 1,  11, 55, 0.0};
+ *
+ *     workbook_set_custom_property_datetime(workbook, "Date completed", &datetime);
+ * @endcode
+ */
 uint8_t workbook_set_custom_property_datetime(lxw_workbook *workbook,
                                               char *name,
                                               lxw_datetime *datetime);

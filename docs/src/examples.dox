@@ -369,7 +369,7 @@ Example of how to hide an Excel worksheet.
 <table  width="600">
 <tr>
   <td>@ref hide_sheet.c "&lt;&lt; hide_sheet.c"</td>
-  <td align="right">@ref worksheet_protection.c "worksheet_protection.c &gt;&gt;"</td>
+  <td align="right">@ref doc_custom_properties.c "doc_custom_properties.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -380,11 +380,28 @@ Example of setting Excel document properties.
 
 
 
-@example worksheet_protection.c
+@example doc_custom_properties.c
 
 <table  width="600">
 <tr>
   <td>@ref doc_properties.c "&lt;&lt; doc_properties.c"</td>
+  <td align="right">@ref worksheet_protection.c "worksheet_protection.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of setting Excel custom document properties, i.e., properties
+non-standard document properties.
+
+@image html custom_properties.png
+
+
+
+
+@example worksheet_protection.c
+
+<table  width="600">
+<tr>
+  <td>@ref doc_custom_properties.c "&lt;&lt; doc_custom_properties.c"</td>
   <td align="right">@ref hide_row_col.c "hide_row_col.c &gt;&gt;"</td>
 </tr>
 </table>

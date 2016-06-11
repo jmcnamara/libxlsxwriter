@@ -34,6 +34,7 @@ my @examples = (
     [ 'tab_colors.c',           'Example of how to set worksheet tab colors' ],
     [ 'hide_sheet.c',           'Example of hiding a worksheet' ],
     [ 'doc_properties.c',       'Example of setting workbook doc properties' ],
+    [ 'doc_custom_properties.c','Example of setting custom doc properties' ],
     [ 'worksheet_protection.c', 'Example of enabling worksheet protection' ],
     [ 'hide_row_col.c',         'Example of hiding worksheet rows and columns' ],
     [ 'panes.c',                'Example of how to create worksheet panes' ],

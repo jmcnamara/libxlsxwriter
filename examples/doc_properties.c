@@ -10,8 +10,8 @@
 
 int main() {
 
-    lxw_workbook       *workbook   = workbook_new("doc_properties.xlsx");
-    lxw_worksheet      *worksheet  = workbook_add_worksheet(workbook, NULL);
+    lxw_workbook  *workbook   = workbook_new("doc_properties.xlsx");
+    lxw_worksheet *worksheet  = workbook_add_worksheet(workbook, NULL);
 
     /* Create a properties structure and set some of the fields. */
     lxw_doc_properties properties = {
@@ -30,9 +30,9 @@ int main() {
     workbook_set_properties(workbook, &properties);
 
     /* Add some text to the file. */
-    worksheet_set_column(worksheet, 0, 0, 70, NULL);
+    worksheet_set_column(worksheet, 0, 0, 50, NULL);
     worksheet_write_string(worksheet, 0, 0,
-        "Select 'Workbook Properties' to see properties." , NULL);
+                           "Select 'Workbook Properties' to see properties." , NULL);
 
     workbook_close(workbook);
 

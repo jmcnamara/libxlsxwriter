@@ -171,6 +171,14 @@ Example of setting Excel document properties.
 @image html doc_properties.png
 
 ##############################################################
+@example doc_custom_properties.c
+
+Example of setting Excel custom document properties, i.e., properties
+non-standard document properties.
+
+@image html custom_properties.png
+
+##############################################################
 @example worksheet_protection.c
 
 Example of setting Excel worksheet protection.
