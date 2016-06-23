@@ -9,6 +9,8 @@ ifdef V
 Q=
 endif
 
+UNAME := $(shell uname)
+
 FPIC = -fPIC
 CFLAGS = -O3 -DNOCRYPT -DNOUNCRYPT
 
