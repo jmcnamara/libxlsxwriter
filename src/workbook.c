@@ -1414,8 +1414,8 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
 
     /* Check if the worksheet name is already in use. */
     if (workbook_get_worksheet_by_name(self, init_data.name)) {
-        LXW_WARN_FORMAT2("%s(): worksheet name '%s' already exists.",
-                         __func__, init_data.name);
+        LXW_WARN_FORMAT1("workbook_add_worksheet(): worksheet name '%s' "
+                         "already exists.", init_data.name);
         goto mem_error;
     }
 
@@ -1665,24 +1665,26 @@ workbook_set_custom_property_string(lxw_workbook *self, char *name,
     lxw_custom_property *custom_property;
 
     if (!name) {
-        LXW_WARN_FORMAT("%s(): parameter 'name' cannot be NULL.", __func__);
+        LXW_WARN_FORMAT("workbook_set_custom_property_string(): "
+                        "parameter 'name' cannot be NULL.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
     if (!value) {
-        LXW_WARN_FORMAT("%s(): parameter 'value' cannot be NULL.", __func__);
+        LXW_WARN_FORMAT("workbook_set_custom_property_string(): "
+                        "parameter 'value' cannot be NULL.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
     if (strlen(name) > 255) {
-        LXW_WARN_FORMAT("%s(): parameter 'name' exceeds Excel length "
-                        "limit of 255.", __func__);
+        LXW_WARN_FORMAT("workbook_set_custom_property_string(): parameter "
+                        "'name' exceeds Excel length limit of 255.");
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
     }
 
     if (strlen(value) > 255) {
-        LXW_WARN_FORMAT("%s(): parameter 'value' exceeds Excel length "
-                        "limit of 255.", __func__);
+        LXW_WARN_FORMAT("workbook_set_custom_property_string(): parameter "
+                        "'value' exceeds Excel length limit of 255.");
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
     }
 
@@ -1710,13 +1712,14 @@ workbook_set_custom_property_number(lxw_workbook *self, char *name,
     lxw_custom_property *custom_property;
 
     if (!name) {
-        LXW_WARN_FORMAT("%s(): parameter 'name' cannot be NULL.", __func__);
+        LXW_WARN_FORMAT("workbook_set_custom_property_number(): parameter "
+                        "'name' cannot be NULL.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
     if (strlen(name) > 255) {
-        LXW_WARN_FORMAT("%s(): parameter 'name' exceeds Excel length "
-                        "limit of 255.", __func__);
+        LXW_WARN_FORMAT("workbook_set_custom_property_number(): parameter "
+                        "'name' exceeds Excel length limit of 255.");
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
     }
 
@@ -1744,13 +1747,14 @@ workbook_set_custom_property_integer(lxw_workbook *self, char *name,
     lxw_custom_property *custom_property;
 
     if (!name) {
-        LXW_WARN_FORMAT("%s(): parameter 'name' cannot be NULL.", __func__);
+        LXW_WARN_FORMAT("workbook_set_custom_property_integer(): parameter "
+                        "'name' cannot be NULL.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
     if (strlen(name) > 255) {
-        LXW_WARN_FORMAT("%s(): parameter 'name' exceeds Excel length "
-                        "limit of 255.", __func__);
+        LXW_WARN_FORMAT("workbook_set_custom_property_integer(): parameter "
+                        "'name' exceeds Excel length limit of 255.");
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
     }
 
@@ -1778,13 +1782,14 @@ workbook_set_custom_property_boolean(lxw_workbook *self, char *name,
     lxw_custom_property *custom_property;
 
     if (!name) {
-        LXW_WARN_FORMAT("%s(): parameter 'name' cannot be NULL.", __func__);
+        LXW_WARN_FORMAT("workbook_set_custom_property_boolean(): parameter "
+                        "'name' cannot be NULL.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
     if (strlen(name) > 255) {
-        LXW_WARN_FORMAT("%s(): parameter 'name' exceeds Excel length "
-                        "limit of 255.", __func__);
+        LXW_WARN_FORMAT("workbook_set_custom_property_boolean(): parameter "
+                        "'name' exceeds Excel length limit of 255.");
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
     }
 
@@ -1812,19 +1817,20 @@ workbook_set_custom_property_datetime(lxw_workbook *self, char *name,
     lxw_custom_property *custom_property;
 
     if (!name) {
-        LXW_WARN_FORMAT("%s(): parameter 'name' cannot be NULL.", __func__);
+        LXW_WARN_FORMAT("workbook_set_custom_property_datetime(): parameter "
+                        "'name' cannot be NULL.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
     if (strlen(name) > 255) {
-        LXW_WARN_FORMAT("%s(): parameter 'name' exceeds Excel length "
-                        "limit of 255.", __func__);
+        LXW_WARN_FORMAT("workbook_set_custom_property_datetime(): parameter "
+                        "'name' exceeds Excel length limit of 255.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
     if (!datetime) {
-        LXW_WARN_FORMAT("%s(): parameter 'datetime' cannot be NULL.",
-                        __func__);
+        LXW_WARN_FORMAT("workbook_set_custom_property_datetime(): parameter "
+                        "'datetime' cannot be NULL.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 

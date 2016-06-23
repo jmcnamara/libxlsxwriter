@@ -2433,8 +2433,8 @@ _chart_initialize(lxw_chart *self, uint8_t type)
             break;
 
         default:
-            LXW_WARN_FORMAT("workbook_add_chart(): "
-                            "unhandled chart type '%d'", type);
+            LXW_WARN_FORMAT1("workbook_add_chart(): "
+                             "unhandled chart type '%d'", type);
     }
 }
 
@@ -2710,8 +2710,8 @@ chart_set_rotation(lxw_chart *self, uint16_t rotation)
     if (rotation <= 360)
         self->rotation = rotation;
     else
-        LXW_WARN_FORMAT("chart_set_rotation(): Chart rotation '%d' outside "
-                        "range: 0 <= rotation <= 360", rotation);
+        LXW_WARN_FORMAT1("chart_set_rotation(): Chart rotation '%d' outside "
+                         "range: 0 <= rotation <= 360", rotation);
 }
 
 /*
@@ -2723,6 +2723,6 @@ chart_set_hole_size(lxw_chart *self, uint8_t size)
     if (size >= 10 && size <= 90)
         self->hole_size = size;
     else
-        LXW_WARN_FORMAT("chart_set_hole_size(): Hole size '%d' outside "
-                        "Excel range: 10 <= size <= 90", size);
+        LXW_WARN_FORMAT1("chart_set_hole_size(): Hole size '%d' outside "
+                         "Excel range: 10 <= size <= 90", size);
 }

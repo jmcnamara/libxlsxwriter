@@ -192,8 +192,11 @@ enum lxw_custom_property_types {
 #define LXW_WARN(message)                       \
     fprintf(stderr, "[WARNING]: " message "\n")
 
-/* Can't use variadic macros here since we support ANSI C. */
-#define LXW_WARN_FORMAT(message, var)           \
+/* We can't use variadic macros here since we support ANSI C. */
+#define LXW_WARN_FORMAT(message)                \
+    fprintf(stderr, "[WARNING]: " message "\n")
+
+#define LXW_WARN_FORMAT1(message, var)          \
     fprintf(stderr, "[WARNING]: " message "\n", var)
 
 #define LXW_WARN_FORMAT2(message, var1, var2)    \

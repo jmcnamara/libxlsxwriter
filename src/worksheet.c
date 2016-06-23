@@ -2128,9 +2128,9 @@ _process_png(lxw_image_options *image_options)
 
     /* Ensure that we read some valid data from the file. */
     if (width == 0) {
-        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "no size data found in file: %s.",
-                        image_options->filename);
+        LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
+                         "no size data found in file: %s.",
+                         image_options->filename);
         return -1;
     }
 
@@ -2239,9 +2239,9 @@ _process_jpeg(lxw_image_options *image_options)
 
     /* Ensure that we read some valid data from the file. */
     if (width == 0) {
-        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "no size data found in file: %s.",
-                        image_options->filename);
+        LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
+                         "no size data found in file: %s.",
+                         image_options->filename);
         return -1;
     }
 
@@ -2280,9 +2280,9 @@ _process_bmp(lxw_image_options *image_options)
 
     /* Ensure that we read some valid data from the file. */
     if (width == 0) {
-        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "no size data found in file: %s.",
-                        image_options->filename);
+        LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
+                         "no size data found in file: %s.",
+                         image_options->filename);
         return -1;
     }
 
@@ -2308,9 +2308,9 @@ _get_image_properties(lxw_image_options *image_options)
 
     /* Read 4 bytes to look for the file header/signature. */
     if (fread(signature, 1, 4, image_options->stream) < 4) {
-        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "couldn't read file type for file: %s.",
-                        image_options->filename);
+        LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
+                         "couldn't read file type for file: %s.",
+                         image_options->filename);
         return -1;
     }
 
@@ -2327,9 +2327,9 @@ _get_image_properties(lxw_image_options *image_options)
             return -1;
     }
     else {
-        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "unsupported image format for file: %s.",
-                        image_options->filename);
+        LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
+                         "unsupported image format for file: %s.",
+                         image_options->filename);
         return -1;
     }
 
@@ -4817,17 +4817,17 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     /* Check that the image file exists and can be opened. */
     image_stream = fopen(filename, "rb");
     if (!image_stream) {
-        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "file doesn't exist or can't be opened: %s.",
-                        filename);
+        LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
+                         "file doesn't exist or can't be opened: %s.",
+                         filename);
         return -1;
     }
 
     /* Get the filename from the full path to add to the Drawing object. */
     short_name = lxw_basename(filename);
     if (!short_name) {
-        LXW_WARN_FORMAT("worksheet_insert_image()/_opt(): "
-                        "couldn't get basename for file: %s.", filename);
+        LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
+                         "couldn't get basename for file: %s.", filename);
         return -1;
     }
 
