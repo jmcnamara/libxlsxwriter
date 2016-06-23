@@ -32,15 +32,31 @@ LIBXLSXWRITER_TO = libxlsxwriter_test.a
 ARFLAGS = rc
 
 # Flags passed to dynamic linker.
-SOFLAGS = -shared -fPIC
+FPIC = -fPIC
+SOFLAGS = -shared $(FPIC)
 
-# Change shared lib options on OS X.
+# Get Env/OS name.
 UNAME := $(shell uname)
+
+# Change make options on OS X.
 ifeq ($(UNAME), Darwin)
 LIBXLSXWRITER_SO = libxlsxwriter.dylib
-SOFLAGS = -dynamiclib -fPIC -install_name /usr/lib/$(LIBXLSXWRITER_SO)
+SOFLAGS = -dynamiclib $(FPIC) -install_name /usr/lib/$(LIBXLSXWRITER_SO)
 endif
 
+# Change make options on MinGW.
+ifneq (,$(findstring MINGW, $(UNAME)))
+LIBXLSXWRITER_SO = libxlsxwriter.dll
+FPIC =
+CFLAGS += -Wno-long-long
+endif
+
+# Change make options on Cygwin.
+ifneq (,$(findstring CYGWIN, $(UNAME)))
+LIBXLSXWRITER_SO = libxlsxwriter.dll
+FPIC =
+CFLAGS += -Wno-char-subscripts
+endif
 
 # Headers as dependecies.
 HDRS = $(wildcard ../include/xlsxwriter/*.h)
@@ -75,10 +91,10 @@ test_compile : $(OBJS)
 
 # Targets for the object files.
 %.o  : %.c $(HDRS)
-	$(Q)$(CC)       -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $<
+	$(Q)$(CC)         -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $<
 
 %.so : %.c $(HDRS)
-	$(Q)$(CC) -fPIC -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(Q)$(CC) $(FPIC) -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
 
 %.to : %.c $(HDRS)
 	$(Q)$(CC) -g -O0 -DTESTING -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@

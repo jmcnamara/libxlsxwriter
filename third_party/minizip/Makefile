@@ -9,15 +9,27 @@ ifdef V
 Q=
 endif
 
+FPIC = -fPIC
 CFLAGS = -O3 -DNOCRYPT -DNOUNCRYPT
+
+# Change make options on MinGW.
+ifneq (,$(findstring MINGW, $(UNAME)))
+FPIC =
+endif
+
+# Change make options on Cygwin.
+ifneq (,$(findstring CYGWIN, $(UNAME)))
+FPIC =
+CFLAGS += -DUSE_FILE32API
+endif
 
 all: ioapi.o zip.o  ioapi.so zip.so
 
 %.o  : %.c
-	$(Q)$(CC)       -c $(CFLAGS) $<
+	$(Q)$(CC)         -c $(CFLAGS) $<
 
 %.so : %.c
-	$(Q)$(CC) -fPIC -c $(CFLAGS) $< -o $@
+	$(Q)$(CC) $(FPIC) -c $(CFLAGS) $< -o $@
 
 clean:
 	$(Q)/bin/rm -f *.o *.so

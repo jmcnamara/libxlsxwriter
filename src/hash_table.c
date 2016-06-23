@@ -21,7 +21,7 @@ STATIC size_t
 _generate_hash_key(void *data, size_t data_len, size_t num_buckets)
 {
     unsigned char *p = data;
-    size_t hash = 2166136261;
+    size_t hash = 2166136261U;
     size_t i;
 
     for (i = 0; i < data_len; i++)

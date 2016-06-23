@@ -557,7 +557,7 @@ uint8_t workbook_set_custom_property_integer(lxw_workbook *workbook,
  * See `workbook_set_custom_property_string()` above for details.
  *
  * @code
- *     workbook_set_custom_property_boolean (workbook, "Has Review", 1);
+ *     workbook_set_custom_property_boolean(workbook, "Has Review", 1);
  * @endcode
  */
 uint8_t workbook_set_custom_property_boolean(lxw_workbook *workbook,
