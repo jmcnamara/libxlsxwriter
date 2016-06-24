@@ -17,6 +17,7 @@ CFLAGS = -O3 -DNOCRYPT -DNOUNCRYPT
 # Change make options on MinGW.
 ifneq (,$(findstring MINGW, $(UNAME)))
 FPIC =
+CC = gcc
 endif
 
 # Change make options on Cygwin.

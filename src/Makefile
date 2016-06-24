@@ -49,6 +49,7 @@ ifneq (,$(findstring MINGW, $(UNAME)))
 LIBXLSXWRITER_SO = libxlsxwriter.dll
 FPIC =
 CFLAGS += -Wno-long-long
+CC = gcc
 endif
 
 # Change make options on Cygwin.
