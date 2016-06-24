@@ -76,6 +76,15 @@ install:
 	$(Q)cp -r include/* /usr/include
 	$(Q)cp lib/* /usr/lib
 
+# Simpler minded uninstall.
+uninstall:
+	$(Q)rm -rf /usr/include/xlsxwriter*
+	$(Q)rm /usr/lib/libxlsxwriter.*
+
+# Strip the lib files.
+strip:
+	$(Q)strip lib/*
+
 # Run a coverity static analysis.
 coverity:
 	$(Q)$(MAKE) -C third_party/minizip

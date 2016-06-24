@@ -5,6 +5,7 @@
 *.lo
 *.la
 *.dylib
+*.dll
 test_*
 !test_*.c
 !test_*.cpp
