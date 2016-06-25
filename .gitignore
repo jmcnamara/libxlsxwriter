@@ -26,6 +26,7 @@ TAGS
 .settings/
 .DS_Store
 __pycache__
+.cache
 docs/html
 docs/latex
 .deps

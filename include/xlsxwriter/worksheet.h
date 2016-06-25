@@ -67,10 +67,10 @@
 #define LXW_BREAKS_MAX 1023
 
 /** Default column width in Excel */
-#define LXW_DEF_COL_WIDTH 8.43
+#define LXW_DEF_COL_WIDTH (double)8.43
 
 /** Default row height in Excel */
-#define LXW_DEF_ROW_HEIGHT 15.0
+#define LXW_DEF_ROW_HEIGHT (double)15.0
 
 /** Gridline options using in `worksheet_gridlines()`. */
 enum lxw_gridlines {
