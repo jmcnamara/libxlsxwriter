@@ -11,18 +11,24 @@ endif
 
 UNAME := $(shell uname)
 
+# Check for MinGW/MinGW64/Cygwin environments.
+ifneq (,$(findstring MINGW, $(UNAME)))
+MING_LIKE = y
+endif
+ifneq (,$(findstring MSYS, $(UNAME)))
+MING_LIKE = y
+endif
+ifneq (,$(findstring CYGWIN, $(UNAME)))
+MING_LIKE = y
+endif
+
 FPIC = -fPIC
 CFLAGS = -O3 -DNOCRYPT -DNOUNCRYPT
 
-# Change make options on MinGW.
-ifneq (,$(findstring MINGW, $(UNAME)))
+# Change make options on MinGW/MinGW64/Cygwin.
+ifdef MING_LIKE
 FPIC =
 CC = gcc
-endif
-
-# Change make options on Cygwin.
-ifneq (,$(findstring CYGWIN, $(UNAME)))
-FPIC =
 CFLAGS += -DUSE_FILE32API
 endif
 

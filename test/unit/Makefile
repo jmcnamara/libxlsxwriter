@@ -13,7 +13,7 @@ endif
 
 # Directory variables.
 INC_DIR        = ../../include
-LIB_DIR        = ../../src$
+LIB_DIR        = ../../src
 
 # Flags passed to the C compiler.
 CFLAGS += -DTESTING -DCOLOR_OK -g -Wall -Wextra -Wno-unused-parameter

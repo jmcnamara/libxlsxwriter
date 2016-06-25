@@ -44,19 +44,23 @@ LIBXLSXWRITER_SO = libxlsxwriter.dylib
 SOFLAGS = -dynamiclib $(FPIC) -install_name /usr/lib/$(LIBXLSXWRITER_SO)
 endif
 
-# Change make options on MinGW.
+# Check for MinGW/MinGW64/Cygwin environments.
 ifneq (,$(findstring MINGW, $(UNAME)))
-LIBXLSXWRITER_SO = libxlsxwriter.dll
-FPIC =
-CFLAGS += -Wno-long-long
-CC = gcc
+MING_LIKE = y
+endif
+ifneq (,$(findstring MSYS, $(UNAME)))
+MING_LIKE = y
+endif
+ifneq (,$(findstring CYGWIN, $(UNAME)))
+MING_LIKE = y
 endif
 
-# Change make options on Cygwin.
-ifneq (,$(findstring CYGWIN, $(UNAME)))
+# Change make options on MinGW/MinGW64/Cygwin.
+ifdef MING_LIKE
 LIBXLSXWRITER_SO = libxlsxwriter.dll
 FPIC =
-CFLAGS += -Wno-char-subscripts
+CC = gcc
+CFLAGS += -Wno-char-subscripts -Wno-long-long
 endif
 
 # Headers as dependecies.
