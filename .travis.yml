@@ -4,20 +4,21 @@ compiler:
   - clang
   - gcc
 
+env:
+  - CFLAGS='-Werror'
+  - CFLAGS='-Werror -m32'
+
 install:
   - sudo pip install pytest
   - sudo apt-get update
+  - sudo apt-get install -y gcc-multilib
+  - sudo apt-get install -y zlib1g-dev
+  - sudo apt-get install -y zlib1g-dev:i386
+  - sudo apt-get install -y gcc
   - sudo apt-get install -y valgrind
-  - curl -O -L http://zlib.net/zlib-1.2.8.tar.gz
-  - tar zxf zlib-1.2.8.tar.gz
-  - cd zlib-1.2.8
-  - ./configure
-  - make
-  - sudo make install
-  - cd ..
 
 script:
-  - CFLAGS=-Werror make
-  - make test_functional
-  - make test_unit
-  - make test_valgrind
+  - make V=1
+  - make test_functional V=1
+  - make test_unit V=1
+  - make test_valgrind V=1

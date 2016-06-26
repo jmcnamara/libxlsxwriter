@@ -484,7 +484,7 @@ lxw_tmpfile(void)
 #else
 /* This variant allows you to define the tmpfile directory and format.
  * Not ANSI C compatible so compile as follows:
- *     CFLAGS="-D USE_TMPFILE2 -U __STRICT_ANSI__" make
+ *     CFLAGS="-DUSE_TMPFILE2 -U__STRICT_ANSI__" make
  */
 #include <unistd.h>
 FILE *

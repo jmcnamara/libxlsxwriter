@@ -23,7 +23,7 @@ MING_LIKE = y
 endif
 
 FPIC = -fPIC
-CFLAGS = -O3 -DNOCRYPT -DNOUNCRYPT
+CFLAGS += -O3 -DNOCRYPT -DNOUNCRYPT
 
 # Change make options on MinGW/MinGW64/Cygwin.
 ifdef MING_LIKE

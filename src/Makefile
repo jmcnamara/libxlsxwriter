@@ -81,22 +81,26 @@ test_lib : libxlsxwriter_test.a
 
 # The static library.
 $(LIBXLSXWRITER_A) : $(OBJS)
-	$(Q)$(AR) $(ARFLAGS)     $@ $(MINIZIP_DIR)/ioapi.o  $(MINIZIP_DIR)/zip.o  $^
+	$(Q)$(AR) $(ARFLAGS) $@ $(MINIZIP_DIR)/ioapi.o  $(MINIZIP_DIR)/zip.o  $^
 
 # The dynamic library.
+ifeq ($(findstring m32,$(CFLAGS)),m32)
+ARCH = -m32
+endif
+
 $(LIBXLSXWRITER_SO) : $(SOBJS)
-	$(Q)$(CC) $(SOFLAGS)  -o $@ $(MINIZIP_DIR)/ioapi.so $(MINIZIP_DIR)/zip.so $^ -lz
+	$(Q)$(CC) $(SOFLAGS) $(ARCH) -o $@ $(MINIZIP_DIR)/ioapi.so $(MINIZIP_DIR)/zip.so $^ -lz
 
 # The test library.
 $(LIBXLSXWRITER_TO) : $(TOBJS)
-	$(Q)$(AR) $(ARFLAGS)     $@ $(MINIZIP_DIR)/ioapi.o  $(MINIZIP_DIR)/zip.o  $^
+	$(Q)$(AR) $(ARFLAGS) $@ $(MINIZIP_DIR)/ioapi.o  $(MINIZIP_DIR)/zip.o  $^
 
 # Minimal target for quick compile without creating the libs.
 test_compile : $(OBJS)
 
 # Targets for the object files.
 %.o  : %.c $(HDRS)
-	$(Q)$(CC)         -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $<
+	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $<
 
 %.so : %.c $(HDRS)
 	$(Q)$(CC) $(FPIC) -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
@@ -107,4 +111,4 @@ test_compile : $(OBJS)
 
 # Clean up any temp/build files.
 clean :
-	$(Q)rm -f *.o *.a *.so *.to *.dylib
+	$(Q)rm -f *.o *.a *.so *.to *.dylib *.dll

@@ -49,10 +49,12 @@ test_unit :
 	$(Q)$(MAKE) -C src test_lib
 	$(Q)$(MAKE) -C test/unit test
 
-# Test the functional test exes with valgrind.
+# Test the functional test exes with valgrind (in 64bit mode only).
 test_valgrind : all
+ifeq ($(findstring m32,$(CFLAGS)),)
 	$(Q)$(MAKE) -C test/functional/src test_valgrind
 	$(Q)$(MAKE) -C examples test_valgrind
+endif
 
 # Minimal target for quick compile without creating the libs.
 test_compile :
