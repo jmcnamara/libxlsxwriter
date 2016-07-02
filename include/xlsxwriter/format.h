@@ -693,7 +693,6 @@ void format_set_num_format(lxw_format *format, const char *num_format);
  * @endcode
  *
  * @note
- *
  * Unless you need to specifically access one of Excel's built-in number
  * formats the format_set_num_format() function above is a better
  * solution. The format_set_num_format_index() function is mainly included for
@@ -741,15 +740,12 @@ void format_set_num_format(lxw_format *format, const char *num_format);
  *   | 48    | 0x30  | `##0.0E+0`                                           |
  *   | 49    | 0x31  | `@`                                                  |
  *
- *  @note
- *
+ * @note
  *  -  Numeric formats 23 to 36 are not documented by Microsoft and may differ
  *     in international versions. The listed date and currency formats may also
  *     vary depending on system settings.
- *
  *  - The dollar sign in the above format appears as the defined local currency
  *    symbol.
- *
  *  - These formats can also be set via format_set_num_format().
  */
 void format_set_num_format_index(lxw_format *format, uint8_t index);

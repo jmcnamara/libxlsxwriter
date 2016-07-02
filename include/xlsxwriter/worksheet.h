@@ -1276,7 +1276,7 @@ int worksheet_insert_image(lxw_worksheet *worksheet,
  *
  * @image html insert_image_opt.png
  *
- * **Note**: See the notes about row scaling and BMP images in
+ * @note See the notes about row scaling and BMP images in
  * `worksheet_insert_image()` above.
  */
 int worksheet_insert_image_opt(lxw_worksheet *worksheet,

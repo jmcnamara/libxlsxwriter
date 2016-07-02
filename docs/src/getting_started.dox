@@ -240,6 +240,45 @@ libxlsxwriter example programs by copying the code from one of the
 `libxlsxwriter\example\*.c` programs.
 
 
+## Installation on Windows using Mingw-w64 and MSYS2
+
+The libxlsxwriter library can also be compiled on Windows using the
+[Mingw-w64](http://mingw-w64.org/doku.php) "Minimalist GNU for Windows"
+toolchain. These tools can be run from the Windows `cmd.exe` but it is
+recommended to use the [MSYS2](http://msys2.github.io) "Minimal SYStem" Bourne
+Shell.
+
+Here are some instructions on how to compile libxlsxwriter with Mingw-w64 and
+MSYS2:
+
+    # Install MSYS2 64 or 32 bit from http://msys2.github.io/
+
+    # Install the dev tools for libxlsxwriter.
+    pacman -S git gcc make zlib-devel
+
+    # Clone and build libxlsxwriter.
+    git clone https://github.com/jmcnamara/libxlsxwriter.git
+    cd libxlsxwriter/
+    make
+
+After compilation you can follow the instructions in the "Install the library"
+and "Use the library" sections above. When using the library you may also need
+to link against the zlib library using `-lz`:
+
+    gcc myexcel.c -o myexcel -lxlsxwriter -lz
+
+It is also possible to use the older [MinGW and MSYS](http://mingw.org)j and
+with [Cygwin](https://cygwin.com). Libxlsxwriter has been confirmed to compile
+and work in all of these environments.
+
+@note The libxlsxwriter library uses files in the system TEMP directory during
+assembly of a xlsx file. On Windows this directory may not be writeable by a
+libxlsxwriter application. To work around this you can make the Windows TEMP
+directory writeable or if you are using MSYS/MSYS2 you can change the `/tmp`
+directory using the system fstab file. Or alternatively you can define your
+own TEMP directory in libxlsxwriter using the `USE_TMPFILE2` workaround in
+`src/utility.c`
+
 ## Next steps
 
 If you got libxlsxwriter built and working then the next sections will look at
