@@ -1,15 +1,15 @@
 /**
 @page getting_started Getting Started with libxlsxwriter
 
+@tableofcontents
 
 Here are some instructions to get you up and running with the libxlsxwriter
 library on different OSes.
 
 
+@section gsg_linux Installation on Linux and FreeBSD
 
-## Installation on Linux and FreeBSD
-
-### Quick-start on Linux
+@subsection gsg_quick_start Quick-start on Linux
 
 If you prefer to assemble Ikea furniture first and only read the instructions
 when you have parts left over then the following minimal set of commands
@@ -24,7 +24,7 @@ should get you up and running on a Debian like system:
 If you read instructions first and then assemble the furniture you will know
 how to proceed.
 
-### Install the dependencies
+@subsection gsg_dependencies Install the dependencies
 
 The only dependency (apart from @ref running_the_tests "testing dependencies")
 is [Zlib](http://www.zlib.net) version 1.2.8.
@@ -49,7 +49,7 @@ However, you need to ensure that the version installed is 1.2.8 or you will
 get zlib related compilation issues.
 
 
-### Get the source code via Git
+@subsection gsg_git Get the source code via Git
 
 Clone the libxlsxwriter source code repository from GitHub as follows:
 
@@ -57,14 +57,14 @@ Clone the libxlsxwriter source code repository from GitHub as follows:
     # Or use your preferred protocol instead of https.
 
 
-### Get the source code as a tarball
+@subsection gsg_tarball Get the source code as a tarball
 
 If you prefer you can get a tarball of the latest code as follows:
 
     curl -O -L http://github.com/jmcnamara/libxlsxwriter/archive/master.tar.gz
 
 
-### Build the source code
+@subsection gsg_build Build the source code
 
 Build the source code as follows:
 
@@ -83,7 +83,7 @@ To see a verbose summary of the compilation steps use `V=1`:
     make V=1
 
 
-### Try an example
+@subsection gsg_examples Try an example
 
 If there weren't any warnings or errors in the previous step (and there
 shouldn't have been) then you can build the programs in the `examples`
@@ -100,7 +100,7 @@ There is a large range of tests that you can run but they have some additional
 dependencies. If you are interested see @ref running_the_tests.
 
 
-### Install the library
+@subsection gsg_install Install the library
 
 Libxlsxwriter supports a simplified installation scheme for a static and
 dynamic/shared library and header files. The installation has been tested on
@@ -112,7 +112,7 @@ This isn't fool proof but if it fails on your system you will probably know
 exactly how to fix it or have no idea how to fix it. I'm hoping for the
 former.
 
-### Using the library
+@subsection gsg_using Using the library
 
 Using you favourite editor create a file like the following called
 `myexcel.c`:
@@ -151,7 +151,7 @@ library you created in the "Build the source code" step:
                                /path/to/libxlsxwriter/lib/libxlsxwriter.a -lz
 
 
-## Installation on Mac OS X and iOS
+@section gsg_macos Installation on Mac OS X and iOS
 
 The instructions for installing on Linux, shown above, will also work on Mac
 OS X.
@@ -159,7 +159,7 @@ OS X.
 To install for Xcode and iOS use the Cocoa Pods method shown in the next
 section.
 
-### Install using Cocoa Pods for Xcode
+@subsection gsg_cocoapods Install using Cocoa Pods for Xcode
 
 For iOS and OS X projects in Xcode you can install libxlsxwriter using
 [CocoaPods](https://cocoapods.org).
@@ -170,7 +170,7 @@ Examples](https://github.com/lrossi/libxlsxwriterCocoaExamples), provided by
 Ludovico Rossi.
 
 
-## Installation on Windows using Microsoft Visual Studio
+@section gsg_msvc Installation on Windows using Microsoft Visual Studio
 
 There is a sample Microsoft Visual Studio project on GitHub called
 [MSVCLibXlsxWriter](https://github.com/jmcnamara/MSVCLibXlsxWriter).
@@ -178,7 +178,7 @@ There is a sample Microsoft Visual Studio project on GitHub called
 The allows you to build a DLL of libxlsxwriter and also a sample application
 that uses it to create an Excel output file.
 
-### Building a Windows DLL of libxlsxwriter
+@subsection gsg_dll Building a Windows DLL of libxlsxwriter
 
 The MSVCLibXlsxWriter repository contains 3 directories:
 
@@ -216,7 +216,7 @@ and `.dll` in:
     MSVCLibXlsxWriter\LibXlsxWriterProj\x64\Debug
 
 
-### Building a console application using the LibXlsxWriter.lib
+@subsection gsg_console Building a console application using the LibXlsxWriter.lib
 
 Ensure that `LibXlsxWriter.lib` was built correctly in the previous steps.
 
@@ -240,12 +240,12 @@ libxlsxwriter example programs by copying the code from one of the
 `libxlsxwriter\example\*.c` programs.
 
 
-## Installation on Windows using Mingw-w64 and MSYS2
+@section gsg_ming Installation on Windows using Mingw-w64 and MSYS2
 
 The libxlsxwriter library can also be compiled on Windows using the
 [Mingw-w64](http://mingw-w64.org/doku.php) "Minimalist GNU for Windows"
 toolchain. These tools can be run from the Windows `cmd.exe` but it is
-recommended to use the [MSYS2](http://msys2.github.io) "Minimal SYStem" Bourne
+recommended to use the [MSYS2](http://msys2.github.io) "Minimal System" Bourne
 Shell.
 
 Here are some instructions on how to compile libxlsxwriter with Mingw-w64 and
@@ -261,13 +261,13 @@ MSYS2:
     cd libxlsxwriter/
     make
 
-After compilation you can follow the instructions in the "Install the library"
-and "Use the library" sections above. When using the library you may also need
-to link against the zlib library using `-lz`:
+After compilation you can follow the instructions in the @ref gsg_install and
+@ref gsg_using sections above. When using the library you may also need to
+link against the zlib library using `-lz`:
 
     gcc myexcel.c -o myexcel -lxlsxwriter -lz
 
-It is also possible to use the older [MinGW and MSYS](http://mingw.org)j and
+It is also possible to use the older [MinGW and MSYS](http://mingw.org) and
 with [Cygwin](https://cygwin.com). Libxlsxwriter has been confirmed to compile
 and work in all of these environments.
 
@@ -279,7 +279,7 @@ directory using the system fstab file. Or alternatively you can define your
 own TEMP directory in libxlsxwriter using the `USE_TMPFILE2` workaround in
 `src/utility.c`
 
-## Next steps
+@section gsg_next Next steps
 
 If you got libxlsxwriter built and working then the next sections will look at
 some more detailed examples.

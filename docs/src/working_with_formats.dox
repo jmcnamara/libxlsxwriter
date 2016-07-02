@@ -1,11 +1,13 @@
 /**
 @page working_with_formats Working with Formats
 
+@tableofcontents
+
 The main functions and properties used to add formatting to a cell are shown
 in @ref format.h "The Format object". This section provides some additional
 information about working with formats.
 
-## Creating and using a Format object
+@section ww_formats_creating Creating and using a Format object
 
 Formats are created by calling the workbook_add_format() method and properties
 as set using the various functions shown below:
@@ -37,7 +39,7 @@ for a row or column:
 @endcode
 
 
-## Format methods and Format properties
+@section ww_formats_properties Format methods and Format properties
 
 The following table shows the Excel format categories and the equivalent
 `libxlsxwriter` Format function:
@@ -76,7 +78,7 @@ The following table shows the Excel format categories and the equivalent
   |                 | Right color          |  format_set_right_color()      |
 
 
-## Format Colors
+@section ww_formats_colors Format Colors
 
 Format property colors are specified using a Html style RGB integer value or a
 limited number of defined colors:
@@ -88,7 +90,7 @@ limited number of defined colors:
 See see @ref working_with_colors for more details.
 
 
-## Format Defaults
+@section ww_formats_default Format Defaults
 
 The default Excel 2007+ cell format is Calibri 11 with all other properties
 off.
@@ -102,7 +104,7 @@ for example:
    format_set_bold(format);
 @endcode
 
-## Modifying and Reusing Formats
+@section ww_formats_reusing Modifying and Reusing Formats
 
 Once a format has been created it can be used and reused in
 `worksheet_write*()` functions across any number of worksheets:

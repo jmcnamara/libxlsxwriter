@@ -1,6 +1,7 @@
 /**
 @page tutorial01 Tutorial 1: Create a simple XLSX file
 
+Next: @ref tutorial02.
 
 Let's start by creating a simple spreadsheet using C and the
 @c libxlsxwriter library.

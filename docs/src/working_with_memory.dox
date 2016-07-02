@@ -1,8 +1,9 @@
 /**
 @page working_with_memory Working with Memory and Performance
 
-Constant Memory Mode
---------------------
+@tableofcontents
+
+@section ww_mem_constant Constant Memory Mode
 
 By default libxlsxwriter holds all cell data in memory. This is to allow
 non-sequential data storage and also to allow future features where formatting
@@ -33,8 +34,7 @@ features that manipulate cell data after it is written. Currently the only
 such feature is worksheet_set_row() which in `constant_memory` mode can only
 be used when writing data to the current row.
 
-Row Column Order
-----------------
+@section ww_mem_row_order Row Column Order
 
 Since each new row flushes the previous row, data must be written in sequential
 row order when `constant_memory` mode is on:
@@ -52,8 +52,7 @@ row order when `constant_memory` mode is on:
    -*- mode:  }
  @endcode
 
-Inline strings
---------------
+@section ww_mem_inline_strings Inline strings
 
 Another optimization that is used to reduce memory usage in `constant_memory`
 mode is that cell strings aren't stored in an Excel structure call "shared
@@ -61,8 +60,7 @@ strings" and instead are written "in-line". This is a documented Excel feature
 that is supported by most spreadsheet applications. One known exception is
 Apple Numbers for Mac where the string data isn't displayed.
 
-Performance
------------
+@section ww_mem_performance Performance
 
 Currently the library isn't optimized. There are some known bottlenecks that
 will be reduced in upcoming versions. Also, the library is currently single

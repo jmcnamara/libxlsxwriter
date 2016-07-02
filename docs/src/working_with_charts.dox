@@ -1,12 +1,13 @@
 /**
 @page working_with_charts Working with Charts
 
+@tableofcontents
+
 This section explains how to work with some of the options and features of
 @ref chart.h "The Chart object".
 
 
-Chart Value and Category Axes
------------------------------
+@section ww_charts_axes Chart Value and Category Axes
 
 When working with charts it is important to understand how Excel
 differentiates between a chart axis that is used for series categories and a
@@ -24,8 +25,7 @@ axis, some can be set for a category axis and some properties can be set for
 both. The documentation calls out the type of axis to which functions apply.
 
 
-Chart Limitations
------------------
+@section ww_charts_limitations Chart Limitations
 
 The following chart features aren't currently supported in libxlsxwriter but
 will be in time:

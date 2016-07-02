@@ -2,10 +2,12 @@
 
 @page faq Frequently Asked Questions
 
+@tableofcontents
+
 The section outlines some answers to some frequently asked questions.
 
 
-### Q. Can Libxlsxwriter use an existing Excel file as a template?
+@section faq_template Q. Can Libxlsxwriter use an existing Excel file as a template?
 
 No.
 
@@ -13,7 +15,7 @@ Libxlsxwriter is designed only as a file *writer*. It cannot read or modify
 an existing Excel file.
 
 
-### Q. Why do my formulas show a zero result in some, non-Excel applications?
+@section faq_formula_zero Q. Why do my formulas show a zero result in some, non-Excel applications?
 
 Due to wide range of possible formulas and inter-dependencies between them
 `libxlsxwriter` doesn't, and realistically cannot, calculate the result of a
@@ -30,25 +32,25 @@ If required, it is also possible to specify the calculated result of the
 formula using the worksheet_write_formula_num() function.
 
 
-### Q. Can I apply a format to a range of cells in one go?
+@section faq_range_format Q. Can I apply a format to a range of cells in one go?
 
 Currently no. However, it is a planned features to allow cell formats
 and data to be written separately.
 
 
-### Q. Is Visual C++ on Windows supported?
+@section faq_msvc Q. Is Visual C++ on Windows supported?
 
-Yes. See @ref getting_started.
+Yes. See @ref gsg_msvc.
 
 
-### Q. Is feature X supported or will it be supported?
+@section faq_features Q. Is feature X supported or will it be supported?
 
 All supported features are documented. In time the feature set may expand to
 include more of the functionality of the [Python
 XlsxWriter](http://xlsxwriter.readthedocs.org) module.
 
 
-### Q. Is there an "AutoFit" option for columns?
+@section faq_autofit Q. Is there an "AutoFit" option for columns?
 
 Unfortunately, there is no way to specify "AutoFit" for a column in the
 Excel file format. This feature is only available at runtime from within
@@ -56,7 +58,7 @@ Excel. It is possible to simulate "AutoFit" by tracking the width of the
 data in the column as your write it.
 
 
-### Q. Do people actually ask these questions frequently, or at all?
+@section faq_faq Q. Do people actually ask these questions frequently, or at all?
 
 Apart from this question, yes.
 

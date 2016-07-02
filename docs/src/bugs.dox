@@ -2,11 +2,12 @@
 
 @page bugs Known Issues and Bugs
 
+@tableofcontents
 
 This section lists known issues and bugs and gives some information on
 how to submit bug reports.
 
-## Content is Unreadable. Open and Repair
+@section bugs_unreadable Content is Unreadable. Open and Repair
 
 Very, very occasionally you may encounter a bug which generates an Excel
 warning when opening an `libxlsxwriter` file like:
@@ -21,7 +22,7 @@ If you encounter an issue like this you should open an issue on GitHub with a
 program to replicate the issue (see below) or send one of the failing output
 files to the @ref author.
 
-## Formulas displayed as `NAME?` until edited
+@section bugs_formula_name Formulas displayed as 'NAME?' until edited
 
 Excel 2010 and 2013 added functions which weren't defined in the original file
 specification. These functions are referred to as *future* functions. Examples
@@ -37,8 +38,7 @@ documentation link above. For example:
     worksheet_write_formula(worksheet, 0, 0,"=_xlfn.STDEV.S(B1:B10)", NULL);
 
 
-## Formula results displaying as zero in non-Excel applications
-
+@section bugs_formula_zero Formula results displaying as zero in non-Excel applications
 
 Due to wide range of possible formulas and inter-dependencies between them,
 `xlsxwriter` doesn't, and realistically cannot, calculate the result of a
@@ -55,7 +55,7 @@ If required, it is also possible to specify the calculated result of the
 formula using the `worksheet_write_formula_num()` function.
 
 
-## Strings aren't displayed in Apple Numbers in 'constant_memory' mode
+@section bugs_apple_numbers Strings aren't displayed in Apple Numbers in 'constant_memory' mode
 
 In `workbook_new_opt()` `constant_memory` mode libxlsxwriter uses an optimization
 where cell strings aren't stored in an Excel structure call "shared strings"
@@ -65,7 +65,7 @@ This is a documented Excel feature that is supported by most spreadsheet
 applications. One known exception is Apple Numbers for Mac where the string
 data isn't displayed.
 
-## Images not displayed correctly in Excel 2001 for Mac and non-Excel applications
+@section bugs_images Images not displayed correctly in Excel 2001 for Mac and non-Excel applications
 
 Images inserted into worksheets via `worksheet_insert_image()` may not display
 correctly in Excel 2011 for Mac and non-Excel applications such as OpenOffice
@@ -75,11 +75,11 @@ This is not an XlsxWriter issue. It also occurs with files created in Excel
 2007 and Excel 2010.
 
 
-# Reporting Bugs
+@section bugs_reporting Reporting Bugs
 
 Here are some tips on reporting bugs in `libxlsxwriter`.
 
-## Upgrade to the latest version of the library
+@subsection bugs_upgrade Upgrade to the latest version of the library
 
 The bug you are reporting may already be fixed in the latest version of
 the module.
@@ -103,24 +103,24 @@ int main() {
 @endcode
 
 
-## Read the documentation
+@subsection bugs_docs Read the documentation
 
 Read or search the `libxlsxwriter` documentation to see if the issue you are
 encountering is already explained.
 
 
-## Look at the example programs
+@subsection bugs_examples Look at the example programs
 
 There are many @ref examples in the distribution. Try to identify an example
 program that corresponds to your query and adapt it to use as a bug report.
 
-## Use the xlsxwriter Issue tracker
+@subsection bugs_issues Use the xlsxwriter Issue tracker
 
 The [libxlsxwriter issue tracker]
 (https://github.com/jmcnamara/libxlsxwriter/issues) is on GitHub.
 
 
-## Tips for submitting a bug report
+@subsection bugs_tips Tips for submitting a bug report
 
 1.  Describe the problem as clearly and as concisely as possible.
 2.  Include a sample program. This is probably the most important step.

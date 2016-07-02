@@ -1,10 +1,11 @@
 /**
 @page running_the_tests Running the Test Suite
 
+@tableofcontents
 
 This section shows how to set up and run the test suite for libxlsxwriter.
 
-## Functional Tests
+@section tests_functional Functional Tests
 
 The functional tests compare the output from libxlsxwriter against xlsx files
 created in Excel.
@@ -41,7 +42,7 @@ The functional tests can then be run:
     =========================== 14 passed in 0.41 seconds =====================
 
 
-## Unit Tests
+@section tests_ Unit Tests
 
 The unit tests test the components of the library at the level of individual
 functions or compilation units.
@@ -71,7 +72,7 @@ Both functional and unit test can be run together:
     $ make test
 
 
-## Valgrind Tests
+@section tests_valgrind Valgrind Tests
 
 The functional tests and examples can be run under
 [Valgrind](http://valgrind.org) to verify that there are no memory leaks.
@@ -85,7 +86,7 @@ Then run the tests:
     make test_valgrind
 
 
-## Travis Continuous Integration
+@section tests_travis Travis Continuous Integration
 
 Libxlsxwriter is configured to run all tests in [Travis Continuous
 Integration](https://travis-ci.org/jmcnamara/libxlsxwriter) for each commit.
