@@ -21,8 +21,9 @@ Pod::Spec.new do |s|
                             * Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter).
                             * FreeBSD ref license.
                             * ANSI C.
-                            * Works with GCC 4.x, GCC 5.x, Clang, Xcode, MSVC 2015, ICC and TCC.
-                            * Works on Linux, FreeBSD, OS X, iOS and Windows.
+                            * Works with GCC 4.x, GCC 5.x, Clang, Xcode, MSVC 2015, ICC, TCC, MinGW, MingGW-w64/32.
+                            * Works on Linux, FreeBSD, OS X, iOS and Windows. Also with Mingw MSYS/MSYS2 and Cygwin.
+                            * Compiles for 32 and 64 bit.
                             * The only dependency is on `zlib`.
                             DESC
 
