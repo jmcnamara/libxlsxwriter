@@ -25,11 +25,17 @@ STATIC uint8_t _add_file_to_zip(lxw_packager *self, FILE * file,
  *
  ****************************************************************************/
 /* Avoid non MSVC definition of _WIN32 in MinGW. */
+
+
 #ifdef __MINGW32__
 #undef _WIN32
 #endif
 
 #ifdef _WIN32
+
+/* Silence Windows warning with duplicate symbol for SLIST_ENTRY in local
+ * queue.h and widows.h. */
+#undef SLIST_ENTRY
 
 #include <windows.h>
 #include "../third_party/minizip/iowin32.h"
