@@ -51,7 +51,7 @@ enum lxw_boolean {
  * See the `lxw_strerror()` function for an example of how to convert the
  * enum number to a descriptive error message string.
  */
-enum lxw_error {
+typedef enum lxw_error {
 
     /** No error. */
     LXW_NO_ERROR = 0,
@@ -77,8 +77,14 @@ enum lxw_error {
     /** NULL function parameter ignored. */
     LXW_ERROR_NULL_PARAMETER_IGNORED,
 
+    /** Function parameter validation error. */
+    LXW_ERROR_PARAMETER_VALIDATION,
+
     /** String exceeds Excel's limit of 32,767 characters. */
     LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED,
+
+    /** Parameter exceeds Excel's limit of 128 characters. */
+    LXW_ERROR_128_STRING_LENGTH_EXCEEDED,
 
     /** Parameter exceeds Excel's limit of 255 characters. */
     LXW_ERROR_255_STRING_LENGTH_EXCEEDED,
@@ -92,8 +98,11 @@ enum lxw_error {
     /** Maximum number of worksheet URLs (65530) exceeded. */
     LXW_ERROR_WORKSHEET_MAX_NUMBER_URLS_EXCEEDED,
 
+    /** Couldn't read image dimensions or DPI. */
+    LXW_ERROR_IMAGE_DIMENSIONS,
+
     LXW_MAX_ERRNO
-};
+} lxw_error;
 
 /** @brief Struct to represent a date and time in Excel.
  *

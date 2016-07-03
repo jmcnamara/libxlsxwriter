@@ -558,10 +558,10 @@ extern "C" {
  * @image html write_number02.png
  *
  */
-int8_t worksheet_write_number(lxw_worksheet *worksheet,
-                              lxw_row_t row,
-                              lxw_col_t col, double number,
-                              lxw_format *format);
+lxw_error worksheet_write_number(lxw_worksheet *worksheet,
+                                 lxw_row_t row,
+                                 lxw_col_t col, double number,
+                                 lxw_format *format);
 /**
  * @brief Write a string to a worksheet cell.
  *
@@ -606,10 +606,10 @@ int8_t worksheet_write_number(lxw_worksheet *worksheet,
  * @image html write_string03.png
  *
  */
-int8_t worksheet_write_string(lxw_worksheet *worksheet,
-                              lxw_row_t row,
-                              lxw_col_t col, const char *string,
-                              lxw_format *format);
+lxw_error worksheet_write_string(lxw_worksheet *worksheet,
+                                 lxw_row_t row,
+                                 lxw_col_t col, const char *string,
+                                 lxw_format *format);
 /**
  * @brief Write a formula to a worksheet cell.
  *
@@ -658,10 +658,10 @@ int8_t worksheet_write_string(lxw_worksheet *worksheet,
  * @endcode
  *
  */
-int8_t worksheet_write_formula(lxw_worksheet *worksheet,
-                               lxw_row_t row,
-                               lxw_col_t col, const char *formula,
-                               lxw_format *format);
+lxw_error worksheet_write_formula(lxw_worksheet *worksheet,
+                                  lxw_row_t row,
+                                  lxw_col_t col, const char *formula,
+                                  lxw_format *format);
 /**
  * @brief Write an array formula to a worksheet cell.
  *
@@ -704,20 +704,22 @@ int8_t worksheet_write_formula(lxw_worksheet *worksheet,
  * @endcode
  *
  */
-int8_t worksheet_write_array_formula(lxw_worksheet *worksheet,
-                                     lxw_row_t first_row,
-                                     lxw_col_t first_col,
-                                     lxw_row_t last_row,
-                                     lxw_col_t last_col,
-                                     const char *formula, lxw_format *format);
+lxw_error worksheet_write_array_formula(lxw_worksheet *worksheet,
+                                        lxw_row_t first_row,
+                                        lxw_col_t first_col,
+                                        lxw_row_t last_row,
+                                        lxw_col_t last_col,
+                                        const char *formula,
+                                        lxw_format *format);
 
-int8_t worksheet_write_array_formula_num(lxw_worksheet *worksheet,
-                                         lxw_row_t first_row,
-                                         lxw_col_t first_col,
-                                         lxw_row_t last_row,
-                                         lxw_col_t last_col,
-                                         const char *formula,
-                                         lxw_format *format, double result);
+lxw_error worksheet_write_array_formula_num(lxw_worksheet *worksheet,
+                                            lxw_row_t first_row,
+                                            lxw_col_t first_col,
+                                            lxw_row_t last_row,
+                                            lxw_col_t last_col,
+                                            const char *formula,
+                                            lxw_format *format,
+                                            double result);
 
 /**
  * @brief Write a date or time to a worksheet cell.
@@ -746,16 +748,16 @@ int8_t worksheet_write_array_formula_num(lxw_worksheet *worksheet,
  * See @ref working_with_dates for more information about handling dates and
  * times in libxlsxwriter.
  */
-int8_t worksheet_write_datetime(lxw_worksheet *worksheet,
-                                lxw_row_t row,
-                                lxw_col_t col, lxw_datetime *datetime,
-                                lxw_format *format);
+lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
+                                   lxw_row_t row,
+                                   lxw_col_t col, lxw_datetime *datetime,
+                                   lxw_format *format);
 
-int8_t worksheet_write_url_opt(lxw_worksheet *worksheet,
-                               lxw_row_t row_num,
-                               lxw_col_t col_num, const char *url,
-                               lxw_format *format, const char *string,
-                               const char *tooltip);
+lxw_error worksheet_write_url_opt(lxw_worksheet *worksheet,
+                                  lxw_row_t row_num,
+                                  lxw_col_t col_num, const char *url,
+                                  lxw_format *format, const char *string,
+                                  const char *tooltip);
 /**
  *
  * @param worksheet pointer to a lxw_worksheet instance to be updated.
@@ -886,10 +888,10 @@ int8_t worksheet_write_url_opt(lxw_worksheet *worksheet,
  *    correctly by the user and will by passed directly to Excel.
  *
  */
-int8_t worksheet_write_url(lxw_worksheet *worksheet,
-                           lxw_row_t row,
-                           lxw_col_t col, const char *url,
-                           lxw_format *format);
+lxw_error worksheet_write_url(lxw_worksheet *worksheet,
+                              lxw_row_t row,
+                              lxw_col_t col, const char *url,
+                              lxw_format *format);
 
 /**
  * @brief Write a formatted boolean worksheet cell.
@@ -909,9 +911,9 @@ int8_t worksheet_write_url(lxw_worksheet *worksheet,
  * @endcode
  *
  */
-int8_t worksheet_write_boolean(lxw_worksheet *worksheet,
-                               lxw_row_t row, lxw_col_t col,
-                               int value, lxw_format *format);
+lxw_error worksheet_write_boolean(lxw_worksheet *worksheet,
+                                  lxw_row_t row, lxw_col_t col,
+                                  int value, lxw_format *format);
 
 /**
  * @brief Write a formatted blank worksheet cell.
@@ -940,9 +942,9 @@ int8_t worksheet_write_boolean(lxw_worksheet *worksheet,
  * As such, if you write an empty cell without formatting it is ignored.
  *
  */
-int8_t worksheet_write_blank(lxw_worksheet *worksheet,
-                             lxw_row_t row, lxw_col_t col,
-                             lxw_format *format);
+lxw_error worksheet_write_blank(lxw_worksheet *worksheet,
+                                lxw_row_t row, lxw_col_t col,
+                                lxw_format *format);
 
 /**
  * @brief Write a formula to a worksheet cell with a user defined result.
@@ -986,11 +988,11 @@ int8_t worksheet_write_blank(lxw_worksheet *worksheet,
  * formulas.
  *
  */
-int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
-                                   lxw_row_t row,
-                                   lxw_col_t col,
-                                   const char *formula,
-                                   lxw_format *format, double result);
+lxw_error worksheet_write_formula_num(lxw_worksheet *worksheet,
+                                      lxw_row_t row,
+                                      lxw_col_t col,
+                                      const char *formula,
+                                      lxw_format *format, double result);
 
 /**
  * @brief Set the properties for a row of cells.
@@ -1044,8 +1046,8 @@ int8_t worksheet_write_formula_num(lxw_worksheet *worksheet,
  * @endcode
  *
  */
-int8_t worksheet_set_row(lxw_worksheet *worksheet,
-                         lxw_row_t row, double height, lxw_format *format);
+lxw_error worksheet_set_row(lxw_worksheet *worksheet,
+                            lxw_row_t row, double height, lxw_format *format);
 
 /**
  * @brief Set the properties for a row of cells.
@@ -1077,11 +1079,11 @@ int8_t worksheet_set_row(lxw_worksheet *worksheet,
  * @endcode
  *
  */
-int8_t worksheet_set_row_opt(lxw_worksheet *worksheet,
-                             lxw_row_t row,
-                             double height,
-                             lxw_format *format,
-                             lxw_row_col_options *options);
+lxw_error worksheet_set_row_opt(lxw_worksheet *worksheet,
+                                lxw_row_t row,
+                                double height,
+                                lxw_format *format,
+                                lxw_row_col_options *options);
 
 /**
  * @brief Set the properties for one or more columns of cells.
@@ -1172,10 +1174,10 @@ int8_t worksheet_set_row_opt(lxw_worksheet *worksheet,
  *     worksheet_write_string(worksheet, 1, 0, "Hello", NULL);
  * @endcode
  */
-int8_t worksheet_set_column(lxw_worksheet *worksheet,
-                            lxw_col_t first_col,
-                            lxw_col_t last_col,
-                            double width, lxw_format *format);
+lxw_error worksheet_set_column(lxw_worksheet *worksheet,
+                               lxw_col_t first_col,
+                               lxw_col_t last_col,
+                               double width, lxw_format *format);
 
  /**
   * @brief Set the properties for one or more columns of cells with options.
@@ -1207,12 +1209,12 @@ int8_t worksheet_set_column(lxw_worksheet *worksheet,
   * @endcode
   *
   */
-int8_t worksheet_set_column_opt(lxw_worksheet *worksheet,
-                                lxw_col_t first_col,
-                                lxw_col_t last_col,
-                                double width,
-                                lxw_format *format,
-                                lxw_row_col_options *options);
+lxw_error worksheet_set_column_opt(lxw_worksheet *worksheet,
+                                   lxw_col_t first_col,
+                                   lxw_col_t last_col,
+                                   double width,
+                                   lxw_format *format,
+                                   lxw_row_col_options *options);
 
 /**
  * @brief Insert an image in a worksheet cell.
@@ -1247,9 +1249,9 @@ int8_t worksheet_set_column_opt(lxw_worksheet *worksheet,
  * best to avoid BMP images since they aren't compressed. If used, BMP images
  * must be 24 bit, true color, bitmaps.
  */
-int worksheet_insert_image(lxw_worksheet *worksheet,
-                           lxw_row_t row, lxw_col_t col,
-                           const char *filename);
+lxw_error worksheet_insert_image(lxw_worksheet *worksheet,
+                                 lxw_row_t row, lxw_col_t col,
+                                 const char *filename);
 
 /**
  * @brief Insert an image in a worksheet cell, with options.
@@ -1279,10 +1281,10 @@ int worksheet_insert_image(lxw_worksheet *worksheet,
  * @note See the notes about row scaling and BMP images in
  * `worksheet_insert_image()` above.
  */
-int worksheet_insert_image_opt(lxw_worksheet *worksheet,
-                               lxw_row_t row, lxw_col_t col,
-                               const char *filename,
-                               lxw_image_options *options);
+lxw_error worksheet_insert_image_opt(lxw_worksheet *worksheet,
+                                     lxw_row_t row, lxw_col_t col,
+                                     const char *filename,
+                                     lxw_image_options *options);
 /**
  * @brief Insert a chart object into a worksheet.
  *
@@ -1319,8 +1321,9 @@ int worksheet_insert_image_opt(lxw_worksheet *worksheet,
  * `%worksheet_insert_chart()`.
  *
  */
-int worksheet_insert_chart(lxw_worksheet *worksheet,
-                           lxw_row_t row, lxw_col_t col, lxw_chart *chart);
+lxw_error worksheet_insert_chart(lxw_worksheet *worksheet,
+                                 lxw_row_t row, lxw_col_t col,
+                                 lxw_chart *chart);
 
 /**
  * @brief Insert a chart object into a worksheet, with options.
@@ -1351,10 +1354,10 @@ int worksheet_insert_chart(lxw_worksheet *worksheet,
  * `worksheet_insert_image_opt()` to position and scale images.
  *
  */
-int worksheet_insert_chart_opt(lxw_worksheet *worksheet,
-                               lxw_row_t row, lxw_col_t col,
-                               lxw_chart *chart,
-                               lxw_image_options *user_options);
+lxw_error worksheet_insert_chart_opt(lxw_worksheet *worksheet,
+                                     lxw_row_t row, lxw_col_t col,
+                                     lxw_chart *chart,
+                                     lxw_image_options *user_options);
 
 /**
  * @brief Merge a range of cells.
@@ -1413,10 +1416,10 @@ int worksheet_insert_chart_opt(lxw_worksheet *worksheet,
  *    worksheet_write_number(worksheet, 1, 1, 123, format);
  * @endcode
  */
-uint8_t worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
-                              lxw_col_t first_col, lxw_row_t last_row,
-                              lxw_col_t last_col, const char *string,
-                              lxw_format *format);
+lxw_error worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
+                                lxw_col_t first_col, lxw_row_t last_row,
+                                lxw_col_t last_col, const char *string,
+                                lxw_format *format);
 
 /**
  * @brief Set the autofilter area in the worksheet.
@@ -1450,9 +1453,9 @@ uint8_t worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
  * Note: it isn't currently possible to apply filter conditions to the
  * autofilter.
  */
-uint8_t worksheet_autofilter(lxw_worksheet *worksheet, lxw_row_t first_row,
-                             lxw_col_t first_col, lxw_row_t last_row,
-                             lxw_col_t last_col);
+lxw_error worksheet_autofilter(lxw_worksheet *worksheet, lxw_row_t first_row,
+                               lxw_col_t first_col, lxw_row_t last_row,
+                               lxw_col_t last_col);
 
  /**
   * @brief Make a worksheet the active, i.e., visible worksheet.
@@ -1972,7 +1975,7 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  * longer than this will not be written.
  *
  */
-uint8_t worksheet_set_header(lxw_worksheet *worksheet, char *string);
+lxw_error worksheet_set_header(lxw_worksheet *worksheet, char *string);
 
 /**
  * @brief Set the printed page footer caption.
@@ -1985,7 +1988,7 @@ uint8_t worksheet_set_header(lxw_worksheet *worksheet, char *string);
  * The syntax of this function is the same as worksheet_set_header().
  *
  */
-uint8_t worksheet_set_footer(lxw_worksheet *worksheet, char *string);
+lxw_error worksheet_set_footer(lxw_worksheet *worksheet, char *string);
 
 /**
  * @brief Set the printed page header caption with additional options.
@@ -2010,8 +2013,8 @@ uint8_t worksheet_set_footer(lxw_worksheet *worksheet, char *string);
  * @endcode
  *
  */
-uint8_t worksheet_set_header_opt(lxw_worksheet *worksheet, char *string,
-                                 lxw_header_footer_options *options);
+lxw_error worksheet_set_header_opt(lxw_worksheet *worksheet, char *string,
+                                   lxw_header_footer_options *options);
 
 /**
  * @brief Set the printed page footer caption with additional options.
@@ -2025,8 +2028,8 @@ uint8_t worksheet_set_header_opt(lxw_worksheet *worksheet, char *string,
  * The syntax of this function is the same as worksheet_set_header_opt().
  *
  */
-uint8_t worksheet_set_footer_opt(lxw_worksheet *worksheet, char *string,
-                                 lxw_header_footer_options *options);
+lxw_error worksheet_set_footer_opt(lxw_worksheet *worksheet, char *string,
+                                   lxw_header_footer_options *options);
 
 /**
  * @brief Set the horizontal page breaks on a worksheet.
@@ -2249,8 +2252,8 @@ void worksheet_print_row_col_headers(lxw_worksheet *worksheet);
  *
  * @return 0 for success, non-zero on error.
  */
-uint8_t worksheet_repeat_rows(lxw_worksheet *worksheet, lxw_row_t first_row,
-                              lxw_row_t last_row);
+lxw_error worksheet_repeat_rows(lxw_worksheet *worksheet, lxw_row_t first_row,
+                                lxw_row_t last_row);
 
 /**
  * @brief Set the number of columns to repeat at the top of each printed page.
@@ -2272,8 +2275,8 @@ uint8_t worksheet_repeat_rows(lxw_worksheet *worksheet, lxw_row_t first_row,
  *
  * @return 0 for success, non-zero on error.
  */
-uint8_t worksheet_repeat_columns(lxw_worksheet *worksheet,
-                                 lxw_col_t first_col, lxw_col_t last_col);
+lxw_error worksheet_repeat_columns(lxw_worksheet *worksheet,
+                                   lxw_col_t first_col, lxw_col_t last_col);
 
 /**
  * @brief Set the print area for a worksheet.
@@ -2302,9 +2305,9 @@ uint8_t worksheet_repeat_columns(lxw_worksheet *worksheet,
  *
  * @return 0 for success, non-zero on error.
  */
-uint8_t worksheet_print_area(lxw_worksheet *worksheet, lxw_row_t first_row,
-                             lxw_col_t first_col, lxw_row_t last_row,
-                             lxw_col_t last_col);
+lxw_error worksheet_print_area(lxw_worksheet *worksheet, lxw_row_t first_row,
+                               lxw_col_t first_col, lxw_row_t last_row,
+                               lxw_col_t last_col);
 /**
  * @brief Fit the printed area to a specific number of pages both vertically
  *        and horizontally.

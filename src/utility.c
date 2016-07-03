@@ -23,11 +23,14 @@ char *error_strings[LXW_MAX_ERRNO + 1] = {
     "Zlib error when adding sub file to xlsx file.",
     "Zlib error when closing xlsx file.",
     "NULL function parameter ignored.",
+    "Function parameter validation error.",
     "String exceeds Excel's limit of 32,767 characters.",
+    "Parameter exceeds Excel's limit of 128 characters.",
     "Parameter exceeds Excel's limit of 255 characters.",
     "Error finding internal string index.",
     "Worksheet row or column index out of range.",
     "Maximum number of worksheet URLs (65530) exceeded.",
+    "Couldn't read image dimensions or DPI.",
     "Unknown error number."
 };
 

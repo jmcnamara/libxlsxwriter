@@ -472,7 +472,7 @@ _compare_defined_names(lxw_defined_name *a, lxw_defined_name *b)
  * order for consistency with Excel. The names need to be normalized before
  * sorting.
  */
-STATIC uint8_t
+STATIC lxw_error
 _store_defined_name(lxw_workbook *self, const char *name,
                     const char *app_name, const char *formula, int16_t index,
                     uint8_t hidden)
@@ -486,11 +486,11 @@ _store_defined_name(lxw_workbook *self, const char *name,
 
     /* Do some checks on the input data */
     if (!name || !formula)
-        return 1;
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
     if (strlen(name) > LXW_DEFINED_NAME_LENGTH ||
         strlen(formula) > LXW_DEFINED_NAME_LENGTH) {
-        return 1;
+        return LXW_ERROR_128_STRING_LENGTH_EXCEEDED;
     }
 
     /* Allocate a new defined_name to be added to the linked list of names. */
@@ -575,7 +575,7 @@ _store_defined_name(lxw_workbook *self, const char *name,
         _compare_defined_names(defined_name, list_defined_name) < 1) {
         /* List is empty or defined name goes to the head. */
         TAILQ_INSERT_HEAD(self->defined_names, defined_name, list_pointers);
-        return 0;
+        return LXW_NO_ERROR;
     }
 
     TAILQ_FOREACH(list_defined_name, self->defined_names, list_pointers) {
@@ -589,18 +589,18 @@ _store_defined_name(lxw_workbook *self, const char *name,
         if (res < 0) {
             TAILQ_INSERT_BEFORE(list_defined_name, defined_name,
                                 list_pointers);
-            return 0;
+            return LXW_NO_ERROR;
         }
     }
 
     /* If the entry wasn't less than any of the entries in the list we add it
      * to the end. */
     TAILQ_INSERT_TAIL(self->defined_names, defined_name, list_pointers);
-    return 0;
+    return LXW_NO_ERROR;
 
 mem_error:
     free(defined_name);
-    return 1;
+    return LXW_ERROR_MEMORY_MALLOC_FAILED;
 }
 
 /*
@@ -1486,7 +1486,7 @@ workbook_add_format(lxw_workbook *self)
 /*
  * Call finalization code and close file.
  */
-uint8_t
+lxw_error
 workbook_close(lxw_workbook *self)
 {
     lxw_worksheet *worksheet = NULL;
@@ -1574,7 +1574,7 @@ mem_error:
  * Create a defined name in Excel. We handle global/workbook level names and
  * local/worksheet names.
  */
-uint8_t
+lxw_error
 workbook_define_name(lxw_workbook *self, const char *name,
                      const char *formula)
 {
@@ -1584,7 +1584,7 @@ workbook_define_name(lxw_workbook *self, const char *name,
 /*
  * Set the document properties such as Title, Author etc.
  */
-uint8_t
+lxw_error
 workbook_set_properties(lxw_workbook *self, lxw_doc_properties *user_props)
 {
     lxw_doc_properties *doc_props;
@@ -1648,17 +1648,17 @@ workbook_set_properties(lxw_workbook *self, lxw_doc_properties *user_props)
 
     self->properties = doc_props;
 
-    return 0;
+    return LXW_NO_ERROR;
 
 mem_error:
     _free_doc_properties(doc_props);
-    return -1;
+    return LXW_ERROR_MEMORY_MALLOC_FAILED;
 }
 
 /*
  * Set a string custom document property.
  */
-uint8_t
+lxw_error
 workbook_set_custom_property_string(lxw_workbook *self, char *name,
                                     char *value)
 {
@@ -1699,13 +1699,13 @@ workbook_set_custom_property_string(lxw_workbook *self, char *name,
     STAILQ_INSERT_TAIL(self->custom_properties, custom_property,
                        list_pointers);
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Set a double number custom document property.
  */
-uint8_t
+lxw_error
 workbook_set_custom_property_number(lxw_workbook *self, char *name,
                                     double value)
 {
@@ -1734,13 +1734,13 @@ workbook_set_custom_property_number(lxw_workbook *self, char *name,
     STAILQ_INSERT_TAIL(self->custom_properties, custom_property,
                        list_pointers);
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Set a integer number custom document property.
  */
-uint8_t
+lxw_error
 workbook_set_custom_property_integer(lxw_workbook *self, char *name,
                                      int32_t value)
 {
@@ -1769,13 +1769,13 @@ workbook_set_custom_property_integer(lxw_workbook *self, char *name,
     STAILQ_INSERT_TAIL(self->custom_properties, custom_property,
                        list_pointers);
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Set a boolean custom document property.
  */
-uint8_t
+lxw_error
 workbook_set_custom_property_boolean(lxw_workbook *self, char *name,
                                      uint8_t value)
 {
@@ -1804,13 +1804,13 @@ workbook_set_custom_property_boolean(lxw_workbook *self, char *name,
     STAILQ_INSERT_TAIL(self->custom_properties, custom_property,
                        list_pointers);
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Set a datetime custom document property.
  */
-uint8_t
+lxw_error
 workbook_set_custom_property_datetime(lxw_workbook *self, char *name,
                                       lxw_datetime *datetime)
 {
@@ -1846,7 +1846,7 @@ workbook_set_custom_property_datetime(lxw_workbook *self, char *name,
     STAILQ_INSERT_TAIL(self->custom_properties, custom_property,
                        list_pointers);
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 lxw_worksheet *

@@ -733,7 +733,7 @@ _next_power_of_two(uint16_t col)
  * The ignore_row/ignore_col flags are used to indicate that we wish to
  * perform the dimension check without storing the value.
  */
-STATIC uint8_t
+STATIC lxw_error
 _check_dimensions(lxw_worksheet *self,
                   lxw_row_t row_num,
                   lxw_col_t col_num, int8_t ignore_row, int8_t ignore_col)
@@ -765,7 +765,7 @@ _check_dimensions(lxw_worksheet *self,
             self->dim_colmax = col_num;
     }
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
@@ -2048,7 +2048,7 @@ mem_error:
 /*
  * Extract width and height information from a PNG file.
  */
-STATIC int
+STATIC lxw_error
 _process_png(lxw_image_options *image_options)
 {
     uint32_t length;
@@ -2131,7 +2131,7 @@ _process_png(lxw_image_options *image_options)
         LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
                          "no size data found in file: %s.",
                          image_options->filename);
-        return -1;
+        return LXW_ERROR_IMAGE_DIMENSIONS;
     }
 
     /* Set the image metadata. */
@@ -2142,13 +2142,13 @@ _process_png(lxw_image_options *image_options)
     image_options->y_dpi = y_dpi ? x_dpi : 96;
     image_options->extension = lxw_strdup("png");
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Extract width and height information from a JPEG file.
  */
-STATIC int
+STATIC lxw_error
 _process_jpeg(lxw_image_options *image_options)
 {
     uint16_t length;
@@ -2242,7 +2242,7 @@ _process_jpeg(lxw_image_options *image_options)
         LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
                          "no size data found in file: %s.",
                          image_options->filename);
-        return -1;
+        return LXW_ERROR_IMAGE_DIMENSIONS;
     }
 
     /* Set the image metadata. */
@@ -2253,13 +2253,13 @@ _process_jpeg(lxw_image_options *image_options)
     image_options->y_dpi = y_dpi ? x_dpi : 96;
     image_options->extension = lxw_strdup("jpeg");
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Extract width and height information from a BMP file.
  */
-STATIC int
+STATIC lxw_error
 _process_bmp(lxw_image_options *image_options)
 {
     uint32_t width = 0;
@@ -2283,7 +2283,7 @@ _process_bmp(lxw_image_options *image_options)
         LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
                          "no size data found in file: %s.",
                          image_options->filename);
-        return -1;
+        return LXW_ERROR_IMAGE_DIMENSIONS;
     }
 
     /* Set the image metadata. */
@@ -2294,14 +2294,14 @@ _process_bmp(lxw_image_options *image_options)
     image_options->y_dpi = y_dpi;
     image_options->extension = lxw_strdup("bmp");
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Extract information from the image file such as dimension, type, filename,
  * and extension.
  */
-STATIC int
+STATIC lxw_error
 _get_image_properties(lxw_image_options *image_options)
 {
     unsigned char signature[4];
@@ -2311,29 +2311,29 @@ _get_image_properties(lxw_image_options *image_options)
         LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
                          "couldn't read file type for file: %s.",
                          image_options->filename);
-        return -1;
+        return LXW_ERROR_IMAGE_DIMENSIONS;
     }
 
     if (memcmp(&signature[1], "PNG", 3) == 0) {
         if (_process_png(image_options) != LXW_NO_ERROR)
-            return -1;
+            return LXW_ERROR_IMAGE_DIMENSIONS;
     }
     else if (signature[0] == 0xFF && signature[1] == 0xD8) {
         if (_process_jpeg(image_options) != LXW_NO_ERROR)
-            return -1;
+            return LXW_ERROR_IMAGE_DIMENSIONS;
     }
     else if (memcmp(signature, "BM", 2) == 0) {
         if (_process_bmp(image_options) != LXW_NO_ERROR)
-            return -1;
+            return LXW_ERROR_IMAGE_DIMENSIONS;
     }
     else {
         LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
                          "unsupported image format for file: %s.",
                          image_options->filename);
-        return -1;
+        return LXW_ERROR_IMAGE_DIMENSIONS;
     }
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*****************************************************************************
@@ -3368,16 +3368,15 @@ lxw_worksheet_assemble_xml_file(lxw_worksheet *self)
 /*
  * Write a number to a cell in Excel.
  */
-int8_t
+lxw_error
 worksheet_write_number(lxw_worksheet *self,
                        lxw_row_t row_num,
                        lxw_col_t col_num, double value, lxw_format *format)
 {
     lxw_cell *cell;
-    int8_t err;
+    lxw_error err;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
-
     if (err)
         return err;
 
@@ -3385,13 +3384,13 @@ worksheet_write_number(lxw_worksheet *self,
 
     _insert_cell(self, row_num, col_num, cell);
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Write a string to an Excel file.
  */
-int8_t
+lxw_error
 worksheet_write_string(lxw_worksheet *self,
                        lxw_row_t row_num,
                        lxw_col_t col_num, const char *string,
@@ -3401,7 +3400,7 @@ worksheet_write_string(lxw_worksheet *self,
     int32_t string_id;
     char *string_copy;
     struct sst_element *sst_element;
-    int8_t err;
+    lxw_error err;
 
     if (!string || !*string) {
         /* Treat a NULL or empty string with formatting as a blank cell. */
@@ -3445,13 +3444,13 @@ worksheet_write_string(lxw_worksheet *self,
 
     _insert_cell(self, row_num, col_num, cell);
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Write a formula with a numerical result to a cell in Excel.
  */
-int8_t
+lxw_error
 worksheet_write_formula_num(lxw_worksheet *self,
                             lxw_row_t row_num,
                             lxw_col_t col_num,
@@ -3460,7 +3459,7 @@ worksheet_write_formula_num(lxw_worksheet *self,
 {
     lxw_cell *cell;
     char *formula_copy;
-    int8_t err;
+    lxw_error err;
 
     if (!formula)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
@@ -3480,13 +3479,13 @@ worksheet_write_formula_num(lxw_worksheet *self,
 
     _insert_cell(self, row_num, col_num, cell);
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Write a formula with a default result to a cell in Excel .
  */
-int8_t
+lxw_error
 worksheet_write_formula(lxw_worksheet *self,
                         lxw_row_t row_num,
                         lxw_col_t col_num, const char *formula,
@@ -3499,7 +3498,7 @@ worksheet_write_formula(lxw_worksheet *self,
 /*
  * Write a formula with a numerical result to a cell in Excel.
  */
-int8_t
+lxw_error
 worksheet_write_array_formula_num(lxw_worksheet *self,
                                   lxw_row_t first_row,
                                   lxw_col_t first_col,
@@ -3513,7 +3512,7 @@ worksheet_write_array_formula_num(lxw_worksheet *self,
     lxw_col_t tmp_col;
     char *formula_copy;
     char *range;
-    int8_t err;
+    lxw_error err;
 
     /* Swap last row/col with first row/col as necessary */
     if (first_row > last_row) {
@@ -3577,13 +3576,13 @@ worksheet_write_array_formula_num(lxw_worksheet *self,
         }
     }
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Write an array formula with a default result to a cell in Excel .
  */
-int8_t
+lxw_error
 worksheet_write_array_formula(lxw_worksheet *self,
                               lxw_row_t first_row,
                               lxw_col_t first_col,
@@ -3599,20 +3598,19 @@ worksheet_write_array_formula(lxw_worksheet *self,
 /*
  * Write a blank cell with a format to a cell in Excel.
  */
-int8_t
+lxw_error
 worksheet_write_blank(lxw_worksheet *self,
                       lxw_row_t row_num, lxw_col_t col_num,
                       lxw_format *format)
 {
     lxw_cell *cell;
-    int8_t err;
+    lxw_error err;
 
     /* Blank cells without formatting are ignored by Excel. */
     if (!format)
-        return 0;
+        return LXW_NO_ERROR;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
-
     if (err)
         return err;
 
@@ -3620,19 +3618,19 @@ worksheet_write_blank(lxw_worksheet *self,
 
     _insert_cell(self, row_num, col_num, cell);
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Write a boolean cell with a format to a cell in Excel.
  */
-int8_t
+lxw_error
 worksheet_write_boolean(lxw_worksheet *self,
                         lxw_row_t row_num, lxw_col_t col_num,
                         int value, lxw_format *format)
 {
     lxw_cell *cell;
-    int8_t err;
+    lxw_error err;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
 
@@ -3643,13 +3641,13 @@ worksheet_write_boolean(lxw_worksheet *self,
 
     _insert_cell(self, row_num, col_num, cell);
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Write a date and or time to a cell in Excel.
  */
-int8_t
+lxw_error
 worksheet_write_datetime(lxw_worksheet *self,
                          lxw_row_t row_num,
                          lxw_col_t col_num, lxw_datetime *datetime,
@@ -3657,10 +3655,9 @@ worksheet_write_datetime(lxw_worksheet *self,
 {
     lxw_cell *cell;
     double excel_date;
-    int8_t err;
+    lxw_error err;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
-
     if (err)
         return err;
 
@@ -3670,13 +3667,13 @@ worksheet_write_datetime(lxw_worksheet *self,
 
     _insert_cell(self, row_num, col_num, cell);
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Write a hyperlink/url to an Excel file.
  */
-int8_t
+lxw_error
 worksheet_write_url_opt(lxw_worksheet *self,
                         lxw_row_t row_num,
                         lxw_col_t col_num, const char *url,
@@ -3690,7 +3687,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
     char *url_string = NULL;
     char *tooltip_copy = NULL;
     char *found_string;
-    int8_t err;
+    lxw_error err;
     size_t string_size;
     size_t i;
     enum cell_types link_type = HYPERLINK_URL;
@@ -3875,7 +3872,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
 
     free(string_copy);
     self->hlink_count++;
-    return 0;
+    return LXW_NO_ERROR;
 
 mem_error:
     free(string_copy);
@@ -3889,7 +3886,7 @@ mem_error:
 /*
  * Write a hyperlink/url to an Excel file.
  */
-int8_t
+lxw_error
 worksheet_write_url(lxw_worksheet *self,
                     lxw_row_t row_num,
                     lxw_col_t col_num, const char *url, lxw_format *format)
@@ -3901,7 +3898,7 @@ worksheet_write_url(lxw_worksheet *self,
 /*
  * Set the properties of a single column or a range of columns with options.
  */
-int8_t
+lxw_error
 worksheet_set_column_opt(lxw_worksheet *self,
                          lxw_col_t firstcol,
                          lxw_col_t lastcol,
@@ -3916,7 +3913,7 @@ worksheet_set_column_opt(lxw_worksheet *self,
     uint8_t level = 0;
     uint8_t collapsed = LXW_FALSE;
     lxw_col_t col;
-    int8_t err;
+    lxw_error err;
 
     if (user_options) {
         hidden = user_options->hidden;
@@ -4008,13 +4005,13 @@ worksheet_set_column_opt(lxw_worksheet *self,
     /* Store the column change to allow optimizations. */
     self->col_size_changed = LXW_TRUE;
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Set the properties of a single column or a range of columns.
  */
-int8_t
+lxw_error
 worksheet_set_column(lxw_worksheet *self,
                      lxw_col_t firstcol,
                      lxw_col_t lastcol, double width, lxw_format *format)
@@ -4026,7 +4023,7 @@ worksheet_set_column(lxw_worksheet *self,
 /*
  * Set the properties of a row with options.
  */
-int8_t
+lxw_error
 worksheet_set_row_opt(lxw_worksheet *self,
                       lxw_row_t row_num,
                       double height,
@@ -4038,7 +4035,7 @@ worksheet_set_row_opt(lxw_worksheet *self,
     uint8_t level = 0;
     uint8_t collapsed = LXW_FALSE;
     lxw_row *row;
-    int8_t err;
+    lxw_error err;
 
     if (user_options) {
         hidden = user_options->hidden;
@@ -4053,7 +4050,6 @@ worksheet_set_row_opt(lxw_worksheet *self,
         min_col = 0;
 
     err = _check_dimensions(self, row_num, min_col, LXW_FALSE, LXW_FALSE);
-
     if (err)
         return err;
 
@@ -4075,13 +4071,13 @@ worksheet_set_row_opt(lxw_worksheet *self,
     if (height != self->default_row_height)
         row->height_changed = LXW_TRUE;
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Set the properties of a row.
  */
-int8_t
+lxw_error
 worksheet_set_row(lxw_worksheet *self,
                   lxw_row_t row_num, double height, lxw_format *format)
 {
@@ -4092,7 +4088,7 @@ worksheet_set_row(lxw_worksheet *self,
  * Merge a range of cells. The first cell should contain the data and the others
  * should be blank. All cells should contain the same format.
  */
-uint8_t
+lxw_error
 worksheet_merge_range(lxw_worksheet *self, lxw_row_t first_row,
                       lxw_col_t first_col, lxw_row_t last_row,
                       lxw_col_t last_col, const char *string,
@@ -4101,11 +4097,11 @@ worksheet_merge_range(lxw_worksheet *self, lxw_row_t first_row,
     lxw_merged_range *merged_range;
     lxw_row_t tmp_row;
     lxw_col_t tmp_col;
-    int8_t err;
+    lxw_error err;
 
     /* Excel doesn't allow a single cell to be merged */
     if (first_row == last_row && first_col == last_col)
-        return 1;
+        return LXW_ERROR_PARAMETER_VALIDATION;
 
     /* Swap last row/col with first row/col as necessary */
     if (first_row > last_row) {
@@ -4121,7 +4117,6 @@ worksheet_merge_range(lxw_worksheet *self, lxw_row_t first_row,
 
     /* Check that column number is valid and store the max value */
     err = _check_dimensions(self, last_row, last_col, LXW_FALSE, LXW_FALSE);
-
     if (err)
         return err;
 
@@ -4150,24 +4145,24 @@ worksheet_merge_range(lxw_worksheet *self, lxw_row_t first_row,
         }
     }
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Set the autofilter area in the worksheet.
  */
-uint8_t
+lxw_error
 worksheet_autofilter(lxw_worksheet *self, lxw_row_t first_row,
                      lxw_col_t first_col, lxw_row_t last_row,
                      lxw_col_t last_col)
 {
     lxw_row_t tmp_row;
     lxw_col_t tmp_col;
-    int8_t err;
+    lxw_error err;
 
     /* Excel doesn't allow a single cell to be merged */
     if (first_row == last_row && first_col == last_col)
-        return 1;
+        return LXW_ERROR_PARAMETER_VALIDATION;
 
     /* Swap last row/col with first row/col as necessary */
     if (first_row > last_row) {
@@ -4183,7 +4178,6 @@ worksheet_autofilter(lxw_worksheet *self, lxw_row_t first_row,
 
     /* Check that column number is valid and store the max value */
     err = _check_dimensions(self, last_row, last_col, LXW_FALSE, LXW_FALSE);
-
     if (err)
         return err;
 
@@ -4193,7 +4187,7 @@ worksheet_autofilter(lxw_worksheet *self, lxw_row_t first_row,
     self->autofilter.last_row = last_row;
     self->autofilter.last_col = last_col;
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
@@ -4445,7 +4439,7 @@ worksheet_set_margins(lxw_worksheet *self, double left, double right,
 /*
  * Set the page header caption and options.
  */
-uint8_t
+lxw_error
 worksheet_set_header_opt(lxw_worksheet *self, char *string,
                          lxw_header_footer_options *options)
 {
@@ -4455,21 +4449,21 @@ worksheet_set_header_opt(lxw_worksheet *self, char *string,
     }
 
     if (!string)
-        return 1;
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
     if (strlen(string) >= LXW_HEADER_FOOTER_MAX)
-        return 1;
+        return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
 
     strcpy(self->header, string);
     self->header_footer_changed = 1;
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Set the page footer caption and options.
  */
-uint8_t
+lxw_error
 worksheet_set_footer_opt(lxw_worksheet *self, char *string,
                          lxw_header_footer_options *options)
 {
@@ -4479,21 +4473,21 @@ worksheet_set_footer_opt(lxw_worksheet *self, char *string,
     }
 
     if (!string)
-        return 1;
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
     if (strlen(string) >= LXW_HEADER_FOOTER_MAX)
-        return 1;
+        return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
 
     strcpy(self->footer, string);
     self->header_footer_changed = 1;
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Set the page header caption.
  */
-uint8_t
+lxw_error
 worksheet_set_header(lxw_worksheet *self, char *string)
 {
     return worksheet_set_header_opt(self, string, NULL);
@@ -4502,7 +4496,7 @@ worksheet_set_header(lxw_worksheet *self, char *string)
 /*
  * Set the page footer caption.
  */
-uint8_t
+lxw_error
 worksheet_set_footer(lxw_worksheet *self, char *string)
 {
     return worksheet_set_footer_opt(self, string, NULL);
@@ -4562,11 +4556,12 @@ worksheet_print_row_col_headers(lxw_worksheet *self)
 /*
  * Set the rows to repeat at the top of each printed page.
  */
-uint8_t
+lxw_error
 worksheet_repeat_rows(lxw_worksheet *self, lxw_row_t first_row,
                       lxw_row_t last_row)
 {
     lxw_row_t tmp_row;
+    lxw_error err;
 
     if (first_row > last_row) {
         tmp_row = last_row;
@@ -4574,24 +4569,26 @@ worksheet_repeat_rows(lxw_worksheet *self, lxw_row_t first_row,
         first_row = tmp_row;
     }
 
-    if (_check_dimensions(self, last_row, 0, LXW_IGNORE, LXW_IGNORE))
-        return 1;
+    err = _check_dimensions(self, last_row, 0, LXW_IGNORE, LXW_IGNORE);
+    if (err)
+        return err;
 
     self->repeat_rows.in_use = LXW_TRUE;
     self->repeat_rows.first_row = first_row;
     self->repeat_rows.last_row = last_row;
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Set the columns to repeat at the left hand side of each printed page.
  */
-uint8_t
+lxw_error
 worksheet_repeat_columns(lxw_worksheet *self, lxw_col_t first_col,
                          lxw_col_t last_col)
 {
     lxw_col_t tmp_col;
+    lxw_error err;
 
     if (first_col > last_col) {
         tmp_col = last_col;
@@ -4599,26 +4596,28 @@ worksheet_repeat_columns(lxw_worksheet *self, lxw_col_t first_col,
         first_col = tmp_col;
     }
 
-    if (_check_dimensions(self, last_col, 0, LXW_IGNORE, LXW_IGNORE))
-        return 1;
+    err = _check_dimensions(self, last_col, 0, LXW_IGNORE, LXW_IGNORE);
+    if (err)
+        return err;
 
     self->repeat_cols.in_use = LXW_TRUE;
     self->repeat_cols.first_col = first_col;
     self->repeat_cols.last_col = last_col;
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Set the print area in the current worksheet.
  */
-uint8_t
+lxw_error
 worksheet_print_area(lxw_worksheet *self, lxw_row_t first_row,
                      lxw_col_t first_col, lxw_row_t last_row,
                      lxw_col_t last_col)
 {
     lxw_row_t tmp_row;
     lxw_col_t tmp_col;
+    lxw_error err;
 
     if (first_row > last_row) {
         tmp_row = last_row;
@@ -4632,13 +4631,14 @@ worksheet_print_area(lxw_worksheet *self, lxw_row_t first_row,
         first_col = tmp_col;
     }
 
-    if (_check_dimensions(self, last_row, last_col, LXW_IGNORE, LXW_IGNORE))
-        return 1;
+    err = _check_dimensions(self, last_row, last_col, LXW_IGNORE, LXW_IGNORE);
+    if (err)
+        return err;
 
     /* Ignore max area since it is the same as no print area in Excel. */
     if (first_row == 0 && first_col == 0 && last_row == LXW_ROW_MAX - 1
         && last_col == LXW_COL_MAX - 1) {
-        return 0;
+        return LXW_NO_ERROR;
     }
 
     self->print_area.in_use = LXW_TRUE;
@@ -4647,7 +4647,7 @@ worksheet_print_area(lxw_worksheet *self, lxw_row_t first_row,
     self->print_area.first_col = first_col;
     self->print_area.last_col = last_col;
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /* Store the vertical and horizontal number of pages that will define the
@@ -4798,7 +4798,7 @@ worksheet_set_default_row(lxw_worksheet *self, double height,
 /*
  * Insert an image into the worksheet.
  */
-int
+lxw_error
 worksheet_insert_image_opt(lxw_worksheet *self,
                            lxw_row_t row_num, lxw_col_t col_num,
                            const char *filename,
@@ -4811,7 +4811,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     if (!filename) {
         LXW_WARN("worksheet_insert_image()/_opt(): "
                  "filename must be specified.");
-        return -1;
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
     /* Check that the image file exists and can be opened. */
@@ -4820,7 +4820,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
         LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
                          "file doesn't exist or can't be opened: %s.",
                          filename);
-        return -1;
+        return LXW_ERROR_PARAMETER_VALIDATION;
     }
 
     /* Get the filename from the full path to add to the Drawing object. */
@@ -4828,12 +4828,12 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     if (!short_name) {
         LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
                          "couldn't get basename for file: %s.", filename);
-        return -1;
+        return LXW_ERROR_PARAMETER_VALIDATION;
     }
 
     /* Create a new object to hold the image options. */
     options = calloc(1, sizeof(lxw_image_options));
-    RETURN_ON_MEM_ERROR(options, -1);
+    RETURN_ON_MEM_ERROR(options, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     if (user_options) {
         memcpy(options, user_options, sizeof(lxw_image_options));
@@ -4854,18 +4854,20 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     if (!options->y_scale)
         options->y_scale = 1;
 
-    if (_get_image_properties(options) == LXW_NO_ERROR)
+    if (_get_image_properties(options) == LXW_NO_ERROR) {
         STAILQ_INSERT_TAIL(self->image_data, options, list_pointers);
-    else
+        return LXW_NO_ERROR;
+    }
+    else {
         free(options);
-
-    return 0;
+        return LXW_ERROR_IMAGE_DIMENSIONS;
+    }
 }
 
 /*
  * Insert an image into the worksheet.
  */
-int
+lxw_error
 worksheet_insert_image(lxw_worksheet *self,
                        lxw_row_t row_num, lxw_col_t col_num,
                        const char *filename)
@@ -4876,7 +4878,7 @@ worksheet_insert_image(lxw_worksheet *self,
 /*
  * Insert an chart into the worksheet.
  */
-int
+lxw_error
 worksheet_insert_chart_opt(lxw_worksheet *self,
                            lxw_row_t row_num, lxw_col_t col_num,
                            lxw_chart *chart, lxw_image_options *user_options)
@@ -4886,7 +4888,7 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
 
     if (!chart) {
         LXW_WARN("worksheet_insert_chart()/_opt(): chart must be non-NULL.");
-        return -1;
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
     /* Check that the chart isn't being used more than once. */
@@ -4894,7 +4896,7 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
         LXW_WARN("worksheet_insert_chart()/_opt(): the same chart object "
                  "cannot be inserted in a worksheet more than once.");
 
-        return -1;
+        return LXW_ERROR_PARAMETER_VALIDATION;
     }
 
     /* Check that the chart has a data series. */
@@ -4902,7 +4904,7 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
         LXW_WARN
             ("worksheet_insert_chart()/_opt(): chart must have a series.");
 
-        return -1;
+        return LXW_ERROR_PARAMETER_VALIDATION;
     }
 
     /* Check that the chart has a 'values' series. */
@@ -4911,13 +4913,13 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
             LXW_WARN("worksheet_insert_chart()/_opt(): chart must have a "
                      "'values' series.");
 
-            return -1;
+            return LXW_ERROR_PARAMETER_VALIDATION;
         }
     }
 
     /* Create a new object to hold the chart image options. */
     options = calloc(1, sizeof(lxw_image_options));
-    RETURN_ON_MEM_ERROR(options, -1);
+    RETURN_ON_MEM_ERROR(options, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     if (user_options)
         memcpy(options, user_options, sizeof(lxw_image_options));
@@ -4943,13 +4945,13 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
 
     chart->in_use = LXW_TRUE;
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
  * Insert an image into the worksheet.
  */
-int
+lxw_error
 worksheet_insert_chart(lxw_worksheet *self,
                        lxw_row_t row_num, lxw_col_t col_num, lxw_chart *chart)
 {

@@ -428,7 +428,7 @@ lxw_chart *workbook_add_chart(lxw_workbook *workbook, uint8_t chart_type);
  * @endcode
  *
  */
-uint8_t workbook_close(lxw_workbook *workbook);
+lxw_error workbook_close(lxw_workbook *workbook);
 
 /**
  * @brief Set the document properties such as Title, Author etc.
@@ -481,8 +481,8 @@ uint8_t workbook_close(lxw_workbook *workbook);
  * @image html doc_properties.png
  *
  */
-uint8_t workbook_set_properties(lxw_workbook *workbook,
-                                lxw_doc_properties *properties);
+lxw_error workbook_set_properties(lxw_workbook *workbook,
+                                  lxw_doc_properties *properties);
 
 /**
  * @brief Set a custom document text property.
@@ -517,8 +517,8 @@ uint8_t workbook_set_properties(lxw_workbook *workbook,
  * by Excel.
  *
  */
-uint8_t workbook_set_custom_property_string(lxw_workbook *workbook,
-                                            char *name, char *value);
+lxw_error workbook_set_custom_property_string(lxw_workbook *workbook,
+                                              char *name, char *value);
 /**
  * @brief Set a custom document number property.
  *
@@ -535,14 +535,14 @@ uint8_t workbook_set_custom_property_string(lxw_workbook *workbook,
  *     workbook_set_custom_property_number(workbook, "Document number", 12345);
  * @endcode
  */
-uint8_t workbook_set_custom_property_number(lxw_workbook *workbook,
-                                            char *name, double value);
+lxw_error workbook_set_custom_property_number(lxw_workbook *workbook,
+                                              char *name, double value);
 
 /* Undocumented since the user can use workbook_set_custom_property_number().
  * Only implemented for file format completeness and testing.
  */
-uint8_t workbook_set_custom_property_integer(lxw_workbook *workbook,
-                                             char *name, int32_t value);
+lxw_error workbook_set_custom_property_integer(lxw_workbook *workbook,
+                                               char *name, int32_t value);
 
 /**
  * @brief Set a custom document boolean property.
@@ -560,8 +560,8 @@ uint8_t workbook_set_custom_property_integer(lxw_workbook *workbook,
  *     workbook_set_custom_property_boolean(workbook, "Has Review", 1);
  * @endcode
  */
-uint8_t workbook_set_custom_property_boolean(lxw_workbook *workbook,
-                                             char *name, uint8_t value);
+lxw_error workbook_set_custom_property_boolean(lxw_workbook *workbook,
+                                               char *name, uint8_t value);
 /**
  * @brief Set a custom document date or time property.
  *
@@ -580,9 +580,9 @@ uint8_t workbook_set_custom_property_boolean(lxw_workbook *workbook,
  *     workbook_set_custom_property_datetime(workbook, "Date completed", &datetime);
  * @endcode
  */
-uint8_t workbook_set_custom_property_datetime(lxw_workbook *workbook,
-                                              char *name,
-                                              lxw_datetime *datetime);
+lxw_error workbook_set_custom_property_datetime(lxw_workbook *workbook,
+                                                char *name,
+                                                lxw_datetime *datetime);
 
 /**
  * @brief Create a defined name in the workbook to use as a variable.
@@ -633,8 +633,8 @@ uint8_t workbook_set_custom_property_datetime(lxw_workbook *workbook,
 documentation](http://office.microsoft.com/en-001/excel-help/define-and-use-names-in-formulas-HA010147120.aspx).
  *
  */
-uint8_t workbook_define_name(lxw_workbook *workbook, const char *name,
-                             const char *formula);
+lxw_error workbook_define_name(lxw_workbook *workbook, const char *name,
+                               const char *formula);
 
 lxw_worksheet *workbook_get_worksheet_by_name(lxw_workbook *workbook,
                                               char *name);
@@ -661,9 +661,10 @@ STATIC void _write_defined_name(lxw_workbook *self,
                                 lxw_defined_name *define_name);
 STATIC void _write_defined_names(lxw_workbook *self);
 
-STATIC uint8_t _store_defined_name(lxw_workbook *self, const char *name,
-                                   const char *app_name, const char *formula,
-                                   int16_t index, uint8_t hidden);
+STATIC lxw_error _store_defined_name(lxw_workbook *self, const char *name,
+                                     const char *app_name,
+                                     const char *formula, int16_t index,
+                                     uint8_t hidden);
 
 #endif /* TESTING */
 
