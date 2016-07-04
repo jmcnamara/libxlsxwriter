@@ -35,7 +35,7 @@ char *error_strings[LXW_MAX_ERRNO + 1] = {
 };
 
 char *
-lxw_strerror(uint8_t error_num)
+lxw_strerror(lxw_error error_num)
 {
     if (error_num > LXW_MAX_ERRNO)
         error_num = LXW_MAX_ERRNO;

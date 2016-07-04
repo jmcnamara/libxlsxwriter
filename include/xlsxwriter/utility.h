@@ -106,7 +106,7 @@
  *
  * @return A pointer to a statically allocated string. Do not free.
  */
-char *lxw_strerror(uint8_t error_num);
+char *lxw_strerror(lxw_error error_num);
 
 /* Create a quoted version of the worksheet name */
 char *lxw_quote_sheetname(const char *str);
