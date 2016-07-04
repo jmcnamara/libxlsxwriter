@@ -43,6 +43,8 @@ zipFile
 _open_zipfile_win32(const char *filename)
 {
     int n;
+    zlib_filefunc64_def filefunc;
+
     wchar_t wide_filename[_MAX_PATH + 1] = L"";
 
     /* Build a UTF-16 filename for Win32. */
@@ -55,7 +57,6 @@ _open_zipfile_win32(const char *filename)
     }
 
     /* Use the native Win32 file handling functions with minizip. */
-    zlib_filefunc64_def filefunc;
     fill_win32_filefunc64(&filefunc);
 
     return zipOpen2_64(wide_filename, 0, NULL, &filefunc);
