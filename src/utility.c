@@ -47,7 +47,7 @@ lxw_strerror(uint8_t error_num)
  * Convert Excel A-XFD style column name to zero based number.
  */
 void
-lxw_col_to_name(char col_name[], lxw_col_t col_num, uint8_t absolute)
+lxw_col_to_name(char *col_name, lxw_col_t col_num, uint8_t absolute)
 {
     uint8_t pos = 0;
     size_t len;
@@ -189,7 +189,7 @@ lxw_rowcol_to_range_abs(char *range,
  * Sheet1!$A$1:$C$5 formula reference with absolute values.
  */
 void
-lxw_rowcol_to_formula_abs(char *formula, char *sheetname,
+lxw_rowcol_to_formula_abs(char *formula, const char *sheetname,
                           lxw_row_t first_row, lxw_col_t first_col,
                           lxw_row_t last_row, lxw_col_t last_col)
 {
@@ -425,7 +425,7 @@ lxw_str_tolower(char *str)
 /* Create a quoted version of the worksheet name, or return an unmodified
  * copy if it doesn't required quoting. */
 char *
-lxw_quote_sheetname(char *str)
+lxw_quote_sheetname(const char *str)
 {
 
     uint8_t needs_quoting = 0;

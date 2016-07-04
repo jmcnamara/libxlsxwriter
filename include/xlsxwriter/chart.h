@@ -412,7 +412,8 @@ void lxw_chart_assemble_xml_file(lxw_chart *chart);
  *
  */
 lxw_chart_series *chart_add_series(lxw_chart *chart,
-                                   char *categories, char *values);
+                                   const char *categories,
+                                   const char *values);
 
 /**
  * @brief Set a series "categories" range using row and column values.
@@ -443,9 +444,10 @@ lxw_chart_series *chart_add_series(lxw_chart *chart,
  * @endcode
  *
  */
-void chart_series_set_categories(lxw_chart_series *series, char *sheetname,
-                                 lxw_row_t first_row, lxw_col_t first_col,
-                                 lxw_row_t last_row, lxw_col_t last_col);
+void chart_series_set_categories(lxw_chart_series *series,
+                                 const char *sheetname, lxw_row_t first_row,
+                                 lxw_col_t first_col, lxw_row_t last_row,
+                                 lxw_col_t last_col);
 
 /**
  * @brief Set a series "values" range using row and column values.
@@ -465,7 +467,7 @@ void chart_series_set_categories(lxw_chart_series *series, char *sheetname,
  * easier to generate programmatically. See the documentation for
  * `chart_series_set_categories()` above.
  */
-void chart_series_set_values(lxw_chart_series *series, char *sheetname,
+void chart_series_set_values(lxw_chart_series *series, const char *sheetname,
                              lxw_row_t first_row, lxw_col_t first_col,
                              lxw_row_t last_row, lxw_col_t last_col);
 
@@ -501,7 +503,7 @@ void chart_series_set_values(lxw_chart_series *series, char *sheetname,
  * See also the `chart_series_set_name_range()` function to see how to set the
  * name formula programmatically.
  */
-void chart_series_set_name(lxw_chart_series *series, char *name);
+void chart_series_set_name(lxw_chart_series *series, const char *name);
 
 /**
  * @brief Set a series name formula using row and column values.
@@ -521,8 +523,9 @@ void chart_series_set_name(lxw_chart_series *series, char *name);
  *     chart_series_set_name_range(series, "Sheet1", 0, 2); // "=Sheet1!$C$1"
  * @endcode
  */
-void chart_series_set_name_range(lxw_chart_series *series, char *sheetname,
-                                 lxw_row_t row, lxw_col_t col);
+void chart_series_set_name_range(lxw_chart_series *series,
+                                 const char *sheetname, lxw_row_t row,
+                                 lxw_col_t col);
 
 /**
  * @brief Set the name caption of the an axis.
@@ -553,7 +556,7 @@ void chart_series_set_name_range(lxw_chart_series *series, char *sheetname,
  *
  * This function is applicable to category, date and value axes.
  */
-void chart_axis_set_name(lxw_chart_axis *axis, char *name);
+void chart_axis_set_name(lxw_chart_axis *axis, const char *name);
 
 /**
  * @brief Set a chart axis name formula using row and column values.
@@ -572,7 +575,7 @@ void chart_axis_set_name(lxw_chart_axis *axis, char *name);
  *     chart_axis_set_name_range(chart->y_axis, "Sheet1", 2, 0);
  * @endcode
  */
-void chart_axis_set_name_range(lxw_chart_axis *axis, char *sheetname,
+void chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
                                lxw_row_t row, lxw_col_t col);
 /**
  * @brief Set the title of the chart.
@@ -601,7 +604,7 @@ void chart_axis_set_name_range(lxw_chart_axis *axis, char *sheetname,
  *
  * The Excel default is to have no chart title.
  */
-void chart_title_set_name(lxw_chart *chart, char *name);
+void chart_title_set_name(lxw_chart *chart, const char *name);
 
 /**
  * @brief Set a chart title formula using row and column values.
@@ -619,7 +622,7 @@ void chart_title_set_name(lxw_chart *chart, char *name);
  *     chart_title_set_name_range(chart, "Sheet1", 1, 0);
  * @endcode
  */
-void chart_title_set_name_range(lxw_chart *chart, char *sheetname,
+void chart_title_set_name_range(lxw_chart *chart, const char *sheetname,
                                 lxw_row_t row, lxw_col_t col);
 /**
  * @brief Turn off an automatic chart title.

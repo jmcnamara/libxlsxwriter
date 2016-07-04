@@ -63,7 +63,7 @@ TAILQ_HEAD(lxw_defined_names, lxw_defined_name);
 
 /* Struct to represent a worksheet name/pointer pair. */
 typedef struct lxw_worksheet_name {
-    char *name;
+    const char *name;
     lxw_worksheet *worksheet;
 
     RB_ENTRY (lxw_worksheet_name) tree_pointers;
@@ -518,7 +518,8 @@ lxw_error workbook_set_properties(lxw_workbook *workbook,
  *
  */
 lxw_error workbook_set_custom_property_string(lxw_workbook *workbook,
-                                              char *name, char *value);
+                                              const char *name,
+                                              const char *value);
 /**
  * @brief Set a custom document number property.
  *
@@ -536,13 +537,14 @@ lxw_error workbook_set_custom_property_string(lxw_workbook *workbook,
  * @endcode
  */
 lxw_error workbook_set_custom_property_number(lxw_workbook *workbook,
-                                              char *name, double value);
+                                              const char *name, double value);
 
 /* Undocumented since the user can use workbook_set_custom_property_number().
  * Only implemented for file format completeness and testing.
  */
 lxw_error workbook_set_custom_property_integer(lxw_workbook *workbook,
-                                               char *name, int32_t value);
+                                               const char *name,
+                                               int32_t value);
 
 /**
  * @brief Set a custom document boolean property.
@@ -561,7 +563,8 @@ lxw_error workbook_set_custom_property_integer(lxw_workbook *workbook,
  * @endcode
  */
 lxw_error workbook_set_custom_property_boolean(lxw_workbook *workbook,
-                                               char *name, uint8_t value);
+                                               const char *name,
+                                               uint8_t value);
 /**
  * @brief Set a custom document date or time property.
  *
@@ -581,7 +584,7 @@ lxw_error workbook_set_custom_property_boolean(lxw_workbook *workbook,
  * @endcode
  */
 lxw_error workbook_set_custom_property_datetime(lxw_workbook *workbook,
-                                                char *name,
+                                                const char *name,
                                                 lxw_datetime *datetime);
 
 /**
@@ -637,7 +640,7 @@ lxw_error workbook_define_name(lxw_workbook *workbook, const char *name,
                                const char *formula);
 
 lxw_worksheet *workbook_get_worksheet_by_name(lxw_workbook *workbook,
-                                              char *name);
+                                              const char *name);
 
 void lxw_workbook_free(lxw_workbook *workbook);
 void lxw_workbook_assemble_xml_file(lxw_workbook *workbook);

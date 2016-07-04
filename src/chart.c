@@ -198,7 +198,7 @@ _chart_add_axis_ids(lxw_chart *self)
  * Utility function to set a chart range.
  */
 STATIC void
-_chart_set_range(lxw_series_range *range, char *sheetname,
+_chart_set_range(lxw_series_range *range, const char *sheetname,
                  lxw_row_t first_row, lxw_col_t first_col,
                  lxw_row_t last_row, lxw_col_t last_col)
 {
@@ -2501,7 +2501,7 @@ lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
  * Insert an image into the worksheet.
  */
 lxw_chart_series *
-chart_add_series(lxw_chart *self, char *categories, char *values)
+chart_add_series(lxw_chart *self, const char *categories, const char *values)
 {
     lxw_chart_series *series;
 
@@ -2567,7 +2567,7 @@ chart_set_style(lxw_chart *self, uint8_t style_id)
  * Set a user defined name for a series.
  */
 void
-chart_series_set_name(lxw_chart_series *series, char *name)
+chart_series_set_name(lxw_chart_series *series, const char *name)
 {
     if (!name)
         return;
@@ -2582,7 +2582,7 @@ chart_series_set_name(lxw_chart_series *series, char *name)
  * Set an axis caption, with a range instead or a formula..
  */
 void
-chart_series_set_name_range(lxw_chart_series *series, char *sheetname,
+chart_series_set_name_range(lxw_chart_series *series, const char *sheetname,
                             lxw_row_t row, lxw_col_t col)
 {
     if (!sheetname) {
@@ -2599,7 +2599,7 @@ chart_series_set_name_range(lxw_chart_series *series, char *sheetname,
  * Set the categories range for a series.
  */
 void
-chart_series_set_categories(lxw_chart_series *series, char *sheetname,
+chart_series_set_categories(lxw_chart_series *series, const char *sheetname,
                             lxw_row_t first_row, lxw_col_t first_col,
                             lxw_row_t last_row, lxw_col_t last_col)
 {
@@ -2617,7 +2617,7 @@ chart_series_set_categories(lxw_chart_series *series, char *sheetname,
  * Set the values range for a series.
  */
 void
-chart_series_set_values(lxw_chart_series *series, char *sheetname,
+chart_series_set_values(lxw_chart_series *series, const char *sheetname,
                         lxw_row_t first_row, lxw_col_t first_col,
                         lxw_row_t last_row, lxw_col_t last_col)
 {
@@ -2634,7 +2634,7 @@ chart_series_set_values(lxw_chart_series *series, char *sheetname,
  * Set an axis caption.
  */
 void
-chart_axis_set_name(lxw_chart_axis *axis, char *name)
+chart_axis_set_name(lxw_chart_axis *axis, const char *name)
 {
     if (!name)
         return;
@@ -2649,7 +2649,7 @@ chart_axis_set_name(lxw_chart_axis *axis, char *name)
  * Set an axis caption, with a range instead or a formula..
  */
 void
-chart_axis_set_name_range(lxw_chart_axis *axis, char *sheetname,
+chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
                           lxw_row_t row, lxw_col_t col)
 {
     if (!sheetname) {
@@ -2665,7 +2665,7 @@ chart_axis_set_name_range(lxw_chart_axis *axis, char *sheetname,
  * Set the chart title.
  */
 void
-chart_title_set_name(lxw_chart *self, char *name)
+chart_title_set_name(lxw_chart *self, const char *name)
 {
     if (!name)
         return;
@@ -2680,7 +2680,7 @@ chart_title_set_name(lxw_chart *self, char *name)
  * Set the chart title, with a range instead or a formula.
  */
 void
-chart_title_set_name_range(lxw_chart *self, char *sheetname,
+chart_title_set_name_range(lxw_chart *self, const char *sheetname,
                            lxw_row_t row, lxw_col_t col)
 {
     if (!sheetname) {

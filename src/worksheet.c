@@ -799,7 +799,7 @@ _cell_cmp(lxw_cell *cell1, lxw_cell *cell2)
  * of OpenOffice.
  */
 STATIC uint16_t
-_hash_password(char *password)
+_hash_password(const char *password)
 {
     size_t count;
     uint8_t i;
@@ -4440,7 +4440,7 @@ worksheet_set_margins(lxw_worksheet *self, double left, double right,
  * Set the page header caption and options.
  */
 lxw_error
-worksheet_set_header_opt(lxw_worksheet *self, char *string,
+worksheet_set_header_opt(lxw_worksheet *self, const char *string,
                          lxw_header_footer_options *options)
 {
     if (options) {
@@ -4464,7 +4464,7 @@ worksheet_set_header_opt(lxw_worksheet *self, char *string,
  * Set the page footer caption and options.
  */
 lxw_error
-worksheet_set_footer_opt(lxw_worksheet *self, char *string,
+worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
                          lxw_header_footer_options *options)
 {
     if (options) {
@@ -4488,7 +4488,7 @@ worksheet_set_footer_opt(lxw_worksheet *self, char *string,
  * Set the page header caption.
  */
 lxw_error
-worksheet_set_header(lxw_worksheet *self, char *string)
+worksheet_set_header(lxw_worksheet *self, const char *string)
 {
     return worksheet_set_header_opt(self, string, NULL);
 }
@@ -4497,7 +4497,7 @@ worksheet_set_header(lxw_worksheet *self, char *string)
  * Set the page footer caption.
  */
 lxw_error
-worksheet_set_footer(lxw_worksheet *self, char *string)
+worksheet_set_footer(lxw_worksheet *self, const char *string)
 {
     return worksheet_set_footer_opt(self, string, NULL);
 }
@@ -4754,7 +4754,7 @@ worksheet_set_tab_color(lxw_worksheet *self, lxw_color_t color)
  * objects.
  */
 void
-worksheet_protect(lxw_worksheet *self, char *password,
+worksheet_protect(lxw_worksheet *self, const char *password,
                   lxw_protection *options)
 {
     struct lxw_protection *protect = &self->protection;

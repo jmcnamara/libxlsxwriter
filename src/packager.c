@@ -26,7 +26,6 @@ STATIC uint8_t _add_file_to_zip(lxw_packager *self, FILE * file,
  ****************************************************************************/
 /* Avoid non MSVC definition of _WIN32 in MinGW. */
 
-
 #ifdef __MINGW32__
 #undef _WIN32
 #endif

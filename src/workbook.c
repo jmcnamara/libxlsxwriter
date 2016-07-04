@@ -1659,8 +1659,8 @@ mem_error:
  * Set a string custom document property.
  */
 lxw_error
-workbook_set_custom_property_string(lxw_workbook *self, char *name,
-                                    char *value)
+workbook_set_custom_property_string(lxw_workbook *self, const char *name,
+                                    const char *value)
 {
     lxw_custom_property *custom_property;
 
@@ -1706,7 +1706,7 @@ workbook_set_custom_property_string(lxw_workbook *self, char *name,
  * Set a double number custom document property.
  */
 lxw_error
-workbook_set_custom_property_number(lxw_workbook *self, char *name,
+workbook_set_custom_property_number(lxw_workbook *self, const char *name,
                                     double value)
 {
     lxw_custom_property *custom_property;
@@ -1741,7 +1741,7 @@ workbook_set_custom_property_number(lxw_workbook *self, char *name,
  * Set a integer number custom document property.
  */
 lxw_error
-workbook_set_custom_property_integer(lxw_workbook *self, char *name,
+workbook_set_custom_property_integer(lxw_workbook *self, const char *name,
                                      int32_t value)
 {
     lxw_custom_property *custom_property;
@@ -1776,7 +1776,7 @@ workbook_set_custom_property_integer(lxw_workbook *self, char *name,
  * Set a boolean custom document property.
  */
 lxw_error
-workbook_set_custom_property_boolean(lxw_workbook *self, char *name,
+workbook_set_custom_property_boolean(lxw_workbook *self, const char *name,
                                      uint8_t value)
 {
     lxw_custom_property *custom_property;
@@ -1811,7 +1811,7 @@ workbook_set_custom_property_boolean(lxw_workbook *self, char *name,
  * Set a datetime custom document property.
  */
 lxw_error
-workbook_set_custom_property_datetime(lxw_workbook *self, char *name,
+workbook_set_custom_property_datetime(lxw_workbook *self, const char *name,
                                       lxw_datetime *datetime)
 {
     lxw_custom_property *custom_property;
@@ -1850,7 +1850,7 @@ workbook_set_custom_property_datetime(lxw_workbook *self, char *name,
 }
 
 lxw_worksheet *
-workbook_get_worksheet_by_name(lxw_workbook *self, char *name)
+workbook_get_worksheet_by_name(lxw_workbook *self, const char *name)
 {
     lxw_worksheet_name worksheet_name;
     lxw_worksheet_name *found;

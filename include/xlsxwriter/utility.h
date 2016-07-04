@@ -109,7 +109,7 @@
 char *lxw_strerror(uint8_t error_num);
 
 /* Create a quoted version of the worksheet name */
-char *lxw_quote_sheetname(char *str);
+char *lxw_quote_sheetname(const char *str);
 
  /* *INDENT-OFF* */
 #ifdef __cplusplus
@@ -133,7 +133,7 @@ void lxw_rowcol_to_range_abs(char *range,
                              lxw_row_t first_row, lxw_col_t first_col,
                              lxw_row_t last_row, lxw_col_t last_col);
 
-void lxw_rowcol_to_formula_abs(char *formula, char *sheetname,
+void lxw_rowcol_to_formula_abs(char *formula, const char *sheetname,
                                lxw_row_t first_row, lxw_col_t first_col,
                                lxw_row_t last_row, lxw_col_t last_col);
 

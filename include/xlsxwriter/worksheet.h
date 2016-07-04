@@ -1975,7 +1975,7 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  * longer than this will not be written.
  *
  */
-lxw_error worksheet_set_header(lxw_worksheet *worksheet, char *string);
+lxw_error worksheet_set_header(lxw_worksheet *worksheet, const char *string);
 
 /**
  * @brief Set the printed page footer caption.
@@ -1988,7 +1988,7 @@ lxw_error worksheet_set_header(lxw_worksheet *worksheet, char *string);
  * The syntax of this function is the same as worksheet_set_header().
  *
  */
-lxw_error worksheet_set_footer(lxw_worksheet *worksheet, char *string);
+lxw_error worksheet_set_footer(lxw_worksheet *worksheet, const char *string);
 
 /**
  * @brief Set the printed page header caption with additional options.
@@ -2013,7 +2013,8 @@ lxw_error worksheet_set_footer(lxw_worksheet *worksheet, char *string);
  * @endcode
  *
  */
-lxw_error worksheet_set_header_opt(lxw_worksheet *worksheet, char *string,
+lxw_error worksheet_set_header_opt(lxw_worksheet *worksheet,
+                                   const char *string,
                                    lxw_header_footer_options *options);
 
 /**
@@ -2028,7 +2029,8 @@ lxw_error worksheet_set_header_opt(lxw_worksheet *worksheet, char *string,
  * The syntax of this function is the same as worksheet_set_header_opt().
  *
  */
-lxw_error worksheet_set_footer_opt(lxw_worksheet *worksheet, char *string,
+lxw_error worksheet_set_footer_opt(lxw_worksheet *worksheet,
+                                   const char *string,
                                    lxw_header_footer_options *options);
 
 /**
@@ -2529,7 +2531,7 @@ void worksheet_set_tab_color(lxw_worksheet *worksheet, lxw_color_t color);
  * since it requires a completely different file format and would take several
  * man months to implement.
  */
-void worksheet_protect(lxw_worksheet *worksheet, char *password,
+void worksheet_protect(lxw_worksheet *worksheet, const char *password,
                        lxw_protection *options);
 
 /**
