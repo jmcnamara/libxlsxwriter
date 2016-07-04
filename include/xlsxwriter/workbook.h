@@ -436,7 +436,7 @@ lxw_error workbook_close(lxw_workbook *workbook);
  * @param workbook   Pointer to a lxw_workbook instance.
  * @param properties Document properties to set.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error.
  *
  * The `%workbook_set_properties` method can be used to set the document
  * properties of the Excel file created by `libxlsxwriter`. These properties
@@ -491,7 +491,7 @@ lxw_error workbook_set_properties(lxw_workbook *workbook,
  * @param name     The name of the custom property.
  * @param value    The value of the custom property.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error.
  *
  * The `%workbook_set_custom_property_string()` method can be used to set one
  * or more custom document text properties not covered by the standard
@@ -527,7 +527,7 @@ lxw_error workbook_set_custom_property_string(lxw_workbook *workbook,
  * @param name     The name of the custom property.
  * @param value    The value of the custom property.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error.
  *
  * Set a custom document number property.
  * See `workbook_set_custom_property_string()` above for details.
@@ -553,7 +553,7 @@ lxw_error workbook_set_custom_property_integer(lxw_workbook *workbook,
  * @param name     The name of the custom property.
  * @param value    The value of the custom property.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error.
  *
  * Set a custom document boolean property.
  * See `workbook_set_custom_property_string()` above for details.
@@ -572,7 +572,7 @@ lxw_error workbook_set_custom_property_boolean(lxw_workbook *workbook,
  * @param name     The name of the custom property.
  * @param datetime The value of the custom property.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error.
  *
  * Set a custom date or time number property.
  * See `workbook_set_custom_property_string()` above for details.
@@ -594,7 +594,7 @@ lxw_error workbook_set_custom_property_datetime(lxw_workbook *workbook,
  * @param name     The defined name.
  * @param formula  The cell or range that the defined name refers to.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error.
  *
  * This method is used to defined a name that can be used to represent a
  * value, a single cell or a range of cells in a workbook: These defined names

@@ -1226,7 +1226,7 @@ lxw_error worksheet_set_column_opt(lxw_worksheet *worksheet,
  * @param col       The zero indexed column number.
  * @param filename  The image filename, with path if required.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error code.
  *
  * This function can be used to insert a image into a worksheet. The image can
  * be in PNG, JPEG or BMP format:
@@ -1264,7 +1264,7 @@ lxw_error worksheet_insert_image(lxw_worksheet *worksheet,
  * @param filename  The image filename, with path if required.
  * @param options   Optional image parameters.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error code.
  *
  * The `%worksheet_insert_image_opt()` function is like
  * `worksheet_insert_image()` function except that it takes an optional
@@ -1295,7 +1295,7 @@ lxw_error worksheet_insert_image_opt(lxw_worksheet *worksheet,
  * @param col       The zero indexed column number.
  * @param chart     A #lxw_chart object created via workbook_add_chart().
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error code.
  *
  * The `%worksheet_insert_chart()` can be used to insert a chart into a
  * worksheet. The chart object must be created first using the
@@ -1336,7 +1336,7 @@ lxw_error worksheet_insert_chart(lxw_worksheet *worksheet,
  * @param chart        A #lxw_chart object created via workbook_add_chart().
  * @param user_options Optional chart parameters.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error code.
  *
  * The `%worksheet_insert_chart_opt()` function is like
  * `worksheet_insert_chart()` function except that it takes an optional
@@ -1372,7 +1372,7 @@ lxw_error worksheet_insert_chart_opt(lxw_worksheet *worksheet,
  * @param string    String to write to the merged range.
  * @param format    A pointer to a Format instance or NULL.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error code.
  *
  * The `%worksheet_merge_range()` function allows cells to be merged together
  * so that they act as a single area.
@@ -1432,7 +1432,7 @@ lxw_error worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
  * @param last_row  The last row of the range.
  * @param last_col  The last col of the range.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error code.
  *
  * The `%worksheet_autofilter()` function allows an autofilter to be added to
  * a worksheet.
@@ -1804,7 +1804,7 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param string    The header string.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error code.
  *
  * Headers and footers are generated using a string which is a combination of
  * plain text and control characters.
@@ -1985,7 +1985,7 @@ lxw_error worksheet_set_header(lxw_worksheet *worksheet, const char *string);
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param string    The footer string.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error code.
  *
  * The syntax of this function is the same as worksheet_set_header().
  *
@@ -1999,7 +1999,7 @@ lxw_error worksheet_set_footer(lxw_worksheet *worksheet, const char *string);
  * @param string    The header string.
  * @param options   Header options.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error code.
  *
  * The syntax of this function is the same as worksheet_set_header() with an
  * additional parameter to specify options for the header.
@@ -2026,7 +2026,7 @@ lxw_error worksheet_set_header_opt(lxw_worksheet *worksheet,
  * @param string    The footer string.
  * @param options   Footer options.
  *
- * @return 0 for success, non-zero on error.
+ * @return A #lxw_error code.
  *
  * The syntax of this function is the same as worksheet_set_header_opt().
  *
@@ -2041,7 +2041,7 @@ lxw_error worksheet_set_footer_opt(lxw_worksheet *worksheet,
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param breaks    Array of page breaks.
  *
- * @return #LXW_NO_ERROR (0) for success. Non-zero #lxw_error value on error.
+ * @return A #lxw_error code.
  *
  * The `%worksheet_set_h_pagebreaks()` function adds horizontal page breaks to
  * a worksheet. A page break causes all the data that follows it to be printed
@@ -2084,7 +2084,7 @@ lxw_error worksheet_set_h_pagebreaks(lxw_worksheet *worksheet,
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param breaks    Array of page breaks.
  *
- * @return #LXW_NO_ERROR (0) for success. Non-zero #lxw_error value on error.
+ * @return A #lxw_error code.
  *
  * The `%worksheet_set_v_pagebreaks()` function adds vertical page breaks to a
  * worksheet. A page break causes all the data that follows it to be printed
@@ -2249,6 +2249,8 @@ void worksheet_print_row_col_headers(lxw_worksheet *worksheet);
  * @param first_row First row of repeat range.
  * @param last_row  Last row of repeat range.
  *
+ * @return A #lxw_error code.
+ *
  * For large Excel documents it is often desirable to have the first row or
  * rows of the worksheet print out at the top of each page.
  *
@@ -2259,8 +2261,6 @@ void worksheet_print_row_col_headers(lxw_worksheet *worksheet);
  *     worksheet_repeat_rows(worksheet, 0, 0); // Repeat the first row.
  *     worksheet_repeat_rows(worksheet, 0, 1); // Repeat the first two rows.
  * @endcode
- *
- * @return 0 for success, non-zero on error.
  */
 lxw_error worksheet_repeat_rows(lxw_worksheet *worksheet, lxw_row_t first_row,
                                 lxw_row_t last_row);
@@ -2272,6 +2272,8 @@ lxw_error worksheet_repeat_rows(lxw_worksheet *worksheet, lxw_row_t first_row,
  * @param first_col First column of repeat range.
  * @param last_col  Last column of repeat range.
  *
+ * @return A #lxw_error code.
+ *
  * For large Excel documents it is often desirable to have the first column or
  * columns of the worksheet print out at the left of each page.
  *
@@ -2282,8 +2284,6 @@ lxw_error worksheet_repeat_rows(lxw_worksheet *worksheet, lxw_row_t first_row,
  *     worksheet_repeat_columns(worksheet, 0, 0); // Repeat the first col.
  *     worksheet_repeat_columns(worksheet, 0, 1); // Repeat the first two cols.
  * @endcode
- *
- * @return 0 for success, non-zero on error.
  */
 lxw_error worksheet_repeat_columns(lxw_worksheet *worksheet,
                                    lxw_col_t first_col, lxw_col_t last_col);
@@ -2296,6 +2296,8 @@ lxw_error worksheet_repeat_columns(lxw_worksheet *worksheet,
  * @param first_col The first column of the range.
  * @param last_row  The last row of the range.
  * @param last_col  The last col of the range.
+ *
+ * @return A #lxw_error code.
  *
  * This function is used to specify the area of the worksheet that will be
  * printed. The RANGE() macro is often convenient for this.
@@ -2312,8 +2314,6 @@ lxw_error worksheet_repeat_columns(lxw_worksheet *worksheet,
  * @code
  *     worksheet_print_area(worksheet, RANGE("A1:H1048576")); // Same as A:H.
  * @endcode
- *
- * @return 0 for success, non-zero on error.
  */
 lxw_error worksheet_print_area(lxw_worksheet *worksheet, lxw_row_t first_row,
                                lxw_col_t first_col, lxw_row_t last_row,
