@@ -444,6 +444,8 @@ typedef struct lxw_worksheet {
 
     lxw_row_t *hbreaks;
     lxw_col_t *vbreaks;
+    uint16_t hbreaks_count;
+    uint16_t vbreaks_count;
 
     struct lxw_rel_tuples *external_hyperlinks;
     struct lxw_rel_tuples *external_drawing_links;
@@ -2039,6 +2041,8 @@ lxw_error worksheet_set_footer_opt(lxw_worksheet *worksheet,
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param breaks    Array of page breaks.
  *
+ * @return #LXW_NO_ERROR (0) for success. Non-zero #lxw_error value on error.
+ *
  * The `%worksheet_set_h_pagebreaks()` function adds horizontal page breaks to
  * a worksheet. A page break causes all the data that follows it to be printed
  * on the next page. Horizontal page breaks act between rows.
@@ -2071,13 +2075,16 @@ lxw_error worksheet_set_footer_opt(lxw_worksheet *worksheet,
  * breaks.
  *
  */
-void worksheet_set_h_pagebreaks(lxw_worksheet *worksheet, lxw_row_t breaks[]);
+lxw_error worksheet_set_h_pagebreaks(lxw_worksheet *worksheet,
+                                     lxw_row_t breaks[]);
 
 /**
  * @brief Set the vertical page breaks on a worksheet.
  *
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param breaks    Array of page breaks.
+ *
+ * @return #LXW_NO_ERROR (0) for success. Non-zero #lxw_error value on error.
  *
  * The `%worksheet_set_v_pagebreaks()` function adds vertical page breaks to a
  * worksheet. A page break causes all the data that follows it to be printed
@@ -2111,7 +2118,8 @@ void worksheet_set_h_pagebreaks(lxw_worksheet *worksheet, lxw_row_t breaks[]);
  * breaks.
  *
  */
-void worksheet_set_v_pagebreaks(lxw_worksheet *worksheet, lxw_col_t breaks[]);
+lxw_error worksheet_set_v_pagebreaks(lxw_worksheet *worksheet,
+                                     lxw_col_t breaks[]);
 
 /**
  * @brief Set the order in which pages are printed.

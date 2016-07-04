@@ -400,6 +400,8 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     if (worksheet->drawing)
         lxw_drawing_free(worksheet->drawing);
 
+    free(worksheet->hbreaks);
+    free(worksheet->vbreaks);
     free(worksheet->name);
     free(worksheet->quoted_name);
 
@@ -2954,17 +2956,11 @@ _worksheet_write_row_breaks(lxw_worksheet *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    uint16_t count = 0;
+    uint16_t count = self->hbreaks_count;
     uint16_t i;
 
-    if (self->hbreaks == NULL)
+    if (!count)
         return;
-
-    while (self->hbreaks[count])
-        count++;
-
-    if (count > LXW_BREAKS_MAX)
-        count = LXW_BREAKS_MAX;
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_INT("count", count);
@@ -2988,17 +2984,11 @@ _worksheet_write_col_breaks(lxw_worksheet *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    uint16_t count = 0;
+    uint16_t count = self->vbreaks_count;
     uint16_t i;
 
-    if (self->vbreaks == NULL)
+    if (!count)
         return;
-
-    while (self->vbreaks[count])
-        count++;
-
-    if (count > LXW_BREAKS_MAX)
-        count = LXW_BREAKS_MAX;
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_INT("count", count);
@@ -4691,19 +4681,55 @@ worksheet_set_print_scale(lxw_worksheet *self, uint16_t scale)
 /*
  * Store the horizontal page breaks on a worksheet.
  */
-void
+lxw_error
 worksheet_set_h_pagebreaks(lxw_worksheet *self, lxw_row_t hbreaks[])
 {
-    self->hbreaks = hbreaks;
+    uint16_t count = 0;
+
+    if (hbreaks == NULL)
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+
+    while (hbreaks[count])
+        count++;
+
+    /* The Excel 2007 specification says that the maximum number of page
+     * breaks is 1026. However, in practice it is actually 1023. */
+    if (count > LXW_BREAKS_MAX)
+        count = LXW_BREAKS_MAX;
+
+    self->hbreaks = calloc(count, sizeof(lxw_row_t));
+    RETURN_ON_MEM_ERROR(self->hbreaks, LXW_ERROR_MEMORY_MALLOC_FAILED);
+    memcpy(self->hbreaks, hbreaks, count * sizeof(lxw_row_t));
+    self->hbreaks_count = count;
+
+    return LXW_NO_ERROR;
 }
 
 /*
  * Store the vertical page breaks on a worksheet.
  */
-void
+lxw_error
 worksheet_set_v_pagebreaks(lxw_worksheet *self, lxw_col_t vbreaks[])
 {
-    self->vbreaks = vbreaks;
+    uint16_t count = 0;
+
+    if (vbreaks == NULL)
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+
+    while (vbreaks[count])
+        count++;
+
+    /* The Excel 2007 specification says that the maximum number of page
+     * breaks is 1026. However, in practice it is actually 1023. */
+    if (count > LXW_BREAKS_MAX)
+        count = LXW_BREAKS_MAX;
+
+    self->vbreaks = calloc(count, sizeof(lxw_col_t));
+    RETURN_ON_MEM_ERROR(self->vbreaks, LXW_ERROR_MEMORY_MALLOC_FAILED);
+    memcpy(self->vbreaks, vbreaks, count * sizeof(lxw_col_t));
+    self->vbreaks_count = count;
+
+    return LXW_NO_ERROR;
 }
 
 /*
