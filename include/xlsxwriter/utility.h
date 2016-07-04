@@ -89,7 +89,7 @@
  * For example:
  *
  * @code
- *     uint8_t error = workbook_close(workbook);
+ *     lxw_error error = workbook_close(workbook);
  *
  *     if (error)
  *         printf("Error in workbook_close().\n"
