@@ -1,9 +1,17 @@
 /**
 @page changes Changes
 
+
+# 0.4.0 July 5 2016
+
+- Added fixes for MSVC 2010.
+
+- Refactored public APIs to return #lxw_error instead of int.
+
+
 # 0.3.9 July 2 2016
 
-- Added support for MinGW, MinGW-w64, Gygwin, MSYS and MSYS2. 
+- Added support for MinGW, MinGW-w64, Gygwin, MSYS and MSYS2.
   See @ref gsg_ming.
 
 
