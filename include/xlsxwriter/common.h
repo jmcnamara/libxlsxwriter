@@ -233,6 +233,41 @@ enum lxw_custom_property_types {
 #define lxw_snprintf __builtin_snprintf
 #endif
 
+/* Define a snprintf for MCVC 2010. */
+#if defined(_MSC_VER) && _MSC_VER < 1900
+
+#include <stdarg.h>
+#define snprintf msvc2010_snprintf
+#define vsnprintf msvc2010_vsnprintf
+
+__inline int
+msvc2010_vsnprintf(char *str, size_t size, const char *format, va_list ap)
+{
+    int count = -1;
+
+    if (size != 0)
+        count = _vsnprintf_s(str, size, _TRUNCATE, format, ap);
+    if (count == -1)
+        count = _vscprintf(format, ap);
+
+    return count;
+}
+
+__inline int
+msvc2010_snprintf(char *str, size_t size, const char *format, ...)
+{
+    int count;
+    va_list ap;
+
+    va_start(ap, format);
+    count = msvc2010_vsnprintf(str, size, format, ap);
+    va_end(ap);
+
+    return count;
+}
+
+#endif
+
 /* Define the queue.h structs for the formats list. */
 STAILQ_HEAD(lxw_formats, lxw_format);
 
