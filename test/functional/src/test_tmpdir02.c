@@ -11,16 +11,13 @@
 
 int main() {
 
-    lxw_workbook_options options = {1, NULL};
+    lxw_workbook_options options = {LXW_TRUE, "."};
 
-    lxw_workbook  *workbook  = workbook_new_opt("test_optimize24.xlsx", &options);
+    lxw_workbook  *workbook  = workbook_new_opt("test_tmpdir02.xlsx", &options);
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
-    lxw_format    *bold      = workbook_add_format(workbook);
 
-    format_set_bold(bold);
-
-    worksheet_set_row(worksheet, 0, 20, bold);
-    worksheet_write_string(worksheet, 0, 0, "Foo", NULL);
+    worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
+    worksheet_write_number(worksheet, 1, 0, 123,     NULL);
 
     return workbook_close(workbook);
 }

@@ -166,13 +166,29 @@ typedef struct lxw_doc_properties {
  * Optional parameters when creating a new Workbook object via
  * workbook_new_opt().
  *
- * Currently only the `constant_memory` property is supported:
+ * The following properties are supported:
  *
- * * `constant_memory`
+ * - `constant_memory`: Reduces the amount of data stored in memory so that
+ *   large files can be written efficiently.
+ *
+ *   Note, in this mode a row of data is written and then discarded when a
+ *   cell in a new row is added via one of the `worksheet_write_*()`
+ *   methods. Therefore, once this option is active, data should be written in
+ *   sequential row order. For this reason the `worksheet_merge_range()`
+ *   doesn't work in this mode. See also @ref ww_mem_constant.
+ *
+ * - `tmpdir`: libxlsxwriter stores workbook data in temporary files prior
+ *   to assembling the final XLSX file. The temporary files are created in the
+ *   system's temp directory. If the default temporary directory isn't
+ *   accessible to your application, or doesn't contain enough space, you can
+ *   specify an alternative location using the `tempdir` option.
  */
 typedef struct lxw_workbook_options {
     /** Optimize the workbook to use constant memory for worksheets */
     uint8_t constant_memory;
+
+    /**  Directory to use for temporary files used by libxlsxwriter. */
+    char *tmpdir;
 } lxw_workbook_options;
 
 /**

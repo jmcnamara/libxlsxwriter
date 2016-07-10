@@ -146,6 +146,7 @@ lxw_workbook_free(lxw_workbook *workbook)
 
     lxw_hash_free(workbook->used_xf_formats);
     lxw_sst_free(workbook->sst);
+    free(workbook->options.tmpdir);
     free(workbook->worksheets);
     free(workbook->charts);
     free(workbook->ordered_charts);
@@ -1365,8 +1366,10 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     /* Initialize its index. */
     lxw_format_get_xf_index(format);
 
-    if (options)
+    if (options) {
         workbook->options.constant_memory = options->constant_memory;
+        workbook->options.tmpdir = lxw_strdup(options->tmpdir);
+    }
 
     return workbook;
 
@@ -1384,7 +1387,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
 {
     lxw_worksheet *worksheet;
     lxw_worksheet_name *worksheet_name = NULL;
-    lxw_worksheet_init_data init_data = { 0, 0, 0, 0, 0, 0, 0, 0 };
+    lxw_worksheet_init_data init_data = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     char *new_name = NULL;
 
     if (sheetname) {
@@ -1426,6 +1429,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     init_data.optimize = self->options.constant_memory;
     init_data.active_sheet = &self->active_sheet;
     init_data.first_sheet = &self->first_sheet;
+    init_data.tmpdir = self->options.tmpdir;
 
     /* Create a new worksheet object. */
     worksheet = lxw_worksheet_new(&init_data);
@@ -1520,7 +1524,7 @@ workbook_close(lxw_workbook *self)
     _add_chart_cache_data(self);
 
     /* Create a packager object to assemble sub-elements into a zip file. */
-    packager = lxw_packager_new(self->filename);
+    packager = lxw_packager_new(self->filename, self->options.tmpdir);
 
     /* If the packager fails it is generally due to a zip permission error. */
     if (packager == NULL) {

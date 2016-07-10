@@ -135,7 +135,13 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     STAILQ_INIT(worksheet->drawing_links);
 
     if (init_data && init_data->optimize) {
-        FILE *tmpfile = lxw_tmpfile();
+        FILE *tmpfile;
+
+        if (init_data)
+            tmpfile = lxw_tmpfile(init_data->tmpdir);
+        else
+            tmpfile = lxw_tmpfile(NULL);
+
         if (!tmpfile) {
             LXW_ERROR("Error creating tmpfile() for worksheet in "
                       "'constant_memory' mode.");
@@ -188,6 +194,7 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     if (init_data) {
         worksheet->name = init_data->name;
         worksheet->quoted_name = init_data->quoted_name;
+        worksheet->tmpdir = init_data->tmpdir;
         worksheet->index = init_data->index;
         worksheet->hidden = init_data->hidden;
         worksheet->sst = init_data->sst;

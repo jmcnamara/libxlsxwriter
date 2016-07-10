@@ -480,11 +480,12 @@ lxw_quote_sheetname(const char *str)
  * version if required for safety or portability.
  */
 FILE *
-lxw_tmpfile(void)
+lxw_tmpfile(char *tmpdir)
 {
 #ifndef USE_SYSTEM_TMPFILE
-    return tmpfileplus(NULL, NULL, NULL, 0);
+    return tmpfileplus(tmpdir, NULL, NULL, 0);
 #else
+    (void) tmpdir;
     return tmpfile();
 #endif
 }

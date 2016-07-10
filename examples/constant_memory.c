@@ -16,8 +16,7 @@ int main() {
     lxw_col_t max_col = 50;
 
     /* Set the worksheet options. */
-    lxw_workbook_options options;
-    options.constant_memory = 1;
+    lxw_workbook_options options = {LXW_TRUE, NULL};
 
     /* Create a new workbook with options. */
     lxw_workbook  *workbook  = workbook_new_opt("constant_memory.xlsx", &options);

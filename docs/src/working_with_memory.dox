@@ -29,10 +29,11 @@ If required, this memory usage can be reduced even more by setting
 maximum column that is likely to be encountered.
 
 The trade-off when using `constant_memory` mode is that data must be added
-sequentially in row order and you won't be able to take advantage of any new
-features that manipulate cell data after it is written. Currently the only
-such feature is worksheet_set_row() which in `constant_memory` mode can only
-be used when writing data to the current row.
+sequentially in row order and you won't be able to take advantage of any
+functions that manipulate cell data after it is written. One such feature is
+worksheet_set_row() which in `constant_memory` mode can only be used when
+writing data to the current row. Another is worksheet_merge_range() which can
+only be applied to a merged range in the current row.
 
 @section ww_mem_row_order Row Column Order
 
@@ -62,9 +63,8 @@ Apple Numbers for Mac where the string data isn't displayed.
 
 @section ww_mem_performance Performance
 
-Currently the library isn't optimized. There are some known bottlenecks that
-will be reduced in upcoming versions. Also, the library is currently single
-threaded.
+Currently the library isn't highly optimized. Also, the library is currently
+single threaded.
 
 
 Next: @ref examples

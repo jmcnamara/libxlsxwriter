@@ -68,7 +68,7 @@ _open_zipfile_win32(const char *filename)
  * Create a new packager object.
  */
 lxw_packager *
-lxw_packager_new(const char *filename)
+lxw_packager_new(const char *filename, char *tmpdir)
 {
     struct tm *file_date;
     time_t now = time(NULL);
@@ -79,6 +79,7 @@ lxw_packager_new(const char *filename)
     GOTO_LABEL_ON_MEM_ERROR(packager->buffer, mem_error);
 
     packager->filename = lxw_strdup(filename);
+    packager->tmpdir = tmpdir;
     GOTO_LABEL_ON_MEM_ERROR(packager->filename, mem_error);
 
     packager->buffer_size = LXW_ZIP_BUFFER_SIZE;
@@ -140,7 +141,7 @@ _write_workbook_file(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     int err;
 
-    workbook->file = lxw_tmpfile();
+    workbook->file = lxw_tmpfile(self->tmpdir);
     if (!workbook->file)
         return LXW_ERROR_CREATING_TMPFILE;
 
@@ -173,7 +174,7 @@ _write_worksheet_files(lxw_packager *self)
         if (worksheet->optimize_row)
             lxw_worksheet_write_single_row(worksheet);
 
-        worksheet->file = lxw_tmpfile();
+        worksheet->file = lxw_tmpfile(self->tmpdir);
         if (!worksheet->file)
             return LXW_ERROR_CREATING_TMPFILE;
 
@@ -241,7 +242,7 @@ _write_chart_files(lxw_packager *self)
         lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
                      "xl/charts/chart%d.xml", index++);
 
-        chart->file = lxw_tmpfile();
+        chart->file = lxw_tmpfile(self->tmpdir);
         if (!chart->file)
             return LXW_ERROR_CREATING_TMPFILE;
 
@@ -278,7 +279,7 @@ _write_drawing_files(lxw_packager *self)
             lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                          "xl/drawings/drawing%d.xml", index++);
 
-            drawing->file = lxw_tmpfile();
+            drawing->file = lxw_tmpfile(self->tmpdir);
             if (!drawing->file)
                 return LXW_ERROR_CREATING_TMPFILE;
 
@@ -308,7 +309,7 @@ _write_shared_strings_file(lxw_packager *self)
     if (!sst->string_count)
         return 0;
 
-    sst->file = lxw_tmpfile();
+    sst->file = lxw_tmpfile(self->tmpdir);
     if (!sst->file)
         return LXW_ERROR_CREATING_TMPFILE;
 
@@ -338,7 +339,7 @@ _write_app_file(lxw_packager *self)
     char number[LXW_ATTR_32] = { 0 };
     int err;
 
-    app->file = lxw_tmpfile();
+    app->file = lxw_tmpfile(self->tmpdir);
     if (!app->file)
         return LXW_ERROR_CREATING_TMPFILE;
 
@@ -393,7 +394,7 @@ _write_core_file(lxw_packager *self)
     lxw_core *core = lxw_core_new();
     int err;
 
-    core->file = lxw_tmpfile();
+    core->file = lxw_tmpfile(self->tmpdir);
     if (!core->file)
         return LXW_ERROR_CREATING_TMPFILE;
 
@@ -425,7 +426,7 @@ _write_custom_file(lxw_packager *self)
 
     custom = lxw_custom_new();
 
-    custom->file = lxw_tmpfile();
+    custom->file = lxw_tmpfile(self->tmpdir);
     if (!custom->file)
         return LXW_ERROR_CREATING_TMPFILE;
 
@@ -452,7 +453,7 @@ _write_theme_file(lxw_packager *self)
     lxw_theme *theme = lxw_theme_new();
     int err;
 
-    theme->file = lxw_tmpfile();
+    theme->file = lxw_tmpfile(self->tmpdir);
     if (!theme->file)
         return LXW_ERROR_CREATING_TMPFILE;
 
@@ -493,7 +494,7 @@ _write_styles_file(lxw_packager *self)
     styles->num_format_count = self->workbook->num_format_count;
     styles->xf_count = self->workbook->used_xf_formats->unique_count;
 
-    styles->file = lxw_tmpfile();
+    styles->file = lxw_tmpfile(self->tmpdir);
     if (!styles->file)
         return LXW_ERROR_CREATING_TMPFILE;
 
@@ -522,7 +523,7 @@ _write_content_types_file(lxw_packager *self)
     uint16_t index = 1;
     int err;
 
-    content_types->file = lxw_tmpfile();
+    content_types->file = lxw_tmpfile(self->tmpdir);
     if (!content_types->file)
         return LXW_ERROR_CREATING_TMPFILE;
 
@@ -584,7 +585,7 @@ _write_workbook_rels_file(lxw_packager *self)
     uint16_t index = 1;
     int err;
 
-    rels->file = lxw_tmpfile();
+    rels->file = lxw_tmpfile(self->tmpdir);
     if (!rels->file)
         return LXW_ERROR_CREATING_TMPFILE;
 
@@ -636,7 +637,7 @@ _write_worksheet_rels_file(lxw_packager *self)
             continue;
 
         rels = lxw_relationships_new();
-        rels->file = lxw_tmpfile();
+        rels->file = lxw_tmpfile(self->tmpdir);
         if (!rels->file)
             return LXW_ERROR_CREATING_TMPFILE;
 
@@ -686,7 +687,7 @@ _write_drawing_rels_file(lxw_packager *self)
             continue;
 
         rels = lxw_relationships_new();
-        rels->file = lxw_tmpfile();
+        rels->file = lxw_tmpfile(self->tmpdir);
         if (!rels->file)
             return LXW_ERROR_CREATING_TMPFILE;
 
@@ -720,7 +721,7 @@ _write_root_rels_file(lxw_packager *self)
     lxw_relationships *rels = lxw_relationships_new();
     int err;
 
-    rels->file = lxw_tmpfile();
+    rels->file = lxw_tmpfile(self->tmpdir);
     if (!rels->file)
         return LXW_ERROR_CREATING_TMPFILE;
 

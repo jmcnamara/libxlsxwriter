@@ -148,7 +148,7 @@ char *lxw_strdup(const char *str);
 
 void lxw_str_tolower(char *str);
 
-FILE *lxw_tmpfile(void);
+FILE *lxw_tmpfile(char *tmpdir);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

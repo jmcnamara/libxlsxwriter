@@ -29,6 +29,7 @@ all : $(LIBXLSXWRITER) $(EXES)
 
 $(LIBXLSXWRITER):
 	$(Q)make -C ../third_party/minizip
+	$(Q)make -C ../third_party/tmpfileplus
 	$(Q)make -C ../src
 
 clean :

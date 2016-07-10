@@ -48,6 +48,7 @@ typedef struct lxw_packager {
     zip_fileinfo zipfile_info;
     char *filename;
     char *buffer;
+    char *tmpdir;
 
     uint16_t chart_count;
     uint16_t drawing_count;
@@ -61,7 +62,7 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_packager *lxw_packager_new(const char *filename);
+lxw_packager *lxw_packager_new(const char *filename, char *tmpdir);
 void lxw_packager_free(lxw_packager *packager);
 uint8_t lxw_create_package(lxw_packager *self);
 

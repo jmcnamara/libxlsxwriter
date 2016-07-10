@@ -365,6 +365,7 @@ typedef struct lxw_worksheet {
     lxw_sst *sst;
     char *name;
     char *quoted_name;
+    char *tmpdir;
 
     uint32_t index;
     uint8_t active;
@@ -473,6 +474,7 @@ typedef struct lxw_worksheet_init_data {
     lxw_sst *sst;
     char *name;
     char *quoted_name;
+    char *tmpdir;
 
 } lxw_worksheet_init_data;
 
@@ -1417,6 +1419,9 @@ lxw_error worksheet_insert_chart_opt(lxw_worksheet *worksheet,
  *    // Then overwrite the first cell with a number.
  *    worksheet_write_number(worksheet, 1, 1, 123, format);
  * @endcode
+ *
+ * @note Merged ranges generally don’t work in libxlsxwriter when the Workbook
+ * #lxw_workbook_options `constant_memory` mode is enabled.
  */
 lxw_error worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
                                 lxw_col_t first_col, lxw_row_t last_row,
