@@ -15,7 +15,7 @@ CTEST(worksheet, write_sheet_view1) {
 
     char* got;
     char exp[] = "<sheetView tabSelected=\"1\" workbookViewId=\"0\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -33,7 +33,7 @@ CTEST(worksheet, write_sheet_view2) {
 
     char* got;
     char exp[] = "<sheetView showGridLines=\"0\" tabSelected=\"1\" workbookViewId=\"0\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;

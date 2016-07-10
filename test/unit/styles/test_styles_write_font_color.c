@@ -16,7 +16,7 @@ CTEST(styles, write_color) {
 
     char* got;
     char exp[] = "<color theme=\"1\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;

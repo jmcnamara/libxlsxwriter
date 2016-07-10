@@ -15,7 +15,7 @@ CTEST(styles, write_cell_styles) {
 
     char* got;
     char exp[] = "<cellStyles count=\"1\"><cellStyle name=\"Normal\" xfId=\"0\" builtinId=\"0\"/></cellStyles>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;

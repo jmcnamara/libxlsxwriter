@@ -15,7 +15,7 @@ CTEST(workbook, write_file_version) {
 
     char* got;
     char exp[] = "<fileVersion appName=\"xl\" lastEdited=\"4\" lowestEdited=\"4\" rupBuild=\"4505\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;

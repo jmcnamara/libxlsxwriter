@@ -16,7 +16,7 @@ CTEST(styles, write_name) {
 
     char* got;
     char exp[] = "<name val=\"Calibri\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;

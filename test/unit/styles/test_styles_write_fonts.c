@@ -15,7 +15,7 @@ CTEST(styles, write_fonts01) {
 
     char* got;
     char exp[] = "<fonts count=\"1\"><font><sz val=\"11\"/><color theme=\"1\"/><name val=\"Calibri\"/><family val=\"2\"/><scheme val=\"minor\"/></font></fonts>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();

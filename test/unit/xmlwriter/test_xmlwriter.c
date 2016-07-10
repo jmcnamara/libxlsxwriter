@@ -15,7 +15,7 @@ CTEST(xmlwriter, xml_declaration) {
 
     char* got;
     char exp[] = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_xml_declaration(testfile);
 
@@ -27,7 +27,7 @@ CTEST(xmlwriter, xml_start_tag) {
 
     char* got;
     char exp[] = "<foo>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_xml_start_tag(testfile, "foo", NULL);
 
@@ -39,7 +39,7 @@ CTEST(xmlwriter, xml_start_tag_with_attributes) {
 
     char* got;
     char exp[] = "<foo span=\"8\" baz=\"7\">";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
@@ -59,7 +59,7 @@ CTEST(xmlwriter, xml_start_tag_with_attributes_to_escape) {
 
     char* got;
     char exp[] = "<foo span=\"&amp;&lt;&gt;&quot;\">";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
@@ -78,7 +78,7 @@ CTEST(xmlwriter, xml_start_tag_unencoded) {
 
     char* got;
     char exp[] = "<foo span=\"&<>\"\">";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
@@ -97,7 +97,7 @@ CTEST(xmlwriter, xml_end_tag) {
 
     char* got;
     char exp[] = "</foo>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_xml_end_tag(testfile, "foo");
 
@@ -109,7 +109,7 @@ CTEST(xmlwriter, xml_empty_tag) {
 
     char* got;
     char exp[] = "<foo/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_xml_empty_tag(testfile, "foo", NULL);
 
@@ -121,7 +121,7 @@ CTEST(xmlwriter, xml_empty_tag_with_attributes) {
 
     char* got;
     char exp[] = "<foo span=\"8\" baz=\"7\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
@@ -141,7 +141,7 @@ CTEST(xmlwriter, xml_empty_tag_with_attributes_to_escape) {
 
     char* got;
     char exp[] = "<foo span=\"&amp;&lt;&gt;&quot;\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
@@ -160,7 +160,7 @@ CTEST(xmlwriter, xml_empty_tag_unencoded) {
 
     char* got;
     char exp[] = "<foo span=\"&<>\"\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
@@ -179,7 +179,7 @@ CTEST(xmlwriter, xml_data_element) {
 
     char* got;
     char exp[] = "<foo>bar</foo>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_xml_data_element(testfile, "foo", "bar", NULL);
 
@@ -191,7 +191,7 @@ CTEST(xmlwriter, xml_data_element_with_attributes) {
 
     char* got;
     char exp[] = "<foo span=\"8\">bar</foo>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
@@ -210,7 +210,7 @@ CTEST(xmlwriter, xml_data_element_with_escapes) {
 
     char* got;
     char exp[] = "<foo span=\"8\">&amp;&lt;&gt;\"</foo>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 

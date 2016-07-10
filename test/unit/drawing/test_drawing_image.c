@@ -58,7 +58,7 @@ CTEST(drawing, drawing_image01) {
           "</xdr:twoCellAnchor>"
         "</xdr:wsDr>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_drawing *drawing = lxw_drawing_new();
     drawing->file = testfile;

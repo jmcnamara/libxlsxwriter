@@ -16,7 +16,7 @@ CTEST(workbook, write_workbook_view1) {
 
     char* got;
     char exp[] = "<workbookView xWindow=\"240\" yWindow=\"15\" windowWidth=\"16095\" windowHeight=\"9660\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
@@ -34,7 +34,7 @@ CTEST(workbook, write_workbook_view2) {
 
     char* got;
     char exp[] = "<workbookView xWindow=\"240\" yWindow=\"15\" windowWidth=\"16095\" windowHeight=\"9660\" activeTab=\"1\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
@@ -54,7 +54,7 @@ CTEST(workbook, write_workbook_view3) {
 
     char* got;
     char exp[] = "<workbookView xWindow=\"240\" yWindow=\"15\" windowWidth=\"16095\" windowHeight=\"9660\" firstSheet=\"2\" activeTab=\"1\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;

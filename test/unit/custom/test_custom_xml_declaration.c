@@ -15,7 +15,7 @@ CTEST(custom, xml_declaration) {
 
     char* got;
     char exp[] = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_custom *custom = lxw_custom_new();
     custom->file = testfile;

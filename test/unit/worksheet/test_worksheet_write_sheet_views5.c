@@ -14,7 +14,7 @@
 CTEST(worksheet, set_selection01) {
     char* got;
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"/></sheetViews>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -33,7 +33,7 @@ CTEST(worksheet, set_selection01) {
 CTEST(worksheet, set_selection02) {
     char* got;
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><selection activeCell=\"A2\" sqref=\"A2\"/></sheetView></sheetViews>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -52,7 +52,7 @@ CTEST(worksheet, set_selection02) {
 CTEST(worksheet, set_selection03) {
     char* got;
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><selection activeCell=\"B1\" sqref=\"B1\"/></sheetView></sheetViews>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -71,7 +71,7 @@ CTEST(worksheet, set_selection03) {
 CTEST(worksheet, set_selection04) {
     char* got;
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><selection activeCell=\"D3\" sqref=\"D3\"/></sheetView></sheetViews>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -90,7 +90,7 @@ CTEST(worksheet, set_selection04) {
 CTEST(worksheet, set_selection05) {
     char* got;
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><selection activeCell=\"D3\" sqref=\"D3:F4\"/></sheetView></sheetViews>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -109,7 +109,7 @@ CTEST(worksheet, set_selection05) {
 CTEST(worksheet, set_selection06) {
     char* got;
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><selection activeCell=\"F4\" sqref=\"D3:F4\"/></sheetView></sheetViews>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -128,7 +128,7 @@ CTEST(worksheet, set_selection06) {
 CTEST(worksheet, set_selection07) {
     char* got;
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><selection activeCell=\"A2\" sqref=\"A2\"/></sheetView></sheetViews>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;

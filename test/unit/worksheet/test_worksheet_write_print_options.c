@@ -15,7 +15,7 @@ CTEST(worksheet, write_print_options1) {
 
     char* got;
     char exp[] = "<printOptions horizontalCentered=\"1\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -35,7 +35,7 @@ CTEST(worksheet, write_print_options2) {
 
     char* got;
     char exp[] = "<printOptions verticalCentered=\"1\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -55,7 +55,7 @@ CTEST(worksheet, write_print_options3) {
 
     char* got;
     char exp[] = "<printOptions horizontalCentered=\"1\" verticalCentered=\"1\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -77,7 +77,7 @@ CTEST(worksheet, write_print_options4) {
 
     char* got;
     char exp[] = "<printOptions gridLines=\"1\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;

@@ -24,7 +24,7 @@ CTEST(relationships, relationships01) {
           "<Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/calcChain\" Target=\"calcChain.xml\"/>"
         "</Relationships>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_relationships *rels = lxw_relationships_new();
     rels->file = testfile;
@@ -54,7 +54,7 @@ CTEST(relationships, relationships02) {
           "<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"link00.xlsx\" TargetMode=\"External\"/>"
         "</Relationships>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_relationships *rels = lxw_relationships_new();
     rels->file = testfile;

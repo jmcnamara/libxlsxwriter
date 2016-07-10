@@ -15,7 +15,7 @@ CTEST(styles, write_border) {
 
     char* got;
     char exp[] = "<border><left/><right/><top/><bottom/><diagonal/></border>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();

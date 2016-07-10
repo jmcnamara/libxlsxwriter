@@ -16,7 +16,7 @@ CTEST(styles, write_style_sheet) {
 
     char* got;
     char exp[] = "<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;

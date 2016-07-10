@@ -14,7 +14,7 @@
 CTEST(worksheet, set_selection41) {
     char* got;
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><pane ySplit=\"600\" topLeftCell=\"A21\" activePane=\"bottomLeft\"/><selection pane=\"bottomLeft\" activeCell=\"A2\" sqref=\"A2\"/></sheetView></sheetViews>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -34,7 +34,7 @@ CTEST(worksheet, set_selection41) {
 CTEST(worksheet, set_selection42) {
     char* got;
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><pane ySplit=\"600\" topLeftCell=\"A21\" activePane=\"bottomLeft\"/><selection pane=\"bottomLeft\" activeCell=\"A21\" sqref=\"A21\"/></sheetView></sheetViews>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -54,7 +54,7 @@ CTEST(worksheet, set_selection42) {
 CTEST(worksheet, set_selection43) {
     char* got;
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><pane xSplit=\"1350\" topLeftCell=\"E1\" activePane=\"topRight\"/><selection pane=\"topRight\" activeCell=\"B1\" sqref=\"B1\"/></sheetView></sheetViews>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -74,7 +74,7 @@ CTEST(worksheet, set_selection43) {
 CTEST(worksheet, set_selection44) {
     char* got;
     char exp[] = "<sheetViews><sheetView tabSelected=\"1\" workbookViewId=\"0\"><pane xSplit=\"1350\" topLeftCell=\"E1\" activePane=\"topRight\"/><selection pane=\"topRight\" activeCell=\"E1\" sqref=\"E1\"/></sheetView></sheetViews>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;

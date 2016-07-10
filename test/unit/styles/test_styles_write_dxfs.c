@@ -15,7 +15,7 @@ CTEST(styles, write_dxfs) {
 
     char* got;
     char exp[] = "<dxfs count=\"0\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;

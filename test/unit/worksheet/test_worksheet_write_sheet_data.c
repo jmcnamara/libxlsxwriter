@@ -15,7 +15,7 @@ CTEST(worksheet, write_sheet_data) {
 
     char* got;
     char exp[] = "<sheetData/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;

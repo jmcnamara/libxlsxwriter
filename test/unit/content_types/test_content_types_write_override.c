@@ -15,7 +15,7 @@ CTEST(content_types, write_override) {
 
     char* got;
     char exp[] = "<Override PartName=\"/docProps/core.xml\" ContentType=\"app...\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_content_types *content_types = lxw_content_types_new();
     content_types->file = testfile;

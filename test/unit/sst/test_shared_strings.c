@@ -28,7 +28,7 @@ CTEST(sst, sst01) {
           "</si>"
         "</sst>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_sst *sst = lxw_sst_new();
     sst->file = testfile;
@@ -66,7 +66,7 @@ CTEST(sst, sst02) {
           "</si>"
         "</sst>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_sst *sst = lxw_sst_new();
     sst->file = testfile;

@@ -15,7 +15,7 @@ CTEST(workbook, write_workbook) {
 
     char* got;
     char exp[] = "<workbook xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\">";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;

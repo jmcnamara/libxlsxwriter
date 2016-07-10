@@ -43,7 +43,7 @@ CTEST(app, app01) {
           "<AppVersion>12.0000</AppVersion>"
         "</Properties>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_app *app = lxw_app_new();
     app->file = testfile;
@@ -92,7 +92,7 @@ CTEST(app, app02) {
           "<AppVersion>12.0000</AppVersion>"
         "</Properties>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_app *app = lxw_app_new();
     app->file = testfile;
@@ -149,7 +149,7 @@ CTEST(app, app03) {
           "<AppVersion>12.0000</AppVersion>"
         "</Properties>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_app *app = lxw_app_new();
     app->file = testfile;

@@ -15,7 +15,7 @@ CTEST(worksheet, write_page_margin01) {
     char* got;
     char exp[] = "<pageMargins left=\"0.7\" right=\"0.7\" top=\"0.75\" "
                  "bottom=\"0.75\" header=\"0.3\" footer=\"0.3\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -32,7 +32,7 @@ CTEST(worksheet, write_page_margin02) {
     char* got;
     char exp[] = "<pageMargins left=\"0.7\" right=\"0.7\" top=\"0.75\" "
                  "bottom=\"0.75\" header=\"0.3\" footer=\"0.3\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -50,7 +50,7 @@ CTEST(worksheet, write_page_margin03) {
     char* got;
     char exp[] = "<pageMargins left=\"0.8\" right=\"0.7\" top=\"0.75\" "
                  "bottom=\"0.75\" header=\"0.3\" footer=\"0.3\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -68,7 +68,7 @@ CTEST(worksheet, write_page_margin04) {
     char* got;
     char exp[] = "<pageMargins left=\"0.7\" right=\"0.8\" top=\"0.75\" "
                  "bottom=\"0.75\" header=\"0.3\" footer=\"0.3\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -86,7 +86,7 @@ CTEST(worksheet, write_page_margin05) {
     char* got;
     char exp[] = "<pageMargins left=\"0.7\" right=\"0.7\" top=\"0.8\" "
                  "bottom=\"0.75\" header=\"0.3\" footer=\"0.3\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -104,7 +104,7 @@ CTEST(worksheet, write_page_margin06) {
     char* got;
     char exp[] = "<pageMargins left=\"0.7\" right=\"0.7\" top=\"0.75\" "
                  "bottom=\"0.8\" header=\"0.3\" footer=\"0.3\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
@@ -122,7 +122,7 @@ CTEST(worksheet, write_page_margin07) {
     char* got;
     char exp[] = "<pageMargins left=\"0.7\" right=\"0.7\" top=\"0.75\" "
                  "bottom=\"0.75\" header=\"0.2\" footer=\"0.4\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
     lxw_header_footer_options header_options = {0.2};
     lxw_header_footer_options footer_options = {0.4};
 

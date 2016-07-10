@@ -16,7 +16,7 @@ CTEST(workbook, write_defined_names) {
 
     char* got;
     char exp[] = "<definedNames><definedName name=\"_xlnm.Print_Titles\" localSheetId=\"0\">Sheet1!$1:$1</definedName></definedNames>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
     lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
 
@@ -37,7 +37,7 @@ CTEST(workbook, write_defined_names) {
 CTEST(workbook, write_defined_names_sorted) {
     char* got;
     char exp[] = "<definedNames><definedName name=\"_Egg\">Sheet1!$A$1</definedName><definedName name=\"_Fog\">Sheet1!$A$1</definedName><definedName name=\"aaa\" localSheetId=\"1\">Sheet2!$A$1</definedName><definedName name=\"Abc\">Sheet1!$A$1</definedName><definedName name=\"Bar\" localSheetId=\"2\">'Sheet 3'!$A$1</definedName><definedName name=\"Bar\" localSheetId=\"0\">Sheet1!$A$1</definedName><definedName name=\"Bar\" localSheetId=\"1\">Sheet2!$A$1</definedName><definedName name=\"Baz\">0.98</definedName><definedName name=\"car\" localSheetId=\"2\">\"Saab 900\"</definedName></definedNames>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
 
     lxw_workbook *workbook = workbook_new(NULL);

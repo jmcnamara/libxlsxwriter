@@ -15,7 +15,7 @@ CTEST(worksheet, write_dimension) {
 
     char* got;
     char exp[] = "<dimension ref=\"A1\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;

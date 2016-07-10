@@ -56,7 +56,7 @@ CTEST(styles, styles01) {
           "<tableStyles count=\"0\" defaultTableStyle=\"TableStyleMedium9\" defaultPivotStyle=\"PivotStyleLight16\"/>"
         "</styleSheet>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -153,7 +153,7 @@ CTEST(styles, styles02) {
           "<tableStyles count=\"0\" defaultTableStyle=\"TableStyleMedium9\" defaultPivotStyle=\"PivotStyleLight16\"/>"
         "</styleSheet>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format1 = lxw_format_new();

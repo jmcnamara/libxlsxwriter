@@ -16,7 +16,7 @@ CTEST(styles, write_scheme) {
 
     char* got;
     char exp[] = "<scheme val=\"minor\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;

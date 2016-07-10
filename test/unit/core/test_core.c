@@ -24,7 +24,7 @@ CTEST(core, core01) {
           "<dcterms:modified xsi:type=\"dcterms:W3CDTF\">2010-01-01T00:00:00Z</dcterms:modified>"
         "</cp:coreProperties>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_core *core = lxw_core_new();
     lxw_workbook *workbook = workbook_new(NULL);
@@ -73,7 +73,7 @@ CTEST(core, core02) {
           "<cp:contentStatus>Quo</cp:contentStatus>"
         "</cp:coreProperties>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_core *core = lxw_core_new();
     lxw_workbook *workbook = workbook_new(NULL);

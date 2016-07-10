@@ -15,7 +15,7 @@ CTEST(styles, write_default_fill) {
 
     char* got;
     char exp[] = "<fill><patternFill patternType=\"none\"/></fill>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;

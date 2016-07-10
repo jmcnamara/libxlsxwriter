@@ -15,7 +15,7 @@ CTEST(worksheet, write_sheet_format_pr) {
 
     char* got;
     char exp[] = "<sheetFormatPr defaultRowHeight=\"15\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;

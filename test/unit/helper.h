@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "xlsxwriter/utility.h"
 
 /* Compare expected results with the XML data written to the output
  * test file.

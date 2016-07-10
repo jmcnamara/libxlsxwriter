@@ -29,7 +29,7 @@ CTEST(workbook, workbook01) {
           "<calcPr calcId=\"124519\" fullCalcOnLoad=\"1\"/>"
         "</workbook>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
@@ -62,7 +62,7 @@ CTEST(workbook, workbook02) {
           "<calcPr calcId=\"124519\" fullCalcOnLoad=\"1\"/>"
         "</workbook>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;
@@ -96,7 +96,7 @@ CTEST(workbook, workbook03) {
           "<calcPr calcId=\"124519\" fullCalcOnLoad=\"1\"/>"
         "</workbook>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_workbook *workbook = workbook_new(NULL);
     workbook->file = testfile;

@@ -16,7 +16,7 @@ CTEST(styles, write_xf01) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -37,7 +37,7 @@ CTEST(styles, write_xf02) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -60,7 +60,7 @@ CTEST(styles, write_xf03) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"1\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyFont=\"1\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -84,7 +84,7 @@ CTEST(styles, write_xf04) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"2\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyNumberFormat=\"1\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -107,7 +107,7 @@ CTEST(styles, write_xf05) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"2\" fontId=\"1\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyNumberFormat=\"1\" applyFont=\"1\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -132,7 +132,7 @@ CTEST(styles, write_xf06) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment vertical=\"top\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -155,7 +155,7 @@ CTEST(styles, write_xf07) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment vertical=\"center\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -178,7 +178,7 @@ CTEST(styles, write_xf08) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"/>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -201,7 +201,7 @@ CTEST(styles, write_xf09) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment vertical=\"justify\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -224,7 +224,7 @@ CTEST(styles, write_xf10) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment vertical=\"distributed\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -247,7 +247,7 @@ CTEST(styles, write_xf11) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment horizontal=\"left\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -270,7 +270,7 @@ CTEST(styles, write_xf12) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment horizontal=\"center\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -293,7 +293,7 @@ CTEST(styles, write_xf13) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment horizontal=\"right\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -316,7 +316,7 @@ CTEST(styles, write_xf14) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment horizontal=\"left\" indent=\"1\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -340,7 +340,7 @@ CTEST(styles, write_xf15) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment horizontal=\"right\" indent=\"1\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -364,7 +364,7 @@ CTEST(styles, write_xf16) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment horizontal=\"fill\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -387,7 +387,7 @@ CTEST(styles, write_xf17) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment horizontal=\"justify\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -410,7 +410,7 @@ CTEST(styles, write_xf18) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment horizontal=\"centerContinuous\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -433,7 +433,7 @@ CTEST(styles, write_xf19) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment horizontal=\"distributed\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -456,7 +456,7 @@ CTEST(styles, write_xf20) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment horizontal=\"distributed\" indent=\"1\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -480,7 +480,7 @@ CTEST(styles, write_xf21) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment horizontal=\"distributed\" justifyLastLine=\"1\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -505,7 +505,7 @@ CTEST(styles, write_xf22) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment horizontal=\"left\" indent=\"1\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -530,7 +530,7 @@ CTEST(styles, write_xf23) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment horizontal=\"distributed\" indent=\"1\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -554,7 +554,7 @@ CTEST(styles, write_xf24) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment wrapText=\"1\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -577,7 +577,7 @@ CTEST(styles, write_xf25) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment shrinkToFit=\"1\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -600,7 +600,7 @@ CTEST(styles, write_xf26) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment readingOrder=\"1\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -623,7 +623,7 @@ CTEST(styles, write_xf27) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment readingOrder=\"2\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -646,7 +646,7 @@ CTEST(styles, write_xf28) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment textRotation=\"45\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -669,7 +669,7 @@ CTEST(styles, write_xf29) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment textRotation=\"135\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -692,7 +692,7 @@ CTEST(styles, write_xf30) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment textRotation=\"255\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -715,7 +715,7 @@ CTEST(styles, write_xf31) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment textRotation=\"90\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -738,7 +738,7 @@ CTEST(styles, write_xf32) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\"><alignment textRotation=\"180\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -761,7 +761,7 @@ CTEST(styles, write_xf33) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyProtection=\"1\"><protection locked=\"0\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -784,7 +784,7 @@ CTEST(styles, write_xf34) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyProtection=\"1\"><protection hidden=\"1\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -807,7 +807,7 @@ CTEST(styles, write_xf35) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyProtection=\"1\"><protection locked=\"0\" hidden=\"1\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();
@@ -831,7 +831,7 @@ CTEST(styles, write_xf36) {
 
     char* got;
     char exp[] = "<xf numFmtId=\"0\" fontId=\"0\" fillId=\"0\" borderId=\"0\" xfId=\"0\" applyAlignment=\"1\" applyProtection=\"1\"><alignment horizontal=\"right\"/><protection locked=\"0\" hidden=\"1\"/></xf>";
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_styles *styles = lxw_styles_new();
     lxw_format *format = lxw_format_new();

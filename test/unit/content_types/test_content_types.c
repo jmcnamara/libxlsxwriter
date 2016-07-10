@@ -32,7 +32,7 @@ CTEST(content_types, content_types01) {
           "<Override PartName=\"/xl/calcChain.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.spreadsheetml.calcChain+xml\"/>"
         "</Types>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_content_types *content_types = lxw_content_types_new();
     content_types->file = testfile;

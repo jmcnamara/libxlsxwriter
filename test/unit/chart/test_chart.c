@@ -136,7 +136,7 @@ CTEST(chart, chart01) {
           "</c:printSettings>"
         "</c:chartSpace>";
 
-    FILE* testfile = tmpfile();
+    FILE* testfile = lxw_tmpfile(NULL);
 
     lxw_chart *chart = lxw_chart_new(LXW_CHART_BAR);
     chart->file = testfile;
