@@ -16,6 +16,7 @@ endif
 # Build the libs.
 all :
 	$(Q)$(MAKE) -C third_party/minizip
+	$(Q)$(MAKE) -C third_party/tmpfileplus
 	$(Q)$(MAKE) -C src
 
 # Build the example programs.
@@ -29,6 +30,7 @@ clean :
 	$(Q)$(MAKE) clean -C test/functional/src
 	$(Q)$(MAKE) clean -C examples
 	$(Q)$(MAKE) clean -C third_party/minizip
+	$(Q)$(MAKE) clean -C third_party/tmpfileplus
 	$(Q)rm -rf docs/html
 	$(Q)rm -rf test/functional/__pycache__
 	$(Q)rm -f  test/functional/*.pyc
@@ -46,6 +48,7 @@ test_functional : all
 test_unit :
 	@echo "Compiling unit tests ..."
 	$(Q)$(MAKE) -C third_party/minizip
+	$(Q)$(MAKE) -C third_party/tmpfileplus
 	$(Q)$(MAKE) -C src test_lib
 	$(Q)$(MAKE) -C test/unit test
 
