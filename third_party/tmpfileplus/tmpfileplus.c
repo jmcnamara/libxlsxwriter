@@ -99,6 +99,8 @@
 
 #ifdef _WIN32
 #include <io.h>
+#else
+#include <unistd.h>
 #endif
 
 #ifdef _WIN32
@@ -268,9 +270,12 @@ FILE *tmpfileplus(const char *dir, const char *prefix, char **pathname, int keep
 	char *tmpdir = NULL;
 	const char *pfx = (prefix ? prefix : "tmp.");
 	char *tempdirs[12] = { 0 };
+#ifdef _WIN32
 	char env1[FILENAME_MAX+1] = { 0 };
 	char env2[FILENAME_MAX+1] = { 0 };
+#else
 	char env3[FILENAME_MAX+1] = { 0 };
+#endif
 	int ntempdirs = 0;
 	int i;
 
