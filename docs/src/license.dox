@@ -34,8 +34,8 @@ Libxlsxwriter is released under a FreeBSD license:
     official policies, either expressed or implied, of the FreeBSD Project.
 
 
-Libxlsxwriter includes `queue.h` and `tree.h` from FreeBSD and the `minizip`
-component of `zlib` which have the following licenses:
+Libxlsxwriter includes `queue.h` and `tree.h` from FreeBSD, the `minizip`
+component of `zlib` and `tmpfileplus` which have the following licenses:
 
 
 Queue.h from FreeBSD:
@@ -94,7 +94,7 @@ Tree.h from FreeBSD:
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-Zlib has the following License/Copyright:
+[Zlib](http://www.zlib.net) has the following License/Copyright:
 
     (C) 1995-2013 Jean-loup Gailly and Mark Adler
 
@@ -117,6 +117,19 @@ Zlib has the following License/Copyright:
     Jean-loup Gailly        Mark Adler
     jloup@gzip.org          madler@alumni.caltech.edu
 
+
+[Tmpfileplus](http://www.di-mgt.com.au/c_function_to_create_temp_file.html)
+has the following license:
+
+
+     This Source Code Form is subject to the terms of the Mozilla Public
+     License, v. 2.0. If a copy of the MPL was not distributed with this
+     file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+     Copyright (c) 2012-16 David Ireland, DI Management Services Pty Ltd
+     <http://www.di-mgt.com.au/contact/>.
+
+See the [Mozilla Public License, v. 2.0](http://mozilla.org/MPL/2.0/).
 
 Next: @ref changes
 */
