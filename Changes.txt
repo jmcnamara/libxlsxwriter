@@ -2,6 +2,19 @@
 @page changes Changes
 
 
+# 0.4.1 July 11 2016
+
+- Switched to using
+  [tmpfileplus](http://www.di-mgt.com.au/c_function_to_create_temp_file.html)
+  for temporary file handles to work around issue when the temp directory on
+  Windows isn't writeable. The temp file directory is now also configurable at
+  runtime, see @ref gsg_tmpdir.
+
+  Issue [#63][gh_63].
+
+  [gh_63]: https://github.com/jmcnamara/libxlsxwriter/issues/63
+
+
 # 0.4.0 July 5 2016
 
 - Added fixes for MSVC 2010.
