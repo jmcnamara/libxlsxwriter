@@ -66,6 +66,7 @@
 -T lxw_drawing
 -T lxw_drawing_coords
 -T lxw_drawing_object
+-T lxw_error
 -T lxw_fill
 -T lxw_font
 -T lxw_format

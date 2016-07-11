@@ -70,8 +70,6 @@ _open_zipfile_win32(const char *filename)
 lxw_packager *
 lxw_packager_new(const char *filename, char *tmpdir)
 {
-    struct tm *file_date;
-    time_t now = time(NULL);
     lxw_packager *packager = calloc(1, sizeof(lxw_packager));
     GOTO_LABEL_ON_MEM_ERROR(packager, mem_error);
 
@@ -84,14 +82,13 @@ lxw_packager_new(const char *filename, char *tmpdir)
 
     packager->buffer_size = LXW_ZIP_BUFFER_SIZE;
 
-    /* Initialize the zip_fileinfo struct. */
-    file_date = localtime(&now);
-    packager->zipfile_info.tmz_date.tm_sec = file_date->tm_sec;
-    packager->zipfile_info.tmz_date.tm_min = file_date->tm_min;
-    packager->zipfile_info.tmz_date.tm_hour = file_date->tm_hour;
-    packager->zipfile_info.tmz_date.tm_mday = file_date->tm_mday;
-    packager->zipfile_info.tmz_date.tm_mon = file_date->tm_mon;
-    packager->zipfile_info.tmz_date.tm_year = file_date->tm_year;
+    /* Initialize the zip_fileinfo struct to Jan 1 1980 like Excel. */
+    packager->zipfile_info.tmz_date.tm_sec = 0;
+    packager->zipfile_info.tmz_date.tm_min = 0;
+    packager->zipfile_info.tmz_date.tm_hour = 0;
+    packager->zipfile_info.tmz_date.tm_mday = 1;
+    packager->zipfile_info.tmz_date.tm_mon = 0;
+    packager->zipfile_info.tmz_date.tm_year = 1980;
     packager->zipfile_info.dosDate = 0;
     packager->zipfile_info.internal_fa = 0;
     packager->zipfile_info.external_fa = 0;
