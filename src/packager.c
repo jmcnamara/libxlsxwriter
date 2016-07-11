@@ -37,7 +37,7 @@ STATIC uint8_t _add_file_to_zip(lxw_packager *self, FILE * file,
 #undef SLIST_ENTRY
 
 #include <windows.h>
-#include "../third_party/minizip/iowin32.h"
+#include "../third_party/iowin32.h"
 
 zipFile
 _open_zipfile_win32(const char *filename)
