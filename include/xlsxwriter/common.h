@@ -233,7 +233,7 @@ enum lxw_custom_property_types {
 #define lxw_snprintf __builtin_snprintf
 #endif
 
-/* Define a snprintf for MCVC 2010. */
+/* Define a snprintf for MSVC 2010. */
 #if defined(_MSC_VER) && _MSC_VER < 1900
 
 #include <stdarg.h>

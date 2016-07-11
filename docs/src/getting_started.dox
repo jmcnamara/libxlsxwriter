@@ -240,6 +240,26 @@ libxlsxwriter example programs by copying the code from one of the
 `libxlsxwriter\example\*.c` programs.
 
 
+@subsection gsg_tmpdir Specifying a TEMP directory for libxlsxwriter
+
+The libxlsxwriter library creates temporary files in the system `TEMP`
+directory during assembly of an xlsx file. On Windows this directory may not
+be writeable by a libxlsxwriter application (although it will try several
+`TEMP` locations before returning an error). To work around this you can set
+the `tmpdir` parameter of the #lxw_workbook_options struct and pass it to
+`workbook_new_opt()`:
+
+@code
+   lxw_workbook_options options = {.constant_memory = LXW_FALSE,
+                                   .tmpdir = "C:\\Temp"};
+
+   lxw_workbook  *workbook  = workbook_new_opt("filename.xlsx", &options);
+@endcode
+
+This can also be used on Unix systems where the `TEMP` directory isn't
+writeable.
+
+
 @section gsg_ming Installation on Windows using Mingw-w64 and MSYS2
 
 The libxlsxwriter library can also be compiled on Windows using the
@@ -267,17 +287,11 @@ link against the zlib library using `-lz`:
 
     gcc myexcel.c -o myexcel -lxlsxwriter -lz
 
-It is also possible to use the older [MinGW and MSYS](http://mingw.org) and
-with [Cygwin](https://cygwin.com). Libxlsxwriter has been confirmed to compile
-and work in all of these environments.
+It is also possible to use [Cygwin](https://cygwin.com) and the older [MinGW
+and MSYS](http://mingw.org). Libxlsxwriter has been confirmed to compile and
+work in all of these environments.
 
-@note The libxlsxwriter library uses files in the system TEMP directory during
-assembly of a xlsx file. On Windows this directory may not be writeable by a
-libxlsxwriter application. To work around this you can make the Windows TEMP
-directory writeable or if you are using MSYS/MSYS2 you can change the `/tmp`
-directory using the system fstab file. Or alternatively you can define your
-own TEMP directory in libxlsxwriter using the `USE_TMPFILE2` workaround in
-`src/utility.c`
+See also @ref gsg_tmpdir.
 
 @section gsg_next Next steps
 

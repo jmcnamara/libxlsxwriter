@@ -171,7 +171,7 @@ typedef struct lxw_doc_properties {
  * - `constant_memory`: Reduces the amount of data stored in memory so that
  *   large files can be written efficiently.
  *
- *   Note, in this mode a row of data is written and then discarded when a
+ *   @note In this mode a row of data is written and then discarded when a
  *   cell in a new row is added via one of the `worksheet_write_*()`
  *   methods. Therefore, once this option is active, data should be written in
  *   sequential row order. For this reason the `worksheet_merge_range()`
@@ -187,7 +187,7 @@ typedef struct lxw_workbook_options {
     /** Optimize the workbook to use constant memory for worksheets */
     uint8_t constant_memory;
 
-    /**  Directory to use for temporary files used by libxlsxwriter. */
+    /** Directory to use for the temporary files created by libxlsxwriter. */
     char *tmpdir;
 } lxw_workbook_options;
 
@@ -273,15 +273,28 @@ lxw_workbook *workbook_new(const char *filename);
  * additional options to be set.
  *
  * @code
- *    lxw_workbook_options options = {.constant_memory = 1};
+ *    lxw_workbook_options options = {.constant_memory = 1,
+ *                                    .tmpdir = "C:\\Temp"};
  *
  *    lxw_workbook  *workbook  = workbook_new_opt("filename.xlsx", &options);
  * @endcode
  *
- * Note, in this mode a row of data is written and then discarded when a cell
- * in a new row is added via one of the worksheet `worksheet_write_*()`
- * methods.  Therefore, once this mode is active, data should be written in
- * sequential row order.
+ * The options that can be set via #lxw_workbook_options are:
+ *
+ * - `constant_memory`: Reduces the amount of data stored in memory so that
+ *   large files can be written efficiently.
+ *
+ *   @note In this mode a row of data is written and then discarded when a
+ *   cell in a new row is added via one of the `worksheet_write_*()`
+ *   methods. Therefore, once this option is active, data should be written in
+ *   sequential row order. For this reason the `worksheet_merge_range()`
+ *   doesn't work in this mode. See also @ref ww_mem_constant.
+ *
+ * - `tmpdir`: libxlsxwriter stores workbook data in temporary files prior
+ *   to assembling the final XLSX file. The temporary files are created in the
+ *   system's temp directory. If the default temporary directory isn't
+ *   accessible to your application, or doesn't contain enough space, you can
+ *   specify an alternative location using the `tempdir` option.*
  *
  * See @ref working_with_memory for more details.
  *
