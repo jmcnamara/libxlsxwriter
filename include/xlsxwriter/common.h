@@ -143,6 +143,9 @@ enum lxw_custom_property_types {
 /* Max col string length. */
 #define LXW_MAX_COL_NAME_LENGTH   sizeof("$XFD")
 
+/* Max row string length. */
+#define LXW_MAX_ROW_NAME_LENGTH   sizeof("$1048576")
+
 /* Max cell string length. */
 #define LXW_MAX_CELL_NAME_LENGTH  sizeof("$XFWD$1048576")
 
