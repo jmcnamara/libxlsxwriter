@@ -103,7 +103,7 @@ lxw_rowcol_to_cell(char *cell_name, lxw_row_t row, lxw_col_t col)
     pos = strlen(cell_name);
 
     /* Add the row to the cell. */
-    snprintf(&cell_name[pos], LXW_MAX_ROW_NAME_LENGTH, "%d", ++row);
+    lxw_snprintf(&cell_name[pos], LXW_MAX_ROW_NAME_LENGTH, "%d", ++row);
 }
 
 /*
@@ -126,7 +126,7 @@ lxw_rowcol_to_cell_abs(char *cell_name, lxw_row_t row, lxw_col_t col,
         cell_name[pos++] = '$';
 
     /* Add the row to the cell. */
-    snprintf(&cell_name[pos], LXW_MAX_ROW_NAME_LENGTH, "%d", ++row);
+    lxw_snprintf(&cell_name[pos], LXW_MAX_ROW_NAME_LENGTH, "%d", ++row);
 }
 
 /*
