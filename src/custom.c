@@ -119,7 +119,7 @@ _custom_write_vt_filetime(lxw_custom *self, lxw_datetime *datetime)
 {
     char data[LXW_DATETIME_LENGTH];
 
-    lxw_snprintf(data, LXW_ATTR_32, "%4d-%02d-%02dT%02d:%02d:%02dZ",
+    lxw_snprintf(data, LXW_DATETIME_LENGTH, "%4d-%02d-%02dT%02d:%02d:%02dZ",
                  datetime->year, datetime->month, datetime->day,
                  datetime->hour, datetime->min, (int) datetime->sec);
 
