@@ -12,6 +12,11 @@
 #include <stdlib.h>
 #include "xlsxwriter/xmlwriter.h"
 
+#define LXW_AMP  "&amp;"
+#define LXW_LT   "&lt;"
+#define LXW_GT   "&gt;"
+#define LXW_QUOT "&quot;"
+
 /* Defines. */
 #define LXW_MAX_ENCODED_ATTRIBUTE_LENGTH (LXW_MAX_ATTRIBUTE_LENGTH*6)
 
@@ -148,20 +153,20 @@ _escape_attributes(struct xml_attribute *attribute)
     while (*p_attr) {
         switch (*p_attr) {
             case '&':
-                strcat(p_encoded, "&amp;");
-                p_encoded += 5;
+                strncat(p_encoded, LXW_AMP, sizeof(LXW_AMP) - 1);
+                p_encoded += sizeof(LXW_AMP) - 1;
                 break;
             case '<':
-                strcat(p_encoded, "&lt;");
-                p_encoded += 4;
+                strncat(p_encoded, LXW_LT, sizeof(LXW_LT) - 1);
+                p_encoded += sizeof(LXW_LT) - 1;
                 break;
             case '>':
-                strcat(p_encoded, "&gt;");
-                p_encoded += 4;
+                strncat(p_encoded, LXW_GT, sizeof(LXW_GT) - 1);
+                p_encoded += sizeof(LXW_GT) - 1;
                 break;
             case '"':
-                strcat(p_encoded, "&quot;");
-                p_encoded += 6;
+                strncat(p_encoded, LXW_QUOT, sizeof(LXW_QUOT) - 1);
+                p_encoded += sizeof(LXW_QUOT) - 1;
                 break;
             default:
                 *p_encoded = *p_attr;
@@ -190,16 +195,16 @@ lxw_escape_data(const char *data)
     while (*data) {
         switch (*data) {
             case '&':
-                strcat(p_encoded, "&amp;");
-                p_encoded += 5;
+                strncat(p_encoded, LXW_AMP, sizeof(LXW_AMP) - 1);
+                p_encoded += sizeof(LXW_AMP) - 1;
                 break;
             case '<':
-                strcat(p_encoded, "&lt;");
-                p_encoded += 4;
+                strncat(p_encoded, LXW_LT, sizeof(LXW_LT) - 1);
+                p_encoded += sizeof(LXW_LT) - 1;
                 break;
             case '>':
-                strcat(p_encoded, "&gt;");
-                p_encoded += 4;
+                strncat(p_encoded, LXW_GT, sizeof(LXW_GT) - 1);
+                p_encoded += sizeof(LXW_GT) - 1;
                 break;
             default:
                 *p_encoded = *data;
