@@ -163,8 +163,8 @@ lxw_chart_new(uint8_t type)
     chart->cat_axis_position = LXW_CHART_BOTTOM;
     chart->val_axis_position = LXW_CHART_LEFT;
 
-    strcpy(chart->x_axis->default_num_format, "General");
-    strcpy(chart->y_axis->default_num_format, "General");
+    lxw_strcpy(chart->x_axis->default_num_format, "General");
+    lxw_strcpy(chart->y_axis->default_num_format, "General");
 
     chart->x_axis->default_major_gridlines = LXW_FALSE;
     chart->y_axis->default_major_gridlines = LXW_TRUE;
@@ -2231,7 +2231,7 @@ _chart_initialize_area_chart(lxw_chart *self, uint8_t type)
 
     if (type == LXW_CHART_AREA_STACKED_PERCENT) {
         self->grouping = LXW_GROUPING_PERCENTSTACKED;
-        strcpy((self->y_axis)->default_num_format, "0%");
+        lxw_strcpy((self->y_axis)->default_num_format, "0%");
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
 
@@ -2267,7 +2267,7 @@ _chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
 
     if (type == LXW_CHART_BAR_STACKED_PERCENT) {
         self->grouping = LXW_GROUPING_PERCENTSTACKED;
-        strcpy((self->y_axis)->default_num_format, "0%");
+        lxw_strcpy((self->y_axis)->default_num_format, "0%");
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
@@ -2297,7 +2297,7 @@ _chart_initialize_column_chart(lxw_chart *self, uint8_t type)
 
     if (type == LXW_CHART_COLUMN_STACKED_PERCENT) {
         self->grouping = LXW_GROUPING_PERCENTSTACKED;
-        strcpy((self->y_axis)->default_num_format, "0%");
+        lxw_strcpy((self->y_axis)->default_num_format, "0%");
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }

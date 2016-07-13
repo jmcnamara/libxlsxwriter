@@ -271,6 +271,10 @@ msvc2010_snprintf(char *str, size_t size, const char *format, ...)
 
 #endif
 
+/* Safer strcpy for fixed width char arrays. */
+#define lxw_strcpy(dest, src) \
+    lxw_snprintf(dest, sizeof(dest), "%s", src)
+
 /* Define the queue.h structs for the formats list. */
 STAILQ_HEAD(lxw_formats, lxw_format);
 

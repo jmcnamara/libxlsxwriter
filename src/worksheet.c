@@ -972,58 +972,58 @@ _worksheet_write_freeze_panes(lxw_worksheet *self)
 
     /* Set the active pane. */
     if (row && col) {
-        strcpy(active_pane, "bottomRight");
+        lxw_strcpy(active_pane, "bottomRight");
 
         lxw_rowcol_to_cell(row_cell, row, 0);
         lxw_rowcol_to_cell(col_cell, 0, col);
 
         selection = calloc(1, sizeof(lxw_selection));
         if (selection) {
-            strcpy(selection->pane, "topRight");
-            strcpy(selection->active_cell, col_cell);
-            strcpy(selection->sqref, col_cell);
+            lxw_strcpy(selection->pane, "topRight");
+            lxw_strcpy(selection->active_cell, col_cell);
+            lxw_strcpy(selection->sqref, col_cell);
 
             STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
         }
 
         selection = calloc(1, sizeof(lxw_selection));
         if (selection) {
-            strcpy(selection->pane, "bottomLeft");
-            strcpy(selection->active_cell, row_cell);
-            strcpy(selection->sqref, row_cell);
+            lxw_strcpy(selection->pane, "bottomLeft");
+            lxw_strcpy(selection->active_cell, row_cell);
+            lxw_strcpy(selection->sqref, row_cell);
 
             STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
         }
 
         selection = calloc(1, sizeof(lxw_selection));
         if (selection) {
-            strcpy(selection->pane, "bottomRight");
-            strcpy(selection->active_cell, user_selection->active_cell);
-            strcpy(selection->sqref, user_selection->sqref);
+            lxw_strcpy(selection->pane, "bottomRight");
+            lxw_strcpy(selection->active_cell, user_selection->active_cell);
+            lxw_strcpy(selection->sqref, user_selection->sqref);
 
             STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
         }
     }
     else if (col) {
-        strcpy(active_pane, "topRight");
+        lxw_strcpy(active_pane, "topRight");
 
         selection = calloc(1, sizeof(lxw_selection));
         if (selection) {
-            strcpy(selection->pane, "topRight");
-            strcpy(selection->active_cell, user_selection->active_cell);
-            strcpy(selection->sqref, user_selection->sqref);
+            lxw_strcpy(selection->pane, "topRight");
+            lxw_strcpy(selection->active_cell, user_selection->active_cell);
+            lxw_strcpy(selection->sqref, user_selection->sqref);
 
             STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
         }
     }
     else {
-        strcpy(active_pane, "bottomLeft");
+        lxw_strcpy(active_pane, "bottomLeft");
 
         selection = calloc(1, sizeof(lxw_selection));
         if (selection) {
-            strcpy(selection->pane, "bottomLeft");
-            strcpy(selection->active_cell, user_selection->active_cell);
-            strcpy(selection->sqref, user_selection->sqref);
+            lxw_strcpy(selection->pane, "bottomLeft");
+            lxw_strcpy(selection->active_cell, user_selection->active_cell);
+            lxw_strcpy(selection->sqref, user_selection->sqref);
 
             STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
         }
@@ -1141,64 +1141,64 @@ _worksheet_write_split_panes(lxw_worksheet *self)
 
     /* If there is no selection set the active cell to the top left cell. */
     if (!has_selection) {
-        strcpy(user_selection->active_cell, top_left_cell);
-        strcpy(user_selection->sqref, top_left_cell);
+        lxw_strcpy(user_selection->active_cell, top_left_cell);
+        lxw_strcpy(user_selection->sqref, top_left_cell);
     }
 
     /* Set the active pane. */
     if (y_split > 0.0 && x_split > 0.0) {
-        strcpy(active_pane, "bottomRight");
+        lxw_strcpy(active_pane, "bottomRight");
 
         lxw_rowcol_to_cell(row_cell, top_row, 0);
         lxw_rowcol_to_cell(col_cell, 0, left_col);
 
         selection = calloc(1, sizeof(lxw_selection));
         if (selection) {
-            strcpy(selection->pane, "topRight");
-            strcpy(selection->active_cell, col_cell);
-            strcpy(selection->sqref, col_cell);
+            lxw_strcpy(selection->pane, "topRight");
+            lxw_strcpy(selection->active_cell, col_cell);
+            lxw_strcpy(selection->sqref, col_cell);
 
             STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
         }
 
         selection = calloc(1, sizeof(lxw_selection));
         if (selection) {
-            strcpy(selection->pane, "bottomLeft");
-            strcpy(selection->active_cell, row_cell);
-            strcpy(selection->sqref, row_cell);
+            lxw_strcpy(selection->pane, "bottomLeft");
+            lxw_strcpy(selection->active_cell, row_cell);
+            lxw_strcpy(selection->sqref, row_cell);
 
             STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
         }
 
         selection = calloc(1, sizeof(lxw_selection));
         if (selection) {
-            strcpy(selection->pane, "bottomRight");
-            strcpy(selection->active_cell, user_selection->active_cell);
-            strcpy(selection->sqref, user_selection->sqref);
+            lxw_strcpy(selection->pane, "bottomRight");
+            lxw_strcpy(selection->active_cell, user_selection->active_cell);
+            lxw_strcpy(selection->sqref, user_selection->sqref);
 
             STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
         }
     }
     else if (x_split > 0.0) {
-        strcpy(active_pane, "topRight");
+        lxw_strcpy(active_pane, "topRight");
 
         selection = calloc(1, sizeof(lxw_selection));
         if (selection) {
-            strcpy(selection->pane, "topRight");
-            strcpy(selection->active_cell, user_selection->active_cell);
-            strcpy(selection->sqref, user_selection->sqref);
+            lxw_strcpy(selection->pane, "topRight");
+            lxw_strcpy(selection->active_cell, user_selection->active_cell);
+            lxw_strcpy(selection->sqref, user_selection->sqref);
 
             STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
         }
     }
     else {
-        strcpy(active_pane, "bottomLeft");
+        lxw_strcpy(active_pane, "bottomLeft");
 
         selection = calloc(1, sizeof(lxw_selection));
         if (selection) {
-            strcpy(selection->pane, "bottomLeft");
-            strcpy(selection->active_cell, user_selection->active_cell);
-            strcpy(selection->sqref, user_selection->sqref);
+            lxw_strcpy(selection->pane, "bottomLeft");
+            lxw_strcpy(selection->active_cell, user_selection->active_cell);
+            lxw_strcpy(selection->sqref, user_selection->sqref);
 
             STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
         }
@@ -3779,8 +3779,8 @@ worksheet_write_url_opt(lxw_worksheet *self,
                     case ('^'):
                     case ('{'):
                     case ('}'):
-                        sprintf(url_external + strlen(url_external), "%%%2x",
-                                url_copy[i]);
+                        lxw_snprintf(url_external + strlen(url_external),
+                                     sizeof("%xx"), "%%%2x", url_copy[i]);
                         break;
                     default:
                         url_external[strlen(url_external)] = url_copy[i];
@@ -4297,9 +4297,9 @@ worksheet_set_selection(lxw_worksheet *self,
     else
         lxw_rowcol_to_range(sqref, first_row, first_col, last_row, last_col);
 
-    strcpy(selection->pane, "");
-    strcpy(selection->active_cell, active_cell);
-    strcpy(selection->sqref, sqref);
+    lxw_strcpy(selection->pane, "");
+    lxw_strcpy(selection->active_cell, active_cell);
+    lxw_strcpy(selection->sqref, sqref);
 
     STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
 }
@@ -4451,7 +4451,7 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
     if (strlen(string) >= LXW_HEADER_FOOTER_MAX)
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
 
-    strcpy(self->header, string);
+    lxw_strcpy(self->header, string);
     self->header_footer_changed = 1;
 
     return LXW_NO_ERROR;
@@ -4475,7 +4475,7 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
     if (strlen(string) >= LXW_HEADER_FOOTER_MAX)
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
 
-    strcpy(self->footer, string);
+    lxw_strcpy(self->footer, string);
     self->header_footer_changed = 1;
 
     return LXW_NO_ERROR;

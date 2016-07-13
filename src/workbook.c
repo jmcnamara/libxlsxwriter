@@ -499,7 +499,7 @@ _store_defined_name(lxw_workbook *self, const char *name,
     RETURN_ON_MEM_ERROR(defined_name, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     /* Copy the user input string. */
-    strcpy(name_copy, name);
+    lxw_strcpy(name_copy, name);
 
     /* Set the worksheet index or -1 for a global defined name. */
     defined_name->index = index;
@@ -510,7 +510,7 @@ _store_defined_name(lxw_workbook *self, const char *name,
 
     if (tmp_str == NULL) {
         /* The name is global. We just store the defined name string. */
-        strcpy(defined_name->name, name_copy);
+        lxw_strcpy(defined_name->name, name_copy);
     }
     else {
         /* The name is worksheet local. We need to extract the sheet name
@@ -531,7 +531,8 @@ _store_defined_name(lxw_workbook *self, const char *name,
         STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
             if (strcmp(worksheet_name, worksheet->name) == 0) {
                 defined_name->index = worksheet->index;
-                strcpy(defined_name->normalised_sheetname, worksheet_name);
+                lxw_strcpy(defined_name->normalised_sheetname,
+                           worksheet_name);
             }
         }
 
@@ -539,16 +540,16 @@ _store_defined_name(lxw_workbook *self, const char *name,
         if (defined_name->index == -1)
             goto mem_error;
 
-        strcpy(defined_name->name, tmp_str);
+        lxw_strcpy(defined_name->name, tmp_str);
     }
 
     /* Print titles and repeat title pass in the name used for App.xml. */
     if (app_name) {
-        strcpy(defined_name->app_name, app_name);
-        strcpy(defined_name->normalised_sheetname, app_name);
+        lxw_strcpy(defined_name->app_name, app_name);
+        lxw_strcpy(defined_name->normalised_sheetname, app_name);
     }
     else {
-        strcpy(defined_name->app_name, name);
+        lxw_strcpy(defined_name->app_name, name);
     }
 
     /* We need to normalize the defined names for sorting. This involves
@@ -556,18 +557,18 @@ _store_defined_name(lxw_workbook *self, const char *name,
     tmp_str = strstr(name_copy, "_xlnm.");
 
     if (tmp_str)
-        strcpy(defined_name->normalised_name, defined_name->name + 6);
+        lxw_strcpy(defined_name->normalised_name, defined_name->name + 6);
     else
-        strcpy(defined_name->normalised_name, defined_name->name);
+        lxw_strcpy(defined_name->normalised_name, defined_name->name);
 
     lxw_str_tolower(defined_name->normalised_name);
     lxw_str_tolower(defined_name->normalised_sheetname);
 
     /* Strip leading "=" from the formula. */
     if (formula[0] == '=')
-        strcpy(defined_name->formula, formula + 1);
+        lxw_strcpy(defined_name->formula, formula + 1);
     else
-        strcpy(defined_name->formula, formula);
+        lxw_strcpy(defined_name->formula, formula);
 
     /* We add the defined name to the list in sorted order. */
     list_defined_name = TAILQ_FIRST(self->defined_names);
