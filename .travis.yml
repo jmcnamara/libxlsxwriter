@@ -6,8 +6,8 @@ compiler:
 
 env:
   - CFLAGS='-Werror'
-  - CFLAGS='-Werror -m32'
-  - USE_STANDARD_TMPFILE=1 CFLAGS='-Werror'
+  - NO_VALGRIND = 1 USE_STANDARD_TMPFILE=1 CFLAGS='-Werror'
+  - NO_VALGRIND = 1                        CFLAGS='-Werror -m32'
 
 install:
   - sudo pip install pytest

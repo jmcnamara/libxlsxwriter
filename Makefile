@@ -60,7 +60,7 @@ endif
 
 # Test the functional test exes with valgrind (in 64bit mode only).
 test_valgrind : all
-ifeq ($(findstring m32,$(CFLAGS)),)
+ifndef NO_VALGRIND
 	$(Q)$(MAKE) -C test/functional/src test_valgrind
 	$(Q)$(MAKE) -C examples test_valgrind
 endif
