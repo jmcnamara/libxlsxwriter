@@ -16,7 +16,9 @@ endif
 # Build the libs.
 all :
 	$(Q)$(MAKE) -C third_party/minizip
+ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
+endif
 	$(Q)$(MAKE) -C src
 
 # Build the example programs.
@@ -30,11 +32,13 @@ clean :
 	$(Q)$(MAKE) clean -C test/functional/src
 	$(Q)$(MAKE) clean -C examples
 	$(Q)$(MAKE) clean -C third_party/minizip
-	$(Q)$(MAKE) clean -C third_party/tmpfileplus
 	$(Q)rm -rf docs/html
 	$(Q)rm -rf test/functional/__pycache__
 	$(Q)rm -f  test/functional/*.pyc
 	$(Q)rm -f  lib/*
+ifndef USE_STANDARD_TMPFILE
+	$(Q)$(MAKE) clean -C third_party/tmpfileplus
+endif
 
 # Run the unit tests.
 test : all test_functional test_unit
@@ -48,7 +52,9 @@ test_functional : all
 test_unit :
 	@echo "Compiling unit tests ..."
 	$(Q)$(MAKE) -C third_party/minizip
+ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
+endif
 	$(Q)$(MAKE) -C src test_lib
 	$(Q)$(MAKE) -C test/unit test
 

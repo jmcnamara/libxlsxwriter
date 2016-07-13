@@ -30,6 +30,9 @@ all : $(LIBXLSXWRITER) $(EXES)
 $(LIBXLSXWRITER):
 	$(Q)$(MAKE) -C ../third_party/minizip
 	$(Q)$(MAKE) -C ../third_party/tmpfileplus
+ifndef USE_STANDARD_TMPFILE
+	$(Q)$(MAKE) -C ../third_party/tmpfileplus
+endif
 	$(Q)$(MAKE) -C ../src
 
 clean :
