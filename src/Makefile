@@ -19,13 +19,14 @@ INC_DIR     = ../include
 MINIZIP_DIR = ../third_party/minizip
 
 
-ifndef USE_STANDARD_TMPFILE
-# Use tmpfileplus (the default) unless using standard/C tmpfile().
+ifdef USE_STANDARD_TMPFILE
+# Use standard/C tmpfile().
+CFLAGS += -DUSE_STANDARD_TMPFILE
+else
+# Use tmpfileplus (the default).
 TMPFILEPLUS_DIR = ../third_party/tmpfileplus
 TMPFILEPLUS_OBJ = $(TMPFILEPLUS_DIR)/tmpfileplus.o
 TMPFILEPLUS_SO  = $(TMPFILEPLUS_DIR)/tmpfileplus.so
-else
-CFLAGS += -DUSE_STANDARD_TMPFILE
 endif
 
 # Flags passed to compiler.
