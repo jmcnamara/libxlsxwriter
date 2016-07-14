@@ -1,6 +1,10 @@
 /**
 @page changes Changes
 
+# 0.4.2 July 14 2016
+
+- Added support for OpenBSD and better support for FreeBSD. See @ref gsg_bsd.
+
 
 # 0.4.1 July 11 2016
 

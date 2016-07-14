@@ -71,8 +71,6 @@ Build the source code as follows:
     cd libxlsxwriter
     make
 
-    # For FreeBSD use gmake instead of make
-
 This will create a static and dynamic library in the local `./lib` directory:
 
     ls lib
@@ -149,6 +147,25 @@ library you created in the "Build the source code" step:
 
     cc myexcel.c -o myexcel -I /path/to/libxlsxwriter/include \
                                /path/to/libxlsxwriter/lib/libxlsxwriter.a -lz
+
+
+@section gsg_bsd Installation on FreeBSD and OpenBSD
+
+Both FreeBSD and OpenBSD come with the zlib development libraries
+pre-installed so there are no additional dependencies. However, if you have
+any issues then follow the instructions
+@ref gsg_dependencies "to install zlib".
+
+
+@ref gsg_git or @ref gsg_tarball "get the source code as a tarball" as shown
+above then build the source code as follows using `gmake` (not make):
+
+    cd libxlsxwriter
+    gmake
+
+Then follow the instructions in the Linux section to
+@ref gsg_install "install the library" and
+@ref gsg_using "use the library".
 
 
 @section gsg_macos Installation on Mac OS X and iOS
