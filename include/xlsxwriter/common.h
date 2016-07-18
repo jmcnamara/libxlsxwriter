@@ -225,6 +225,12 @@ enum lxw_custom_property_types {
 #define LXW_UINT16_NETWORK(n) (n)
 #endif
 
+/* *INDENT-OFF* */
+#ifdef __cplusplus
+extern "C" {
+#endif
+/* *INDENT-ON* */
+
 /* Compilers that have a native snprintf() can use it directly. */
 #ifdef _MSC_VER
 #define LXW_HAS_SNPRINTF
@@ -307,13 +313,6 @@ typedef struct lxw_custom_property {
 
 } lxw_custom_property;
 
-
-
- /* *INDENT-OFF* */
-#ifdef __cplusplus
-extern "C" {
-#endif
-/* *INDENT-ON* */
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

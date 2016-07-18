@@ -19,6 +19,7 @@
 #include <stdint.h>
 #include "common.h"
 
+
 /**
  * @brief Convert an Excel `A1` cell string into a `(row, col)` pair.
  *
@@ -79,6 +80,12 @@
     lxw_name_to_row(range), lxw_name_to_col(range), \
     lxw_name_to_row_2(range), lxw_name_to_col_2(range)
 
+/* *INDENT-OFF* */
+#ifdef __cplusplus
+extern "C" {
+#endif
+/* *INDENT-ON* */
+
 /**
  * @brief Converts a libxlsxwriter error number to a string.
  *
@@ -110,12 +117,6 @@ char *lxw_strerror(lxw_error error_num);
 
 /* Create a quoted version of the worksheet name */
 char *lxw_quote_sheetname(const char *str);
-
- /* *INDENT-OFF* */
-#ifdef __cplusplus
-extern "C" {
-#endif
-/* *INDENT-ON* */
 
 void lxw_col_to_name(char *col_name, lxw_col_t col_num, uint8_t absolute);
 
