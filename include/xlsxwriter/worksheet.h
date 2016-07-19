@@ -1129,16 +1129,22 @@ lxw_error worksheet_set_row_opt(lxw_worksheet *worksheet,
  *
  * @endcode
  *
- * The width corresponds to the column width value that is specified in
- * Excel. It is approximately equal to the length of a string in the default
- * font of Calibri 11. Unfortunately, there is no way to specify "AutoFit" for
- * a column in the Excel file format. This feature is only available at
- * runtime from within Excel. It is possible to simulate "AutoFit" by tracking
- * the width of the data in the column as your write it.
+ * The `width` parameter sets the column width in the same units used by Excel
+ * which is: the number of characters in the default font. The default width
+ * is 8.43 in the default font of Calibri 11. The actual relationship between
+ * a string width and a column width in Excel is complex. See the
+ * [following explanation of column widths](https://support.microsoft.com/en-us/kb/214123)
+ * from the Microsoft support documentation for more details.
+ *
+ * There is no way to specify "AutoFit" for a column in the Excel file
+ * format. This feature is only available at runtime from within Excel. It is
+ * possible to simulate "AutoFit" in your application by tracking the maximum
+ * width of the data in the column as your write it and then adjusting the
+ * column width at the end.
  *
  * As usual the @ref format.h `format` parameter is optional. If you wish to
- * set the format without changing the width you can pass default col width of
- * #LXW_DEF_COL_WIDTH = 8.43:
+ * set the format without changing the width you can pass a default column
+ * width of #LXW_DEF_COL_WIDTH = 8.43:
  *
  * @code
  *     lxw_format *bold = workbook_add_format(workbook);
