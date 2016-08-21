@@ -7,7 +7,7 @@ Here are some instructions to get you up and running with the libxlsxwriter
 library on different OSes.
 
 
-@section gsg_linux Installation on Linux and FreeBSD
+@section gsg_linux Installation on Linux
 
 @subsection gsg_quick_start Quick-start on Linux
 
@@ -150,6 +150,9 @@ library you created in the "Build the source code" step:
 
 
 @section gsg_bsd Installation on FreeBSD and OpenBSD
+
+Installation on FreeBSD and OpenBSD is mainly the same as on Linux, see above,
+with the differences outlined below.
 
 Both FreeBSD and OpenBSD come with the zlib development libraries
 pre-installed so there are no additional dependencies. However, if you have
