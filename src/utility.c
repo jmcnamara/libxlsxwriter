@@ -441,7 +441,7 @@ lxw_quote_sheetname(const char *str)
     /* Check if the sheetname contains any characters that require it
      * to be quoted. Also check for single quotes within the string. */
     for (i = 0; i < len; i++) {
-        if (!isalnum(str[i]) && str[i] != '_' && str[i] != '.')
+        if (!isalnum((unsigned char)str[i]) && str[i] != '_' && str[i] != '.')
             needs_quoting = 1;
 
         if (str[i] == '\'') {
