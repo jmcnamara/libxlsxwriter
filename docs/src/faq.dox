@@ -47,7 +47,7 @@ Yes. See @ref gsg_msvc.
 
 All supported features are documented. In time the feature set may expand to
 include more of the functionality of the [Python
-XlsxWriter](http://xlsxwriter.readthedocs.org) module.
+XlsxWriter](https://xlsxwriter.readthedocs.io) module.
 
 
 @section faq_autofit Q. Is there an "AutoFit" option for columns?
