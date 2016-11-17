@@ -2011,7 +2011,21 @@ lxw_worksheet_prepare_chart(lxw_worksheet *self,
     RETURN_VOID_ON_MEM_ERROR(drawing_object);
 
     drawing_object->anchor_type = LXW_ANCHOR_TYPE_CHART;
-    drawing_object->edit_as = LXW_ANCHOR_EDIT_AS_ONE_CELL;
+	switch (image_data->anchor)
+	{
+	case 1:
+		drawing_object->edit_as = LXW_ANCHOR_EDIT_AS_RELATIVE;
+		break;
+	case 2:
+		drawing_object->edit_as = LXW_ANCHOR_EDIT_AS_ONE_CELL;
+		break;
+	case 3:
+		drawing_object->edit_as = LXW_ANCHOR_EDIT_AS_ABSOLUTE;
+		break;
+	default:
+		drawing_object->edit_as = LXW_ANCHOR_EDIT_AS_ONE_CELL;
+		break;
+	}
     drawing_object->description = lxw_strdup("TODO_DESC");
 
     /* Scale to user scale. */

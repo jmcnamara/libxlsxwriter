@@ -677,6 +677,11 @@ _drawing_write_two_cell_anchor(lxw_drawing *self, uint16_t index,
         else if (drawing_object->edit_as != LXW_ANCHOR_EDIT_AS_RELATIVE)
             LXW_PUSH_ATTRIBUTES_STR("editAs", "oneCell");
     }
+	else if (drawing_object->anchor_type == LXW_ANCHOR_TYPE_CHART)
+	{
+		if (drawing_object->edit_as == LXW_ANCHOR_EDIT_AS_ABSOLUTE)
+			LXW_PUSH_ATTRIBUTES_STR("editAs", "absolute");
+	}
 
     lxw_xml_start_tag(self->file, "xdr:twoCellAnchor", &attributes);
 
