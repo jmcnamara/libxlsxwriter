@@ -314,6 +314,7 @@ typedef struct lxw_chart {
     uint8_t cross_between;
     uint8_t cat_axis_position;
     uint8_t val_axis_position;
+	uint8_t legend_position;
 
     struct lxw_chart_series_list *series_list;
 

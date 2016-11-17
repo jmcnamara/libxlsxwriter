@@ -163,6 +163,9 @@ lxw_chart_new(uint8_t type)
     chart->cat_axis_position = LXW_CHART_BOTTOM;
     chart->val_axis_position = LXW_CHART_LEFT;
 
+	/* Set the default legend position */
+	chart->legend_position = LXW_CHART_RIGHT;
+
     lxw_strcpy(chart->x_axis->default_num_format, "General");
     lxw_strcpy(chart->y_axis->default_num_format, "General");
 
@@ -1335,6 +1338,9 @@ _chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
         _chart_write_sp_pr(self);
     }
 
+	if (series->title.name)
+		_chart_write_tx_value(self, series->title.name);
+
     if (self->type == LXW_CHART_SCATTER_STRAIGHT
         || self->type == LXW_CHART_SCATTER_SMOOTH) {
         /* Write the c:marker element. */
@@ -1578,11 +1584,26 @@ STATIC void
 _chart_write_legend_pos(lxw_chart *self)
 {
     struct xml_attribute_list attributes;
-    struct xml_attribute *attribute;
-    char val[] = "r";
+    struct xml_attribute *attribute;    
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+	switch (self->legend_position)
+	{
+	case LXW_CHART_RIGHT:
+		LXW_PUSH_ATTRIBUTES_STR("val", "r");
+		break;
+	case LXW_CHART_LEFT:
+		LXW_PUSH_ATTRIBUTES_STR("val", "l");
+		break;
+	case LXW_CHART_TOP:
+		LXW_PUSH_ATTRIBUTES_STR("val", "t");
+		break;
+	case LXW_CHART_BOTTOM:
+		LXW_PUSH_ATTRIBUTES_STR("val", "b");
+		break;
+	default:
+		LXW_PUSH_ATTRIBUTES_STR("val", "r");
+	}
 
     lxw_xml_empty_tag(self->file, "c:legendPos", &attributes);
 
