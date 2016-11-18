@@ -1545,12 +1545,19 @@ _chart_write_number_format(lxw_chart *self, lxw_chart_axis *axis)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char source_linked[] = "1";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("formatCode", axis->default_num_format);
-    LXW_PUSH_ATTRIBUTES_STR("sourceLinked", source_linked);
-
+	if (strlen(axis->num_format) > 0)
+	{
+		LXW_PUSH_ATTRIBUTES_STR("formatCode", axis->num_format);
+		LXW_PUSH_ATTRIBUTES_STR("sourceLinked", "0");
+	}
+	else
+	{
+		LXW_PUSH_ATTRIBUTES_STR("formatCode", axis->default_num_format);
+		LXW_PUSH_ATTRIBUTES_STR("sourceLinked", "1");
+	}
+    
     lxw_xml_empty_tag(self->file, "c:numFmt", &attributes);
 
     LXW_FREE_ATTRIBUTES();
@@ -1887,10 +1894,10 @@ _chart_write_cat_val_axis(lxw_chart *self)
     _chart_write_title(self, &self->x_axis->title);
 
     /* Write the c:numFmt element. */
-    _chart_write_number_format(self, self->y_axis);
+    _chart_write_number_format(self, self->x_axis);
 
     /* Write the c:majorTickMark element. */
-    _chart_write_major_tick_mark(self, self->y_axis);
+    _chart_write_major_tick_mark(self, self->x_axis);
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
@@ -2680,6 +2687,14 @@ chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
 
     /* Start and end row, col are the same for single cell range. */
     _chart_set_range(axis->title.range, sheetname, row, col, row, col);
+}
+
+void 
+chart_axis_set_format(lxw_chart_axis *axis, const char* format)
+{	
+	if (!format)
+		return;
+	lxw_strcpy(axis->num_format, format);
 }
 
 /*

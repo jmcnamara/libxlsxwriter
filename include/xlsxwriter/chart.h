@@ -281,8 +281,8 @@ typedef struct lxw_chart {
     lxw_chart_axis *x_axis;
 
     /**
-     * A pointer to the chart x_axis object which can be used in functions
-     * that configures the X axis.
+     * A pointer to the chart y_axis object which can be used in functions
+     * that configures the Y axis.
      */
     lxw_chart_axis *y_axis;
 
@@ -578,6 +578,15 @@ void chart_axis_set_name(lxw_chart_axis *axis, const char *name);
  */
 void chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
                                lxw_row_t row, lxw_col_t col);
+
+/**
+ * @brief Set a chart axis values format
+ *
+ * @param axis     A pointer to a chart #lxw_chart_axis object.
+ * @param format   Format for axis's values 
+ */
+void chart_axis_set_format(lxw_chart_axis *axis, const char* format);
+
 /**
  * @brief Set the title of the chart.
  *
