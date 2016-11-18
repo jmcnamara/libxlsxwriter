@@ -10,6 +10,7 @@
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/chart.h"
 #include "xlsxwriter/utility.h"
+#include "math.h"
 
 /*
  * Forward declarations.
@@ -138,10 +139,14 @@ lxw_chart_new(uint8_t type)
 
     chart->title.range = calloc(1, sizeof(lxw_series_range));
     GOTO_LABEL_ON_MEM_ERROR(chart->title.range, mem_error);
-
+    
+    chart->x_axis->min_value = NAN;
+    chart->x_axis->max_value = NAN;
     chart->x_axis->title.range = calloc(1, sizeof(lxw_series_range));
     GOTO_LABEL_ON_MEM_ERROR(chart->x_axis->title.range, mem_error);
 
+    chart->y_axis->min_value = NAN;
+    chart->y_axis->max_value = NAN;    
     chart->y_axis->title.range = calloc(1, sizeof(lxw_series_range));
     GOTO_LABEL_ON_MEM_ERROR(chart->y_axis->title.range, mem_error);
 
@@ -1384,12 +1389,33 @@ _chart_write_orientation(lxw_chart *self)
  * Write the <c:scaling> element.
  */
 STATIC void
-_chart_write_scaling(lxw_chart *self)
+_chart_write_scaling(lxw_chart *self, lxw_chart_axis *axis)
 {
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
     lxw_xml_start_tag(self->file, "c:scaling", NULL);
 
     /* Write the c:orientation element. */
     _chart_write_orientation(self);
+
+    if (!isnan(axis->min_value))
+    {
+        LXW_INIT_ATTRIBUTES();
+        LXW_PUSH_ATTRIBUTES_DBL("val", axis->min_value);
+
+        lxw_xml_empty_tag(self->file, "c:min", &attributes);
+
+        LXW_FREE_ATTRIBUTES();
+    }
+    if (!isnan(axis->max_value))
+    {
+        LXW_INIT_ATTRIBUTES();
+        LXW_PUSH_ATTRIBUTES_DBL("val", axis->max_value);
+
+        lxw_xml_empty_tag(self->file, "c:max", &attributes);
+
+        LXW_FREE_ATTRIBUTES();
+    }
 
     lxw_xml_end_tag(self->file, "c:scaling");
 }
@@ -1785,7 +1811,7 @@ _chart_write_cat_axis(lxw_chart *self)
     _chart_write_axis_id(self, self->axis_id_1);
 
     /* Write the c:scaling element. */
-    _chart_write_scaling(self);
+    _chart_write_scaling(self, self->x_axis);
 
     /* Write the c:axPos element. */
     _chart_write_axis_pos(self, position);
@@ -1838,7 +1864,7 @@ _chart_write_val_axis(lxw_chart *self)
     _chart_write_axis_id(self, self->axis_id_2);
 
     /* Write the c:scaling element. */
-    _chart_write_scaling(self);
+    _chart_write_scaling(self, self->y_axis);
 
     /* Write the c:axPos element. */
     _chart_write_axis_pos(self, position);
@@ -1884,7 +1910,7 @@ _chart_write_cat_val_axis(lxw_chart *self)
     _chart_write_axis_id(self, self->axis_id_1);
 
     /* Write the c:scaling element. */
-    _chart_write_scaling(self);
+    _chart_write_scaling(self, self->x_axis);
 
     /* Write the c:axPos element. */
     _chart_write_axis_pos(self, position);

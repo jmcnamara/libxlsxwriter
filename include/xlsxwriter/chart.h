@@ -255,6 +255,9 @@ typedef struct lxw_chart_axis {
     uint8_t default_major_gridlines;
     uint8_t major_tick_mark;
 
+    double min_value;
+    double max_value;
+
 } lxw_chart_axis;
 
 /**
