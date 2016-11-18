@@ -10,6 +10,7 @@
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/chart.h"
 #include "xlsxwriter/utility.h"
+#include "math.h"
 
 /*
  * Forward declarations.
@@ -138,10 +139,14 @@ lxw_chart_new(uint8_t type)
 
     chart->title.range = calloc(1, sizeof(lxw_series_range));
     GOTO_LABEL_ON_MEM_ERROR(chart->title.range, mem_error);
-
+    
+    chart->x_axis->min_value = NAN;
+    chart->x_axis->max_value = NAN;
     chart->x_axis->title.range = calloc(1, sizeof(lxw_series_range));
     GOTO_LABEL_ON_MEM_ERROR(chart->x_axis->title.range, mem_error);
 
+    chart->y_axis->min_value = NAN;
+    chart->y_axis->max_value = NAN;    
     chart->y_axis->title.range = calloc(1, sizeof(lxw_series_range));
     GOTO_LABEL_ON_MEM_ERROR(chart->y_axis->title.range, mem_error);
 
@@ -162,6 +167,9 @@ lxw_chart_new(uint8_t type)
     /* Set the default axis positions. */
     chart->cat_axis_position = LXW_CHART_BOTTOM;
     chart->val_axis_position = LXW_CHART_LEFT;
+
+	/* Set the default legend position */
+	chart->legend_position = LXW_CHART_RIGHT;
 
     lxw_strcpy(chart->x_axis->default_num_format, "General");
     lxw_strcpy(chart->y_axis->default_num_format, "General");
@@ -1335,6 +1343,9 @@ _chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
         _chart_write_sp_pr(self);
     }
 
+	if (series->title.name)
+		_chart_write_tx_value(self, series->title.name);
+
     if (self->type == LXW_CHART_SCATTER_STRAIGHT
         || self->type == LXW_CHART_SCATTER_SMOOTH) {
         /* Write the c:marker element. */
@@ -1378,12 +1389,33 @@ _chart_write_orientation(lxw_chart *self)
  * Write the <c:scaling> element.
  */
 STATIC void
-_chart_write_scaling(lxw_chart *self)
+_chart_write_scaling(lxw_chart *self, lxw_chart_axis *axis)
 {
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
     lxw_xml_start_tag(self->file, "c:scaling", NULL);
 
     /* Write the c:orientation element. */
     _chart_write_orientation(self);
+
+    if (!isnan(axis->min_value))
+    {
+        LXW_INIT_ATTRIBUTES();
+        LXW_PUSH_ATTRIBUTES_DBL("val", axis->min_value);
+
+        lxw_xml_empty_tag(self->file, "c:min", &attributes);
+
+        LXW_FREE_ATTRIBUTES();
+    }
+    if (!isnan(axis->max_value))
+    {
+        LXW_INIT_ATTRIBUTES();
+        LXW_PUSH_ATTRIBUTES_DBL("val", axis->max_value);
+
+        lxw_xml_empty_tag(self->file, "c:max", &attributes);
+
+        LXW_FREE_ATTRIBUTES();
+    }
 
     lxw_xml_end_tag(self->file, "c:scaling");
 }
@@ -1539,12 +1571,19 @@ _chart_write_number_format(lxw_chart *self, lxw_chart_axis *axis)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char source_linked[] = "1";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("formatCode", axis->default_num_format);
-    LXW_PUSH_ATTRIBUTES_STR("sourceLinked", source_linked);
-
+	if (strlen(axis->num_format) > 0)
+	{
+		LXW_PUSH_ATTRIBUTES_STR("formatCode", axis->num_format);
+		LXW_PUSH_ATTRIBUTES_STR("sourceLinked", "0");
+	}
+	else
+	{
+		LXW_PUSH_ATTRIBUTES_STR("formatCode", axis->default_num_format);
+		LXW_PUSH_ATTRIBUTES_STR("sourceLinked", "1");
+	}
+    
     lxw_xml_empty_tag(self->file, "c:numFmt", &attributes);
 
     LXW_FREE_ATTRIBUTES();
@@ -1578,11 +1617,26 @@ STATIC void
 _chart_write_legend_pos(lxw_chart *self)
 {
     struct xml_attribute_list attributes;
-    struct xml_attribute *attribute;
-    char val[] = "r";
+    struct xml_attribute *attribute;    
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+	switch (self->legend_position)
+	{
+	case LXW_CHART_RIGHT:
+		LXW_PUSH_ATTRIBUTES_STR("val", "r");
+		break;
+	case LXW_CHART_LEFT:
+		LXW_PUSH_ATTRIBUTES_STR("val", "l");
+		break;
+	case LXW_CHART_TOP:
+		LXW_PUSH_ATTRIBUTES_STR("val", "t");
+		break;
+	case LXW_CHART_BOTTOM:
+		LXW_PUSH_ATTRIBUTES_STR("val", "b");
+		break;
+	default:
+		LXW_PUSH_ATTRIBUTES_STR("val", "r");
+	}
 
     lxw_xml_empty_tag(self->file, "c:legendPos", &attributes);
 
@@ -1757,7 +1811,7 @@ _chart_write_cat_axis(lxw_chart *self)
     _chart_write_axis_id(self, self->axis_id_1);
 
     /* Write the c:scaling element. */
-    _chart_write_scaling(self);
+    _chart_write_scaling(self, self->x_axis);
 
     /* Write the c:axPos element. */
     _chart_write_axis_pos(self, position);
@@ -1810,7 +1864,7 @@ _chart_write_val_axis(lxw_chart *self)
     _chart_write_axis_id(self, self->axis_id_2);
 
     /* Write the c:scaling element. */
-    _chart_write_scaling(self);
+    _chart_write_scaling(self, self->y_axis);
 
     /* Write the c:axPos element. */
     _chart_write_axis_pos(self, position);
@@ -1856,7 +1910,7 @@ _chart_write_cat_val_axis(lxw_chart *self)
     _chart_write_axis_id(self, self->axis_id_1);
 
     /* Write the c:scaling element. */
-    _chart_write_scaling(self);
+    _chart_write_scaling(self, self->x_axis);
 
     /* Write the c:axPos element. */
     _chart_write_axis_pos(self, position);
@@ -1866,10 +1920,10 @@ _chart_write_cat_val_axis(lxw_chart *self)
     _chart_write_title(self, &self->x_axis->title);
 
     /* Write the c:numFmt element. */
-    _chart_write_number_format(self, self->y_axis);
+    _chart_write_number_format(self, self->x_axis);
 
     /* Write the c:majorTickMark element. */
-    _chart_write_major_tick_mark(self, self->y_axis);
+    _chart_write_major_tick_mark(self, self->x_axis);
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
@@ -2659,6 +2713,14 @@ chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
 
     /* Start and end row, col are the same for single cell range. */
     _chart_set_range(axis->title.range, sheetname, row, col, row, col);
+}
+
+void 
+chart_axis_set_format(lxw_chart_axis *axis, const char* format)
+{	
+	if (!format)
+		return;
+	lxw_strcpy(axis->num_format, format);
 }
 
 /*
