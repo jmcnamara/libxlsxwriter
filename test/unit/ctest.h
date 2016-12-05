@@ -307,6 +307,7 @@ void assert_fail(const char* caller, int line) {
 
 
 static int suite_all(struct ctest* t) {
+    (void) t;
     return 1;
 }
 

@@ -23,8 +23,8 @@
 
 #if (!defined(_WIN32)) && (!defined(WIN32)) && (!defined(__APPLE__))
 
-  // Linux needs this to support file operation on files larger then 4+GB
-  // But might need better if/def to select just the platforms that needs them.
+  /* Linux needs this to support file operation on files larger then 4+GB
+     But might need better if/def to select just the platforms that needs them. */
 
         #ifndef __USE_FILE_OFFSET64
                 #define __USE_FILE_OFFSET64
@@ -43,6 +43,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 #include "zlib.h"
 
 #if defined(USE_FILE32API)
@@ -60,7 +61,7 @@
  #if (_MSC_VER >= 1400) && (!(defined(NO_MSCVER_FILE64_FUNC)))
   #define ftello64 _ftelli64
   #define fseeko64 _fseeki64
- #else // old MSC
+ #else /* old MSC */
   #define ftello64 ftell
   #define fseeko64 fseek
  #endif
@@ -97,7 +98,7 @@ typedef uint64_t ZPOS64_T;
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 typedef unsigned __int64 ZPOS64_T;
 #else
-typedef unsigned long long int ZPOS64_T;
+typedef uint64_t ZPOS64_T;
 #endif
 #endif
 #endif
