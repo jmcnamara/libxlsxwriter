@@ -3412,7 +3412,7 @@ worksheet_write_string(lxw_worksheet *self,
     if (err)
         return err;
 
-    if (strlen(string) > LXW_STR_MAX)
+    if (lxw_utf8_strlen(string) > LXW_STR_MAX)
         return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
 
     if (!self->optimize) {
@@ -3854,7 +3854,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
     }
 
     /* Excel limits escaped URL to 255 characters. */
-    if (strlen(url_copy) > 255)
+    if (lxw_utf8_strlen(url_copy) > 255)
         goto mem_error;
 
     err = worksheet_write_string(self, row_num, col_num, string_copy, format);
@@ -4448,7 +4448,7 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
     if (!string)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
-    if (strlen(string) >= LXW_HEADER_FOOTER_MAX)
+    if (lxw_utf8_strlen(string) >= LXW_HEADER_FOOTER_MAX)
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
 
     lxw_strcpy(self->header, string);
@@ -4472,7 +4472,7 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
     if (!string)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
-    if (strlen(string) >= LXW_HEADER_FOOTER_MAX)
+    if (lxw_utf8_strlen(string) >= LXW_HEADER_FOOTER_MAX)
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
 
     lxw_strcpy(self->footer, string);

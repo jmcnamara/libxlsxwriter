@@ -413,6 +413,23 @@ lxw_strdup(const char *str)
     return copy;
 }
 
+/* Simple strlen that counts UTF-8 characters. Assumes well formed UTF-8. */
+size_t
+lxw_utf8_strlen(const char *str)
+{
+    size_t byte_count = 0;
+    size_t char_count = 0;
+
+    while (str[byte_count]) {
+        if ((str[byte_count] & 0xc0) != 0x80)
+            char_count++;
+
+        byte_count++;
+    }
+
+    return char_count;
+}
+
 /* Simple tolower() for strings. */
 void
 lxw_str_tolower(char *str)
@@ -441,7 +458,8 @@ lxw_quote_sheetname(const char *str)
     /* Check if the sheetname contains any characters that require it
      * to be quoted. Also check for single quotes within the string. */
     for (i = 0; i < len; i++) {
-        if (!isalnum((unsigned char)str[i]) && str[i] != '_' && str[i] != '.')
+        if (!isalnum((unsigned char) str[i]) && str[i] != '_'
+            && str[i] != '.')
             needs_quoting = 1;
 
         if (str[i] == '\'') {

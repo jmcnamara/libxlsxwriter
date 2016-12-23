@@ -19,7 +19,6 @@
 #include <stdint.h>
 #include "common.h"
 
-
 /**
  * @brief Convert an Excel `A1` cell string into a `(row, col)` pair.
  *
@@ -146,6 +145,8 @@ uint16_t lxw_name_to_col_2(const char *col_str);
 double lxw_datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904);
 
 char *lxw_strdup(const char *str);
+
+size_t lxw_utf8_strlen(const char *str);
 
 void lxw_str_tolower(char *str);
 

@@ -134,11 +134,11 @@ enum lxw_custom_property_types {
     LXW_CUSTOM_DATETIME
 };
 
-/* Excel sheetname max of 31 chars + \0. */
-#define LXW_SHEETNAME_MAX         32
+/* Excel sheetname max of 31 chars. */
+#define LXW_SHEETNAME_MAX         31
 
-/* Every worksheet char doubled + start and end quotes + \0. */
-#define LXW_MAX_SHEETNAME_LENGTH  65
+/* Max with all worksheet chars 4xUTF-8 bytes + start and end quotes + \0. */
+#define LXW_MAX_SHEETNAME_LENGTH  ((LXW_SHEETNAME_MAX * 4) + 2 + 1)
 
 /* Max col string length. */
 #define LXW_MAX_COL_NAME_LENGTH   sizeof("$XFD")
@@ -312,7 +312,6 @@ typedef struct lxw_custom_property {
     STAILQ_ENTRY (lxw_custom_property) list_pointers;
 
 } lxw_custom_property;
-
 
 /* Declarations required for unit testing. */
 #ifdef TESTING
