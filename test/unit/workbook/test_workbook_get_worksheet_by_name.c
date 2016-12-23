@@ -18,7 +18,7 @@ CTEST(workbook, get_worksheet_by_name01) {
     lxw_worksheet *exp = workbook_add_worksheet(workbook, NULL);
     lxw_worksheet *got = workbook_get_worksheet_by_name(workbook, "Sheet1");
 
-    ASSERT_TRUE(exp == got);
+    ASSERT_TRUE(got == exp);
 
     lxw_workbook_free(workbook);
 }
@@ -31,7 +31,7 @@ CTEST(workbook, get_worksheet_by_name02) {
     lxw_worksheet *exp = workbook_add_worksheet(workbook, "FOO");
     lxw_worksheet *got = workbook_get_worksheet_by_name(workbook, "FOO");
 
-    ASSERT_TRUE(exp == got);
+    ASSERT_TRUE(got == exp);
 
     lxw_workbook_free(workbook);
 }
@@ -44,7 +44,7 @@ CTEST(workbook, get_worksheet_by_name03) {
     workbook_add_worksheet(workbook, NULL);
     lxw_worksheet *got = workbook_get_worksheet_by_name(workbook, "FOO");
 
-    ASSERT_TRUE(NULL == got);
+    ASSERT_TRUE(got == NULL);
 
     lxw_workbook_free(workbook);
 }
@@ -56,7 +56,7 @@ CTEST(workbook, get_worksheet_by_name04) {
 
     lxw_worksheet *got = workbook_get_worksheet_by_name(workbook, "FOO");
 
-    ASSERT_TRUE(NULL == got);
+    ASSERT_TRUE(got == NULL);
 
     lxw_workbook_free(workbook);
 }
@@ -69,8 +69,7 @@ CTEST(workbook, get_worksheet_by_name05) {
     workbook_add_worksheet(workbook, NULL);
     lxw_worksheet *got = workbook_get_worksheet_by_name(workbook, NULL);
 
-    ASSERT_TRUE(NULL == got);
+    ASSERT_TRUE(got == NULL);
 
     lxw_workbook_free(workbook);
 }
-

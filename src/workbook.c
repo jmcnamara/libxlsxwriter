@@ -1876,3 +1876,24 @@ workbook_get_worksheet_by_name(lxw_workbook *self, const char *name)
     else
         return NULL;
 }
+
+/*
+ * Validate the worksheet name based on Excel's rules.
+ */
+lxw_error
+workbook_validate_worksheet_name(lxw_workbook *self, const char *sheetname)
+{
+    /* Check the UTF-8 length of the worksheet name. */
+    if (lxw_utf8_strlen(sheetname) > LXW_SHEETNAME_MAX)
+        return LXW_ERROR_SHEETNAME_LENGTH_EXCEEDED;
+
+    /* Check that the worksheet name doesn't contain invalid characters. */
+    if (strpbrk(sheetname, "[]:*?/\\"))
+        return LXW_ERROR_INVALID_SHEETNAME_CHARACTER;
+
+    /* Check if the worksheet name is already in use. */
+    if (workbook_get_worksheet_by_name(self, sheetname))
+        return LXW_ERROR_SHEETNAME_ALREADY_USED;
+
+    return LXW_NO_ERROR;
+}

@@ -671,6 +671,9 @@ lxw_error workbook_define_name(lxw_workbook *workbook, const char *name,
 lxw_worksheet *workbook_get_worksheet_by_name(lxw_workbook *workbook,
                                               const char *name);
 
+lxw_error workbook_validate_worksheet_name(lxw_workbook *workbook,
+                                           const char *sheetname);
+
 void lxw_workbook_free(lxw_workbook *workbook);
 void lxw_workbook_assemble_xml_file(lxw_workbook *workbook);
 void lxw_workbook_set_default_xf_indices(lxw_workbook *workbook);

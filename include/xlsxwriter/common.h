@@ -80,14 +80,23 @@ typedef enum lxw_error {
     /** Function parameter validation error. */
     LXW_ERROR_PARAMETER_VALIDATION,
 
-    /** String exceeds Excel's limit of 32,767 characters. */
-    LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED,
+    /** Worksheet name exceeds Excel's limit of 31 characters. */
+    LXW_ERROR_SHEETNAME_LENGTH_EXCEEDED,
+
+    /** Worksheet name contains invalid Excel character: '[]:*?/\\' */
+    LXW_ERROR_INVALID_SHEETNAME_CHARACTER,
+
+    /** Worksheet name is already in use. */
+    LXW_ERROR_SHEETNAME_ALREADY_USED,
 
     /** Parameter exceeds Excel's limit of 128 characters. */
     LXW_ERROR_128_STRING_LENGTH_EXCEEDED,
 
     /** Parameter exceeds Excel's limit of 255 characters. */
     LXW_ERROR_255_STRING_LENGTH_EXCEEDED,
+
+    /** String exceeds Excel's limit of 32,767 characters. */
+    LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED,
 
     /** Error finding internal string index. */
     LXW_ERROR_SHARED_STRING_INDEX_NOT_FOUND,
