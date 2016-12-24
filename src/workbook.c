@@ -1388,22 +1388,14 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
 {
     lxw_worksheet *worksheet;
     lxw_worksheet_name *worksheet_name = NULL;
+    lxw_error error;
     lxw_worksheet_init_data init_data = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     char *new_name = NULL;
 
     if (sheetname) {
         /* Use the user supplied name. */
-        if (lxw_utf8_strlen(sheetname) > LXW_SHEETNAME_MAX) {
-            LXW_WARN_FORMAT1("workbook_add_worksheet(): worksheet name '%s'"
-                             "exceeds Excel length limit  of 31 characters.",
-                             sheetname);
-
-            return NULL;
-        }
-        else {
-            init_data.name = lxw_strdup(sheetname);
-            init_data.quoted_name = lxw_quote_sheetname((char *) sheetname);
-        }
+        init_data.name = lxw_strdup(sheetname);
+        init_data.quoted_name = lxw_quote_sheetname((char *) sheetname);
     }
     else {
         /* Use the default SheetN name. */
@@ -1416,16 +1408,17 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
         init_data.quoted_name = lxw_strdup(new_name);
     }
 
+    /* Check that the worksheet name is valid. */
+    error = workbook_validate_worksheet_name(self, init_data.name);
+    if (error) {
+        LXW_WARN_FORMAT2("workbook_add_worksheet(): worksheet name '%s' has "
+                         "error: %s", init_data.name, lxw_strerror(error));
+        goto mem_error;
+    }
+
     /* Create a struct to find/store the worksheet name/pointer. */
     worksheet_name = calloc(1, sizeof(struct lxw_worksheet_name));
     GOTO_LABEL_ON_MEM_ERROR(worksheet_name, mem_error);
-
-    /* Check if the worksheet name is already in use. */
-    if (workbook_get_worksheet_by_name(self, init_data.name)) {
-        LXW_WARN_FORMAT1("workbook_add_worksheet(): worksheet name '%s' "
-                         "already exists.", init_data.name);
-        goto mem_error;
-    }
 
     /* Initialize the metadata to pass to the worksheet. */
     init_data.hidden = 0;
