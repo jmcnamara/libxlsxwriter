@@ -173,7 +173,7 @@ typedef struct lxw_doc_properties {
  *
  *   @note In this mode a row of data is written and then discarded when a
  *   cell in a new row is added via one of the `worksheet_write_*()`
- *   methods. Therefore, once this option is active, data should be written in
+ *   functions. Therefore, once this option is active, data should be written in
  *   sequential row order. For this reason the `worksheet_merge_range()`
  *   doesn't work in this mode. See also @ref ww_mem_constant.
  *
@@ -269,7 +269,7 @@ lxw_workbook *workbook_new(const char *filename);
  *
  * @return A lxw_workbook instance.
  *
- * This method is the same as the `workbook_new()` constructor but allows
+ * This function is the same as the `workbook_new()` constructor but allows
  * additional options to be set.
  *
  * @code
@@ -286,7 +286,7 @@ lxw_workbook *workbook_new(const char *filename);
  *
  *   @note In this mode a row of data is written and then discarded when a
  *   cell in a new row is added via one of the `worksheet_write_*()`
- *   methods. Therefore, once this option is active, data should be written in
+ *   functions. Therefore, once this option is active, data should be written in
  *   sequential row order. For this reason the `worksheet_merge_range()`
  *   doesn't work in this mode. See also @ref ww_mem_constant.
  *
@@ -467,7 +467,7 @@ lxw_error workbook_close(lxw_workbook *workbook);
  *
  * @return A #lxw_error.
  *
- * The `%workbook_set_properties` method can be used to set the document
+ * The `%workbook_set_properties` function can be used to set the document
  * properties of the Excel file created by `libxlsxwriter`. These properties
  * are visible when you use the `Office Button -> Prepare -> Properties`
  * option in Excel and are also available to external applications that read
@@ -522,9 +522,9 @@ lxw_error workbook_set_properties(lxw_workbook *workbook,
  *
  * @return A #lxw_error.
  *
- * The `%workbook_set_custom_property_string()` method can be used to set one
+ * The `%workbook_set_custom_property_string()` function can be used to set one
  * or more custom document text properties not covered by the standard
- * properties in the `workbook_set_properties()` method above.
+ * properties in the `workbook_set_properties()` function above.
  *
  *  For example:
  *
@@ -625,7 +625,7 @@ lxw_error workbook_set_custom_property_datetime(lxw_workbook *workbook,
  *
  * @return A #lxw_error.
  *
- * This method is used to defined a name that can be used to represent a
+ * This function is used to defined a name that can be used to represent a
  * value, a single cell or a range of cells in a workbook: These defined names
  * can then be used in formulas:
  *
@@ -671,6 +671,28 @@ lxw_error workbook_define_name(lxw_workbook *workbook, const char *name,
 lxw_worksheet *workbook_get_worksheet_by_name(lxw_workbook *workbook,
                                               const char *name);
 
+/**
+ * @param workbook  Pointer to a lxw_workbook instance.
+ * @param sheetname Worksheet name to validate.
+ *
+ * @return A #lxw_error.
+ *
+ * This function is used to validate a worksheet name according to the rules
+ * used by Excel:
+ *
+ * - The name is less than or equal to 31 UTF-8 characters.
+ * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `.
+ * - The name isn't already in use.
+ *
+ * @code
+ *     lxw_error err = workbook_validate_worksheet_name(workbook, "Foglio");
+ * @endcode
+ *
+ * This function is called by `workbook_add_worksheet()` but it can be
+ * explicitly called by the user beforehand to ensure that the worksheet
+ * name is valid.
+ *
+ */
 lxw_error workbook_validate_worksheet_name(lxw_workbook *workbook,
                                            const char *sheetname);
 
