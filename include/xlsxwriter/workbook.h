@@ -310,7 +310,7 @@ lxw_workbook *new_workbook_opt(const char *filename,
                                lxw_workbook_options *options);
 
 /**
- * @brief Add a new worksheet to a workbook:
+ * @brief Add a new worksheet to a workbook.
  *
  * @param workbook  Pointer to a lxw_workbook instance.
  * @param sheetname Optional worksheet name, defaults to Sheet1, etc.
@@ -668,10 +668,27 @@ documentation](http://office.microsoft.com/en-001/excel-help/define-and-use-name
 lxw_error workbook_define_name(lxw_workbook *workbook, const char *name,
                                const char *formula);
 
+/**
+ * @brief Get a worksheet object from its name.
+ *
+ * @param workbook
+ * @param name
+ *
+ * @return A lxw_worksheet object.
+ *
+ * This function returns a lxw_worksheet object reference based on its name:
+ *
+ * @code
+ *     worksheet = workbook_get_worksheet_by_name(workbook, "Sheet1");
+ * @endcode
+ *
+ */
 lxw_worksheet *workbook_get_worksheet_by_name(lxw_workbook *workbook,
                                               const char *name);
 
 /**
+ * @brief Validate a worksheet name.
+ *
  * @param workbook  Pointer to a lxw_workbook instance.
  * @param sheetname Worksheet name to validate.
  *
@@ -681,7 +698,7 @@ lxw_worksheet *workbook_get_worksheet_by_name(lxw_workbook *workbook,
  * used by Excel:
  *
  * - The name is less than or equal to 31 UTF-8 characters.
- * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `.
+ * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
  * - The name isn't already in use.
  *
  * @code

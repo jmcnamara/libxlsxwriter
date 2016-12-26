@@ -1851,6 +1851,9 @@ workbook_set_custom_property_datetime(lxw_workbook *self, const char *name,
     return LXW_NO_ERROR;
 }
 
+/*
+ * Get a worksheet object from its name.
+ */
 lxw_worksheet *
 workbook_get_worksheet_by_name(lxw_workbook *self, const char *name)
 {
