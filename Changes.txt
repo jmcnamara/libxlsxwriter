@@ -1,12 +1,26 @@
 /**
 @page changes Changes
 
-# 0.4.2 July 14 2016
+## 0.4.3 December 26 2016
+
+- Added `workbook_get_worksheet_by_name()` function to get a worksheet
+  object from its name.
+
+- Added `workbook_validate_worksheet_name()` function to validate a worksheet
+  name.
+
+- Fix for parameter length check when strings are UTF-8.
+  Issue [#84][gh_84].
+
+  [gh_84]: https://github.com/jmcnamara/libxlsxwriter/issues/84
+
+
+## 0.4.2 July 14 2016
 
 - Added support for OpenBSD and better support for FreeBSD. See @ref gsg_bsd.
 
 
-# 0.4.1 July 11 2016
+## 0.4.1 July 11 2016
 
 - Switched to using
   [tmpfileplus](http://www.di-mgt.com.au/c_function_to_create_temp_file.html)
@@ -19,26 +33,26 @@
   [gh_63]: https://github.com/jmcnamara/libxlsxwriter/issues/63
 
 
-# 0.4.0 July 5 2016
+## 0.4.0 July 5 2016
 
 - Added fixes for MSVC 2010.
 
 - Refactored public APIs to return #lxw_error instead of int.
 
 
-# 0.3.9 July 2 2016
+## 0.3.9 July 2 2016
 
 - Added support for MinGW, MinGW-w64, Cygwin, MSYS and MSYS2.
   See @ref gsg_ming.
 
 
-# 0.3.8 June 11 2016
+## 0.3.8 June 11 2016
 
 - Added workbook functions to set custom document properties. See
   `workbook_set_custom_property_string()` and @ref doc_custom_properties.c.
 
 
-# 0.3.7 June 2 2016
+## 0.3.7 June 2 2016
 
 - Added updated Cocoapods file for Cocoapods 1.0.0. This also add support for
   the "use_frameworks" directive. Thanks to Ludovico Rossi. See @ref
