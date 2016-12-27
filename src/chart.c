@@ -1866,10 +1866,10 @@ _chart_write_cat_val_axis(lxw_chart *self)
     _chart_write_title(self, &self->x_axis->title);
 
     /* Write the c:numFmt element. */
-    _chart_write_number_format(self, self->y_axis);
+    _chart_write_number_format(self, self->x_axis);
 
     /* Write the c:majorTickMark element. */
-    _chart_write_major_tick_mark(self, self->y_axis);
+    _chart_write_major_tick_mark(self, self->x_axis);
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
