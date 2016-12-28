@@ -18,7 +18,7 @@ INC_DIR     = ../../../include
 CFLAGS += -g -Wall -Wextra
 
 # Source files to compile.
-SRCS = $(wildcard *.c)
+SRCS = $(wildcard test_chart*.c)
 EXES = $(patsubst %.c,%,$(SRCS))
 
 LIBXLSXWRITER = ../../../src/libxlsxwriter.a

@@ -432,9 +432,35 @@ _chart_write_a_end_para_rpr(lxw_chart *self)
  * Write the <a:defRPr> element.
  */
 STATIC void
-_chart_write_a_def_rpr(lxw_chart *self)
+_chart_write_a_def_rpr(lxw_chart *self, lxw_chart_font *font)
 {
-    lxw_xml_empty_tag(self->file, "a:defRPr", NULL);
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!font) {
+        lxw_xml_empty_tag(self->file, "a:defRPr", NULL);
+        return;
+    }
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (font->size)
+        LXW_PUSH_ATTRIBUTES_INT("sz", font->size * 100);
+
+    LXW_PUSH_ATTRIBUTES_INT("b", font->bold);
+
+    LXW_PUSH_ATTRIBUTES_INT("i", font->italic);
+
+    if (font->underline)
+        LXW_PUSH_ATTRIBUTES_INT("u", font->underline);
+
+    if (font->baseline != -1)
+        LXW_PUSH_ATTRIBUTES_INT("baseline", font->baseline);
+
+    lxw_xml_empty_tag(self->file, "a:defRPr", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+
 }
 
 /*
@@ -476,12 +502,12 @@ _chart_write_a_r(lxw_chart *self, char *name)
  * Write the <a:pPr> element.
  */
 STATIC void
-_chart_write_a_p_pr(lxw_chart *self)
+_chart_write_a_p_pr_formula(lxw_chart *self, lxw_chart_font *font)
 {
     lxw_xml_start_tag(self->file, "a:pPr", NULL);
 
     /* Write the a:defRPr element. */
-    _chart_write_a_def_rpr(self);
+    _chart_write_a_def_rpr(self, font);
 
     lxw_xml_end_tag(self->file, "a:pPr");
 }
@@ -501,7 +527,7 @@ _chart_write_a_p_pr_pie(lxw_chart *self)
     lxw_xml_start_tag(self->file, "a:pPr", &attributes);
 
     /* Write the a:defRPr element. */
-    _chart_write_a_def_rpr(self);
+    _chart_write_a_def_rpr(self, NULL);
 
     lxw_xml_end_tag(self->file, "a:pPr");
 
@@ -512,12 +538,12 @@ _chart_write_a_p_pr_pie(lxw_chart *self)
  * Write the <a:pPr> element.
  */
 STATIC void
-_chart_write_a_p_pr_rich(lxw_chart *self)
+_chart_write_a_p_pr_rich(lxw_chart *self, lxw_chart_font *font)
 {
     lxw_xml_start_tag(self->file, "a:pPr", NULL);
 
     /* Write the a:defRPr element. */
-    _chart_write_a_def_rpr(self);
+    _chart_write_a_def_rpr(self, font);
 
     lxw_xml_end_tag(self->file, "a:pPr");
 }
@@ -526,12 +552,12 @@ _chart_write_a_p_pr_rich(lxw_chart *self)
  * Write the <a:p> element.
  */
 STATIC void
-_chart_write_a_p(lxw_chart *self)
+_chart_write_a_p_formula(lxw_chart *self, lxw_chart_font *font)
 {
     lxw_xml_start_tag(self->file, "a:p", NULL);
 
     /* Write the a:pPr element. */
-    _chart_write_a_p_pr(self);
+    _chart_write_a_p_pr_formula(self, font);
 
     /* Write the a:endParaRPr element. */
     _chart_write_a_end_para_rpr(self);
@@ -560,12 +586,12 @@ _chart_write_a_p_pie(lxw_chart *self)
  * Write the <a:p> element.
  */
 STATIC void
-_chart_write_a_p_rich(lxw_chart *self, char *name)
+_chart_write_a_p_rich(lxw_chart *self, char *name, lxw_chart_font *font)
 {
     lxw_xml_start_tag(self->file, "a:p", NULL);
 
     /* Write the a:pPr element. */
-    _chart_write_a_p_pr_rich(self);
+    _chart_write_a_p_pr_rich(self, font);
 
     /* Write the a:r element. */
     _chart_write_a_r(self, name);
@@ -586,17 +612,22 @@ _chart_write_a_lst_style(lxw_chart *self)
  * Write the <a:bodyPr> element.
  */
 STATIC void
-_chart_write_a_body_pr(lxw_chart *self, lxw_chart_title *title)
+_chart_write_a_body_pr(lxw_chart *self, int32_t rotation,
+                       uint8_t is_horizontal)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
 
-    if (title && title->is_horizontal) {
-        LXW_PUSH_ATTRIBUTES_STR("rot", "-5400000");
+    if (rotation == 0 && is_horizontal)
+        rotation = -5400000;
+
+    if (rotation)
+        LXW_PUSH_ATTRIBUTES_INT("rot", rotation);
+
+    if (is_horizontal)
         LXW_PUSH_ATTRIBUTES_STR("vert", "horz");
-    }
 
     lxw_xml_empty_tag(self->file, "a:bodyPr", &attributes);
 
@@ -850,18 +881,24 @@ _chart_write_tx_formula(lxw_chart *self, lxw_chart_title *title)
  * Write the <c:txPr> element.
  */
 STATIC void
-_chart_write_tx_pr(lxw_chart *self, lxw_chart_title *title)
+_chart_write_tx_pr(lxw_chart *self, uint8_t is_horizontal,
+                   lxw_chart_font *font)
 {
+    int32_t rotation = 0;
+
+    if (font)
+        rotation = font->rotation;
+
     lxw_xml_start_tag(self->file, "c:txPr", NULL);
 
     /* Write the a:bodyPr element. */
-    _chart_write_a_body_pr(self, title);
+    _chart_write_a_body_pr(self, rotation, is_horizontal);
 
     /* Write the a:lstStyle element. */
     _chart_write_a_lst_style(self);
 
     /* Write the a:p element. */
-    _chart_write_a_p(self);
+    _chart_write_a_p_formula(self, font);
 
     lxw_xml_end_tag(self->file, "c:txPr");
 }
@@ -870,12 +907,18 @@ _chart_write_tx_pr(lxw_chart *self, lxw_chart_title *title)
  * Write the <c:txPr> element for pie chart legends.
  */
 STATIC void
-_chart_write_tx_pr_pie(lxw_chart *self, lxw_chart_title *title)
+_chart_write_tx_pr_pie(lxw_chart *self, uint8_t is_horizontal,
+                       lxw_chart_font *font)
 {
+    int32_t rotation = 0;
+
+    if (font)
+        rotation = font->rotation;
+
     lxw_xml_start_tag(self->file, "c:txPr", NULL);
 
     /* Write the a:bodyPr element. */
-    _chart_write_a_body_pr(self, title);
+    _chart_write_a_body_pr(self, rotation, is_horizontal);
 
     /* Write the a:lstStyle element. */
     _chart_write_a_lst_style(self);
@@ -887,21 +930,56 @@ _chart_write_tx_pr_pie(lxw_chart *self, lxw_chart_title *title)
 }
 
 /*
+ * Write the <c:txPr> element.
+ */
+STATIC void
+_chart_write_axis_font(lxw_chart *self, lxw_chart_font *font)
+{
+    if (!font)
+        return;
+
+    lxw_xml_start_tag(self->file, "c:txPr", NULL);
+
+    /* Write the a:bodyPr element. */
+    _chart_write_a_body_pr(self, font->rotation, LXW_FALSE);
+
+    /* Write the a:lstStyle element. */
+    _chart_write_a_lst_style(self);
+
+    lxw_xml_start_tag(self->file, "a:p", NULL);
+
+    /* Write the a:pPr element. */
+    _chart_write_a_p_pr_rich(self, font);
+
+    /* Write the a:endParaRPr element. */
+    _chart_write_a_end_para_rpr(self);
+
+    lxw_xml_end_tag(self->file, "a:p");
+    lxw_xml_end_tag(self->file, "c:txPr");
+}
+
+/*
  * Write the <c:rich> element.
  */
 STATIC void
-_chart_write_rich(lxw_chart *self, lxw_chart_title *title)
+_chart_write_rich(lxw_chart *self, char *name, uint8_t is_horizontal,
+                  lxw_chart_font *font)
 {
+    int32_t rotation = 0;
+
+    if (font)
+        rotation = font->rotation;
+
     lxw_xml_start_tag(self->file, "c:rich", NULL);
 
     /* Write the a:bodyPr element. */
-    _chart_write_a_body_pr(self, title);
+    _chart_write_a_body_pr(self, rotation, is_horizontal);
 
     /* Write the a:lstStyle element. */
     _chart_write_a_lst_style(self);
 
     /* Write the a:p element. */
-    _chart_write_a_p_rich(self, title->name);
+    _chart_write_a_p_rich(self, name, font);
 
     lxw_xml_end_tag(self->file, "c:rich");
 }
@@ -910,12 +988,14 @@ _chart_write_rich(lxw_chart *self, lxw_chart_title *title)
  * Write the <c:tx> element.
  */
 STATIC void
-_chart_write_tx_rich(lxw_chart *self, lxw_chart_title *title)
+_chart_write_tx_rich(lxw_chart *self, char *name, uint8_t is_horizontal,
+                     lxw_chart_font *font)
 {
+
     lxw_xml_start_tag(self->file, "c:tx", NULL);
 
     /* Write the c:rich element. */
-    _chart_write_rich(self, title);
+    _chart_write_rich(self, name, is_horizontal, font);
 
     lxw_xml_end_tag(self->file, "c:tx");
 }
@@ -929,7 +1009,8 @@ _chart_write_title_rich(lxw_chart *self, lxw_chart_title *title)
     lxw_xml_start_tag(self->file, "c:title", NULL);
 
     /* Write the c:tx element. */
-    _chart_write_tx_rich(self, title);
+    _chart_write_tx_rich(self, title->name, title->is_horizontal,
+                         title->font);
 
     /* Write the c:layout element. */
     _chart_write_layout(self);
@@ -952,7 +1033,7 @@ _chart_write_title_formula(lxw_chart *self, lxw_chart_title *title)
     _chart_write_layout(self);
 
     /* Write the c:txPr element. */
-    _chart_write_tx_pr(self, title);
+    _chart_write_tx_pr(self, title->is_horizontal, title->font);
 
     lxw_xml_end_tag(self->file, "c:title");
 }
@@ -1605,7 +1686,7 @@ _chart_write_legend(lxw_chart *self)
 
     if (self->type == LXW_CHART_PIE || self->type == LXW_CHART_DOUGHNUT) {
         /* Write the c:txPr element. */
-        _chart_write_tx_pr_pie(self, NULL);
+        _chart_write_tx_pr_pie(self, LXW_FALSE, NULL);
     }
 
     lxw_xml_end_tag(self->file, "c:legend");
@@ -1779,6 +1860,9 @@ _chart_write_cat_axis(lxw_chart *self)
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
 
+    /* Write the axis font elements. */
+    _chart_write_axis_font(self, self->x_axis->num_font);
+
     /* Write the c:crossAx element. */
     _chart_write_cross_axis(self, self->axis_id_2);
 
@@ -1831,6 +1915,9 @@ _chart_write_val_axis(lxw_chart *self)
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
 
+    /* Write the axis font elements. */
+    _chart_write_axis_font(self, self->y_axis->num_font);
+
     /* Write the c:crossAx element. */
     _chart_write_cross_axis(self, self->axis_id_1);
 
@@ -1873,6 +1960,9 @@ _chart_write_cat_val_axis(lxw_chart *self)
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
+
+    /* Write the axis font elements. */
+    _chart_write_axis_font(self, self->x_axis->num_font);
 
     /* Write the c:crossAx element. */
     _chart_write_cross_axis(self, self->axis_id_2);
@@ -2659,6 +2749,30 @@ chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
 
     /* Start and end row, col are the same for single cell range. */
     _chart_set_range(axis->title.range, sheetname, row, col, row, col);
+}
+
+/*
+ * Set an axis title/name font.
+ */
+void
+chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font)
+{
+    if (!font)
+        return;
+
+    axis->title.font = font;
+}
+
+/*
+ * Set an axis number font.
+ */
+void
+chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font)
+{
+    if (!font)
+        return;
+
+    axis->num_font = font;
 }
 
 /*

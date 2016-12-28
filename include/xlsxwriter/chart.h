@@ -75,6 +75,7 @@
 #include <string.h>
 
 #include "common.h"
+#include "format.h"
 
 STAILQ_HEAD(lxw_chart_series_list, lxw_chart_series);
 STAILQ_HEAD(lxw_series_data_points, lxw_series_data_point);
@@ -201,7 +202,16 @@ typedef struct lxw_series_data_point {
 
 typedef struct lxw_chart_font {
 
+    char *font_name;
+    uint16_t size;
     uint8_t bold;
+    uint8_t italic;
+    uint8_t underline;
+    int32_t rotation;
+    lxw_color_t font_color;
+    uint8_t pitch_family;
+    uint8_t charset;
+    int8_t baseline;
 
 } lxw_chart_font;
 
@@ -210,7 +220,7 @@ typedef struct lxw_chart_title {
     char *name;
     lxw_row_t row;
     lxw_col_t col;
-    lxw_chart_font font;
+    lxw_chart_font *font;
     uint8_t off;
     uint8_t is_horizontal;
     uint8_t ignore_cache;
@@ -254,6 +264,9 @@ typedef struct lxw_chart_axis {
 
     uint8_t default_major_gridlines;
     uint8_t major_tick_mark;
+
+    uint8_t is_horizontal;
+    lxw_chart_font *num_font;
 
 } lxw_chart_axis;
 
@@ -577,6 +590,11 @@ void chart_axis_set_name(lxw_chart_axis *axis, const char *name);
  */
 void chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
                                lxw_row_t row, lxw_col_t col);
+
+void chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font);
+
+void chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font);
+
 /**
  * @brief Set the title of the chart.
  *

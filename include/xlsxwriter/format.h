@@ -430,7 +430,6 @@ typedef struct lxw_font {
     uint16_t font_size;
     uint8_t bold;
     uint8_t italic;
-    lxw_color_t font_color;
     uint8_t underline;
     uint8_t font_strikeout;
     uint8_t font_outline;
@@ -440,6 +439,7 @@ typedef struct lxw_font {
     uint8_t font_charset;
     uint8_t font_condense;
     uint8_t font_extend;
+    lxw_color_t font_color;
 } lxw_font;
 
 /*

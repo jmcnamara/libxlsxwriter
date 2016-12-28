@@ -46,7 +46,7 @@ test : all test_functional test_unit
 # Run the functional tests.
 test_functional : all
 	$(Q)$(MAKE) -C test/functional/src
-	$(Q)py.test test/functional -v
+	$(Q)py.test test/functional -v -k chart
 
 # Run all tests.
 test_unit :
