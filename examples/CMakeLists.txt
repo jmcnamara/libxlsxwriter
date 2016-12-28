@@ -1,0 +1,49 @@
+include_directories(
+    ${CMAKE_SOURCE_DIR}/include
+    ${ZLIB_INCLUDE_DIRS})
+
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
+    ${CMAKE_BINARY_DIR}/bin/examples)
+
+set(examples
+    anatomy
+    array_formula
+    autofilter
+    chart_area
+    chart_bar
+    chart
+    chart_column
+    chart_doughnut
+    chart_line
+    chart_pie
+    chart_radar
+    chart_scatter
+    chart_styles
+    constant_memory
+    dates_and_times01
+    dates_and_times02
+    dates_and_times03
+    defined_name
+    demo
+    doc_custom_properties
+    doc_properties
+    format_font
+    format_num_format
+    headers_footers
+    hello
+    hide_row_col
+    hide_sheet
+    hyperlinks
+    images
+    merge_range
+    panes
+    tab_colors
+    tutorial1
+    tutorial2
+    tutorial3
+    utf8
+    worksheet_protection)
+
+foreach(example ${examples})
+    add_simple_executable(${example})
+endforeach()
