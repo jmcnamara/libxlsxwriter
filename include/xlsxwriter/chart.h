@@ -204,6 +204,7 @@ typedef struct lxw_chart_fill {
 
     lxw_color_t color;
     uint8_t transparency;
+    uint8_t has_color;
 
 } lxw_chart_fill;
 

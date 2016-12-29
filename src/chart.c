@@ -226,6 +226,9 @@ _chart_convert_font_args(lxw_chart_font *user_font)
     if (font->rotation)
         font->rotation = font->rotation * 60000;
 
+    if (font->color)
+        font->has_color = LXW_TRUE;
+
     return font;
 }
 
@@ -506,12 +509,12 @@ _chart_write_a_srgb_clr(lxw_chart *self, lxw_color_t color,
  * Write the <a:solidFill> element.
  */
 STATIC void
-_chart_write_a_solid_fill(lxw_chart *self, lxw_chart_fill * fill)
+_chart_write_a_solid_fill(lxw_chart *self, lxw_chart_fill *fill)
 {
 
     lxw_xml_start_tag(self->file, "a:solidFill", NULL);
 
-    if (fill->color) {
+    if (fill->has_color) {
         /* Write the a:srgbClr element. */
         _chart_write_a_srgb_clr(self, fill->color, fill->transparency);
     }
@@ -587,9 +590,10 @@ _chart_write_a_def_rpr(lxw_chart *self, lxw_chart_font *font)
         lxw_xml_start_tag(self->file, "a:defRPr", &attributes);
 
         if (has_color) {
-            lxw_chart_fill fill = { 0, 0 };
+            lxw_chart_fill fill = { 0, 0, 0 };
 
             fill.color = font->color;
+            fill.has_color = LXW_TRUE;
             _chart_write_a_solid_fill(self, &fill);
         }
 
@@ -662,9 +666,10 @@ _chart_write_a_r_pr(lxw_chart *self, lxw_chart_font *font)
         lxw_xml_start_tag(self->file, "a:rPr", &attributes);
 
         if (has_color) {
-            lxw_chart_fill fill = { 0, 0 };
+            lxw_chart_fill fill = { 0, 0, 0 };
 
             fill.color = font->color;
+            fill.has_color = LXW_TRUE;
             _chart_write_a_solid_fill(self, &fill);
         }
 

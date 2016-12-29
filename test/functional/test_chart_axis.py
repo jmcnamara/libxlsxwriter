@@ -30,3 +30,21 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chart_axis07(self):
         self.run_exe_test('test_chart_axis07')
+
+
+
+    def test_chart_axis26(self):
+        self.run_exe_test('test_chart_axis26')
+
+    def test_chart_axis27(self):
+        self.run_exe_test('test_chart_axis27')
+
+    def test_chart_axis28(self):
+        self.run_exe_test('test_chart_axis28')
+
+    def test_chart_axis29(self):
+        self.run_exe_test('test_chart_axis29')
+
+
+    def test_chart_axis33(self):
+        self.run_exe_test('test_chart_axis33')
