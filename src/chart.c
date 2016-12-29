@@ -79,6 +79,19 @@ _chart_init_data_cache(lxw_series_range *range)
 }
 
 /*
+ * Free a chart font object.
+ */
+STATIC void
+_chart_free_font(lxw_chart_font *font)
+{
+    if (!font)
+        return;
+
+    free(font->name);
+    free(font);
+}
+
+/*
  * Free a chart object.
  */
 void
@@ -100,20 +113,26 @@ lxw_chart_free(lxw_chart *chart)
         free(chart->series_list);
     }
 
-    if (chart->x_axis)
+    if (chart->x_axis) {
+        _chart_free_font(chart->x_axis->title.font);
+        _chart_free_font(chart->x_axis->num_font);
+        _chart_free_range(chart->x_axis->title.range);
         free(chart->x_axis->title.name);
+        free(chart->x_axis);
+    }
 
-    if (chart->y_axis)
+    if (chart->y_axis) {
+        _chart_free_font(chart->y_axis->title.font);
+        _chart_free_font(chart->y_axis->num_font);
+        _chart_free_range(chart->y_axis->title.range);
         free(chart->y_axis->title.name);
+        free(chart->y_axis);
+    }
 
+    _chart_free_font(chart->title.font);
     _chart_free_range(chart->title.range);
-    _chart_free_range(chart->x_axis->title.range);
-    _chart_free_range(chart->y_axis->title.range);
-
-    free(chart->x_axis);
-    free(chart->y_axis);
-
     free(chart->title.name);
+
     free(chart);
 }
 
@@ -179,6 +198,35 @@ lxw_chart_new(uint8_t type)
 mem_error:
     lxw_chart_free(chart);
     return NULL;
+}
+
+/*
+ * Create a copy of a user supplied font.
+ */
+STATIC lxw_chart_font *
+_chart_convert_font_args(lxw_chart_font *user_font)
+{
+    lxw_chart_font *font;
+
+    if (!user_font)
+        return NULL;
+
+    font = calloc(1, sizeof(struct lxw_chart_font));
+    RETURN_ON_MEM_ERROR(font, NULL);
+
+    memcpy(font, user_font, sizeof(lxw_chart_font));
+
+    font->name = lxw_strdup(user_font->name);
+
+    /* Convert font size units. */
+    if (font->size)
+        font->size = font->size * 100;
+
+    /* Convert rotation into 60,000ths of a degree. */
+    if (font->rotation)
+        font->rotation = font->rotation * 60000;
+
+    return font;
 }
 
 /*
@@ -403,6 +451,75 @@ _chart_write_hole_size(lxw_chart *self)
 }
 
 /*
+ * Write the <a:alpha> element.
+ */
+STATIC void
+_chart_write_a_alpha(lxw_chart *self, uint8_t transparency)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    uint16_t val;
+
+    LXW_INIT_ATTRIBUTES();
+
+    val = (100 - transparency) * 1000;
+
+    LXW_PUSH_ATTRIBUTES_INT("val", val);
+
+    lxw_xml_empty_tag(self->file, "a:alpha", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <a:srgbClr> element.
+ */
+STATIC void
+_chart_write_a_srgb_clr(lxw_chart *self, lxw_color_t color,
+                        uint8_t transparency)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char rgb_str[LXW_ATTR_32];
+
+    LXW_INIT_ATTRIBUTES();
+
+    lxw_snprintf(rgb_str, LXW_ATTR_32, "%06X", color & LXW_COLOR_MASK);
+    LXW_PUSH_ATTRIBUTES_STR("val", rgb_str);
+
+    if (transparency) {
+        lxw_xml_start_tag(self->file, "a:srgbClr", &attributes);
+
+        /* Write the a:alpha element. */
+        _chart_write_a_alpha(self, transparency);
+
+        lxw_xml_end_tag(self->file, "a:srgbClr");
+    }
+    else {
+        lxw_xml_empty_tag(self->file, "a:srgbClr", &attributes);
+    }
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <a:solidFill> element.
+ */
+STATIC void
+_chart_write_a_solid_fill(lxw_chart *self, lxw_chart_fill * fill)
+{
+
+    lxw_xml_start_tag(self->file, "a:solidFill", NULL);
+
+    if (fill->color) {
+        /* Write the a:srgbClr element. */
+        _chart_write_a_srgb_clr(self, fill->color, fill->transparency);
+    }
+
+    lxw_xml_end_tag(self->file, "a:solidFill");
+}
+
+/*
  * Write the <a:t> element.
  */
 STATIC void
@@ -436,47 +553,143 @@ _chart_write_a_def_rpr(lxw_chart *self, lxw_chart_font *font)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-
-    if (!font) {
-        lxw_xml_empty_tag(self->file, "a:defRPr", NULL);
-        return;
-    }
+    uint8_t has_color = LXW_FALSE;
+    uint8_t has_latin = LXW_FALSE;
+    uint8_t use_font_default = LXW_FALSE;
 
     LXW_INIT_ATTRIBUTES();
 
-    if (font->size)
-        LXW_PUSH_ATTRIBUTES_INT("sz", font->size * 100);
+    if (font) {
+        has_color = font->color || font->has_color;
+        has_latin = font->name || font->pitch_family || font->charset;
+        use_font_default = !(has_color || has_latin || font->baseline == -1);
 
-    LXW_PUSH_ATTRIBUTES_INT("b", font->bold);
+        /* Set the font attributes. */
+        if (font->size)
+            LXW_PUSH_ATTRIBUTES_INT("sz", font->size);
 
-    LXW_PUSH_ATTRIBUTES_INT("i", font->italic);
+        if (use_font_default || font->bold)
+            LXW_PUSH_ATTRIBUTES_INT("b", font->bold & 0x1);
 
-    if (font->underline)
-        LXW_PUSH_ATTRIBUTES_INT("u", font->underline);
+        if (use_font_default || font->italic)
+            LXW_PUSH_ATTRIBUTES_INT("i", font->italic & 0x1);
 
-    if (font->baseline != -1)
-        LXW_PUSH_ATTRIBUTES_INT("baseline", font->baseline);
+        if (font->underline)
+            LXW_PUSH_ATTRIBUTES_STR("u", "sng");
 
-    lxw_xml_empty_tag(self->file, "a:defRPr", &attributes);
+        if (font->baseline != -1)
+            LXW_PUSH_ATTRIBUTES_INT("baseline", font->baseline);
+    }
+
+    /* There are sub-elements if the font name or color have changed. */
+    if (has_latin || has_color) {
+
+        lxw_xml_start_tag(self->file, "a:defRPr", &attributes);
+
+        if (has_color) {
+            lxw_chart_fill fill = { 0, 0 };
+
+            fill.color = font->color;
+            _chart_write_a_solid_fill(self, &fill);
+        }
+
+        if (has_latin) {
+            /* Free and reuse the attribute list for the latin attributes. */
+            LXW_FREE_ATTRIBUTES();
+
+            if (font->name)
+                LXW_PUSH_ATTRIBUTES_STR("typeface", font->name);
+
+            if (font->pitch_family)
+                LXW_PUSH_ATTRIBUTES_INT("pitchFamily", font->pitch_family);
+
+            if (font->pitch_family || font->charset)
+                LXW_PUSH_ATTRIBUTES_INT("charset", font->charset);
+
+            /* Write the <a:latin> element. */
+            lxw_xml_empty_tag(self->file, "a:latin", &attributes);
+        }
+
+        lxw_xml_end_tag(self->file, "a:defRPr");
+    }
+    else {
+        lxw_xml_empty_tag(self->file, "a:defRPr", &attributes);
+    }
 
     LXW_FREE_ATTRIBUTES();
-
 }
 
 /*
  * Write the <a:rPr> element.
  */
 STATIC void
-_chart_write_a_r_pr(lxw_chart *self)
+_chart_write_a_r_pr(lxw_chart *self, lxw_chart_font *font)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char lang[] = "en-US";
+    uint8_t has_color = LXW_FALSE;
+    uint8_t has_latin = LXW_FALSE;
+    uint8_t use_font_default = LXW_FALSE;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("lang", lang);
+    LXW_PUSH_ATTRIBUTES_STR("lang", "en-US");
 
-    lxw_xml_empty_tag(self->file, "a:rPr", &attributes);
+    if (font) {
+        has_color = font->color || font->has_color;
+        has_latin = font->name || font->pitch_family || font->charset;
+        use_font_default = !(has_color || has_latin || font->baseline == -1);
+
+        /* Set the font attributes. */
+        if (font->size)
+            LXW_PUSH_ATTRIBUTES_INT("sz", font->size);
+
+        if (use_font_default || font->bold)
+            LXW_PUSH_ATTRIBUTES_INT("b", font->bold & 0x1);
+
+        if (use_font_default || font->italic)
+            LXW_PUSH_ATTRIBUTES_INT("i", font->italic & 0x1);
+
+        if (font->underline)
+            LXW_PUSH_ATTRIBUTES_STR("u", "sng");
+
+        if (font->baseline != -1)
+            LXW_PUSH_ATTRIBUTES_INT("baseline", font->baseline);
+    }
+
+    /* There are sub-elements if the font name or color have changed. */
+    if (has_latin || has_color) {
+
+        lxw_xml_start_tag(self->file, "a:rPr", &attributes);
+
+        if (has_color) {
+            lxw_chart_fill fill = { 0, 0 };
+
+            fill.color = font->color;
+            _chart_write_a_solid_fill(self, &fill);
+        }
+
+        if (has_latin) {
+            /* Free and reuse the attribute list for the latin attributes. */
+            LXW_FREE_ATTRIBUTES();
+
+            if (font->name)
+                LXW_PUSH_ATTRIBUTES_STR("typeface", font->name);
+
+            if (font->pitch_family)
+                LXW_PUSH_ATTRIBUTES_INT("pitchFamily", font->pitch_family);
+
+            if (font->pitch_family || font->charset)
+                LXW_PUSH_ATTRIBUTES_INT("charset", font->charset);
+
+            /* Write the <a:latin> element. */
+            lxw_xml_empty_tag(self->file, "a:latin", &attributes);
+        }
+
+        lxw_xml_end_tag(self->file, "a:rPr");
+    }
+    else {
+        lxw_xml_empty_tag(self->file, "a:rPr", &attributes);
+    }
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -485,12 +698,12 @@ _chart_write_a_r_pr(lxw_chart *self)
  * Write the <a:r> element.
  */
 STATIC void
-_chart_write_a_r(lxw_chart *self, char *name)
+_chart_write_a_r(lxw_chart *self, char *name, lxw_chart_font *font)
 {
     lxw_xml_start_tag(self->file, "a:r", NULL);
 
     /* Write the a:rPr element. */
-    _chart_write_a_r_pr(self);
+    _chart_write_a_r_pr(self, font);
 
     /* Write the a:t element. */
     _chart_write_a_t(self, name);
@@ -594,7 +807,7 @@ _chart_write_a_p_rich(lxw_chart *self, char *name, lxw_chart_font *font)
     _chart_write_a_p_pr_rich(self, font);
 
     /* Write the a:r element. */
-    _chart_write_a_r(self, name);
+    _chart_write_a_r(self, name, font);
 
     lxw_xml_end_tag(self->file, "a:p");
 }
@@ -2757,10 +2970,7 @@ chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
 void
 chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font)
 {
-    if (!font)
-        return;
-
-    axis->title.font = font;
+    axis->title.font = _chart_convert_font_args(font);
 }
 
 /*
@@ -2769,10 +2979,7 @@ chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font)
 void
 chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font)
 {
-    if (!font)
-        return;
-
-    axis->num_font = font;
+    axis->num_font = _chart_convert_font_args(font);
 }
 
 /*
@@ -2804,6 +3011,15 @@ chart_title_set_name_range(lxw_chart *self, const char *sheetname,
 
     /* Start and end row, col are the same for single cell range. */
     _chart_set_range(self->title.range, sheetname, row, col, row, col);
+}
+
+/*
+ * Set an chart title font.
+ */
+void
+chart_title_set_name_font(lxw_chart *self, lxw_chart_font *font)
+{
+    self->title.font = _chart_convert_font_args(font);
 }
 
 /*

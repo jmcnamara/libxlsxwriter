@@ -30,7 +30,7 @@ TMPFILEPLUS_SO  = $(TMPFILEPLUS_DIR)/tmpfileplus.so
 endif
 
 # Flags passed to compiler.
-CFLAGS   += -g -O0 -Wall -Wextra -pedantic -ansi
+CFLAGS   += -g -O3 -Wall -Wextra -pedantic -ansi
 
 # Library names.
 LIBXLSXWRITER_A  = libxlsxwriter.a

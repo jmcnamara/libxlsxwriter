@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_chart_font01.xlsx");
+    lxw_workbook  *workbook  = new_workbook("test_chart_font02.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_BAR);
 
@@ -38,14 +38,19 @@ int main() {
 
     chart_title_set_name(chart, "Title");
 
-    lxw_chart_font font1 = {.size = 11, .bold = LXW_TRUE, .italic = LXW_TRUE};
-    lxw_chart_font font2 = {.size = 9, .italic = LXW_TRUE};
+    lxw_chart_font font1 = {.italic = LXW_TRUE};
+    lxw_chart_font font2 = {.bold = LXW_TRUE, .italic = LXW_TRUE};
+    lxw_chart_font font3 = {.size = 11, .bold = LXW_TRUE, .italic = LXW_TRUE};
+    lxw_chart_font font4 = {.size = 9, .italic = LXW_TRUE};
 
     chart_axis_set_name(chart->x_axis, "XXX");
-    chart_axis_set_name(chart->y_axis, "YYY");
+    chart_axis_set_name_font(chart->x_axis, &font1);
 
-    chart_axis_set_num_font(chart->x_axis, &font1);
-    chart_axis_set_num_font(chart->y_axis, &font2);
+    chart_axis_set_name(chart->y_axis, "YYY");
+    chart_axis_set_name_font(chart->y_axis, &font2);
+
+    chart_axis_set_num_font(chart->x_axis, &font3);
+    chart_axis_set_num_font(chart->y_axis, &font4);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

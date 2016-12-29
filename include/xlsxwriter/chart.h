@@ -200,18 +200,27 @@ typedef struct lxw_series_data_point {
 
 } lxw_series_data_point;
 
+typedef struct lxw_chart_fill {
+
+    lxw_color_t color;
+    uint8_t transparency;
+
+} lxw_chart_fill;
+
 typedef struct lxw_chart_font {
 
-    char *font_name;
+    char *name;
     uint16_t size;
     uint8_t bold;
     uint8_t italic;
     uint8_t underline;
     int32_t rotation;
-    lxw_color_t font_color;
+    lxw_color_t color;
     uint8_t pitch_family;
     uint8_t charset;
     int8_t baseline;
+
+    uint8_t has_color;
 
 } lxw_chart_font;
 
@@ -642,6 +651,9 @@ void chart_title_set_name(lxw_chart *chart, const char *name);
  */
 void chart_title_set_name_range(lxw_chart *chart, const char *sheetname,
                                 lxw_row_t row, lxw_col_t col);
+
+void chart_title_set_name_font(lxw_chart *chart, lxw_chart_font *font);
+
 /**
  * @brief Turn off an automatic chart title.
  *

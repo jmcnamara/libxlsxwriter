@@ -27,3 +27,7 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chart_scatter05(self):
         self.run_exe_test('test_chart_scatter05')
+
+
+    def test_chart_scatter15(self):
+        self.run_exe_test('test_chart_scatter15')

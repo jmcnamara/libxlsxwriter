@@ -11,13 +11,13 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_chart_font01.xlsx");
+    lxw_workbook  *workbook  = new_workbook("test_chart_font05.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_BAR);
 
     /* For testing, copy the randomly generated axis ids in the target file. */
-    chart->axis_id_1 = 43945344;
-    chart->axis_id_2 = 45705856;
+    chart->axis_id_1 = 49407488;
+    chart->axis_id_2 = 53740288;
 
     uint8_t data[5][3] = {
         {1, 2,  3},
@@ -38,8 +38,8 @@ int main() {
 
     chart_title_set_name(chart, "Title");
 
-    lxw_chart_font font1 = {.size = 11, .bold = LXW_TRUE, .italic = LXW_TRUE};
-    lxw_chart_font font2 = {.size = 9, .italic = LXW_TRUE};
+    lxw_chart_font font1 = {.name = "Arial", .pitch_family = 34, .charset = 0};
+    lxw_chart_font font2 = {.bold = LXW_TRUE, .italic = LXW_TRUE, .underline = LXW_TRUE};
 
     chart_axis_set_name(chart->x_axis, "XXX");
     chart_axis_set_name(chart->y_axis, "YYY");

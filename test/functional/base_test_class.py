@@ -46,7 +46,7 @@ class XLSXBaseTest(unittest.TestCase):
                                        self.exp_filename,
                                        self.ignore_files,
                                        self.ignore_elements)
-        self.assertEqual(got, exp)
+        self.assertEqual(exp, got)
 
     def tearDown(self):
         # Cleanup.
