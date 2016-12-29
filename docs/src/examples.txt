@@ -316,6 +316,13 @@ The default doughnut chart:
 
 
 ##############################################################
+@example chart_fonts.c
+
+An example of creating a simple chart with different fonts.
+
+@image html chart_fonts.png
+
+##############################################################
 @example chart_styles.c
 
 An example showing all 48 default chart styles available in Excel 2007 using

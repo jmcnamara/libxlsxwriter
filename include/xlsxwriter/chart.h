@@ -208,19 +208,35 @@ typedef struct lxw_chart_fill {
 
 } lxw_chart_fill;
 
+/**
+ * @brief Struct to represent a chart font.
+ */
 typedef struct lxw_chart_font {
 
+    /** The chart font name, such as "Arial" or "Calibri". */
     char *name;
+
+    /** The chart font size. The default is 11. */
     uint16_t size;
+
+    /** The chart font bold property. Set to 0 or 1. */
     uint8_t bold;
+
+    /** The chart font italic property. Set to 0 or 1. */
     uint8_t italic;
+
+    /** The chart font underline property. Set to 0 or 1. */
     uint8_t underline;
+
+    /** The chart font rotation property. Range: -90 to 90. */
     int32_t rotation;
+
+    /** The chart font color. See @ref working_with_colors. */
     lxw_color_t color;
+
     uint8_t pitch_family;
     uint8_t charset;
     int8_t baseline;
-
     uint8_t has_color;
 
 } lxw_chart_font;
@@ -261,9 +277,10 @@ typedef struct lxw_chart_series {
 } lxw_chart_series;
 
 /**
- * @brief Struct to represent an Excel chart axis. It is used in functions
- * that modify a chart axis but the members of the struct aren't modified
- * directly.
+ * @brief Struct to represent an Excel chart axis.
+ *
+ * The lxw_chart_axis struct is used in functions that modify a chart axis
+ * but the members of the struct aren't modified directly.
  */
 typedef struct lxw_chart_axis {
 
@@ -601,8 +618,43 @@ void chart_axis_set_name(lxw_chart_axis *axis, const char *name);
 void chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
                                lxw_row_t row, lxw_col_t col);
 
+/**
+ * @brief  Set the font properties for a chart axis name.
+ *
+ * @param axis  A pointer to a chart #lxw_chart_axis object.
+ * @param font  A pointer to a chart #lxw_chart_font font struct.
+ *
+ * The `%chart_axis_set_name_font()` function is used to set the font of an
+ * axis name:
+ *
+ * @code
+ *     lxw_chart_font font = {.bold = LXW_TRUE, .color = LXW_COLOR_BLUE};
+ *
+ *     chart_axis_set_name(chart->x_axis, "Yearly data");
+ *     chart_axis_set_name_font(chart->x_axis, &font);
+ * @endcode
+ *
+ * @image html chart_axis_set_name_font.png
+ */
 void chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font);
 
+/**
+ * @brief  Set the font properties for the numbers of a chart axis.
+ *
+ * @param axis  A pointer to a chart #lxw_chart_axis object.
+ * @param font  A pointer to a chart #lxw_chart_font font struct.
+ *
+ * The `%chart_axis_set_num_font()` function is used to set the font of the
+ * numbers on an axis:
+ *
+ * @code
+ *     lxw_chart_font font = {.bold = LXW_TRUE, .color = LXW_COLOR_BLUE};
+ *
+ *     chart_axis_set_num_font(chart->x_axis, &font1;
+ * @endcode
+ *
+ * @image html chart_axis_set_num_font.png
+ */
 void chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font);
 
 /**
@@ -653,6 +705,24 @@ void chart_title_set_name(lxw_chart *chart, const char *name);
 void chart_title_set_name_range(lxw_chart *chart, const char *sheetname,
                                 lxw_row_t row, lxw_col_t col);
 
+/**
+ * @brief  Set the font properties for a chart title.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ * @param font  A pointer to a chart #lxw_chart_font font struct.
+ *
+ * The `%chart_title_set_name_font()` function is used to set the font of a
+ * chart title:
+ *
+ * @code
+ *     lxw_chart_font font = {.bold = LXW_TRUE, .color = LXW_COLOR_BLUE};
+ *
+ *     chart_title_set_name(chart, "Year End Results");
+ *     chart_title_set_name_font(chart, &font);
+ * @endcode
+ *
+ * @image html chart_title_set_name_font.png
+ */
 void chart_title_set_name_font(lxw_chart *chart, lxw_chart_font *font);
 
 /**
