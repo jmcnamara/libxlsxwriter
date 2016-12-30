@@ -1,6 +1,12 @@
 /**
 @page changes Changes
 
+## 0.4.4 December 30 2016
+
+- Added chart fonts. See `chart_axis_set_name_font()`, `chart_axis_set_num_font()`,
+  `chart_title_set_name_font()` and @ref chart_fonts.
+
+
 ## 0.4.3 December 26 2016
 
 - Added `workbook_get_worksheet_by_name()` function to get a worksheet

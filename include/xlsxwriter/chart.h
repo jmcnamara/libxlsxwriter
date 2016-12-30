@@ -638,7 +638,7 @@ void chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
  *
  * @image html chart_axis_set_name_font.png
  *
- * For more information about working with chart fonts see @ref chart_fonts.
+ * For more information see @ref chart_fonts.
  */
 void chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font);
 
@@ -659,7 +659,7 @@ void chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font);
  *
  * @image html chart_axis_set_num_font.png
  *
- * For more information about working with chart fonts see @ref chart_fonts.
+ * For more information see @ref chart_fonts.
  */
 void chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font);
 
@@ -729,7 +729,7 @@ void chart_title_set_name_range(lxw_chart *chart, const char *sheetname,
  *
  * @image html chart_title_set_name_font.png
  *
- * For more information about working with chart fonts see @ref chart_fonts.
+ * For more information see @ref chart_fonts.
  */
 void chart_title_set_name_font(lxw_chart *chart, lxw_chart_font *font);
 

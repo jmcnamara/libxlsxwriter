@@ -25,7 +25,7 @@ axis, some can be set for a category axis and some properties can be set for
 both. The documentation calls out the type of axis to which functions apply.
 
 
-@section chart_fonts Chart Fonts
+@section chart_fonts Working with Chart Fonts
 
 Font properties can be set for several chart objects such as chart titles,
 axis labels, and axis numbering.
