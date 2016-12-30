@@ -102,6 +102,7 @@ lxw_chart_free(lxw_chart *chart)
     if (!chart)
         return;
 
+    /* Chart series. */
     if (chart->series_list) {
         while (!STAILQ_EMPTY(chart->series_list)) {
             series = STAILQ_FIRST(chart->series_list);
@@ -113,6 +114,7 @@ lxw_chart_free(lxw_chart *chart)
         free(chart->series_list);
     }
 
+    /* X Axis. */
     if (chart->x_axis) {
         _chart_free_font(chart->x_axis->title.font);
         _chart_free_font(chart->x_axis->num_font);
@@ -121,6 +123,7 @@ lxw_chart_free(lxw_chart *chart)
         free(chart->x_axis);
     }
 
+    /* Y Axis. */
     if (chart->y_axis) {
         _chart_free_font(chart->y_axis->title.font);
         _chart_free_font(chart->y_axis->num_font);
@@ -129,9 +132,13 @@ lxw_chart_free(lxw_chart *chart)
         free(chart->y_axis);
     }
 
+    /* Chart title. */
     _chart_free_font(chart->title.font);
     _chart_free_range(chart->title.range);
     free(chart->title.name);
+
+    /* Chart legend. */
+    _chart_free_font(chart->legend.font);
 
     free(chart);
 }
@@ -192,6 +199,8 @@ lxw_chart_new(uint8_t type)
 
     chart->has_horiz_cat_axis = LXW_FALSE;
     chart->has_horiz_val_axis = LXW_TRUE;
+
+    chart->legend.position = LXW_CHART_LEGEND_RIGHT;
 
     return chart;
 
@@ -1871,17 +1880,34 @@ _chart_write_cross_between(lxw_chart *self)
 }
 
 /*
- * Write the <c:legendPos> element.
+ * Write the <c:overlay> element.
  */
 STATIC void
-_chart_write_legend_pos(lxw_chart *self)
+_chart_write_overlay(lxw_chart *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "r";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:overlay", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:legendPos> element.
+ */
+STATIC void
+_chart_write_legend_pos(lxw_chart *self, char *position)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+
+    LXW_PUSH_ATTRIBUTES_STR("val", position);
 
     lxw_xml_empty_tag(self->file, "c:legendPos", &attributes);
 
@@ -1894,10 +1920,35 @@ _chart_write_legend_pos(lxw_chart *self)
 STATIC void
 _chart_write_legend(lxw_chart *self)
 {
+    uint8_t has_overlay = LXW_FALSE;
+
+    if (self->legend.position == LXW_CHART_LEGEND_NONE)
+        return;
+
     lxw_xml_start_tag(self->file, "c:legend", NULL);
 
     /* Write the c:legendPos element. */
-    _chart_write_legend_pos(self);
+    switch (self->legend.position) {
+        case LXW_CHART_LEGEND_LEFT:
+            _chart_write_legend_pos(self, "l");
+            break;
+        case LXW_CHART_LEGEND_TOP:
+            _chart_write_legend_pos(self, "t");
+            break;
+        case LXW_CHART_LEGEND_BOTTOM:
+            _chart_write_legend_pos(self, "b");
+            break;
+        case LXW_CHART_LEGEND_OVERLAY_RIGHT:
+            _chart_write_legend_pos(self, "r");
+            has_overlay = LXW_TRUE;
+            break;
+        case LXW_CHART_LEGEND_OVERLAY_LEFT:
+            _chart_write_legend_pos(self, "l");
+            has_overlay = LXW_TRUE;
+            break;
+        default:
+            _chart_write_legend_pos(self, "r");
+    }
 
     /* Write the c:layout element. */
     _chart_write_layout(self);
@@ -1906,6 +1957,10 @@ _chart_write_legend(lxw_chart *self)
         /* Write the c:txPr element. */
         _chart_write_tx_pr_pie(self, LXW_FALSE, NULL);
     }
+
+    /* Write the c:overlay element. */
+    if (has_overlay)
+        _chart_write_overlay(self);
 
     lxw_xml_end_tag(self->file, "c:legend");
 }
@@ -1918,10 +1973,9 @@ _chart_write_plot_vis_only(lxw_chart *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "1";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
 
     lxw_xml_empty_tag(self->file, "c:plotVisOnly", &attributes);
 
@@ -3034,6 +3088,15 @@ void
 chart_title_off(lxw_chart *self)
 {
     self->title.off = LXW_TRUE;
+}
+
+/*
+ * Set the chart legend position.
+ */
+void
+chart_legend_set_position(lxw_chart *self, uint8_t position)
+{
+    self->legend.position = position;
 }
 
 /*

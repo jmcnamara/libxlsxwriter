@@ -149,6 +149,31 @@ typedef enum lxw_chart_types {
     LXW_CHART_RADAR_FILLED
 } lxw_chart_types;
 
+/** Chart legend positions. */
+typedef enum lxw_chart_legend_postions {
+
+    /** No chart legend. */
+    LXW_CHART_LEGEND_NONE = 0,
+
+    /** Chart legend positioned at right side. */
+    LXW_CHART_LEGEND_RIGHT,
+
+    /** Chart legend positioned at left side. */
+    LXW_CHART_LEGEND_LEFT,
+
+    /** Chart legend positioned at top. */
+    LXW_CHART_LEGEND_TOP,
+
+    /** Chart legend positioned at bottom. */
+    LXW_CHART_LEGEND_BOTTOM,
+
+    /** Chart legend overlaid at right side. */
+    LXW_CHART_LEGEND_OVERLAY_RIGHT,
+
+    /** Chart legend overlaid at left side. */
+    LXW_CHART_LEGEND_OVERLAY_LEFT
+} lxw_chart_legend_postions;
+
 enum lxw_chart_subtypes {
 
     LXW_CHART_SUBTYPE_NONE = 0,
@@ -242,6 +267,13 @@ typedef struct lxw_chart_font {
     uint8_t has_color;
 
 } lxw_chart_font;
+
+typedef struct lxw_chart_legend {
+
+    lxw_chart_font *font;
+    uint8_t position;
+
+} lxw_chart_legend;
 
 typedef struct lxw_chart_title {
 
@@ -356,6 +388,8 @@ typedef struct lxw_chart {
     uint8_t cross_between;
     uint8_t cat_axis_position;
     uint8_t val_axis_position;
+
+    lxw_chart_legend legend;
 
     struct lxw_chart_series_list *series_list;
 
@@ -750,6 +784,8 @@ void chart_title_set_name_font(lxw_chart *chart, lxw_chart_font *font);
  */
 void chart_title_off(lxw_chart *chart);
 
+void chart_legend_set_position(lxw_chart *chart, uint8_t position);
+
 /**
  * @brief Set the chart style type.
  *
@@ -790,6 +826,7 @@ int lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
 #ifdef TESTING
 
 STATIC void _chart_xml_declaration(lxw_chart *chart);
+STATIC void _chart_write_legend(lxw_chart *chart);
 
 #endif /* TESTING */
 

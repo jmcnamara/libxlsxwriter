@@ -51,6 +51,8 @@
 -T lxw_chart_axis
 -T lxw_chart_fill
 -T lxw_chart_font
+-T lxw_chart_legend
+-T lxw_chart_legend_postions
 -T lxw_chart_series
 -T lxw_chart_title
 -T lxw_chart_types
