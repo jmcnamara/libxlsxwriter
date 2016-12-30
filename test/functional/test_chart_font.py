@@ -31,7 +31,11 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_chart_font06(self):
         self.run_exe_test('test_chart_font06')
 
-    # Need support for legend for 07 and 08.
+    def test_chart_font07(self):
+        self.run_exe_test('test_chart_font07')
+
+    def test_chart_font08(self):
+        self.run_exe_test('test_chart_font08')
 
     def test_chart_font09(self):
         self.run_exe_test('test_chart_font09')

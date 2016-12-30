@@ -139,6 +139,7 @@ lxw_chart_free(lxw_chart *chart)
 
     /* Chart legend. */
     _chart_free_font(chart->legend.font);
+    free(chart->delete_series);
 
     free(chart);
 }
@@ -743,7 +744,7 @@ _chart_write_a_p_pr_formula(lxw_chart *self, lxw_chart_font *font)
  * Write the <a:pPr> element for pie chart legends.
  */
 STATIC void
-_chart_write_a_p_pr_pie(lxw_chart *self)
+_chart_write_a_p_pr_pie(lxw_chart *self, lxw_chart_font *font)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -754,7 +755,7 @@ _chart_write_a_p_pr_pie(lxw_chart *self)
     lxw_xml_start_tag(self->file, "a:pPr", &attributes);
 
     /* Write the a:defRPr element. */
-    _chart_write_a_def_rpr(self, NULL);
+    _chart_write_a_def_rpr(self, font);
 
     lxw_xml_end_tag(self->file, "a:pPr");
 
@@ -796,12 +797,12 @@ _chart_write_a_p_formula(lxw_chart *self, lxw_chart_font *font)
  * Write the <a:p> element for pie chart legends.
  */
 STATIC void
-_chart_write_a_p_pie(lxw_chart *self)
+_chart_write_a_p_pie(lxw_chart *self, lxw_chart_font *font)
 {
     lxw_xml_start_tag(self->file, "a:p", NULL);
 
     /* Write the a:pPr element. */
-    _chart_write_a_p_pr_pie(self);
+    _chart_write_a_p_pr_pie(self, font);
 
     /* Write the a:endParaRPr element. */
     _chart_write_a_end_para_rpr(self);
@@ -1151,7 +1152,7 @@ _chart_write_tx_pr_pie(lxw_chart *self, uint8_t is_horizontal,
     _chart_write_a_lst_style(self);
 
     /* Write the a:p element. */
-    _chart_write_a_p_pie(self);
+    _chart_write_a_p_pie(self, font);
 
     lxw_xml_end_tag(self->file, "c:txPr");
 }
@@ -1263,6 +1264,23 @@ _chart_write_title_formula(lxw_chart *self, lxw_chart_title *title)
     _chart_write_tx_pr(self, title->is_horizontal, title->font);
 
     lxw_xml_end_tag(self->file, "c:title");
+}
+
+/*
+ * Write the <c:delete> element.
+ */
+STATIC void
+_chart_write_delete(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:delete", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -1915,12 +1933,30 @@ _chart_write_legend_pos(lxw_chart *self, char *position)
 }
 
 /*
+ * Write the <c:legendEntry> element.
+ */
+STATIC void
+_chart_write_legend_entry(lxw_chart *self, uint16_t index)
+{
+    lxw_xml_start_tag(self->file, "c:legendEntry", NULL);
+
+    /* Write the c:idx element. */
+    _chart_write_idx(self, self->delete_series[index]);
+
+    /* Write the c:delete element. */
+    _chart_write_delete(self);
+
+    lxw_xml_end_tag(self->file, "c:legendEntry");
+}
+
+/*
  * Write the <c:legend> element.
  */
 STATIC void
 _chart_write_legend(lxw_chart *self)
 {
     uint8_t has_overlay = LXW_FALSE;
+    uint16_t index;
 
     if (self->legend.position == LXW_CHART_LEGEND_NONE)
         return;
@@ -1950,17 +1986,32 @@ _chart_write_legend(lxw_chart *self)
             _chart_write_legend_pos(self, "r");
     }
 
+    /* Remove series labels from the legend. */
+    for (index = 0; index < self->delete_series_count; index++) {
+        /* Write the c:legendEntry element. */
+        _chart_write_legend_entry(self, index);
+    }
+
     /* Write the c:layout element. */
     _chart_write_layout(self);
 
     if (self->type == LXW_CHART_PIE || self->type == LXW_CHART_DOUGHNUT) {
-        /* Write the c:txPr element. */
-        _chart_write_tx_pr_pie(self, LXW_FALSE, NULL);
-    }
+        /* Write the c:overlay element. */
+        if (has_overlay)
+            _chart_write_overlay(self);
 
-    /* Write the c:overlay element. */
-    if (has_overlay)
-        _chart_write_overlay(self);
+        /* Write the c:txPr element for Pie/Doughnut charts. */
+        _chart_write_tx_pr_pie(self, LXW_FALSE, self->legend.font);
+    }
+    else {
+        /* Write the c:txPr element for all other charts. */
+        if (self->legend.font)
+            _chart_write_tx_pr(self, LXW_FALSE, self->legend.font);
+
+        /* Write the c:overlay element. */
+        if (has_overlay)
+            _chart_write_overlay(self);
+    }
 
     lxw_xml_end_tag(self->file, "c:legend");
 }
@@ -3073,7 +3124,7 @@ chart_title_set_name_range(lxw_chart *self, const char *sheetname,
 }
 
 /*
- * Set an chart title font.
+ * Set the chart title font.
  */
 void
 chart_title_set_name_font(lxw_chart *self, lxw_chart_font *font)
@@ -3097,6 +3148,41 @@ void
 chart_legend_set_position(lxw_chart *self, uint8_t position)
 {
     self->legend.position = position;
+}
+
+/*
+ * Set the legend font.
+ */
+void
+chart_legend_set_font(lxw_chart *self, lxw_chart_font *font)
+{
+    self->legend.font = _chart_convert_font_args(font);
+}
+
+/*
+ * Remove one or more series from the the legend.
+ */
+lxw_error
+chart_legend_delete_series(lxw_chart *self, int16_t delete_series[])
+{
+    uint16_t count = 0;
+
+    if (delete_series == NULL)
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+
+    while (delete_series[count] > 0)
+        count++;
+
+    /* The maximum number of series in a chart is 255. */
+    if (count > 255)
+        count = 255;
+
+    self->delete_series = calloc(count, sizeof(int16_t));
+    RETURN_ON_MEM_ERROR(self->delete_series, LXW_ERROR_MEMORY_MALLOC_FAILED);
+    memcpy(self->delete_series, delete_series, count * sizeof(int16_t));
+    self->delete_series_count = count;
+
+    return LXW_NO_ERROR;
 }
 
 /*

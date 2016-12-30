@@ -16,5 +16,14 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_chart_pie01(self):
         self.run_exe_test('test_chart_pie01')
 
+    def test_chart_pie02(self):
+        self.run_exe_test('test_chart_pie02')
+
+    def test_chart_pie03(self):
+        self.run_exe_test('test_chart_pie03')
+
+    def test_chart_pie04(self):
+        self.run_exe_test('test_chart_pie04')
+
     def test_chart_pie05(self):
         self.run_exe_test('test_chart_pie05')

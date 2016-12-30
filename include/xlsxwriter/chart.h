@@ -390,6 +390,8 @@ typedef struct lxw_chart {
     uint8_t val_axis_position;
 
     lxw_chart_legend legend;
+    int16_t *delete_series;
+    uint16_t delete_series_count;
 
     struct lxw_chart_series_list *series_list;
 
@@ -785,6 +787,11 @@ void chart_title_set_name_font(lxw_chart *chart, lxw_chart_font *font);
 void chart_title_off(lxw_chart *chart);
 
 void chart_legend_set_position(lxw_chart *chart, uint8_t position);
+
+void chart_legend_set_font(lxw_chart *chart, lxw_chart_font *font);
+
+lxw_error chart_legend_delete_series(lxw_chart *chart,
+                                     int16_t delete_series[]);
 
 /**
  * @brief Set the chart style type.
