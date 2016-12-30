@@ -50,7 +50,8 @@ int main() {
     lxw_chart_font font2 = {.name = "Courier", .color = 0x92D050};
     lxw_chart_font font3 = {.name = "Arial",   .color = 0x00B0F0};
     lxw_chart_font font4 = {.name = "Century", .color = LXW_COLOR_RED};
-    lxw_chart_font font5 = {.bold      = LXW_TRUE,
+    lxw_chart_font font5 = {.rotation = -30};
+    lxw_chart_font font6 = {.bold      = LXW_TRUE,
                             .italic    = LXW_TRUE,
                             .underline = LXW_TRUE,
                             .color     = 0x7030A0};
@@ -59,15 +60,20 @@ int main() {
     chart_title_set_name(chart, "Test Results");
     chart_title_set_name_font(chart, &font1);
 
-    /* Write the X axis with a font. */
-    chart_axis_set_name(chart->x_axis, "Month");
-    chart_axis_set_name_font(chart->x_axis, &font2);
-    chart_axis_set_num_font(chart->x_axis, &font3);
-
     /* Write the Y axis with a font. */
     chart_axis_set_name(chart->y_axis, "Units");
-    chart_axis_set_name_font(chart->y_axis, &font4);
-    chart_axis_set_num_font(chart->y_axis, &font5);
+    chart_axis_set_name_font(chart->y_axis, &font2);
+    chart_axis_set_num_font(chart->y_axis, &font3);
+
+    /* Write the X axis with a font. */
+    chart_axis_set_name(chart->x_axis, "Month");
+    chart_axis_set_name_font(chart->x_axis, &font4);
+    chart_axis_set_num_font(chart->x_axis, &font5);
+
+
+    /* Display the chart legend at the bottom of the chart. */
+    chart_legend_set_position(chart, LXW_CHART_LEGEND_BOTTOM);
+    chart_legend_set_font(chart, &font6);
 
     /* Insert the chart into the worksheet. */
     worksheet_insert_chart(worksheet, CELL("E9"), chart);

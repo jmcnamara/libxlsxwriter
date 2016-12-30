@@ -381,7 +381,7 @@ lxw_format *workbook_add_format(lxw_workbook *workbook);
  * @brief Create a new chart to be added to a worksheet:
  *
  * @param workbook   Pointer to a lxw_workbook instance.
- * @param chart_type The type of chart to be created. See #lxw_chart_types.
+ * @param chart_type The type of chart to be created. See #lxw_chart_type.
  *
  * @return A lxw_chart object.
  *
@@ -401,7 +401,7 @@ lxw_format *workbook_add_format(lxw_workbook *workbook);
  *     worksheet_insert_chart(worksheet, CELL("B7"), chart);
  * @endcode
  *
- * The available chart types are defined in #lxw_chart_types. The types of
+ * The available chart types are defined in #lxw_chart_type. The types of
  * charts that are supported are:
  *
  * | Chart type                               | Description                            |

@@ -187,8 +187,8 @@ lxw_chart_new(uint8_t type)
     chart->hole_size = 50;
 
     /* Set the default axis positions. */
-    chart->cat_axis_position = LXW_CHART_BOTTOM;
-    chart->val_axis_position = LXW_CHART_LEFT;
+    chart->cat_axis_position = LXW_CHART_AXIS_BOTTOM;
+    chart->val_axis_position = LXW_CHART_AXIS_LEFT;
 
     lxw_strcpy(chart->x_axis->default_num_format, "General");
     lxw_strcpy(chart->y_axis->default_num_format, "General");
@@ -1725,13 +1725,13 @@ _chart_write_axis_pos(lxw_chart *self, uint8_t position)
 
     LXW_INIT_ATTRIBUTES();
 
-    if (position == LXW_CHART_RIGHT)
+    if (position == LXW_CHART_AXIS_RIGHT)
         LXW_PUSH_ATTRIBUTES_STR("val", "r");
-    else if (position == LXW_CHART_LEFT)
+    else if (position == LXW_CHART_AXIS_LEFT)
         LXW_PUSH_ATTRIBUTES_STR("val", "l");
-    else if (position == LXW_CHART_TOP)
+    else if (position == LXW_CHART_AXIS_TOP)
         LXW_PUSH_ATTRIBUTES_STR("val", "t");
-    else if (position == LXW_CHART_BOTTOM)
+    else if (position == LXW_CHART_AXIS_BOTTOM)
         LXW_PUSH_ATTRIBUTES_STR("val", "b");
 
     lxw_xml_empty_tag(self->file, "c:axPos", &attributes);
@@ -2686,8 +2686,8 @@ _chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
     }
 
     /* Override the default axis positions for a bar chart. */
-    self->cat_axis_position = LXW_CHART_LEFT;
-    self->val_axis_position = LXW_CHART_BOTTOM;
+    self->cat_axis_position = LXW_CHART_AXIS_LEFT;
+    self->val_axis_position = LXW_CHART_AXIS_BOTTOM;
 
     /* Initialize the function pointers for this chart type. */
     self->write_chart_type = _chart_write_bar_chart;

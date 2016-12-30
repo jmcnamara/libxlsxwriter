@@ -95,31 +95,10 @@ HTML style RGB color, See @ref working_with_colors :
 
 Here is a longer example of several chart formats:
 
-@code
-    // Create some fonts to use in the chart.
-    lxw_chart_font font1 = {.name = "Calibri", .color = LXW_COLOR_BLUE};
-    lxw_chart_font font2 = {.name = "Courier", .color = 0x92D050};
-    lxw_chart_font font3 = {.name = "Arial",   .color = 0x00B0F0};
-    lxw_chart_font font4 = {.name = "Century", .color = LXW_COLOR_RED};
-    lxw_chart_font font5 = {.bold      = LXW_TRUE,
-                            .italic    = LXW_TRUE,
-                            .underline = LXW_TRUE,
-                            .color     = 0x7030A0};
 
-    // Write the chart title with a font.
-    chart_title_set_name(chart, "Test Results");
-    chart_title_set_name_font(chart, &font1);
-
-    // Write the X axis with a font.
-    chart_axis_set_name(chart->x_axis, "Month");
-    chart_axis_set_name_font(chart->x_axis, &font2);
-    chart_axis_set_num_font(chart->x_axis, &font3);
-
-    // Write the Y axis with a font.
-    chart_axis_set_name(chart->y_axis, "Units");
-    chart_axis_set_name_font(chart->y_axis, &font4);
-    chart_axis_set_num_font(chart->y_axis, &font5);
-@endcode
+@dontinclude chart_fonts.c
+@skip lxw_chart_font
+@until chart_legend_set_font
 
 @image html chart_fonts.png
 

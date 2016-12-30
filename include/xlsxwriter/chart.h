@@ -83,7 +83,7 @@ STAILQ_HEAD(lxw_series_data_points, lxw_series_data_point);
 #define LXW_CHART_NUM_FORMAT_LEN 128
 
 /** Available chart types . */
-typedef enum lxw_chart_types {
+typedef enum lxw_chart_type {
 
     /** None. */
     LXW_CHART_NONE = 0,
@@ -147,10 +147,10 @@ typedef enum lxw_chart_types {
 
     /** Radar chart - filled. */
     LXW_CHART_RADAR_FILLED
-} lxw_chart_types;
+} lxw_chart_type;
 
 /** Chart legend positions. */
-typedef enum lxw_chart_legend_postions {
+typedef enum lxw_chart_legend_position {
 
     /** No chart legend. */
     LXW_CHART_LEGEND_NONE = 0,
@@ -172,32 +172,32 @@ typedef enum lxw_chart_legend_postions {
 
     /** Chart legend overlaid at left side. */
     LXW_CHART_LEGEND_OVERLAY_LEFT
-} lxw_chart_legend_postions;
+} lxw_chart_legend_position;
 
-enum lxw_chart_subtypes {
+enum lxw_chart_subtype {
 
     LXW_CHART_SUBTYPE_NONE = 0,
     LXW_CHART_SUBTYPE_STACKED,
     LXW_CHART_SUBTYPE_STACKED_PERCENT
 };
 
-enum lxw_chart_groupings {
+enum lxw_chart_grouping {
     LXW_GROUPING_CLUSTERED,
     LXW_GROUPING_STANDARD,
     LXW_GROUPING_PERCENTSTACKED,
     LXW_GROUPING_STACKED
 };
 
-enum lxw_chart_axis_positions {
+enum lxw_chart_axis_tick_position {
     LXW_CHART_AXIS_POSITION_BETWEEN,
     LXW_CHART_AXIS_POSITION_ON_TICK
 };
 
-enum lxw_chart_positions {
-    LXW_CHART_RIGHT,
-    LXW_CHART_LEFT,
-    LXW_CHART_TOP,
-    LXW_CHART_BOTTOM
+enum lxw_chart_position {
+    LXW_CHART_AXIS_RIGHT,
+    LXW_CHART_AXIS_LEFT,
+    LXW_CHART_AXIS_TOP,
+    LXW_CHART_AXIS_BOTTOM
 };
 
 typedef struct lxw_series_range {
@@ -690,7 +690,7 @@ void chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font);
  * @code
  *     lxw_chart_font font = {.bold = LXW_TRUE, .color = LXW_COLOR_BLUE};
  *
- *     chart_axis_set_num_font(chart->x_axis, &font1;
+ *     chart_axis_set_num_font(chart->x_axis, &font1);
  * @endcode
  *
  * @image html chart_axis_set_num_font.png
@@ -786,10 +786,88 @@ void chart_title_set_name_font(lxw_chart *chart, lxw_chart_font *font);
  */
 void chart_title_off(lxw_chart *chart);
 
+/**
+ * @brief Set the position of the chart legend.
+ *
+ * @param chart    Pointer to a lxw_chart instance to be configured.
+ * @param position The #lxw_chart_legend_position value for the legend.
+ *
+ * The `%chart_legend_set_position()` function is used to set the chart
+ * legend to one of the #lxw_chart_legend_position values:
+ *
+ *     LXW_CHART_LEGEND_NONE
+ *     LXW_CHART_LEGEND_RIGHT
+ *     LXW_CHART_LEGEND_LEFT
+ *     LXW_CHART_LEGEND_TOP
+ *     LXW_CHART_LEGEND_BOTTOM
+ *     LXW_CHART_LEGEND_OVERLAY_RIGHT
+ *     LXW_CHART_LEGEND_OVERLAY_LEFT
+ *
+ * For example:
+ *
+ * @code
+ *     chart_legend_set_position(chart, LXW_CHART_LEGEND_BOTTOM);
+ * @endcode
+ *
+ * @image html chart_legend_bottom.png
+ *
+ * This function can also be used to turn off a chart legend:
+ *
+ * @code
+ *     chart_legend_set_position(chart, LXW_CHART_LEGEND_NONE);
+ * @endcode
+ *
+ * @image html chart_legend_none.png
+ *
+ */
 void chart_legend_set_position(lxw_chart *chart, uint8_t position);
 
+/**
+ * @brief Set the font properties for a chart legend.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ * @param font  A pointer to a chart #lxw_chart_font font struct.
+ *
+ * The `%chart_legend_set_font()` function is used to set the font of a
+ * chart legend:
+ *
+ * @code
+ *     lxw_chart_font font = {.bold = LXW_TRUE, .color = LXW_COLOR_BLUE};
+ *
+ *     chart_legend_set_font(chart, &font);
+ * @endcode
+ *
+ * @image html chart_legend_set_font.png
+ *
+ * For more information see @ref chart_fonts.
+ */
 void chart_legend_set_font(lxw_chart *chart, lxw_chart_font *font);
 
+/**
+ * @brief Remove one or more series from the the legend.
+ *
+ * @param chart         Pointer to a lxw_chart instance to be configured.
+ * @param delete_series An array of zero-indexed values to delete from series.
+ *
+ * @return A #lxw_error.
+ *
+ * The `%chart_legend_delete_series()` function allows you to remove/hide one
+ * or more series in a chart legend (the series will still display on the chart).
+ *
+ * This function takes an array of one or more zero indexed series
+ * numbers. The array should be terminated with -1.
+ *
+ * For example to remove the first and third zero-indexed series from the
+ * legend of a chart with 3 series:
+ *
+ * @code
+ *     int16_t series[] = {0, 2, -1};
+ *
+ *     chart_legend_delete_series(chart, series);
+ * @endcode
+ *
+ * @image html chart_legend_delete.png
+ */
 lxw_error chart_legend_delete_series(lxw_chart *chart,
                                      int16_t delete_series[]);
 
