@@ -46,10 +46,10 @@ int main() {
     chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
 
     /* Create some fonts to use in the chart.  */
-    lxw_chart_font font1 = {.name = "Calibri",     .color = LXW_COLOR_BLUE};
-    lxw_chart_font font2 = {.name = "Courier New", .color = 0x92D050};
-    lxw_chart_font font3 = {.name = "Arial",       .color = 0x00B0F0};
-    lxw_chart_font font4 = {.name = "Century",     .color = LXW_COLOR_RED};
+    lxw_chart_font font1 = {.name = "Calibri", .color = LXW_COLOR_BLUE};
+    lxw_chart_font font2 = {.name = "Courier", .color = 0x92D050};
+    lxw_chart_font font3 = {.name = "Arial",   .color = 0x00B0F0};
+    lxw_chart_font font4 = {.name = "Century", .color = LXW_COLOR_RED};
     lxw_chart_font font5 = {.bold      = LXW_TRUE,
                             .italic    = LXW_TRUE,
                             .underline = LXW_TRUE,
