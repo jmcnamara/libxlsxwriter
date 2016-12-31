@@ -3,7 +3,7 @@
  *
  * Simple test case for merged ranges.
  *
- * Copyright 2014-2016, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
  *
  */
 

@@ -2,7 +2,7 @@
 #
 # Helper functions for testing libxlsxwriter.
 #
-# Copyright 2014-2016, John McNamara, jmcnamara@cpan.org
+# Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
 #
 
 import re

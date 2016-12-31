@@ -26,7 +26,7 @@
  *     &G                                      Same as &[Picture]
  *     &&                  Miscellaneous       Literal ampersand &
  *
- * Copyright 2014-2016, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
  *
  */
 

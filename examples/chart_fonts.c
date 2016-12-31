@@ -2,7 +2,7 @@
  * An example of a simple Excel chart with user defined fonts using the
  * libxlsxwriter library.
  *
- * Copyright 2014-2016, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
  *
  */
 

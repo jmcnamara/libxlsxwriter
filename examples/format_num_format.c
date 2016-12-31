@@ -2,7 +2,7 @@
  * Example of writing some data with numeric formatting to a simple Excel file
  * using libxlsxwriter.
  *
- * Copyright 2014-2016, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
  *
  */
 
