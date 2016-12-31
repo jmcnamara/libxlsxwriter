@@ -225,6 +225,16 @@ typedef struct lxw_series_data_point {
 
 } lxw_series_data_point;
 
+typedef struct lxw_chart_line {
+
+    lxw_color_t color;
+    uint8_t none;
+    uint8_t dash_type;
+    uint8_t has_color;
+    float width;
+
+} lxw_chart_line;
+
 typedef struct lxw_chart_fill {
 
     lxw_color_t color;
@@ -305,6 +315,7 @@ typedef struct lxw_chart_series {
     lxw_series_range *categories;
     lxw_series_range *values;
     lxw_chart_title title;
+    lxw_chart_line *line;
 
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
 
@@ -604,6 +615,8 @@ void chart_series_set_name(lxw_chart_series *series, const char *name);
 void chart_series_set_name_range(lxw_chart_series *series,
                                  const char *sheetname, lxw_row_t row,
                                  lxw_col_t col);
+
+void chart_series_set_line(lxw_chart_series *series, lxw_chart_line *line);
 
 /**
  * @brief Set the name caption of the an axis.

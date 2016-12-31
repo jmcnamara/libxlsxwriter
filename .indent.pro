@@ -53,6 +53,7 @@
 -T lxw_chart_font
 -T lxw_chart_legend
 -T lxw_chart_legend_position
+-T lxw_chart_line
 -T lxw_chart_series
 -T lxw_chart_title
 -T lxw_chart_type

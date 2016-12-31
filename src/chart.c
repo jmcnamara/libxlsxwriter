@@ -56,6 +56,7 @@ _chart_series_free(lxw_chart_series *series)
         return;
 
     free(series->title.name);
+    free(series->line);
 
     _chart_free_range(series->categories);
     _chart_free_range(series->values);
@@ -240,6 +241,28 @@ _chart_convert_font_args(lxw_chart_font *user_font)
         font->has_color = LXW_TRUE;
 
     return font;
+}
+
+/*
+ * Create a copy of a user supplied line.
+ */
+STATIC lxw_chart_line *
+_chart_convert_line_args(lxw_chart_line *user_line)
+{
+    lxw_chart_line *line;
+
+    if (!user_line)
+        return NULL;
+
+    line = calloc(1, sizeof(struct lxw_chart_line));
+    RETURN_ON_MEM_ERROR(line, NULL);
+
+    memcpy(line, user_line, sizeof(lxw_chart_line));
+
+    if (line->color)
+        line->has_color = LXW_TRUE;
+
+    return line;
 }
 
 /*
@@ -519,15 +542,14 @@ _chart_write_a_srgb_clr(lxw_chart *self, lxw_color_t color,
  * Write the <a:solidFill> element.
  */
 STATIC void
-_chart_write_a_solid_fill(lxw_chart *self, lxw_chart_fill *fill)
+_chart_write_a_solid_fill(lxw_chart *self, lxw_color_t color,
+                          uint8_t transparency)
 {
 
     lxw_xml_start_tag(self->file, "a:solidFill", NULL);
 
-    if (fill->has_color) {
-        /* Write the a:srgbClr element. */
-        _chart_write_a_srgb_clr(self, fill->color, fill->transparency);
-    }
+    /* Write the a:srgbClr element. */
+    _chart_write_a_srgb_clr(self, color, transparency);
 
     lxw_xml_end_tag(self->file, "a:solidFill");
 }
@@ -600,11 +622,7 @@ _chart_write_a_def_rpr(lxw_chart *self, lxw_chart_font *font)
         lxw_xml_start_tag(self->file, "a:defRPr", &attributes);
 
         if (has_color) {
-            lxw_chart_fill fill = { 0, 0, 0 };
-
-            fill.color = font->color;
-            fill.has_color = LXW_TRUE;
-            _chart_write_a_solid_fill(self, &fill);
+            _chart_write_a_solid_fill(self, font->color, LXW_FALSE);
         }
 
         if (has_latin) {
@@ -676,11 +694,7 @@ _chart_write_a_r_pr(lxw_chart *self, lxw_chart_font *font)
         lxw_xml_start_tag(self->file, "a:rPr", &attributes);
 
         if (has_color) {
-            lxw_chart_fill fill = { 0, 0, 0 };
-
-            fill.color = font->color;
-            fill.has_color = LXW_TRUE;
-            _chart_write_a_solid_fill(self, &fill);
+            _chart_write_a_solid_fill(self, font->color, LXW_FALSE);
         }
 
         if (has_latin) {
@@ -1330,19 +1344,35 @@ _chart_write_a_no_fill(lxw_chart *self)
  * Write the <a:ln> element.
  */
 STATIC void
-_chart_write_a_ln(lxw_chart *self)
+_chart_write_a_ln(lxw_chart *self, lxw_chart_line *line)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char w[] = "28575";
+    float width_flt = line->width;
+    uint32_t width_int;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("w", w);
+
+    /* Round width to nearest 0.25, like Excel. */
+    width_flt = (float) (uint32_t) ((line->width + 0.125) * 4.0) / 4.0;
+
+    /* Convert to internal units. */
+    width_int = (uint32_t) (0.5 + (12700.0 * width_flt));
+
+    if (width_int)
+        LXW_PUSH_ATTRIBUTES_INT("w", width_int);
 
     lxw_xml_start_tag(self->file, "a:ln", &attributes);
 
-    /* Write the a:noFill element. */
-    _chart_write_a_no_fill(self);
+    /* Write the line fill. */
+    if (line->none) {
+        /* Write the a:noFill element. */
+        _chart_write_a_no_fill(self);
+    }
+    else if (line->has_color) {
+        /* Write the a:solidFill element. */
+        _chart_write_a_solid_fill(self, line->color, LXW_FALSE);
+    }
 
     lxw_xml_end_tag(self->file, "a:ln");
 
@@ -1353,12 +1383,16 @@ _chart_write_a_ln(lxw_chart *self)
  * Write the <c:spPr> element.
  */
 STATIC void
-_chart_write_sp_pr(lxw_chart *self)
+_chart_write_sp_pr(lxw_chart *self, lxw_chart_series *series)
 {
+
+    if (!series->line)
+        return;
+
     lxw_xml_start_tag(self->file, "c:spPr", NULL);
 
     /* Write the a:ln element. */
-    _chart_write_a_ln(self);
+    _chart_write_a_ln(self, series->line);
 
     lxw_xml_end_tag(self->file, "c:spPr");
 }
@@ -1627,6 +1661,9 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
     /* Write the series name. */
     _chart_write_series_name(self, series);
 
+    /* Write the c:spPr element. */
+    _chart_write_sp_pr(self, series);
+
     /* Write the c:marker element. */
     _chart_write_marker(self);
 
@@ -1656,10 +1693,11 @@ _chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
     /* Write the c:order element. */
     _chart_write_order(self, index);
 
-    if (self->type == LXW_CHART_SCATTER) {
-        /* Write the c:spPr element. */
-        _chart_write_sp_pr(self);
-    }
+    /* Write the series name. */
+    _chart_write_series_name(self, series);
+
+    /* Write the c:spPr element. */
+    _chart_write_sp_pr(self, series);
 
     if (self->type == LXW_CHART_SCATTER_STRAIGHT
         || self->type == LXW_CHART_SCATTER_SMOOTH) {
@@ -2501,6 +2539,17 @@ _chart_write_scatter_chart(lxw_chart *self)
     _chart_write_scatter_style(self);
 
     STAILQ_FOREACH(series, self->series_list, list_pointers) {
+
+        /* Add default scatter chart formatting to the series data unless
+         * it has already been specified by the user.*/
+        if (self->type == LXW_CHART_SCATTER) {
+            if (!series->line) {
+                lxw_chart_line line =
+                    { 0x000000, LXW_TRUE, 0x0, LXW_FALSE, 2.25 };
+                series->line = _chart_convert_line_args(&line);
+            }
+        }
+
         /* Write the c:ser element. */
         _chart_write_xval_ser(self, series);
     }
@@ -3041,6 +3090,18 @@ chart_series_set_values(lxw_chart_series *series, const char *sheetname,
 
     _chart_set_range(series->values, sheetname,
                      first_row, first_col, last_row, last_col);
+}
+
+/*
+ * Set a line type for a series.
+ */
+void
+chart_series_set_line(lxw_chart_series *series, lxw_chart_line *line)
+{
+    if (!line)
+        return;
+
+    series->line = _chart_convert_line_args(line);
 }
 
 /*
