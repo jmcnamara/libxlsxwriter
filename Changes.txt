@@ -1,8 +1,14 @@
 /**
 @page changes Changes
 
-## 0.4.4 December 30 2016
 
+## 0.4.5 December 31 2016
+
+- Added functions to set chart legend properties: see  `chart_legend_set_position()`,
+  `chart_legend_set_font()` and `chart_legend_delete_series()`.
+
+
+## 0.4.4 December 30 2016
 - Added chart fonts. See `chart_axis_set_name_font()`, `chart_axis_set_num_font()`,
   `chart_title_set_name_font()` and @ref chart_fonts.
 
