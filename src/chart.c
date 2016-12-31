@@ -1332,6 +1332,43 @@ _chart_write_idx(lxw_chart *self, uint16_t index)
 }
 
 /*
+ * Write the <a:prstDash> element.
+ */
+STATIC void
+_chart_write_a_prst_dash(lxw_chart *self, uint8_t dash_type)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (dash_type == LXW_CHART_LINE_DASH_ROUND_DOT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "sysDot");
+    else if (dash_type == LXW_CHART_LINE_DASH_SQUARE_DOT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "sysDash");
+    else if (dash_type == LXW_CHART_LINE_DASH_DASH_DOT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "dashDot");
+    else if (dash_type == LXW_CHART_LINE_DASH_LONG_DASH)
+        LXW_PUSH_ATTRIBUTES_STR("val", "lgDash");
+    else if (dash_type == LXW_CHART_LINE_DASH_LONG_DASH_DOT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "lgDashDot");
+    else if (dash_type == LXW_CHART_LINE_DASH_LONG_DASH_DOT_DOT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "lgDashDotDot");
+    else if (dash_type == LXW_CHART_LINE_DASH_DOT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "dot");
+    else if (dash_type == LXW_CHART_LINE_DASH_SYSTEM_DASH_DOT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "sysDashDot");
+    else if (dash_type == LXW_CHART_LINE_DASH_SYSTEM_DASH_DOT_DOT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "sysDashDotDot");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "dash");
+
+    lxw_xml_empty_tag(self->file, "a:prstDash", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <a:noFill> element.
  */
 STATIC void
@@ -1372,6 +1409,12 @@ _chart_write_a_ln(lxw_chart *self, lxw_chart_line *line)
     else if (line->has_color) {
         /* Write the a:solidFill element. */
         _chart_write_a_solid_fill(self, line->color, LXW_FALSE);
+    }
+
+    /* Write the line/dash type. */
+    if (line->dash_type) {
+        /* Write the a:prstDash element. */
+        _chart_write_a_prst_dash(self, line->dash_type);
     }
 
     lxw_xml_end_tag(self->file, "a:ln");

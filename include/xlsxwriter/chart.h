@@ -174,6 +174,21 @@ typedef enum lxw_chart_legend_position {
     LXW_CHART_LEGEND_OVERLAY_LEFT
 } lxw_chart_legend_position;
 
+/** Chart line dash types. */
+typedef enum lxw_chart_line_dash_type {
+    LXW_CHART_LINE_DASH_SOLID = 0,
+    LXW_CHART_LINE_DASH_ROUND_DOT,
+    LXW_CHART_LINE_DASH_SQUARE_DOT,
+    LXW_CHART_LINE_DASH_DASH,
+    LXW_CHART_LINE_DASH_DASH_DOT,
+    LXW_CHART_LINE_DASH_LONG_DASH,
+    LXW_CHART_LINE_DASH_LONG_DASH_DOT,
+    LXW_CHART_LINE_DASH_LONG_DASH_DOT_DOT,
+    LXW_CHART_LINE_DASH_DOT,
+    LXW_CHART_LINE_DASH_SYSTEM_DASH_DOT,
+    LXW_CHART_LINE_DASH_SYSTEM_DASH_DOT_DOT
+} lxw_chart_liLINE_ne_dash_type;
+
 enum lxw_chart_subtype {
 
     LXW_CHART_SUBTYPE_NONE = 0,
