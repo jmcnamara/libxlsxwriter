@@ -2,6 +2,18 @@
 @page changes Changes
 
 
+## 0.4.6 January 1 2017
+
+- Added functions to set chart line and fill properties, see:
+
+  - `chart_series_set_line()`
+  - `chart_series_set_fill()`
+  - `chart_axis_set_line()`
+  - `chart_axis_set_fill()`
+  - @ref chart_lines
+  - @ref chart_fills
+
+
 ## 0.4.5 December 31 2016
 
 - Added functions to set chart legend properties: see  `chart_legend_set_position()`,
