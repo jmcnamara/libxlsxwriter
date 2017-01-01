@@ -18,8 +18,8 @@ The color names and corresponding RRGGBB value are shown below:
 
 
   Color    | Define                | Value
-  -------- | --------------------- | ---------
-  Black    | #LXW_COLOR_BLACK      | `0x000000`
+  -------- | --------------------- | ------------------
+  Black    | #LXW_COLOR_BLACK      | `0x1000000` (note)
   Blue     | #LXW_COLOR_BLUE       | `0x0000FF`
   Brown    | #LXW_COLOR_BROWN      | `0x800000`
   Cyan     | #LXW_COLOR_CYAN       | `0x00FFFF`
@@ -36,6 +36,10 @@ The color names and corresponding RRGGBB value are shown below:
   White    | #LXW_COLOR_WHITE      | `0xFFFFFF`
   Yellow   | #LXW_COLOR_YELLOW     | `0xFFFF00`
 
+
+@note Black in Html is actually `0x000000` but `#LXW_COLOR_BLACK` is defined
+as 0x1000000 to avoid confusion with an undefined or Zero color value. It is
+converted to the correct Html code internally.
 
 Next: @ref working_with_dates
 

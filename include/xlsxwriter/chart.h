@@ -174,19 +174,42 @@ typedef enum lxw_chart_legend_position {
     LXW_CHART_LEGEND_OVERLAY_LEFT
 } lxw_chart_legend_position;
 
-/** Chart line dash types. */
+/** @brief Chart line dash types.
+ *
+ * The dash types are shown in the order that they appear in the Excel dialog.
+ * See @ref chart_lines.
+ */
 typedef enum lxw_chart_line_dash_type {
+
+    /** Solid. */
     LXW_CHART_LINE_DASH_SOLID = 0,
+
+    /** Round Dot. */
     LXW_CHART_LINE_DASH_ROUND_DOT,
+
+    /** Square Dot. */
     LXW_CHART_LINE_DASH_SQUARE_DOT,
+
+    /** Dash. */
     LXW_CHART_LINE_DASH_DASH,
+
+    /** Dash Dot. */
     LXW_CHART_LINE_DASH_DASH_DOT,
+
+    /** Long Dash. */
     LXW_CHART_LINE_DASH_LONG_DASH,
+
+    /** Long Dash Dot. */
     LXW_CHART_LINE_DASH_LONG_DASH_DOT,
+
+    /** Long Dash Dot Dot. */
     LXW_CHART_LINE_DASH_LONG_DASH_DOT_DOT,
+
+    /* These aren't available in the dialog but are used by Excel. */
     LXW_CHART_LINE_DASH_DOT,
     LXW_CHART_LINE_DASH_SYSTEM_DASH_DOT,
     LXW_CHART_LINE_DASH_SYSTEM_DASH_DOT_DOT
+
 } lxw_chart_liLINE_ne_dash_type;
 
 enum lxw_chart_subtype {
@@ -240,22 +263,50 @@ typedef struct lxw_series_data_point {
 
 } lxw_series_data_point;
 
+/**
+ * @brief Struct to represent a chart line.
+ *
+ * See @ref chart_lines.
+ */
 typedef struct lxw_chart_line {
 
+    /** The chart font color. See @ref working_with_colors. */
     lxw_color_t color;
+
+    /** Turn off/hide line. Set to 0 or 1.*/
     uint8_t none;
+
+    /** Width of the line in increments of 0.25. Default is 2.25. */
     float width;
+
+    /** The line dash type. See #lxw_chart_line_dash_type. */
     uint8_t dash_type;
+
+    /* Transparency for lines isn't generally useful. Undocumented for now. */
     uint8_t transparency;
+
+    /* Members for internal use only. */
     uint8_t has_color;
 
 } lxw_chart_line;
 
+/**
+ * @brief Struct to represent a chart line.
+ *
+ * See @ref chart_fills.
+ */
 typedef struct lxw_chart_fill {
 
+    /** The chart font color. See @ref working_with_colors. */
     lxw_color_t color;
+
+    /** Turn off/hide line. Set to 0 or 1.*/
     uint8_t none;
+
+    /** Set the transparency of the fill. 0 - 100. Default 0. */
     uint8_t transparency;
+
+    /* Members for internal use only. */
     uint8_t has_color;
 
 } lxw_chart_fill;
@@ -288,6 +339,7 @@ typedef struct lxw_chart_font {
     /** The chart font color. See @ref working_with_colors. */
     lxw_color_t color;
 
+    /* Members for internal use only. */
     uint8_t pitch_family;
     uint8_t charset;
     int8_t baseline;
@@ -635,9 +687,50 @@ void chart_series_set_name(lxw_chart_series *series, const char *name);
 void chart_series_set_name_range(lxw_chart_series *series,
                                  const char *sheetname, lxw_row_t row,
                                  lxw_col_t col);
-
+/**
+ * @brief Set the line properties for a chart series.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ * @param line   A #lxw_chart_line struct.
+ *
+ * Set the line/border properties of a chart series:
+ *
+ * @code
+ *     lxw_chart_line line = {.color = LXW_COLOR_RED};
+ *
+ *     chart_series_set_line(series1, &line);
+ *     chart_series_set_line(series2, &line);
+ *     chart_series_set_line(series3, &line);
+ * @endcode
+ *
+ * @image html chart_series_set_line.png
+ *
+ * For more information see @ref chart_lines.
+ */
 void chart_series_set_line(lxw_chart_series *series, lxw_chart_line *line);
 
+/**
+ * @brief Set the fill properties for a chart series.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ * @param fill   A #lxw_chart_fill struct.
+ *
+ * Set the fill properties of a chart series:
+ *
+ * @code
+ *     lxw_chart_fill fill1 = {.color = LXW_COLOR_RED};
+ *     lxw_chart_fill fill2 = {.color = LXW_COLOR_YELLOW};
+ *     lxw_chart_fill fill3 = {.color = LXW_COLOR_GREEN};
+ *
+ *     chart_series_set_fill(series1, &fill1);
+ *     chart_series_set_fill(series2, &fill2);
+ *     chart_series_set_fill(series3, &fill3);
+ * @endcode
+ *
+ * @image html chart_series_set_fill.png
+ *
+ * For more information see @ref chart_fills.
+ */
 void chart_series_set_fill(lxw_chart_series *series, lxw_chart_fill *fill);
 
 /**
@@ -692,10 +785,10 @@ void chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
                                lxw_row_t row, lxw_col_t col);
 
 /**
- * @brief  Set the font properties for a chart axis name.
+ * @brief Set the font properties for a chart axis name.
  *
- * @param axis  A pointer to a chart #lxw_chart_axis object.
- * @param font  A pointer to a chart #lxw_chart_font font struct.
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param font A pointer to a chart #lxw_chart_font font struct.
  *
  * The `%chart_axis_set_name_font()` function is used to set the font of an
  * axis name:
@@ -714,10 +807,10 @@ void chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
 void chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font);
 
 /**
- * @brief  Set the font properties for the numbers of a chart axis.
+ * @brief Set the font properties for the numbers of a chart axis.
  *
- * @param axis  A pointer to a chart #lxw_chart_axis object.
- * @param font  A pointer to a chart #lxw_chart_font font struct.
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param font A pointer to a chart #lxw_chart_font font struct.
  *
  * The `%chart_axis_set_num_font()` function is used to set the font of the
  * numbers on an axis:
@@ -734,8 +827,45 @@ void chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font);
  */
 void chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font);
 
+/**
+ * @brief Set the line properties for a chart axis.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param line A #lxw_chart_line struct.
+ *
+ * Set the line properties of a chart axis:
+ *
+ * @code
+ *     // Hide the Y axis.
+ *     lxw_chart_line line = {.none = LXW_TRUE};
+ *
+ *     chart_axis_set_line(chart->y_axis, &line);
+ * @endcode
+ *
+ * @image html chart_axis_set_line.png
+ *
+ * For more information see @ref chart_lines.
+ */
 void chart_axis_set_line(lxw_chart_axis *axis, lxw_chart_line *line);
 
+/**
+ * @brief Set the fill properties for a chart axis.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param fill A #lxw_chart_fill struct.
+ *
+ * Set the fill properties of a chart axis:
+ *
+ * @code
+ *     lxw_chart_fill fill = {.color = LXW_COLOR_YELLOW};
+ *
+ *     chart_axis_set_fill(chart->y_axis, &fill);
+ * @endcode
+ *
+ * @image html chart_axis_set_fill.png
+ *
+ * For more information see @ref chart_fills.
+ */
 void chart_axis_set_fill(lxw_chart_axis *axis, lxw_chart_fill *fill);
 
 /**

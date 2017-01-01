@@ -166,7 +166,7 @@ enum lxw_format_diagonal_types {
 /** Predefined values for common colors. */
 enum lxw_defined_colors {
     /** Black */
-    LXW_COLOR_BLACK = 0x000000,
+    LXW_COLOR_BLACK = 0x1000000,
 
     /** Blue */
     LXW_COLOR_BLUE = 0x0000FF,

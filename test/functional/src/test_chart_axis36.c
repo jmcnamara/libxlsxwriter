@@ -37,8 +37,8 @@ int main() {
     chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
 
     lxw_chart_line line = {.none = LXW_TRUE};
-    chart_axis_set_line(chart->x_axis, &line);
 
+    chart_axis_set_line(chart->x_axis, &line);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 
