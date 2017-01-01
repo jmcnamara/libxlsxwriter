@@ -11,13 +11,13 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_chart_format09.xlsx");
+    lxw_workbook  *workbook  = new_workbook("test_chart_format03.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
-    lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_LINE);
+    lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_COLUMN);
 
     /* For testing, copy the randomly generated axis ids in the target file. */
-    chart->axis_id_1 = 46115072;
-    chart->axis_id_2 = 46157184;
+    chart->axis_id_1 = 46175744;
+    chart->axis_id_2 = 46319488;
 
     uint8_t data[5][3] = {
         {1, 2,  3},
@@ -42,11 +42,12 @@ int main() {
          "=Sheet1!$C$1:$C$5"
     );
 
-    lxw_chart_line line = {.color     = LXW_COLOR_RED,
-                           .width     = 1.25,
-                           .dash_type = LXW_CHART_LINE_DASH_SQUARE_DOT};
+    lxw_chart_line line = {.color = LXW_COLOR_YELLOW};
+    lxw_chart_fill fill = {.color = LXW_COLOR_RED};
 
     chart_series_set_line(series1, &line);
+    chart_series_set_fill(series1, &fill);
+
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

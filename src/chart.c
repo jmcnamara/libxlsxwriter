@@ -57,6 +57,7 @@ _chart_series_free(lxw_chart_series *series)
 
     free(series->title.name);
     free(series->line);
+    free(series->fill);
 
     _chart_free_range(series->categories);
     _chart_free_range(series->values);
@@ -237,8 +238,10 @@ _chart_convert_font_args(lxw_chart_font *user_font)
     if (font->rotation)
         font->rotation = font->rotation * 60000;
 
-    if (font->color)
+    if (font->color) {
+        font->color = lxw_format_check_color(font->color);
         font->has_color = LXW_TRUE;
+    }
 
     return font;
 }
@@ -259,10 +262,42 @@ _chart_convert_line_args(lxw_chart_line *user_line)
 
     memcpy(line, user_line, sizeof(lxw_chart_line));
 
-    if (line->color)
+    if (line->color) {
+        line->color = lxw_format_check_color(line->color);
         line->has_color = LXW_TRUE;
+    }
+
+    if (line->transparency > 100)
+        line->transparency = 0;
 
     return line;
+}
+
+/*
+ * Create a copy of a user supplied fill.
+ */
+STATIC lxw_chart_fill *
+_chart_convert_fill_args(lxw_chart_fill *user_fill)
+{
+    lxw_chart_fill *fill;
+
+    if (!user_fill)
+        return NULL;
+
+    fill = calloc(1, sizeof(struct lxw_chart_fill));
+    RETURN_ON_MEM_ERROR(fill, NULL);
+
+    memcpy(fill, user_fill, sizeof(lxw_chart_fill));
+
+    if (fill->color) {
+        fill->color = lxw_format_check_color(fill->color);
+        fill->has_color = LXW_TRUE;
+    }
+
+    if (fill->transparency > 100)
+        fill->transparency = 0;
+
+    return fill;
 }
 
 /*
@@ -494,7 +529,7 @@ _chart_write_a_alpha(lxw_chart *self, uint8_t transparency)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    uint16_t val;
+    uint32_t val;
 
     LXW_INIT_ATTRIBUTES();
 
@@ -1408,7 +1443,7 @@ _chart_write_a_ln(lxw_chart *self, lxw_chart_line *line)
     }
     else if (line->has_color) {
         /* Write the a:solidFill element. */
-        _chart_write_a_solid_fill(self, line->color, LXW_FALSE);
+        _chart_write_a_solid_fill(self, line->color, line->transparency);
     }
 
     /* Write the line/dash type. */
@@ -1429,13 +1464,28 @@ STATIC void
 _chart_write_sp_pr(lxw_chart *self, lxw_chart_series *series)
 {
 
-    if (!series->line)
+    if (!series->line && !series->fill)
         return;
 
     lxw_xml_start_tag(self->file, "c:spPr", NULL);
 
-    /* Write the a:ln element. */
-    _chart_write_a_ln(self, series->line);
+    /* Write the series fill. */
+    if (series->fill) {
+        lxw_chart_fill *fill = series->fill;
+        if (fill->none) {
+            /* Write the a:noFill element. */
+            _chart_write_a_no_fill(self);
+        }
+        else {
+            /* Write the a:solidFill element. */
+            _chart_write_a_solid_fill(self, fill->color, fill->transparency);
+        }
+    }
+
+    if (series->line) {
+        /* Write the a:ln element. */
+        _chart_write_a_ln(self, series->line);
+    }
 
     lxw_xml_end_tag(self->file, "c:spPr");
 }
@@ -2587,8 +2637,14 @@ _chart_write_scatter_chart(lxw_chart *self)
          * it has already been specified by the user.*/
         if (self->type == LXW_CHART_SCATTER) {
             if (!series->line) {
-                lxw_chart_line line =
-                    { 0x000000, LXW_TRUE, 0x0, LXW_FALSE, 2.25 };
+                lxw_chart_line line = {
+                    0x000000,
+                    LXW_TRUE,
+                    2.25,
+                    LXW_CHART_LINE_DASH_SOLID,
+                    0,
+                    LXW_FALSE
+                };
                 series->line = _chart_convert_line_args(&line);
             }
         }
@@ -3145,6 +3201,18 @@ chart_series_set_line(lxw_chart_series *series, lxw_chart_line *line)
         return;
 
     series->line = _chart_convert_line_args(line);
+}
+
+/*
+ * Set a fill type for a series.
+ */
+void
+chart_series_set_fill(lxw_chart_series *series, lxw_chart_fill *fill)
+{
+    if (!fill)
+        return;
+
+    series->fill = _chart_convert_fill_args(fill);
 }
 
 /*

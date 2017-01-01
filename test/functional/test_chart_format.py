@@ -19,7 +19,29 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_chart_format02(self):
         self.run_exe_test('test_chart_format02')
 
+    def test_chart_format03(self):
+        self.run_exe_test('test_chart_format03')
 
+    def test_chart_format04(self):
+        self.run_exe_test('test_chart_format04')
 
     def test_chart_format09(self):
         self.run_exe_test('test_chart_format09')
+
+    def test_chart_format17(self):
+        self.run_exe_test('test_chart_format17')
+
+    def test_chart_format18(self):
+        self.run_exe_test('test_chart_format18')
+
+    def test_chart_format21(self):
+        self.run_exe_test('test_chart_format21')
+
+    def test_chart_format22(self):
+        self.run_exe_test('test_chart_format22')
+
+    def test_chart_format23(self):
+        self.run_exe_test('test_chart_format23')
+
+    def test_chart_format25(self):
+        self.run_exe_test('test_chart_format25')
