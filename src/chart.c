@@ -122,6 +122,8 @@ lxw_chart_free(lxw_chart *chart)
         _chart_free_font(chart->x_axis->num_font);
         _chart_free_range(chart->x_axis->title.range);
         free(chart->x_axis->title.name);
+        free(chart->x_axis->line);
+        free(chart->x_axis->fill);
         free(chart->x_axis);
     }
 
@@ -131,6 +133,8 @@ lxw_chart_free(lxw_chart *chart)
         _chart_free_font(chart->y_axis->num_font);
         _chart_free_range(chart->y_axis->title.range);
         free(chart->y_axis->title.name);
+        free(chart->y_axis->line);
+        free(chart->y_axis->fill);
         free(chart->y_axis);
     }
 
@@ -1461,17 +1465,16 @@ _chart_write_a_ln(lxw_chart *self, lxw_chart_line *line)
  * Write the <c:spPr> element.
  */
 STATIC void
-_chart_write_sp_pr(lxw_chart *self, lxw_chart_series *series)
+_chart_write_sp_pr(lxw_chart *self, lxw_chart_line *line,
+                   lxw_chart_fill *fill)
 {
-
-    if (!series->line && !series->fill)
+    if (!line && !fill)
         return;
 
     lxw_xml_start_tag(self->file, "c:spPr", NULL);
 
     /* Write the series fill. */
-    if (series->fill) {
-        lxw_chart_fill *fill = series->fill;
+    if (fill) {
         if (fill->none) {
             /* Write the a:noFill element. */
             _chart_write_a_no_fill(self);
@@ -1482,9 +1485,9 @@ _chart_write_sp_pr(lxw_chart *self, lxw_chart_series *series)
         }
     }
 
-    if (series->line) {
+    if (line) {
         /* Write the a:ln element. */
-        _chart_write_a_ln(self, series->line);
+        _chart_write_a_ln(self, line);
     }
 
     lxw_xml_end_tag(self->file, "c:spPr");
@@ -1755,7 +1758,7 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
     _chart_write_series_name(self, series);
 
     /* Write the c:spPr element. */
-    _chart_write_sp_pr(self, series);
+    _chart_write_sp_pr(self, series->line, series->fill);
 
     /* Write the c:marker element. */
     _chart_write_marker(self);
@@ -1790,7 +1793,7 @@ _chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
     _chart_write_series_name(self, series);
 
     /* Write the c:spPr element. */
-    _chart_write_sp_pr(self, series);
+    _chart_write_sp_pr(self, series->line, series->fill);
 
     if (self->type == LXW_CHART_SCATTER_STRAIGHT
         || self->type == LXW_CHART_SCATTER_SMOOTH) {
@@ -2314,6 +2317,9 @@ _chart_write_cat_axis(lxw_chart *self)
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
 
+    /* Write the c:spPr element for the axis line. */
+    _chart_write_sp_pr(self, self->x_axis->line, self->x_axis->fill);
+
     /* Write the axis font elements. */
     _chart_write_axis_font(self, self->x_axis->num_font);
 
@@ -2369,6 +2375,9 @@ _chart_write_val_axis(lxw_chart *self)
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
 
+    /* Write the c:spPr element for the axis line. */
+    _chart_write_sp_pr(self, self->y_axis->line, self->y_axis->fill);
+
     /* Write the axis font elements. */
     _chart_write_axis_font(self, self->y_axis->num_font);
 
@@ -2414,6 +2423,9 @@ _chart_write_cat_val_axis(lxw_chart *self)
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_lbl_pos(self);
+
+    /* Write the c:spPr element for the axis line. */
+    _chart_write_sp_pr(self, self->x_axis->line, self->x_axis->fill);
 
     /* Write the axis font elements. */
     _chart_write_axis_font(self, self->x_axis->num_font);
@@ -3262,6 +3274,30 @@ void
 chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font)
 {
     axis->num_font = _chart_convert_font_args(font);
+}
+
+/*
+ * Set a line type for an axis.
+ */
+void
+chart_axis_set_line(lxw_chart_axis *axis, lxw_chart_line *line)
+{
+    if (!line)
+        return;
+
+    axis->line = _chart_convert_line_args(line);
+}
+
+/*
+ * Set a fill type for an axis.
+ */
+void
+chart_axis_set_fill(lxw_chart_axis *axis, lxw_chart_fill *fill)
+{
+    if (!fill)
+        return;
+
+    axis->fill = _chart_convert_fill_args(fill);
 }
 
 /*

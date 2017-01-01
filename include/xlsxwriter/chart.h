@@ -354,9 +354,11 @@ typedef struct lxw_chart_axis {
 
     uint8_t default_major_gridlines;
     uint8_t major_tick_mark;
-
     uint8_t is_horizontal;
+
     lxw_chart_font *num_font;
+    lxw_chart_line *line;
+    lxw_chart_fill *fill;
 
 } lxw_chart_axis;
 
@@ -731,6 +733,10 @@ void chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font);
  * For more information see @ref chart_fonts.
  */
 void chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font);
+
+void chart_axis_set_line(lxw_chart_axis *axis, lxw_chart_line *line);
+
+void chart_axis_set_fill(lxw_chart_axis *axis, lxw_chart_fill *fill);
 
 /**
  * @brief Set the title of the chart.
