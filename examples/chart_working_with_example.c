@@ -31,6 +31,8 @@ int main() {
     /* Configure the chart. */
     series = chart_add_series(chart, NULL, "Sheet1!$A$1:$A$6");
 
+    (void)series; /* Do something with series in the real examples. */
+
      /* Insert the chart into the worksheet. */
     worksheet_insert_chart(worksheet, CELL("C1"), chart);
 
