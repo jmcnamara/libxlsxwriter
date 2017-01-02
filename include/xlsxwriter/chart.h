@@ -209,7 +209,25 @@ typedef enum lxw_chart_line_dash_type {
     LXW_CHART_LINE_DASH_DOT,
     LXW_CHART_LINE_DASH_SYSTEM_DASH_DOT,
     LXW_CHART_LINE_DASH_SYSTEM_DASH_DOT_DOT
-} lxw_chart_liLINE_ne_dash_type;
+} lxw_chart_line_dash_type;
+
+/**
+ * @brief Chart marker types.
+ *
+ */
+typedef enum lxw_chart_marker_type {
+    LXW_CHART_MARKER_AUTOMATIC,
+    LXW_CHART_MARKER_NONE,
+    LXW_CHART_MARKER_SQUARE,
+    LXW_CHART_MARKER_DIAMOND,
+    LXW_CHART_MARKER_TRIANGLE,
+    LXW_CHART_MARKER_X,
+    LXW_CHART_MARKER_STAR,
+    LXW_CHART_MARKER_SHORT_DASH,
+    LXW_CHART_MARKER_LONG_DASH,
+    LXW_CHART_MARKER_CIRCLE,
+    LXW_CHART_MARKER_PLUS
+} lxw_chart_marker_type;
 
 enum lxw_chart_subtype {
 
@@ -346,6 +364,15 @@ typedef struct lxw_chart_font {
 
 } lxw_chart_font;
 
+typedef struct lxw_chart_marker {
+
+    uint8_t type;
+    uint8_t size;
+    lxw_chart_line *line;
+    lxw_chart_fill *fill;
+
+} lxw_chart_marker;
+
 typedef struct lxw_chart_legend {
 
     lxw_chart_font *font;
@@ -385,6 +412,7 @@ typedef struct lxw_chart_series {
     lxw_chart_title title;
     lxw_chart_line *line;
     lxw_chart_fill *fill;
+    lxw_chart_marker *marker;
 
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
 
@@ -458,7 +486,7 @@ typedef struct lxw_chart {
     uint32_t axis_id_4;
 
     uint8_t in_use;
-    uint8_t is_scatter;
+    uint8_t is_scatter_chart;
     uint8_t cat_has_num_fmt;
 
     uint8_t has_horiz_cat_axis;
@@ -469,7 +497,6 @@ typedef struct lxw_chart {
     uint16_t hole_size;
 
     uint8_t no_title;
-    uint8_t has_markers;
     uint8_t has_overlap;
     int series_overlap_1;
 
@@ -481,6 +508,7 @@ typedef struct lxw_chart {
     lxw_chart_legend legend;
     int16_t *delete_series;
     uint16_t delete_series_count;
+    lxw_chart_marker *default_marker;
 
     struct lxw_chart_series_list *series_list;
 
@@ -738,6 +766,16 @@ void chart_series_set_line(lxw_chart_series *series, lxw_chart_line *line);
  * For more information see @ref chart_fills.
  */
 void chart_series_set_fill(lxw_chart_series *series, lxw_chart_fill *fill);
+
+void chart_series_set_marker_type(lxw_chart_series *series, uint8_t type);
+
+void chart_series_set_marker_size(lxw_chart_series *series, uint8_t size);
+
+void chart_series_set_marker_line(lxw_chart_series *series,
+                                  lxw_chart_line *line);
+
+void chart_series_set_marker_fill(lxw_chart_series *series,
+                                  lxw_chart_fill *fill);
 
 /**
  * @brief Set the name caption of the an axis.

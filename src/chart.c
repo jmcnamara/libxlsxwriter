@@ -59,6 +59,12 @@ _chart_series_free(lxw_chart_series *series)
     free(series->line);
     free(series->fill);
 
+    if (series->marker) {
+        free(series->marker->line);
+        free(series->marker->fill);
+        free(series->marker);
+    }
+
     _chart_free_range(series->categories);
     _chart_free_range(series->values);
     _chart_free_range(series->title.range);
@@ -302,6 +308,21 @@ _chart_convert_fill_args(lxw_chart_fill *user_fill)
         fill->transparency = 0;
 
     return fill;
+}
+
+/*
+ * Set a marker type for a series.
+ */
+STATIC void
+_chart_set_default_marker_type(lxw_chart *self, uint8_t type)
+{
+    if (!self->default_marker) {
+        lxw_chart_marker *marker = calloc(1, sizeof(struct lxw_chart_marker));
+        RETURN_VOID_ON_MEM_ERROR(marker);
+        self->default_marker = marker;
+    }
+
+    self->default_marker->type = type;
 }
 
 /*
@@ -1581,16 +1602,52 @@ _chart_write_major_tick_mark(lxw_chart *self, lxw_chart_axis *axis)
  * Write the <c:symbol> element.
  */
 STATIC void
-_chart_write_symbol(lxw_chart *self)
+_chart_write_symbol(lxw_chart *self, uint8_t type)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "none";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+
+    if (type == LXW_CHART_MARKER_SQUARE)
+        LXW_PUSH_ATTRIBUTES_STR("val", "square");
+    else if (type == LXW_CHART_MARKER_DIAMOND)
+        LXW_PUSH_ATTRIBUTES_STR("val", "diamond");
+    else if (type == LXW_CHART_MARKER_TRIANGLE)
+        LXW_PUSH_ATTRIBUTES_STR("val", "triangle");
+    else if (type == LXW_CHART_MARKER_X)
+        LXW_PUSH_ATTRIBUTES_STR("val", "x");
+    else if (type == LXW_CHART_MARKER_STAR)
+        LXW_PUSH_ATTRIBUTES_STR("val", "star");
+    else if (type == LXW_CHART_MARKER_SHORT_DASH)
+        LXW_PUSH_ATTRIBUTES_STR("val", "short_dash");
+    else if (type == LXW_CHART_MARKER_LONG_DASH)
+        LXW_PUSH_ATTRIBUTES_STR("val", "long_dash");
+    else if (type == LXW_CHART_MARKER_CIRCLE)
+        LXW_PUSH_ATTRIBUTES_STR("val", "circle");
+    else if (type == LXW_CHART_MARKER_PLUS)
+        LXW_PUSH_ATTRIBUTES_STR("val", "plus");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "none");
 
     lxw_xml_empty_tag(self->file, "c:symbol", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:size> element.
+ */
+STATIC void
+_chart_write_marker_size(lxw_chart *self, uint8_t size)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("val", size);
+
+    lxw_xml_empty_tag(self->file, "c:size", &attributes);
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -1599,15 +1656,30 @@ _chart_write_symbol(lxw_chart *self)
  * Write the <c:marker> element.
  */
 STATIC void
-_chart_write_marker(lxw_chart *self)
+_chart_write_marker(lxw_chart *self, lxw_chart_marker *marker)
 {
-    if (!self->has_markers)
+    /* If there isn't a user defined marker use the default, if this chart
+     * type one. The default usually turns the marker off. */
+    if (!marker)
+        marker = self->default_marker;
+
+    if (!marker)
+        return;
+
+    if (marker->type == LXW_CHART_MARKER_AUTOMATIC)
         return;
 
     lxw_xml_start_tag(self->file, "c:marker", NULL);
 
     /* Write the c:symbol element. */
-    _chart_write_symbol(self);
+    _chart_write_symbol(self, marker->type);
+
+    /* Write the c:size element. */
+    if (marker->size)
+        _chart_write_marker_size(self, marker->size);
+
+    /* Write the c:spPr element. */
+    _chart_write_sp_pr(self, marker->line, marker->fill);
 
     lxw_xml_end_tag(self->file, "c:marker");
 }
@@ -1761,7 +1833,7 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
     _chart_write_sp_pr(self, series->line, series->fill);
 
     /* Write the c:marker element. */
-    _chart_write_marker(self);
+    _chart_write_marker(self, series->marker);
 
     /* Write the c:cat element. */
     _chart_write_cat(self, series);
@@ -1798,7 +1870,7 @@ _chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
     if (self->type == LXW_CHART_SCATTER_STRAIGHT
         || self->type == LXW_CHART_SCATTER_SMOOTH) {
         /* Write the c:marker element. */
-        _chart_write_marker(self);
+        _chart_write_marker(self, series->marker);
     }
 
     /* Write the c:xVal element. */
@@ -2969,8 +3041,6 @@ _chart_initialize_column_chart(lxw_chart *self, uint8_t type)
 STATIC void
 _chart_initialize_doughnut_chart(lxw_chart *self)
 {
-    self->has_markers = LXW_FALSE;
-
     /* Initialize the function pointers for this chart type. */
     self->write_chart_type = _chart_write_doughnut_chart;
     self->write_plot_area = _chart_write_pie_plot_area;
@@ -2982,7 +3052,7 @@ _chart_initialize_doughnut_chart(lxw_chart *self)
 STATIC void
 _chart_initialize_line_chart(lxw_chart *self)
 {
-    self->has_markers = LXW_TRUE;
+    _chart_set_default_marker_type(self, LXW_CHART_MARKER_NONE);
     self->grouping = LXW_GROUPING_STANDARD;
 
     /* Initialize the function pointers for this chart type. */
@@ -2996,8 +3066,6 @@ _chart_initialize_line_chart(lxw_chart *self)
 STATIC void
 _chart_initialize_pie_chart(lxw_chart *self)
 {
-    self->has_markers = LXW_FALSE;
-
     /* Initialize the function pointers for this chart type. */
     self->write_chart_type = _chart_write_pie_chart;
     self->write_plot_area = _chart_write_pie_plot_area;
@@ -3011,8 +3079,13 @@ _chart_initialize_scatter_chart(lxw_chart *self)
 {
     self->has_horiz_val_axis = LXW_FALSE;
     self->cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
-    self->is_scatter = LXW_TRUE;
-    self->has_markers = LXW_TRUE;
+    self->is_scatter_chart = LXW_TRUE;
+
+    if (self->type == LXW_CHART_SCATTER_STRAIGHT
+        || self->type == LXW_CHART_SCATTER_SMOOTH) {
+
+        _chart_set_default_marker_type(self, LXW_CHART_MARKER_NONE);
+    }
 
     /* Initialize the function pointers for this chart type. */
     self->write_chart_type = _chart_write_scatter_chart;
@@ -3026,7 +3099,7 @@ STATIC void
 _chart_initialize_radar_chart(lxw_chart *self, uint8_t type)
 {
     if (type == LXW_CHART_RADAR)
-        self->has_markers = LXW_TRUE;
+        _chart_set_default_marker_type(self, LXW_CHART_MARKER_NONE);
 
     self->x_axis->default_major_gridlines = LXW_TRUE;
     self->y_axis->major_tick_mark = LXW_TRUE;
@@ -3308,6 +3381,72 @@ chart_series_set_fill(lxw_chart_series *series, lxw_chart_fill *fill)
         return;
 
     series->fill = _chart_convert_fill_args(fill);
+}
+
+/*
+ * Set a marker type for a series.
+ */
+void
+chart_series_set_marker_type(lxw_chart_series *series, uint8_t type)
+{
+    if (!series->marker) {
+        lxw_chart_marker *marker = calloc(1, sizeof(struct lxw_chart_marker));
+        RETURN_VOID_ON_MEM_ERROR(marker);
+        series->marker = marker;
+    }
+
+    series->marker->type = type;
+}
+
+/*
+ * Set a marker size for a series.
+ */
+void
+chart_series_set_marker_size(lxw_chart_series *series, uint8_t size)
+{
+    if (!series->marker) {
+        lxw_chart_marker *marker = calloc(1, sizeof(struct lxw_chart_marker));
+        RETURN_VOID_ON_MEM_ERROR(marker);
+        series->marker = marker;
+    }
+
+    series->marker->size = size;
+}
+
+/*
+ * Set a line type for a series.
+ */
+void
+chart_series_set_marker_line(lxw_chart_series *series, lxw_chart_line *line)
+{
+    if (!line)
+        return;
+
+    if (!series->marker) {
+        lxw_chart_marker *marker = calloc(1, sizeof(struct lxw_chart_marker));
+        RETURN_VOID_ON_MEM_ERROR(marker);
+        series->marker = marker;
+    }
+
+    series->marker->line = _chart_convert_line_args(line);
+}
+
+/*
+ * Set a fill type for a series.
+ */
+void
+chart_series_set_marker_fill(lxw_chart_series *series, lxw_chart_fill *fill)
+{
+    if (!fill)
+        return;
+
+    if (!series->marker) {
+        lxw_chart_marker *marker = calloc(1, sizeof(struct lxw_chart_marker));
+        RETURN_VOID_ON_MEM_ERROR(marker);
+        series->marker = marker;
+    }
+
+    series->marker->fill = _chart_convert_fill_args(fill);
 }
 
 /*
