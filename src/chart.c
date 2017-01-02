@@ -153,6 +153,8 @@ lxw_chart_free(lxw_chart *chart)
     _chart_free_font(chart->legend.font);
     free(chart->delete_series);
 
+    free(chart->default_marker);
+
     free(chart);
 }
 
