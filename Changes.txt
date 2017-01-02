@@ -2,16 +2,33 @@
 @page changes Changes
 
 
+## 0.4.7 January 2 2017
+
+- Added `chart_axis_set_reverse()` function to reverse the order of a chart
+  axis.
+
+- Added `chart_axis_set_min()`and `chart_axis_set_max()` functions to set the
+  minimum and maximum value for a chart axis.
+
+- Added `chart_axis_set_log_base()` function to set the log base of a chart
+  axis.
+  Feature request [#70][gh_70].
+
+  [gh_70]: https://github.com/jmcnamara/libxlsxwriter/issues/70
+
+
 ## 0.4.6 January 1 2017
 
 - Added functions to set chart line and fill properties, see:
 
-  - `chart_series_set_line()`
-  - `chart_series_set_fill()`
-  - `chart_axis_set_line()`
-  - `chart_axis_set_fill()`
-  - @ref chart_lines
-  - @ref chart_fills
+  - `chart_series_set_line()`. Feature request [#83][gh_83].
+  - `chart_series_set_fill()`.
+  - `chart_axis_set_line()`.
+  - `chart_axis_set_fill()`.
+  - @ref chart_lines.
+  - @ref chart_fills.
+
+  [gh_83]: https://github.com/jmcnamara/libxlsxwriter/issues/83
 
 
 ## 0.4.5 December 31 2016

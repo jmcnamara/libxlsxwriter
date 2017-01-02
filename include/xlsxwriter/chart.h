@@ -908,7 +908,7 @@ void chart_axis_set_reverse(lxw_chart_axis *axis);
  *
  * @note This function is applicable to value and date axes only.
  *       It isn't applicable to the horizontal category axis in the above
- *       example. For more information ee @ref ww_charts_axes.
+ *       example. For more information see @ref ww_charts_axes.
  *
  */
 void chart_axis_set_min(lxw_chart_axis *axis, double min);
@@ -930,7 +930,7 @@ void chart_axis_set_min(lxw_chart_axis *axis, double min);
  *
  * @note This function is applicable to value and date axes only.
  *       It isn't applicable to the horizontal category axis in the above
- *       example. For more information ee @ref ww_charts_axes.
+ *       example. For more information see @ref ww_charts_axes.
  */
 void chart_axis_set_max(lxw_chart_axis *axis, double max);
 
@@ -953,7 +953,7 @@ void chart_axis_set_max(lxw_chart_axis *axis, double max);
  *
  * @note This function is applicable to value and date axes only.
  *       It isn't applicable to the horizontal category axis in the above
- *       example. For more information ee @ref ww_charts_axes.
+ *       example. For more information see @ref ww_charts_axes.
  */
 void chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base);
 
