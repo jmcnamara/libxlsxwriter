@@ -1837,6 +1837,38 @@ _chart_write_orientation(lxw_chart *self, uint8_t reverse)
 }
 
 /*
+ * Write the <c:max> element.
+ */
+STATIC void
+_chart_write_max(lxw_chart *self, double max)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_DBL("val", max);
+
+    lxw_xml_empty_tag(self->file, "c:max", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:min> element.
+ */
+STATIC void
+_chart_write_min(lxw_chart *self, double min)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_DBL("val", min);
+
+    lxw_xml_empty_tag(self->file, "c:min", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <c:scaling> element.
  */
 STATIC void
@@ -1854,6 +1886,16 @@ _chart_write_scaling(lxw_chart *self, uint8_t reverse,
 
     /* Write the c:orientation element. */
     _chart_write_orientation(self, reverse);
+
+    if (has_max) {
+        /* Write the c:max element. */
+        _chart_write_max(self, max);
+    }
+
+    if (has_min) {
+        /* Write the c:min element. */
+        _chart_write_min(self, min);
+    }
 
     lxw_xml_end_tag(self->file, "c:scaling");
 }
