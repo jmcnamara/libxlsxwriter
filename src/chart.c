@@ -1869,6 +1869,26 @@ _chart_write_min(lxw_chart *self, double min)
 }
 
 /*
+ * Write the <c:logBase> element.
+ */
+STATIC void
+_chart_write_log_base(lxw_chart *self, uint16_t log_base)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!log_base)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("val", log_base);
+
+    lxw_xml_empty_tag(self->file, "c:logBase", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <c:scaling> element.
  */
 STATIC void
@@ -1878,11 +1898,8 @@ _chart_write_scaling(lxw_chart *self, uint8_t reverse,
 {
     lxw_xml_start_tag(self->file, "c:scaling", NULL);
 
-    (void) has_min;
-    (void) min;
-    (void) has_max;
-    (void) max;
-    (void) log_base;
+    /* Write the c:logBase element. */
+    _chart_write_log_base(self, log_base);
 
     /* Write the c:orientation element. */
     _chart_write_orientation(self, reverse);
