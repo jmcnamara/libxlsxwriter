@@ -874,12 +874,87 @@ void chart_axis_set_line(lxw_chart_axis *axis, lxw_chart_line *line);
  */
 void chart_axis_set_fill(lxw_chart_axis *axis, lxw_chart_fill *fill);
 
+/**
+ * @brief Reverse the order of the axis categories or values.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ *
+ * Reverse the order of the axis categories or values:
+ *
+ * @code
+ *     chart_axis_set_reverse(chart->x_axis);
+ * @endcode
+ *
+ * @image html chart_reverse.png
+ *
+ * Applicable to category, date and value axes.
+ */
 void chart_axis_set_reverse(lxw_chart_axis *axis);
 
+/**
+ * @brief Set the minimum value for a chart axis.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param min  Minimum value for chart axis. Value axes only.
+ *
+ * Set the minimum value for the axis range.
+ *
+ * @code
+ *     chart_axis_set_min(chart->y_axis, -4);
+ *     chart_axis_set_max(chart->y_axis, 21);
+ * @endcode
+ *
+ * @image html chart_max_min.png
+ *
+ * @note This function is applicable to value and date axes only.
+ *       It isn't applicable to the horizontal category axis in the above
+ *       example. For more information ee @ref ww_charts_axes.
+ *
+ */
 void chart_axis_set_min(lxw_chart_axis *axis, double min);
 
+/**
+ * @brief Set the maximum value for a chart axis.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param max  Maximum value for chart axis. Value axes only.
+ *
+ * Set the maximum value for the axis range.
+ *
+ * @code
+ *     chart_axis_set_min(chart->y_axis, -4);
+ *     chart_axis_set_max(chart->y_axis, 21);
+ * @endcode
+ *
+ * See the above image.
+ *
+ * @note This function is applicable to value and date axes only.
+ *       It isn't applicable to the horizontal category axis in the above
+ *       example. For more information ee @ref ww_charts_axes.
+ */
 void chart_axis_set_max(lxw_chart_axis *axis, double max);
 
+/**
+ * @brief Set the log base of the axis range.
+ *
+ * @param axis     A pointer to a chart #lxw_chart_axis object.
+ * @param log_base The log base for value axis. Value axes only.
+ *
+ * Set the log base for the axis:
+ *
+ * @code
+ *     chart_axis_set_log_base(chart->y_axis, 10);
+ * @endcode
+ *
+ * @image html chart_log_base.png
+ *
+ * The allowable range of values for the log base in Excel is between 2 and
+ * 1000.
+ *
+ * @note This function is applicable to value and date axes only.
+ *       It isn't applicable to the horizontal category axis in the above
+ *       example. For more information ee @ref ww_charts_axes.
+ */
 void chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base);
 
 /**
