@@ -209,7 +209,6 @@ typedef enum lxw_chart_line_dash_type {
     LXW_CHART_LINE_DASH_DOT,
     LXW_CHART_LINE_DASH_SYSTEM_DASH_DOT,
     LXW_CHART_LINE_DASH_SYSTEM_DASH_DOT_DOT
-
 } lxw_chart_liLINE_ne_dash_type;
 
 enum lxw_chart_subtype {
@@ -411,6 +410,13 @@ typedef struct lxw_chart_axis {
     lxw_chart_font *num_font;
     lxw_chart_line *line;
     lxw_chart_fill *fill;
+
+    uint8_t reverse;
+    uint8_t has_min;
+    uint8_t has_max;
+    double min;
+    double max;
+    uint16_t log_base;
 
 } lxw_chart_axis;
 
@@ -867,6 +873,14 @@ void chart_axis_set_line(lxw_chart_axis *axis, lxw_chart_line *line);
  * For more information see @ref chart_fills.
  */
 void chart_axis_set_fill(lxw_chart_axis *axis, lxw_chart_fill *fill);
+
+void chart_axis_set_reverse(lxw_chart_axis *axis);
+
+void chart_axis_set_min(lxw_chart_axis *axis, double min);
+
+void chart_axis_set_max(lxw_chart_axis *axis, double max);
+
+void chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base);
 
 /**
  * @brief Set the title of the chart.

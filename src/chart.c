@@ -1820,14 +1820,16 @@ _chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
  * Write the <c:orientation> element.
  */
 STATIC void
-_chart_write_orientation(lxw_chart *self)
+_chart_write_orientation(lxw_chart *self, uint8_t reverse)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "minMax";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+    if (reverse)
+        LXW_PUSH_ATTRIBUTES_STR("val", "maxMin");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "minMax");
 
     lxw_xml_empty_tag(self->file, "c:orientation", &attributes);
 
@@ -1838,12 +1840,20 @@ _chart_write_orientation(lxw_chart *self)
  * Write the <c:scaling> element.
  */
 STATIC void
-_chart_write_scaling(lxw_chart *self)
+_chart_write_scaling(lxw_chart *self, uint8_t reverse,
+                     uint8_t has_min, double min,
+                     uint8_t has_max, double max, uint16_t log_base)
 {
     lxw_xml_start_tag(self->file, "c:scaling", NULL);
 
+    (void) has_min;
+    (void) min;
+    (void) has_max;
+    (void) max;
+    (void) log_base;
+
     /* Write the c:orientation element. */
-    _chart_write_orientation(self);
+    _chart_write_orientation(self, reverse);
 
     lxw_xml_end_tag(self->file, "c:scaling");
 }
@@ -1852,12 +1862,15 @@ _chart_write_scaling(lxw_chart *self)
  * Write the <c:axPos> element.
  */
 STATIC void
-_chart_write_axis_pos(lxw_chart *self, uint8_t position)
+_chart_write_axis_pos(lxw_chart *self, uint8_t position, uint8_t reverse)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
+
+    /* Reverse the axis direction if required. */
+    position ^= reverse;
 
     if (position == LXW_CHART_AXIS_RIGHT)
         LXW_PUSH_ATTRIBUTES_STR("val", "r");
@@ -2294,11 +2307,14 @@ _chart_write_cat_axis(lxw_chart *self)
 
     _chart_write_axis_id(self, self->axis_id_1);
 
-    /* Write the c:scaling element. */
-    _chart_write_scaling(self);
+    /* Write the c:scaling element. Note we can't set max, min, or log base
+     * for a Category axis in Excel.*/
+    _chart_write_scaling(self,
+                         self->x_axis->reverse,
+                         LXW_FALSE, 0.0, LXW_FALSE, 0.0, 0);
 
     /* Write the c:axPos element. */
-    _chart_write_axis_pos(self, position);
+    _chart_write_axis_pos(self, position, self->y_axis->reverse);
 
     /* Write the c:majorGridlines element. */
     _chart_write_major_gridlines(self, self->x_axis);
@@ -2354,10 +2370,14 @@ _chart_write_val_axis(lxw_chart *self)
     _chart_write_axis_id(self, self->axis_id_2);
 
     /* Write the c:scaling element. */
-    _chart_write_scaling(self);
+    _chart_write_scaling(self,
+                         self->y_axis->reverse,
+                         self->y_axis->has_min, self->y_axis->min,
+                         self->y_axis->has_max, self->y_axis->max,
+                         self->y_axis->log_base);
 
     /* Write the c:axPos element. */
-    _chart_write_axis_pos(self, position);
+    _chart_write_axis_pos(self, position, self->x_axis->reverse);
 
     /* Write the c:majorGridlines element. */
     _chart_write_major_gridlines(self, self->y_axis);
@@ -2406,10 +2426,14 @@ _chart_write_cat_val_axis(lxw_chart *self)
     _chart_write_axis_id(self, self->axis_id_1);
 
     /* Write the c:scaling element. */
-    _chart_write_scaling(self);
+    _chart_write_scaling(self,
+                         self->x_axis->reverse,
+                         self->x_axis->has_min, self->x_axis->min,
+                         self->x_axis->has_max, self->x_axis->max,
+                         self->x_axis->log_base);
 
     /* Write the c:axPos element. */
-    _chart_write_axis_pos(self, position);
+    _chart_write_axis_pos(self, position, self->y_axis->reverse);
 
     /* Write the axis title elements. */
     self->x_axis->title.is_horizontal = self->has_horiz_val_axis;
@@ -3298,6 +3322,46 @@ chart_axis_set_fill(lxw_chart_axis *axis, lxw_chart_fill *fill)
         return;
 
     axis->fill = _chart_convert_fill_args(fill);
+}
+
+/*
+ * Reverse the direction of an axis.
+ */
+void
+chart_axis_set_reverse(lxw_chart_axis *axis)
+{
+    axis->reverse = LXW_TRUE;
+}
+
+/*
+ * Set the minimum value for an axis.
+ */
+void
+chart_axis_set_min(lxw_chart_axis *axis, double min)
+{
+    axis->min = min;
+    axis->has_min = LXW_TRUE;
+}
+
+/*
+ * Set the maximum value for an axis.
+ */
+void
+chart_axis_set_max(lxw_chart_axis *axis, double max)
+{
+    axis->max = max;
+    axis->has_max = LXW_TRUE;
+}
+
+/*
+ * Set the log base for an axis.
+ */
+void
+chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base)
+{
+    /* Excel log range is 2-1000. */
+    if (log_base >= 2 && log_base <= 1000)
+        axis->log_base = log_base;
 }
 
 /*
