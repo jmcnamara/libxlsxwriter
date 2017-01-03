@@ -58,10 +58,12 @@ _chart_series_free(lxw_chart_series *series)
     free(series->title.name);
     free(series->line);
     free(series->fill);
+    free(series->pattern);
 
     if (series->marker) {
         free(series->marker->line);
         free(series->marker->fill);
+        free(series->marker->pattern);
         free(series->marker);
     }
 
@@ -130,6 +132,7 @@ lxw_chart_free(lxw_chart *chart)
         free(chart->x_axis->title.name);
         free(chart->x_axis->line);
         free(chart->x_axis->fill);
+        free(chart->x_axis->pattern);
         free(chart->x_axis);
     }
 
@@ -141,6 +144,7 @@ lxw_chart_free(lxw_chart *chart)
         free(chart->y_axis->title.name);
         free(chart->y_axis->line);
         free(chart->y_axis->fill);
+        free(chart->y_axis->pattern);
         free(chart->y_axis);
     }
 
@@ -310,6 +314,50 @@ _chart_convert_fill_args(lxw_chart_fill *user_fill)
         fill->transparency = 0;
 
     return fill;
+}
+
+/*
+ * Create a copy of a user supplied pattern.
+ */
+STATIC lxw_chart_pattern *
+_chart_convert_pattern_args(lxw_chart_pattern *user_pattern)
+{
+    lxw_chart_pattern *pattern;
+
+    if (!user_pattern)
+        return NULL;
+
+    if (!user_pattern->type) {
+        LXW_WARN("chart_xxx_set_pattern: 'type' must be specified");
+        return NULL;
+    }
+
+    if (!user_pattern->fg_color) {
+        LXW_WARN("chart_xxx_set_pattern: 'fg_color' must be specified");
+        return NULL;
+    }
+
+    pattern = calloc(1, sizeof(struct lxw_chart_pattern));
+    RETURN_ON_MEM_ERROR(pattern, NULL);
+
+    memcpy(pattern, user_pattern, sizeof(lxw_chart_pattern));
+
+    pattern->fg_color = lxw_format_check_color(pattern->fg_color);
+    pattern->has_fg_color = LXW_TRUE;
+
+    if (pattern->bg_color) {
+        pattern->bg_color = lxw_format_check_color(pattern->bg_color);
+        pattern->has_bg_color = LXW_TRUE;
+    }
+    else {
+        /* Default background color in Excel is white, when unspecified. */
+        pattern->bg_color = LXW_COLOR_WHITE;
+        pattern->has_bg_color = LXW_TRUE;
+    }
+
+    pattern->type = user_pattern->type;
+
+    return pattern;
 }
 
 /*
@@ -1485,19 +1533,170 @@ _chart_write_a_ln(lxw_chart *self, lxw_chart_line *line)
 }
 
 /*
+ * Write the <a:fgClr> element.
+ */
+STATIC void
+_chart_write_a_fg_clr(lxw_chart *self, lxw_color_t color)
+{
+    lxw_xml_start_tag(self->file, "a:fgClr", NULL);
+
+    _chart_write_a_srgb_clr(self, color, LXW_FALSE);
+
+    lxw_xml_end_tag(self->file, "a:fgClr");
+}
+
+/*
+ * Write the <a:bgClr> element.
+ */
+STATIC void
+_chart_write_a_bg_clr(lxw_chart *self, lxw_color_t color)
+{
+    lxw_xml_start_tag(self->file, "a:bgClr", NULL);
+
+    _chart_write_a_srgb_clr(self, color, LXW_FALSE);
+
+    lxw_xml_end_tag(self->file, "a:bgClr");
+}
+
+/*
+ * Write the <a:pattFill> element.
+ */
+STATIC void
+_chart_write_a_patt_fill(lxw_chart *self, lxw_chart_pattern *pattern)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (pattern->type == LXW_CHART_PATTERN_NONE)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "none");
+    else if (pattern->type == LXW_CHART_PATTERN_PERCENT_5)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "pct5");
+    else if (pattern->type == LXW_CHART_PATTERN_PERCENT_10)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "pct10");
+    else if (pattern->type == LXW_CHART_PATTERN_PERCENT_20)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "pct20");
+    else if (pattern->type == LXW_CHART_PATTERN_PERCENT_25)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "pct25");
+    else if (pattern->type == LXW_CHART_PATTERN_PERCENT_30)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "pct30");
+    else if (pattern->type == LXW_CHART_PATTERN_PERCENT_40)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "pct40");
+    else if (pattern->type == LXW_CHART_PATTERN_PERCENT_50)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "pct50");
+    else if (pattern->type == LXW_CHART_PATTERN_PERCENT_60)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "pct60");
+    else if (pattern->type == LXW_CHART_PATTERN_PERCENT_70)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "pct70");
+    else if (pattern->type == LXW_CHART_PATTERN_PERCENT_75)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "pct75");
+    else if (pattern->type == LXW_CHART_PATTERN_PERCENT_80)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "pct80");
+    else if (pattern->type == LXW_CHART_PATTERN_PERCENT_90)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "pct90");
+    else if (pattern->type == LXW_CHART_PATTERN_LIGHT_DOWNWARD_DIAGONAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "ltDnDiag");
+    else if (pattern->type == LXW_CHART_PATTERN_LIGHT_UPWARD_DIAGONAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "ltUpDiag");
+    else if (pattern->type == LXW_CHART_PATTERN_DARK_DOWNWARD_DIAGONAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "dkDnDiag");
+    else if (pattern->type == LXW_CHART_PATTERN_DARK_UPWARD_DIAGONAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "dkUpDiag");
+    else if (pattern->type == LXW_CHART_PATTERN_WIDE_DOWNWARD_DIAGONAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "wdDnDiag");
+    else if (pattern->type == LXW_CHART_PATTERN_WIDE_UPWARD_DIAGONAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "wdUpDiag");
+    else if (pattern->type == LXW_CHART_PATTERN_LIGHT_VERTICAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "ltVert");
+    else if (pattern->type == LXW_CHART_PATTERN_LIGHT_HORIZONTAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "ltHorz");
+    else if (pattern->type == LXW_CHART_PATTERN_NARROW_VERTICAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "narVert");
+    else if (pattern->type == LXW_CHART_PATTERN_NARROW_HORIZONTAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "narHorz");
+    else if (pattern->type == LXW_CHART_PATTERN_DARK_VERTICAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "dkVert");
+    else if (pattern->type == LXW_CHART_PATTERN_DARK_HORIZONTAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "dkHorz");
+    else if (pattern->type == LXW_CHART_PATTERN_DASHED_DOWNWARD_DIAGONAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "dashDnDiag");
+    else if (pattern->type == LXW_CHART_PATTERN_DASHED_UPWARD_DIAGONAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "dashUpDiag");
+    else if (pattern->type == LXW_CHART_PATTERN_DASHED_HORIZONTAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "dashHorz");
+    else if (pattern->type == LXW_CHART_PATTERN_DASHED_VERTICAL)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "dashVert");
+    else if (pattern->type == LXW_CHART_PATTERN_SMALL_CONFETTI)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "smConfetti");
+    else if (pattern->type == LXW_CHART_PATTERN_LARGE_CONFETTI)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "lgConfetti");
+    else if (pattern->type == LXW_CHART_PATTERN_ZIGZAG)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "zigZag");
+    else if (pattern->type == LXW_CHART_PATTERN_WAVE)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "wave");
+    else if (pattern->type == LXW_CHART_PATTERN_DIAGONAL_BRICK)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "diagBrick");
+    else if (pattern->type == LXW_CHART_PATTERN_HORIZONTAL_BRICK)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "horzBrick");
+    else if (pattern->type == LXW_CHART_PATTERN_WEAVE)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "weave");
+    else if (pattern->type == LXW_CHART_PATTERN_PLAID)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "plaid");
+    else if (pattern->type == LXW_CHART_PATTERN_DIVOT)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "divot");
+    else if (pattern->type == LXW_CHART_PATTERN_DOTTED_GRID)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "dotGrid");
+    else if (pattern->type == LXW_CHART_PATTERN_DOTTED_DIAMOND)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "dotDmnd");
+    else if (pattern->type == LXW_CHART_PATTERN_SHINGLE)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "shingle");
+    else if (pattern->type == LXW_CHART_PATTERN_TRELLIS)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "trellis");
+    else if (pattern->type == LXW_CHART_PATTERN_SPHERE)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "sphere");
+    else if (pattern->type == LXW_CHART_PATTERN_SMALL_GRID)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "smGrid");
+    else if (pattern->type == LXW_CHART_PATTERN_LARGE_GRID)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "lgGrid");
+    else if (pattern->type == LXW_CHART_PATTERN_SMALL_CHECK)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "smCheck");
+    else if (pattern->type == LXW_CHART_PATTERN_LARGE_CHECK)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "lgCheck");
+    else if (pattern->type == LXW_CHART_PATTERN_OUTLINED_DIAMOND)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "openDmnd");
+    else if (pattern->type == LXW_CHART_PATTERN_SOLID_DIAMOND)
+        LXW_PUSH_ATTRIBUTES_STR("prst", "solidDmnd");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("prst", "percent_50");
+
+    lxw_xml_start_tag(self->file, "a:pattFill", &attributes);
+
+    if (pattern->has_fg_color)
+        _chart_write_a_fg_clr(self, pattern->fg_color);
+
+    if (pattern->has_bg_color)
+        _chart_write_a_bg_clr(self, pattern->bg_color);
+
+    lxw_xml_end_tag(self->file, "a:pattFill");
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <c:spPr> element.
  */
 STATIC void
 _chart_write_sp_pr(lxw_chart *self, lxw_chart_line *line,
-                   lxw_chart_fill *fill)
+                   lxw_chart_fill *fill, lxw_chart_pattern *pattern)
 {
-    if (!line && !fill)
+    if (!line && !fill && !pattern)
         return;
 
     lxw_xml_start_tag(self->file, "c:spPr", NULL);
 
-    /* Write the series fill. */
-    if (fill) {
+    /* Write the series fill. Note: a pattern fill overrides a solid fill. */
+    if (fill && !pattern) {
         if (fill->none) {
             /* Write the a:noFill element. */
             _chart_write_a_no_fill(self);
@@ -1506,6 +1705,11 @@ _chart_write_sp_pr(lxw_chart *self, lxw_chart_line *line,
             /* Write the a:solidFill element. */
             _chart_write_a_solid_fill(self, fill->color, fill->transparency);
         }
+    }
+
+    if (pattern) {
+        /* Write the a:pattFill element. */
+        _chart_write_a_patt_fill(self, pattern);
     }
 
     if (line) {
@@ -1681,7 +1885,7 @@ _chart_write_marker(lxw_chart *self, lxw_chart_marker *marker)
         _chart_write_marker_size(self, marker->size);
 
     /* Write the c:spPr element. */
-    _chart_write_sp_pr(self, marker->line, marker->fill);
+    _chart_write_sp_pr(self, marker->line, marker->fill, marker->pattern);
 
     lxw_xml_end_tag(self->file, "c:marker");
 }
@@ -1832,7 +2036,7 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
     _chart_write_series_name(self, series);
 
     /* Write the c:spPr element. */
-    _chart_write_sp_pr(self, series->line, series->fill);
+    _chart_write_sp_pr(self, series->line, series->fill, series->pattern);
 
     /* Write the c:marker element. */
     _chart_write_marker(self, series->marker);
@@ -1867,7 +2071,7 @@ _chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
     _chart_write_series_name(self, series);
 
     /* Write the c:spPr element. */
-    _chart_write_sp_pr(self, series->line, series->fill);
+    _chart_write_sp_pr(self, series->line, series->fill, series->pattern);
 
     /* Write the c:marker element. */
     _chart_write_marker(self, series->marker);
@@ -2464,7 +2668,8 @@ _chart_write_cat_axis(lxw_chart *self)
     _chart_write_tick_lbl_pos(self);
 
     /* Write the c:spPr element for the axis line. */
-    _chart_write_sp_pr(self, self->x_axis->line, self->x_axis->fill);
+    _chart_write_sp_pr(self, self->x_axis->line, self->x_axis->fill,
+                       self->x_axis->pattern);
 
     /* Write the axis font elements. */
     _chart_write_axis_font(self, self->x_axis->num_font);
@@ -2526,7 +2731,8 @@ _chart_write_val_axis(lxw_chart *self)
     _chart_write_tick_lbl_pos(self);
 
     /* Write the c:spPr element for the axis line. */
-    _chart_write_sp_pr(self, self->y_axis->line, self->y_axis->fill);
+    _chart_write_sp_pr(self, self->y_axis->line, self->y_axis->fill,
+                       self->y_axis->pattern);
 
     /* Write the axis font elements. */
     _chart_write_axis_font(self, self->y_axis->num_font);
@@ -2579,7 +2785,8 @@ _chart_write_cat_val_axis(lxw_chart *self)
     _chart_write_tick_lbl_pos(self);
 
     /* Write the c:spPr element for the axis line. */
-    _chart_write_sp_pr(self, self->x_axis->line, self->x_axis->fill);
+    _chart_write_sp_pr(self, self->x_axis->line, self->x_axis->fill,
+                       self->x_axis->pattern);
 
     /* Write the axis font elements. */
     _chart_write_axis_font(self, self->x_axis->num_font);
@@ -3389,6 +3596,21 @@ chart_series_set_fill(lxw_chart_series *series, lxw_chart_fill *fill)
 }
 
 /*
+ * Set a pattern type for a series.
+ */
+void
+chart_series_set_pattern(lxw_chart_series *series, lxw_chart_pattern *pattern)
+{
+    if (!pattern)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(series->pattern);
+
+    series->pattern = _chart_convert_pattern_args(pattern);
+}
+
+/*
  * Set a marker type for a series.
  */
 void
@@ -3419,7 +3641,7 @@ chart_series_set_marker_size(lxw_chart_series *series, uint8_t size)
 }
 
 /*
- * Set a line type for a series.
+ * Set a line type for a series marker.
  */
 void
 chart_series_set_marker_line(lxw_chart_series *series, lxw_chart_line *line)
@@ -3440,7 +3662,7 @@ chart_series_set_marker_line(lxw_chart_series *series, lxw_chart_line *line)
 }
 
 /*
- * Set a fill type for a series.
+ * Set a fill type for a series marker.
  */
 void
 chart_series_set_marker_fill(lxw_chart_series *series, lxw_chart_fill *fill)
@@ -3458,6 +3680,28 @@ chart_series_set_marker_fill(lxw_chart_series *series, lxw_chart_fill *fill)
     free(series->marker->fill);
 
     series->marker->fill = _chart_convert_fill_args(fill);
+}
+
+/*
+ * Set a pattern type for a series.
+ */
+void
+chart_series_set_marker_pattern(lxw_chart_series *series,
+                                lxw_chart_pattern *pattern)
+{
+    if (!pattern)
+        return;
+
+    if (!series->marker) {
+        lxw_chart_marker *marker = calloc(1, sizeof(struct lxw_chart_marker));
+        RETURN_VOID_ON_MEM_ERROR(marker);
+        series->marker = marker;
+    }
+
+    /* Free any previously allocated resource. */
+    free(series->marker->pattern);
+
+    series->marker->pattern = _chart_convert_pattern_args(pattern);
 }
 
 /*
@@ -3543,6 +3787,21 @@ chart_axis_set_fill(lxw_chart_axis *axis, lxw_chart_fill *fill)
     free(axis->fill);
 
     axis->fill = _chart_convert_fill_args(fill);
+}
+
+/*
+ * Set a pattern type for an axis.
+ */
+void
+chart_axis_set_pattern(lxw_chart_axis *axis, lxw_chart_pattern *pattern)
+{
+    if (!pattern)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(axis->pattern);
+
+    axis->pattern = _chart_convert_pattern_args(pattern);
 }
 
 /*

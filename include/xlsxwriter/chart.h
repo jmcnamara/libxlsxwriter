@@ -82,7 +82,9 @@ STAILQ_HEAD(lxw_series_data_points, lxw_series_data_point);
 
 #define LXW_CHART_NUM_FORMAT_LEN 128
 
-/** Available chart types . */
+/**
+ * @brief Available chart types.
+ */
 typedef enum lxw_chart_type {
 
     /** None. */
@@ -149,7 +151,9 @@ typedef enum lxw_chart_type {
     LXW_CHART_RADAR_FILLED
 } lxw_chart_type;
 
-/** Chart legend positions. */
+/**
+ * @brief Chart legend positions.
+ */
 typedef enum lxw_chart_legend_position {
 
     /** No chart legend. */
@@ -174,7 +178,8 @@ typedef enum lxw_chart_legend_position {
     LXW_CHART_LEGEND_OVERLAY_LEFT
 } lxw_chart_legend_position;
 
-/** @brief Chart line dash types.
+/**
+ * @brief Chart line dash types.
  *
  * The dash types are shown in the order that they appear in the Excel dialog.
  * See @ref chart_lines.
@@ -213,7 +218,6 @@ typedef enum lxw_chart_line_dash_type {
 
 /**
  * @brief Chart marker types.
- *
  */
 typedef enum lxw_chart_marker_type {
 
@@ -250,6 +254,159 @@ typedef enum lxw_chart_marker_type {
     /** Plus (+) marker type. */
     LXW_CHART_MARKER_PLUS
 } lxw_chart_marker_type;
+
+/**
+ * @brief Chart pattern types.
+ */
+typedef enum lxw_chart_pattern_type {
+
+    /** None pattern. */
+    LXW_CHART_PATTERN_NONE,
+
+    /** 5 Percent pattern. */
+    LXW_CHART_PATTERN_PERCENT_5,
+
+    /** 10 Percent pattern. */
+    LXW_CHART_PATTERN_PERCENT_10,
+
+    /** 20 Percent pattern. */
+    LXW_CHART_PATTERN_PERCENT_20,
+
+    /** 25 Percent pattern. */
+    LXW_CHART_PATTERN_PERCENT_25,
+
+    /** 30 Percent pattern. */
+    LXW_CHART_PATTERN_PERCENT_30,
+
+    /** 40 Percent pattern. */
+    LXW_CHART_PATTERN_PERCENT_40,
+
+    /** 50 Percent pattern. */
+    LXW_CHART_PATTERN_PERCENT_50,
+
+    /** 60 Percent pattern. */
+    LXW_CHART_PATTERN_PERCENT_60,
+
+    /** 70 Percent pattern. */
+    LXW_CHART_PATTERN_PERCENT_70,
+
+    /** 75 Percent pattern. */
+    LXW_CHART_PATTERN_PERCENT_75,
+
+    /** 80 Percent pattern. */
+    LXW_CHART_PATTERN_PERCENT_80,
+
+    /** 90 Percent pattern. */
+    LXW_CHART_PATTERN_PERCENT_90,
+
+    /** Light downward diagonal pattern. */
+    LXW_CHART_PATTERN_LIGHT_DOWNWARD_DIAGONAL,
+
+    /** Light upward diagonal pattern. */
+    LXW_CHART_PATTERN_LIGHT_UPWARD_DIAGONAL,
+
+    /** Dark downward diagonal pattern. */
+    LXW_CHART_PATTERN_DARK_DOWNWARD_DIAGONAL,
+
+    /** Dark upward diagonal pattern. */
+    LXW_CHART_PATTERN_DARK_UPWARD_DIAGONAL,
+
+    /** Wide downward diagonal pattern. */
+    LXW_CHART_PATTERN_WIDE_DOWNWARD_DIAGONAL,
+
+    /** Wide upward diagonal pattern. */
+    LXW_CHART_PATTERN_WIDE_UPWARD_DIAGONAL,
+
+    /** Light vertical pattern. */
+    LXW_CHART_PATTERN_LIGHT_VERTICAL,
+
+    /** Light horizontal pattern. */
+    LXW_CHART_PATTERN_LIGHT_HORIZONTAL,
+
+    /** Narrow vertical pattern. */
+    LXW_CHART_PATTERN_NARROW_VERTICAL,
+
+    /** Narrow horizontal pattern. */
+    LXW_CHART_PATTERN_NARROW_HORIZONTAL,
+
+    /** Dark vertical pattern. */
+    LXW_CHART_PATTERN_DARK_VERTICAL,
+
+    /** Dark horizontal pattern. */
+    LXW_CHART_PATTERN_DARK_HORIZONTAL,
+
+    /** Dashed downward diagonal pattern. */
+    LXW_CHART_PATTERN_DASHED_DOWNWARD_DIAGONAL,
+
+    /** Dashed upward diagonal pattern. */
+    LXW_CHART_PATTERN_DASHED_UPWARD_DIAGONAL,
+
+    /** Dashed horizontal pattern. */
+    LXW_CHART_PATTERN_DASHED_HORIZONTAL,
+
+    /** Dashed vertical pattern. */
+    LXW_CHART_PATTERN_DASHED_VERTICAL,
+
+    /** Small confetti pattern. */
+    LXW_CHART_PATTERN_SMALL_CONFETTI,
+
+    /** Large confetti pattern. */
+    LXW_CHART_PATTERN_LARGE_CONFETTI,
+
+    /** Zigzag pattern. */
+    LXW_CHART_PATTERN_ZIGZAG,
+
+    /** Wave pattern. */
+    LXW_CHART_PATTERN_WAVE,
+
+    /** Diagonal brick pattern. */
+    LXW_CHART_PATTERN_DIAGONAL_BRICK,
+
+    /** Horizontal brick pattern. */
+    LXW_CHART_PATTERN_HORIZONTAL_BRICK,
+
+    /** Weave pattern. */
+    LXW_CHART_PATTERN_WEAVE,
+
+    /** Plaid pattern. */
+    LXW_CHART_PATTERN_PLAID,
+
+    /** Divot pattern. */
+    LXW_CHART_PATTERN_DIVOT,
+
+    /** Dotted grid pattern. */
+    LXW_CHART_PATTERN_DOTTED_GRID,
+
+    /** Dotted diamond pattern. */
+    LXW_CHART_PATTERN_DOTTED_DIAMOND,
+
+    /** Shingle pattern. */
+    LXW_CHART_PATTERN_SHINGLE,
+
+    /** Trellis pattern. */
+    LXW_CHART_PATTERN_TRELLIS,
+
+    /** Sphere pattern. */
+    LXW_CHART_PATTERN_SPHERE,
+
+    /** Small grid pattern. */
+    LXW_CHART_PATTERN_SMALL_GRID,
+
+    /** Large grid pattern. */
+    LXW_CHART_PATTERN_LARGE_GRID,
+
+    /** Small check pattern. */
+    LXW_CHART_PATTERN_SMALL_CHECK,
+
+    /** Large check pattern. */
+    LXW_CHART_PATTERN_LARGE_CHECK,
+
+    /** Outlined diamond pattern. */
+    LXW_CHART_PATTERN_OUTLINED_DIAMOND,
+
+    /** Solid diamond pattern. */
+    LXW_CHART_PATTERN_SOLID_DIAMOND
+} lxw_chart_pattern_type;
 
 enum lxw_chart_subtype {
 
@@ -330,7 +487,7 @@ typedef struct lxw_chart_line {
 } lxw_chart_line;
 
 /**
- * @brief Struct to represent a chart line.
+ * @brief Struct to represent a chart fill.
  *
  * See @ref chart_fills.
  */
@@ -349,6 +506,28 @@ typedef struct lxw_chart_fill {
     uint8_t has_color;
 
 } lxw_chart_fill;
+
+/**
+ * @brief Struct to represent a chart pattern.
+ *
+ * See @ref chart_patterns.
+ */
+typedef struct lxw_chart_pattern {
+
+    /** The pattern foreground color. See @ref working_with_colors. */
+    lxw_color_t fg_color;
+
+    /** The pattern background color. See @ref working_with_colors. */
+    lxw_color_t bg_color;
+
+    /** The pattern type. See #lxw_chart_pattern_type. */
+    uint8_t type;
+
+    /* Members for internal use only. */
+    uint8_t has_fg_color;
+    uint8_t has_bg_color;
+
+} lxw_chart_pattern;
 
 /**
  * @brief Struct to represent a chart font.
@@ -392,6 +571,7 @@ typedef struct lxw_chart_marker {
     uint8_t size;
     lxw_chart_line *line;
     lxw_chart_fill *fill;
+    lxw_chart_pattern *pattern;
 
 } lxw_chart_marker;
 
@@ -434,6 +614,7 @@ typedef struct lxw_chart_series {
     lxw_chart_title title;
     lxw_chart_line *line;
     lxw_chart_fill *fill;
+    lxw_chart_pattern *pattern;
     lxw_chart_marker *marker;
 
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
@@ -460,6 +641,7 @@ typedef struct lxw_chart_axis {
     lxw_chart_font *num_font;
     lxw_chart_line *line;
     lxw_chart_fill *fill;
+    lxw_chart_pattern *pattern;
 
     uint8_t reverse;
     uint8_t has_min;
@@ -789,6 +971,9 @@ void chart_series_set_line(lxw_chart_series *series, lxw_chart_line *line);
  */
 void chart_series_set_fill(lxw_chart_series *series, lxw_chart_fill *fill);
 
+void chart_series_set_pattern(lxw_chart_series *series,
+                              lxw_chart_pattern *pattern);
+
 /**
  * @brief Set the data marker type for a series.
  *
@@ -912,6 +1097,9 @@ void chart_series_set_marker_line(lxw_chart_series *series,
  */
 void chart_series_set_marker_fill(lxw_chart_series *series,
                                   lxw_chart_fill *fill);
+
+void chart_series_set_marker_pattern(lxw_chart_series *series,
+                                     lxw_chart_pattern *pattern);
 
 /**
  * @brief Set the name caption of the an axis.
@@ -1047,6 +1235,8 @@ void chart_axis_set_line(lxw_chart_axis *axis, lxw_chart_line *line);
  * For more information see @ref chart_fills.
  */
 void chart_axis_set_fill(lxw_chart_axis *axis, lxw_chart_fill *fill);
+
+void chart_axis_set_pattern(lxw_chart_axis *axis, lxw_chart_pattern *pattern);
 
 /**
  * @brief Reverse the order of the axis categories or values.

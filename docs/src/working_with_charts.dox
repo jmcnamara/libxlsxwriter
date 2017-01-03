@@ -391,6 +391,11 @@ set via the `line` format:
 @image html chart_fill4.png
 
 
+@subsection chart_patterns Chart formatting: Pattern
+
+TODO
+
+
 @section ww_charts_limitations Chart Limitations
 
 The following chart features aren't currently supported in libxlsxwriter but
