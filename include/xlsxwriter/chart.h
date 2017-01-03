@@ -249,7 +249,6 @@ typedef enum lxw_chart_marker_type {
 
     /** Plus (+) marker type. */
     LXW_CHART_MARKER_PLUS
-
 } lxw_chart_marker_type;
 
 enum lxw_chart_subtype {

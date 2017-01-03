@@ -3367,6 +3367,9 @@ chart_series_set_line(lxw_chart_series *series, lxw_chart_line *line)
     if (!line)
         return;
 
+    /* Free any previously allocated resource. */
+    free(series->line);
+
     series->line = _chart_convert_line_args(line);
 }
 
@@ -3378,6 +3381,9 @@ chart_series_set_fill(lxw_chart_series *series, lxw_chart_fill *fill)
 {
     if (!fill)
         return;
+
+    /* Free any previously allocated resource. */
+    free(series->fill);
 
     series->fill = _chart_convert_fill_args(fill);
 }
@@ -3427,6 +3433,9 @@ chart_series_set_marker_line(lxw_chart_series *series, lxw_chart_line *line)
         series->marker = marker;
     }
 
+    /* Free any previously allocated resource. */
+    free(series->marker->line);
+
     series->marker->line = _chart_convert_line_args(line);
 }
 
@@ -3444,6 +3453,9 @@ chart_series_set_marker_fill(lxw_chart_series *series, lxw_chart_fill *fill)
         RETURN_VOID_ON_MEM_ERROR(marker);
         series->marker = marker;
     }
+
+    /* Free any previously allocated resource. */
+    free(series->marker->fill);
 
     series->marker->fill = _chart_convert_fill_args(fill);
 }
@@ -3485,6 +3497,9 @@ chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
 void
 chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font)
 {
+    /* Free any previously allocated resource. */
+    free(axis->title.font);
+
     axis->title.font = _chart_convert_font_args(font);
 }
 
@@ -3494,6 +3509,9 @@ chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font)
 void
 chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font)
 {
+    /* Free any previously allocated resource. */
+    free(axis->num_font);
+
     axis->num_font = _chart_convert_font_args(font);
 }
 
@@ -3506,6 +3524,9 @@ chart_axis_set_line(lxw_chart_axis *axis, lxw_chart_line *line)
     if (!line)
         return;
 
+    /* Free any previously allocated resource. */
+    free(axis->line);
+
     axis->line = _chart_convert_line_args(line);
 }
 
@@ -3517,6 +3538,9 @@ chart_axis_set_fill(lxw_chart_axis *axis, lxw_chart_fill *fill)
 {
     if (!fill)
         return;
+
+    /* Free any previously allocated resource. */
+    free(axis->fill);
 
     axis->fill = _chart_convert_fill_args(fill);
 }
@@ -3598,6 +3622,9 @@ chart_title_set_name_range(lxw_chart *self, const char *sheetname,
 void
 chart_title_set_name_font(lxw_chart *self, lxw_chart_font *font)
 {
+    /* Free any previously allocated resource. */
+    free(self->title.font);
+
     self->title.font = _chart_convert_font_args(font);
 }
 
@@ -3625,6 +3652,9 @@ chart_legend_set_position(lxw_chart *self, uint8_t position)
 void
 chart_legend_set_font(lxw_chart *self, lxw_chart_font *font)
 {
+    /* Free any previously allocated resource. */
+    free(self->legend.font);
+
     self->legend.font = _chart_convert_font_args(font);
 }
 

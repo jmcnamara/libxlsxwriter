@@ -47,6 +47,10 @@ int main() {
     chart_axis_set_num_font(chart->x_axis, &font1);
     chart_axis_set_num_font(chart->y_axis, &font2);
 
+    /* Set the properties twice to check for memory leaks. */
+    chart_axis_set_num_font(chart->x_axis, &font1);
+    chart_axis_set_num_font(chart->y_axis, &font2);
+
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 
     return workbook_close(workbook);

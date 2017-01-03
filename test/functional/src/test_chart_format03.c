@@ -48,6 +48,9 @@ int main() {
     chart_series_set_line(series1, &line);
     chart_series_set_fill(series1, &fill);
 
+    /* Set the properties twice to check for memory leaks. */
+    chart_series_set_line(series1, &line);
+    chart_series_set_fill(series1, &fill);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 
