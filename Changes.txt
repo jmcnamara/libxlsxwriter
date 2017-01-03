@@ -2,6 +2,11 @@
 @page changes Changes
 
 
+## 0.4.8 January 3 2017
+
+- Added support for chart markers. See @ref chart_markers.
+
+
 ## 0.4.7 January 2 2017
 
 - Added `chart_axis_set_reverse()` function to reverse the order of a chart
