@@ -1869,11 +1869,8 @@ _chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
     /* Write the c:spPr element. */
     _chart_write_sp_pr(self, series->line, series->fill);
 
-    if (self->type == LXW_CHART_SCATTER_STRAIGHT
-        || self->type == LXW_CHART_SCATTER_SMOOTH) {
-        /* Write the c:marker element. */
-        _chart_write_marker(self, series->marker);
-    }
+    /* Write the c:marker element. */
+    _chart_write_marker(self, series->marker);
 
     /* Write the c:xVal element. */
     _chart_write_x_val(self, series);
