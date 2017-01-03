@@ -129,6 +129,7 @@ column fill areas and other chart elements:
 - Font
 - Line/Border
 - Fill
+- Pattern
 
 For example:
 
@@ -354,7 +355,7 @@ default):
 @image html chart_fill1.png
 
 The `color` member sets the color of the fill area. It can be a HTML style RGB
-color or a limited number of named colors, (see @ref working_with_colors for
+color or a limited number of named colors (see @ref working_with_colors for
 more information):
 
 @code
@@ -393,8 +394,101 @@ set via the `line` format:
 
 @subsection chart_patterns Chart formatting: Pattern
 
-TODO
+The pattern fill is used to specify pattern filled areas of chart objects such
+as the interior of a column or the background of the chart itself.
 
+A chart pattern #lxw_chart_pattern struct with default properties is:
+
+@code
+    lxw_chart_pattern pattern = {.type      = LXW_CHART_PATTERN_NONE,
+                                 .fg_color  = LXW_COLOR_NONE,;
+                                 .bg_color  = LXW_COLOR_WHITE};
+@endcode
+
+Where the members are:
+
+- `pattern`: The pattern to be applied (required).
+- `fg_color`: The foreground color of the pattern (required).
+- `bg_color`: The background color (optional, defaults to white).
+
+
+The foreground color, `fg_color`, is a required parameter and can be HTML
+style RGB color or a limited number of named colors (see
+@ref working_with_colors for more information):
+
+The background color, `bg_color`, is optional and defaults to LXW_COLOR_WHITE.
+
+For example:
+
+@code
+    lxw_chart_pattern pattern1 = {.type = LXW_CHART_PATTERN_SHINGLE,
+                                  .fg_color = 0x804000,
+                                  .bg_color = 0XC68C53};
+
+    lxw_chart_pattern pattern2 = {.type = LXW_CHART_PATTERN_HORIZONTAL_BRICK,
+                                  .fg_color = 0XB30000,
+                                  .bg_color = 0XFF6666};
+
+    chart_series_set_pattern(series1, &pattern1);
+    chart_series_set_pattern(series2, &pattern2);
+
+@endcode
+
+@image html chart_pattern.png
+
+The following patterns #lxw_chart_pattern_type can be applied:
+
+- #LXW_CHART_PATTERN_PERCENT_5
+- #LXW_CHART_PATTERN_PERCENT_10
+- #LXW_CHART_PATTERN_PERCENT_20
+- #LXW_CHART_PATTERN_PERCENT_25
+- #LXW_CHART_PATTERN_PERCENT_30
+- #LXW_CHART_PATTERN_PERCENT_40
+- #LXW_CHART_PATTERN_PERCENT_50
+- #LXW_CHART_PATTERN_PERCENT_60
+- #LXW_CHART_PATTERN_PERCENT_70
+- #LXW_CHART_PATTERN_PERCENT_75
+- #LXW_CHART_PATTERN_PERCENT_80
+- #LXW_CHART_PATTERN_PERCENT_90
+- #LXW_CHART_PATTERN_LIGHT_DOWNWARD_DIAGONAL
+- #LXW_CHART_PATTERN_LIGHT_UPWARD_DIAGONAL
+- #LXW_CHART_PATTERN_DARK_DOWNWARD_DIAGONAL
+- #LXW_CHART_PATTERN_DARK_UPWARD_DIAGONAL
+- #LXW_CHART_PATTERN_WIDE_DOWNWARD_DIAGONAL
+- #LXW_CHART_PATTERN_WIDE_UPWARD_DIAGONAL
+- #LXW_CHART_PATTERN_LIGHT_VERTICAL
+- #LXW_CHART_PATTERN_LIGHT_HORIZONTAL
+- #LXW_CHART_PATTERN_NARROW_VERTICAL
+- #LXW_CHART_PATTERN_NARROW_HORIZONTAL
+- #LXW_CHART_PATTERN_DARK_VERTICAL
+- #LXW_CHART_PATTERN_DARK_HORIZONTAL
+- #LXW_CHART_PATTERN_DASHED_DOWNWARD_DIAGONAL
+- #LXW_CHART_PATTERN_DASHED_UPWARD_DIAGONAL
+- #LXW_CHART_PATTERN_DASHED_HORIZONTAL
+- #LXW_CHART_PATTERN_DASHED_VERTICAL
+- #LXW_CHART_PATTERN_SMALL_CONFETTI
+- #LXW_CHART_PATTERN_LARGE_CONFETTI
+- #LXW_CHART_PATTERN_ZIGZAG
+- #LXW_CHART_PATTERN_WAVE
+- #LXW_CHART_PATTERN_DIAGONAL_BRICK
+- #LXW_CHART_PATTERN_HORIZONTAL_BRICK
+- #LXW_CHART_PATTERN_WEAVE
+- #LXW_CHART_PATTERN_PLAID
+- #LXW_CHART_PATTERN_DIVOT
+- #LXW_CHART_PATTERN_DOTTED_GRID
+- #LXW_CHART_PATTERN_DOTTED_DIAMOND
+- #LXW_CHART_PATTERN_SHINGLE
+- #LXW_CHART_PATTERN_TRELLIS
+- #LXW_CHART_PATTERN_SPHERE
+- #LXW_CHART_PATTERN_SMALL_GRID
+- #LXW_CHART_PATTERN_LARGE_GRID
+- #LXW_CHART_PATTERN_SMALL_CHECK
+- #LXW_CHART_PATTERN_LARGE_CHECK
+- #LXW_CHART_PATTERN_OUTLINED_DIAMOND
+- #LXW_CHART_PATTERN_SOLID_DIAMOND
+
+@note If a pattern fill is used on a chart object it overrides the solid fill
+      properties of the object.
 
 @section ww_charts_limitations Chart Limitations
 

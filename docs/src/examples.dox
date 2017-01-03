@@ -647,7 +647,7 @@ The default doughnut chart:
 <table  width="600">
 <tr>
   <td>@ref chart_doughnut.c "&lt;&lt; chart_doughnut.c"</td>
-  <td align="right">@ref chart_styles.c "chart_styles.c &gt;&gt;"</td>
+  <td align="right">@ref chart_pattern.c "chart_pattern.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -658,11 +658,29 @@ An example of creating a simple chart with different fonts.
 
 
 
-@example chart_styles.c
+
+@example chart_pattern.c
 
 <table  width="600">
 <tr>
   <td>@ref chart_fonts.c "&lt;&lt; chart_fonts.c"</td>
+  <td align="right">@ref chart_styles.c "chart_styles.c &gt;&gt;"</td>
+</tr>
+</table>
+
+An example of creating a simple chart with different patterns.
+
+@image html chart_pattern.png
+
+
+
+
+
+@example chart_styles.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_pattern.c "&lt;&lt; chart_pattern.c"</td>
   <td align="right">@ref examples "Examples page &gt;&gt;"</td>
 </tr>
 </table>

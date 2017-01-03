@@ -48,6 +48,7 @@ my @examples = (
     [ 'chart_pie.c',            'Examples of pie charts' ],
     [ 'chart_doughnut.c',       'Examples of doughnut charts' ],
     [ 'chart_fonts.c',          'Examples of using charts fonts' ],
+    [ 'chart_pattern.c',        'Examples of using charts patterns' ],
     [ 'chart_styles.c',         'Examples of built-in charts styles' ],
 );
 

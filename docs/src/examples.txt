@@ -322,6 +322,15 @@ An example of creating a simple chart with different fonts.
 
 @image html chart_fonts.png
 
+
+##############################################################
+@example chart_pattern.c
+
+An example of creating a simple chart with different patterns.
+
+@image html chart_pattern.png
+
+
 ##############################################################
 @example chart_styles.c
 

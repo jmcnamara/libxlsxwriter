@@ -971,6 +971,32 @@ void chart_series_set_line(lxw_chart_series *series, lxw_chart_line *line);
  */
 void chart_series_set_fill(lxw_chart_series *series, lxw_chart_fill *fill);
 
+/**
+ * @brief Set the pattern properties for a chart series.
+ *
+ * @param series  A series object created via `chart_add_series()`.
+ * @param pattern A #lxw_chart_pattern struct.
+ *
+ * Set the pattern properties of a chart series:
+ *
+ * @code
+ *     lxw_chart_pattern pattern1 = {.type = LXW_CHART_PATTERN_SHINGLE,
+ *                                   .fg_color = 0x804000,
+ *                                   .bg_color = 0XC68C53};
+ *
+ *     lxw_chart_pattern pattern2 = {.type = LXW_CHART_PATTERN_HORIZONTAL_BRICK,
+ *                                   .fg_color = 0XB30000,
+ *                                   .bg_color = 0XFF6666};
+ *
+ *     chart_series_set_pattern(series1, &pattern1);
+ *     chart_series_set_pattern(series2, &pattern2);
+ *
+ * @endcode
+ *
+ * @image html chart_pattern.png
+ *
+ * For more information see #lxw_chart_pattern_type and @ref chart_patterns.
+ */
 void chart_series_set_pattern(lxw_chart_series *series,
                               lxw_chart_pattern *pattern);
 
@@ -1098,6 +1124,20 @@ void chart_series_set_marker_line(lxw_chart_series *series,
 void chart_series_set_marker_fill(lxw_chart_series *series,
                                   lxw_chart_fill *fill);
 
+/**
+ * @brief Set the pattern properties for a chart series marker.
+ *
+ * @param series  A series object created via `chart_add_series()`.
+ * @param pattern A #lxw_chart_pattern struct.
+ *
+ * Set the pattern properties of a chart marker:
+ *
+ * @code
+ *     chart_series_set_marker_pattern(series, &pattern);
+ * @endcode
+ *
+ * For more information see #lxw_chart_pattern_type and @ref chart_patterns.
+ */
 void chart_series_set_marker_pattern(lxw_chart_series *series,
                                      lxw_chart_pattern *pattern);
 
@@ -1236,6 +1276,20 @@ void chart_axis_set_line(lxw_chart_axis *axis, lxw_chart_line *line);
  */
 void chart_axis_set_fill(lxw_chart_axis *axis, lxw_chart_fill *fill);
 
+/**
+ * @brief Set the pattern properties for a chart axis.
+ *
+ * @param axis    A pointer to a chart #lxw_chart_axis object.
+ * @param pattern A #lxw_chart_pattern struct.
+ *
+ * Set the pattern properties of a chart axis:
+ *
+ * @code
+ *     chart_axis_set_pattern(chart->y_axis, &pattern);
+ * @endcode
+ *
+ * For more information see #lxw_chart_pattern_type and @ref chart_patterns.
+ */
 void chart_axis_set_pattern(lxw_chart_axis *axis, lxw_chart_pattern *pattern);
 
 /**
