@@ -33,6 +33,92 @@ As such, some of the `libxlsxwriter` axis properties can be set for a value
 axis, some can be set for a category axis and some properties can be set for
 both. The documentation calls out the type of axis to which functions apply.
 
+@section chart_markers Working with Chart markers
+
+In Excel a chart marker is used to distinguish data points in a plotted
+series. In general only Line and Scatter and Radar chart types use
+markers. The libxlsxwriter chart types that can have markers are:
+
+- #LXW_CHART_LINE
+- #LXW_CHART_SCATTER
+- #LXW_CHART_SCATTER_STRAIGHT
+- #LXW_CHART_SCATTER_STRAIGHT_WITH_MARKERS
+- #LXW_CHART_SCATTER_SMOOTH
+- #LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS
+- #LXW_CHART_RADAR
+- #LXW_CHART_RADAR_WITH_MARKERS
+
+The chart types with `MARKERS` in the name have markers with default colors
+and shapes turned on by default but it is possible to change them using the
+functions shown below.
+
+The `chart_series_set_marker_type()` function is used to specify the type of
+the series marker:
+
+@code
+    chart_series_set_marker_type(series, LXW_CHART_MARKER_DIAMOND);
+@endcode
+
+@image html chart_marker1.png
+
+The available marker types defined by #lxw_chart_marker_type are:
+
+- #LXW_CHART_MARKER_AUTOMATIC
+- #LXW_CHART_MARKER_NONE
+- #LXW_CHART_MARKER_SQUARE
+- #LXW_CHART_MARKER_DIAMOND
+- #LXW_CHART_MARKER_TRIANGLE
+- #LXW_CHART_MARKER_X
+- #LXW_CHART_MARKER_STAR
+- #LXW_CHART_MARKER_SHORT_DASH
+- #LXW_CHART_MARKER_LONG_DASH
+- #LXW_CHART_MARKER_CIRCLE
+- #LXW_CHART_MARKER_PLUS
+
+The `#LXW_CHART_MARKER_NONE` type can be used to turn off default markers:
+
+@code
+    chart_series_set_marker_type(series, LXW_CHART_MARKER_NONE);
+@endcode
+
+@image html chart_series_set_marker_none.png
+
+The `#LXW_CHART_MARKER_AUTOMATIC` type is a special case which turns on a
+marker using the default marker style for the particular series. If
+automatic is on then other marker properties such as size, line or fill
+cannot be set.
+
+The `chart_series_set_marker_size()` function is used to specify the size of
+the series marker:
+
+@code
+    chart_series_set_marker_type(series, LXW_CHART_MARKER_CIRCLE);
+    chart_series_set_marker_size(series, 10);
+@endcode
+
+@image html chart_series_set_marker_size.png
+
+
+The `chart_series_set_marker_line()` and `chart_series_set_marker_fill()`
+functions can be used to set the line/border and fill properties of a chart
+marker:
+
+@code
+    lxw_chart_line line = {.color = LXW_COLOR_BLACK};
+    lxw_chart_fill fill = {.color = LXW_COLOR_RED};
+
+    chart_series_set_marker_type(series, LXW_CHART_MARKER_SQUARE);
+    chart_series_set_marker_size(series, 8);
+
+    chart_series_set_marker_line(series, &line);
+    chart_series_set_marker_fill(series, &fill);
+@endcode
+
+@image html chart_marker2.png
+
+For more information on line/border and fill formatting see @ref chart_lines
+and @ref chart_fills below.
+
 
 @section chart_formatting Chart Formatting
 
@@ -43,6 +129,23 @@ column fill areas and other chart elements:
 - Font
 - Line/Border
 - Fill
+
+For example:
+
+@code
+    lxw_chart_line chart_line  = {.color = LXW_COLOR_BLUE};
+    lxw_chart_line marker_line = {.color = LXW_COLOR_RED};
+    lxw_chart_fill marker_fill = {.color = LXW_COLOR_YELLOW};
+
+    chart_series_set_marker_type(series, LXW_CHART_MARKER_SQUARE);
+    chart_series_set_marker_size(series, 5);
+
+    chart_series_set_line(series, &chart_line);
+    chart_series_set_marker_line(series, &marker_line);
+    chart_series_set_marker_fill(series, &marker_fill);
+@endcode
+
+@image html chart_formatting2.png
 
 These properties are explained in the subsections below.
 
@@ -66,50 +169,49 @@ A chart font #lxw_chart_font struct with default properties is:
 
 The font properties are:
 
-__name__: Set the font name:
+- `name`: Set the font name:
 
 @code
     lxw_chart_font font = {.name = "Arial"};
 @endcode
 
-
-__size__: Set the font size:
+- `size`: Set the font size:
 
 @code
     lxw_chart_font font = {.name = "Arial", .size = 11};
 @endcode
 
-__bold__: Set the font bold property:
+- `bold`: Set the font bold property:
 
 @code
     lxw_chart_font font = {.bold = LXW_TRUE};
 @endcode
 
-__italic__: Set the font italic property:
+- `italic`: Set the font italic property:
 
 @code
     lxw_chart_font font = {.italic = LXW_TRUE};
 @endcode
 
-__underline__: Set the font underline property:
+- `underline`: Set the font underline property:
 
 @code
     lxw_chart_font font = {.underline = LXW_TRUE};
 @endcode
 
-__rotation__: Set the font rotation, angle, property in the range -90 to 90
+- `rotation`: Set the font rotation, angle, property in the range -90 to 90
 deg:
 
 @code
     lxw_chart_font font = {.rotation = 45};
 @endcode
 
-This is useful for displaying axis data such as dates in a more compact
-format.
+  This is useful for displaying axis data such as dates in a more compact
+  format.
 
-__color__: Set the font color property. It can be a HTML style RGB color or a
-limited number of named colors (see @ref working_with_colors for more
-information):
+- `color`: Set the font color property. It can be a HTML style RGB color or a
+  limited number of named colors (see @ref working_with_colors for more
+  information):
 
 @code
     lxw_chart_font font = {.color = LXW_COLOR_BLUE};
@@ -141,8 +243,16 @@ A chart line #lxw_chart_line struct with default properties is:
 
 The `none` member is uses to turn the line off (it is always on by default
 except in Scatter charts). This is useful if you wish to plot a series with
-markers (not supported yet) but without a line or a column fill without a
-border.
+markers without a line, or a column fill without a border:
+
+@code
+    lxw_chart_line line = {.none = LXW_TRUE};
+
+    chart_series_set_line(series, &line);
+    chart_series_set_marker_type(series, LXW_CHART_MARKER_AUTOMATIC);
+@endcode
+
+@image html chart_formatting3.png
 
 The `color` member sets the color of the line. It can be a HTML style RGB
 color or a limited number of named colors (see @ref working_with_colors for
@@ -288,7 +398,6 @@ will be in time. See the [GitHub Chart Feature Request][1].
 
 [1]: https://github.com/jmcnamara/libxlsxwriter/issues/51
 
-- Chart markers.
 - Secondary axis.
 - Combined charts.
 - Chart area and plot area formatting.

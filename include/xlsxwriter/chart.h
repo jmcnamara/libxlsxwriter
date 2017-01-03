@@ -216,17 +216,40 @@ typedef enum lxw_chart_line_dash_type {
  *
  */
 typedef enum lxw_chart_marker_type {
+
+    /** Automatic, series default, marker type. */
     LXW_CHART_MARKER_AUTOMATIC,
+
+    /** No marker type. */
     LXW_CHART_MARKER_NONE,
+
+    /** Square marker type. */
     LXW_CHART_MARKER_SQUARE,
+
+    /** Diamond marker type. */
     LXW_CHART_MARKER_DIAMOND,
+
+    /** Triangle marker type. */
     LXW_CHART_MARKER_TRIANGLE,
+
+    /** X shape marker type. */
     LXW_CHART_MARKER_X,
+
+    /** Star marker type. */
     LXW_CHART_MARKER_STAR,
+
+    /** Short dash marker type. */
     LXW_CHART_MARKER_SHORT_DASH,
+
+    /** Long dash marker type. */
     LXW_CHART_MARKER_LONG_DASH,
+
+    /** Circle marker type. */
     LXW_CHART_MARKER_CIRCLE,
+
+    /** Plus (+) marker type. */
     LXW_CHART_MARKER_PLUS
+
 } lxw_chart_marker_type;
 
 enum lxw_chart_subtype {
@@ -767,13 +790,127 @@ void chart_series_set_line(lxw_chart_series *series, lxw_chart_line *line);
  */
 void chart_series_set_fill(lxw_chart_series *series, lxw_chart_fill *fill);
 
+/**
+ * @brief Set the data marker type for a series.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ * @param type   The marker type, see #lxw_chart_marker_type.
+ *
+ * In Excel a chart marker is used to distinguish data points in a plotted
+ * series. In general only Line and Scatter and Radar chart types use
+ * markers. The libxlsxwriter chart types that can have markers are:
+ *
+ * - #LXW_CHART_LINE
+ * - #LXW_CHART_SCATTER
+ * - #LXW_CHART_SCATTER_STRAIGHT
+ * - #LXW_CHART_SCATTER_STRAIGHT_WITH_MARKERS
+ * - #LXW_CHART_SCATTER_SMOOTH
+ * - #LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS
+ * - #LXW_CHART_RADAR
+ * - #LXW_CHART_RADAR_WITH_MARKERS
+ *
+ * The chart types with `MARKERS` in the name have markers with default colors
+ * and shapes turned on by default but it is possible using the various
+ * `chart_series_set_marker_xxx()` functions below to change these defaults. It
+ * is also possible to turn on an off markers.
+ *
+ * The `%chart_series_set_marker_type()` function is used to specify the
+ * type of the series marker:
+ *
+ * @code
+ *     chart_series_set_marker_type(series, LXW_CHART_MARKER_DIAMOND);
+ * @endcode
+ *
+ * @image html chart_marker1.png
+ *
+ * The available marker types defined by #lxw_chart_marker_type are:
+ *
+ * - #LXW_CHART_MARKER_AUTOMATIC
+ * - #LXW_CHART_MARKER_NONE
+ * - #LXW_CHART_MARKER_SQUARE
+ * - #LXW_CHART_MARKER_DIAMOND
+ * - #LXW_CHART_MARKER_TRIANGLE
+ * - #LXW_CHART_MARKER_X
+ * - #LXW_CHART_MARKER_STAR
+ * - #LXW_CHART_MARKER_SHORT_DASH
+ * - #LXW_CHART_MARKER_LONG_DASH
+ * - #LXW_CHART_MARKER_CIRCLE
+ * - #LXW_CHART_MARKER_PLUS
+ *
+ * The `#LXW_CHART_MARKER_NONE` type can be used to turn off default markers:
+ *
+ * @code
+ *     chart_series_set_marker_type(series, LXW_CHART_MARKER_NONE);
+ * @endcode
+ *
+ * @image html chart_series_set_marker_none.png
+ *
+ * The `#LXW_CHART_MARKER_AUTOMATIC` type is a special case which turns on a
+ * marker using the default marker style for the particular series. If
+ * automatic is on then other marker properties such as size, line or fill
+ * cannot be set.
+ */
 void chart_series_set_marker_type(lxw_chart_series *series, uint8_t type);
 
+/**
+ * @brief Set the size of a data marker for a series.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ * @param size   The size of the marker.
+ *
+ * The `%chart_series_set_marker_size()` function is used to specify the
+ * size of the series marker:
+ *
+ * @code
+ *     chart_series_set_marker_type(series, LXW_CHART_MARKER_CIRCLE);
+ *     chart_series_set_marker_size(series, 10);
+ * @endcode
+ *
+ * @image html chart_series_set_marker_size.png
+ *
+ */
 void chart_series_set_marker_size(lxw_chart_series *series, uint8_t size);
 
+/**
+ * @brief Set the line properties for a chart series marker.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ * @param line   A #lxw_chart_line struct.
+ *
+ * Set the line/border properties of a chart marker:
+ *
+ * @code
+ *     lxw_chart_line line = {.color = LXW_COLOR_BLACK};
+ *     lxw_chart_fill fill = {.color = LXW_COLOR_RED};
+ *
+ *     chart_series_set_marker_type(series, LXW_CHART_MARKER_SQUARE);
+ *     chart_series_set_marker_size(series, 8);
+ *
+ *     chart_series_set_marker_line(series, &line);
+ *     chart_series_set_marker_fill(series, &fill);
+ * @endcode
+ *
+ * @image html chart_marker2.png
+ *
+ * For more information see @ref chart_lines.
+ */
 void chart_series_set_marker_line(lxw_chart_series *series,
                                   lxw_chart_line *line);
 
+/**
+ * @brief Set the fill properties for a chart series marker.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ * @param fill   A #lxw_chart_fill struct.
+ *
+ * Set the fill properties of a chart marker:
+ *
+ * @code
+ *     chart_series_set_marker_fill(series, &fill);
+ * @endcode
+ *
+ * See the example and image above and also see @ref chart_fills.
+ */
 void chart_series_set_marker_fill(lxw_chart_series *series,
                                   lxw_chart_fill *fill);
 
