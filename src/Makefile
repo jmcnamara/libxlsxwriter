@@ -117,7 +117,7 @@ test_compile : $(OBJS)
 	$(Q)$(CC) $(FPIC) -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
 
 %.to : %.c $(HDRS)
-	$(Q)$(CC) -g -O0 -DTESTING -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(Q)$(CC) -g -O3 -DTESTING -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
 
 
 # Clean up any temp/build files.
