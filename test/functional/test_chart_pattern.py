@@ -36,3 +36,6 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chart_pattern08(self):
         self.run_exe_test('test_chart_pattern08')
+
+    def test_chart_pattern10(self):
+        self.run_exe_test('test_chart_pattern10')

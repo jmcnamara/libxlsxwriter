@@ -714,6 +714,13 @@ typedef struct lxw_chart {
     uint16_t delete_series_count;
     lxw_chart_marker *default_marker;
 
+    lxw_chart_line *chartarea_line;
+    lxw_chart_fill *chartarea_fill;
+    lxw_chart_pattern *chartarea_pattern;
+    lxw_chart_line *plotarea_line;
+    lxw_chart_fill *plotarea_fill;
+    lxw_chart_pattern *plotarea_pattern;
+
     struct lxw_chart_series_list *series_list;
 
     STAILQ_ENTRY (lxw_chart) ordered_list_pointers;
@@ -1546,6 +1553,19 @@ void chart_legend_set_font(lxw_chart *chart, lxw_chart_font *font);
  */
 lxw_error chart_legend_delete_series(lxw_chart *chart,
                                      int16_t delete_series[]);
+
+void chart_chartarea_set_line(lxw_chart *chart, lxw_chart_line *line);
+
+void chart_chartarea_set_fill(lxw_chart *chart, lxw_chart_fill *fill);
+
+void chart_chartarea_set_pattern(lxw_chart *chart,
+                                 lxw_chart_pattern *pattern);
+
+void chart_plotarea_set_line(lxw_chart *chart, lxw_chart_line *line);
+
+void chart_plotarea_set_fill(lxw_chart *chart, lxw_chart_fill *fill);
+
+void chart_plotarea_set_pattern(lxw_chart *chart, lxw_chart_pattern *pattern);
 
 /**
  * @brief Set the chart style type.

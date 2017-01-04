@@ -159,6 +159,13 @@ lxw_chart_free(lxw_chart *chart)
 
     free(chart->default_marker);
 
+    free(chart->chartarea_line);
+    free(chart->chartarea_fill);
+    free(chart->chartarea_pattern);
+    free(chart->plotarea_line);
+    free(chart->plotarea_fill);
+    free(chart->plotarea_pattern);
+
     free(chart);
 }
 
@@ -3083,6 +3090,10 @@ _chart_write_scatter_plot_area(lxw_chart *self)
     /* Write the c:valAx element. */
     _chart_write_val_axis(self);
 
+    /* Write the c:spPr element for the plotarea formatting. */
+    _chart_write_sp_pr(self, self->plotarea_line, self->plotarea_fill,
+                       self->plotarea_pattern);
+
     lxw_xml_end_tag(self->file, "c:plotArea");
 }
 
@@ -3122,6 +3133,10 @@ _chart_write_plot_area(lxw_chart *self)
 
     /* Write the c:valAx element. */
     _chart_write_val_axis(self);
+
+    /* Write the c:spPr element for the plotarea formatting. */
+    _chart_write_sp_pr(self, self->plotarea_line, self->plotarea_fill,
+                       self->plotarea_pattern);
 
     lxw_xml_end_tag(self->file, "c:plotArea");
 }
@@ -3396,6 +3411,10 @@ lxw_chart_assemble_xml_file(lxw_chart *self)
 
     /* Write the c:chart element. */
     _chart_write_chart(self);
+
+    /* Write the c:spPr element for the chartarea formatting. */
+    _chart_write_sp_pr(self, self->chartarea_line, self->chartarea_fill,
+                       self->chartarea_pattern);
 
     /* Write the c:printSettings element. */
     _chart_write_print_settings(self);
@@ -3941,6 +3960,96 @@ chart_legend_delete_series(lxw_chart *self, int16_t delete_series[])
     self->delete_series_count = count;
 
     return LXW_NO_ERROR;
+}
+
+/*
+ * Set a line type for the chartarea.
+ */
+void
+chart_chartarea_set_line(lxw_chart *self, lxw_chart_line *line)
+{
+    if (!line)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(self->chartarea_line);
+
+    self->chartarea_line = _chart_convert_line_args(line);
+}
+
+/*
+ * Set a fill type for the chartarea.
+ */
+void
+chart_chartarea_set_fill(lxw_chart *self, lxw_chart_fill *fill)
+{
+    if (!fill)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(self->chartarea_fill);
+
+    self->chartarea_fill = _chart_convert_fill_args(fill);
+}
+
+/*
+ * Set a pattern type for the chartarea.
+ */
+void
+chart_chartarea_set_pattern(lxw_chart *self, lxw_chart_pattern *pattern)
+{
+    if (!pattern)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(self->chartarea_pattern);
+
+    self->chartarea_pattern = _chart_convert_pattern_args(pattern);
+}
+
+/*
+ * Set a line type for the plotarea.
+ */
+void
+chart_plotarea_set_line(lxw_chart *self, lxw_chart_line *line)
+{
+    if (!line)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(self->plotarea_line);
+
+    self->plotarea_line = _chart_convert_line_args(line);
+}
+
+/*
+ * Set a fill type for the plotarea.
+ */
+void
+chart_plotarea_set_fill(lxw_chart *self, lxw_chart_fill *fill)
+{
+    if (!fill)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(self->plotarea_fill);
+
+    self->plotarea_fill = _chart_convert_fill_args(fill);
+}
+
+/*
+ * Set a pattern type for the plotarea.
+ */
+void
+chart_plotarea_set_pattern(lxw_chart *self, lxw_chart_pattern *pattern)
+{
+    if (!pattern)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(self->plotarea_pattern);
+
+    self->plotarea_pattern = _chart_convert_pattern_args(pattern);
 }
 
 /*
