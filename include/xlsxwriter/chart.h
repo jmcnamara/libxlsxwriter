@@ -1554,17 +1554,122 @@ void chart_legend_set_font(lxw_chart *chart, lxw_chart_font *font);
 lxw_error chart_legend_delete_series(lxw_chart *chart,
                                      int16_t delete_series[]);
 
+/**
+ * @brief Set the line properties for a chartarea.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ * @param line  A #lxw_chart_line struct.
+ *
+ * Set the line/border properties of a chartarea. In Excel the chartarea
+ * is the background area behind the chart:
+ *
+ * @code
+ *     lxw_chart_line line = {.none  = LXW_TRUE};
+ *     lxw_chart_fill fill = {.color = LXW_COLOR_RED};
+ *
+ *     chart_chartarea_set_line(chart, &line);
+ *     chart_chartarea_set_fill(chart, &fill);
+ * @endcode
+ *
+ * @image html chart_chartarea.png
+ *
+ * For more information see @ref chart_lines.
+ */
 void chart_chartarea_set_line(lxw_chart *chart, lxw_chart_line *line);
 
+/**
+ * @brief Set the fill properties for a chartarea.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ * @param fill  A #lxw_chart_fill struct.
+ *
+ * Set the fill properties of a chartarea:
+ *
+ * @code
+ *     chart_chartarea_set_fill(chart, &fill);
+ * @endcode
+ *
+ * See the example and image above.
+ *
+ * For more information see @ref chart_fills.
+ */
 void chart_chartarea_set_fill(lxw_chart *chart, lxw_chart_fill *fill);
 
+/**
+ * @brief Set the pattern properties for a chartarea.
+ *
+ * @param chart   Pointer to a lxw_chart instance to be configured.
+ * @param pattern A #lxw_chart_pattern struct.
+ *
+ * Set the pattern properties of a chartarea:
+ *
+ * @code
+ *     chart_chartarea_set_pattern(series1, &pattern);
+ * @endcode
+ *
+ * For more information see #lxw_chart_pattern_type and @ref chart_patterns.
+ */
 void chart_chartarea_set_pattern(lxw_chart *chart,
                                  lxw_chart_pattern *pattern);
 
+/**
+ * @brief Set the line properties for a plotarea.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ * @param line  A #lxw_chart_line struct.
+ *
+ * Set the line/border properties of a plotarea. In Excel the plotarea is
+ * the area between the axes on which the chart series are plotted:
+ *
+ * @code
+ *     lxw_chart_line line = {.color     = LXW_COLOR_RED,
+ *                            .width     = 2,
+ *                            .dash_type = LXW_CHART_LINE_DASH_DASH};
+ *     lxw_chart_fill fill = {.color     = 0xFFFFC2};
+ *
+ *     chart_plotarea_set_line(chart, &line);
+ *     chart_plotarea_set_fill(chart, &fill);
+ *
+ * @endcode
+ *
+ * @image html chart_plotarea.png
+ *
+ * For more information see @ref chart_lines.
+ */
 void chart_plotarea_set_line(lxw_chart *chart, lxw_chart_line *line);
 
+/**
+ * @brief Set the fill properties for a plotarea.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ * @param fill  A #lxw_chart_fill struct.
+ *
+ * Set the fill properties of a plotarea:
+ *
+ * @code
+ *     chart_plotarea_set_fill(chart, &fill);
+ * @endcode
+ *
+ * See the example and image above.
+ *
+ * For more information see @ref chart_fills.
+ */
 void chart_plotarea_set_fill(lxw_chart *chart, lxw_chart_fill *fill);
 
+/**
+ * @brief Set the pattern properties for a plotarea.
+ *
+ * @param chart   Pointer to a lxw_chart instance to be configured.
+ * @param pattern A #lxw_chart_pattern struct.
+ *
+ * Set the pattern properties of a plotarea:
+ *
+ * @code
+ *     chart_plotarea_set_pattern(series1, &pattern);
+ * @endcode
+ *
+ * For more information see #lxw_chart_pattern_type and @ref chart_patterns.
+ */
 void chart_plotarea_set_pattern(lxw_chart *chart, lxw_chart_pattern *pattern);
 
 /**
