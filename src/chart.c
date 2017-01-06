@@ -133,6 +133,8 @@ lxw_chart_free(lxw_chart *chart)
         free(chart->x_axis->line);
         free(chart->x_axis->fill);
         free(chart->x_axis->pattern);
+        free(chart->x_axis->major_gridlines.line);
+        free(chart->x_axis->minor_gridlines.line);
         free(chart->x_axis);
     }
 
@@ -145,6 +147,8 @@ lxw_chart_free(lxw_chart *chart)
         free(chart->y_axis->line);
         free(chart->y_axis->fill);
         free(chart->y_axis->pattern);
+        free(chart->y_axis->major_gridlines.line);
+        free(chart->y_axis->minor_gridlines.line);
         free(chart->y_axis);
     }
 
@@ -218,8 +222,8 @@ lxw_chart_new(uint8_t type)
     lxw_strcpy(chart->x_axis->default_num_format, "General");
     lxw_strcpy(chart->y_axis->default_num_format, "General");
 
-    chart->x_axis->default_major_gridlines = LXW_FALSE;
-    chart->y_axis->default_major_gridlines = LXW_TRUE;
+    chart->x_axis->major_gridlines.visible = LXW_FALSE;
+    chart->y_axis->major_gridlines.visible = LXW_TRUE;
 
     chart->series_overlap_1 = 100;
 
@@ -2340,9 +2344,43 @@ _chart_write_lbl_offset(lxw_chart *self)
 STATIC void
 _chart_write_major_gridlines(lxw_chart *self, lxw_chart_axis *axis)
 {
+    if (!axis->major_gridlines.visible)
+        return;
 
-    if (axis->default_major_gridlines)
+    if (axis->major_gridlines.line) {
+        lxw_xml_start_tag(self->file, "c:majorGridlines", NULL);
+
+        /* Write the c:spPr element for the axis line. */
+        _chart_write_sp_pr(self, axis->major_gridlines.line, NULL, NULL);
+
+        lxw_xml_end_tag(self->file, "c:majorGridlines");
+    }
+    else {
         lxw_xml_empty_tag(self->file, "c:majorGridlines", NULL);
+    }
+}
+
+/*
+ * Write the <c:minorGridlines> element.
+ */
+STATIC void
+_chart_write_minor_gridlines(lxw_chart *self, lxw_chart_axis *axis)
+{
+    if (!axis->minor_gridlines.visible)
+        return;
+
+    if (axis->minor_gridlines.line) {
+        lxw_xml_start_tag(self->file, "c:minorGridlines", NULL);
+
+        /* Write the c:spPr element for the axis line. */
+        _chart_write_sp_pr(self, axis->minor_gridlines.line, NULL, NULL);
+
+        lxw_xml_end_tag(self->file, "c:minorGridlines");
+
+    }
+    else {
+        lxw_xml_empty_tag(self->file, "c:minorGridlines", NULL);
+    }
 }
 
 /*
@@ -2660,6 +2698,9 @@ _chart_write_cat_axis(lxw_chart *self)
     /* Write the c:majorGridlines element. */
     _chart_write_major_gridlines(self, self->x_axis);
 
+    /* Write the c:minorGridlines element. */
+    _chart_write_minor_gridlines(self, self->x_axis);
+
     /* Write the axis title elements. */
     self->x_axis->title.is_horizontal = self->has_horiz_cat_axis;
     _chart_write_title(self, &self->x_axis->title);
@@ -2724,6 +2765,9 @@ _chart_write_val_axis(lxw_chart *self)
     /* Write the c:majorGridlines element. */
     _chart_write_major_gridlines(self, self->y_axis);
 
+    /* Write the c:minorGridlines element. */
+    _chart_write_minor_gridlines(self, self->y_axis);
+
     /* Write the axis title elements. */
     self->y_axis->title.is_horizontal = self->has_horiz_val_axis;
     _chart_write_title(self, &self->y_axis->title);
@@ -2777,6 +2821,12 @@ _chart_write_cat_val_axis(lxw_chart *self)
 
     /* Write the c:axPos element. */
     _chart_write_axis_pos(self, position, self->y_axis->reverse);
+
+    /* Write the c:majorGridlines element. */
+    _chart_write_major_gridlines(self, self->x_axis);
+
+    /* Write the c:minorGridlines element. */
+    _chart_write_minor_gridlines(self, self->x_axis);
 
     /* Write the axis title elements. */
     self->x_axis->title.is_horizontal = self->has_horiz_val_axis;
@@ -3203,8 +3253,9 @@ _chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
     self->y_axis = tmp;
 
     /*Also reverse some of the defaults. */
-    self->x_axis->default_major_gridlines = LXW_FALSE;
-    self->y_axis->default_major_gridlines = LXW_TRUE;
+    self->x_axis->major_gridlines.visible = LXW_FALSE;
+    self->y_axis->major_gridlines.visible = LXW_TRUE;
+
     self->has_horiz_cat_axis = LXW_TRUE;
     self->has_horiz_val_axis = LXW_FALSE;
 
@@ -3322,7 +3373,8 @@ _chart_initialize_radar_chart(lxw_chart *self, uint8_t type)
     if (type == LXW_CHART_RADAR)
         _chart_set_default_marker_type(self, LXW_CHART_MARKER_NONE);
 
-    self->x_axis->default_major_gridlines = LXW_TRUE;
+    self->x_axis->major_gridlines.visible = LXW_TRUE;
+
     self->y_axis->major_tick_mark = LXW_TRUE;
 
     /* Initialize the function pointers for this chart type. */
@@ -3861,6 +3913,64 @@ chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base)
     /* Excel log range is 2-1000. */
     if (log_base >= 2 && log_base <= 1000)
         axis->log_base = log_base;
+}
+
+/*
+ * Set the axis major gridlines on/off.
+ */
+void
+chart_axis_major_gridlines_set_visible(lxw_chart_axis *axis, uint8_t visible)
+{
+    axis->major_gridlines.visible = visible;
+}
+
+/*
+ * Set a line type for the major gridlines.
+ */
+void
+chart_axis_major_gridlines_set_line(lxw_chart_axis *axis,
+                                    lxw_chart_line *line)
+{
+    if (!line)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(axis->major_gridlines.line);
+
+    axis->major_gridlines.line = _chart_convert_line_args(line);
+
+    /* If the gridline has a format it should also be visible. */
+    if (axis->major_gridlines.line)
+        axis->major_gridlines.visible = LXW_TRUE;
+}
+
+/*
+ * Set the axis minor gridlines on/off.
+ */
+void
+chart_axis_minor_gridlines_set_visible(lxw_chart_axis *axis, uint8_t visible)
+{
+    axis->minor_gridlines.visible = visible;
+}
+
+/*
+ * Set a line type for the minor gridlines.
+ */
+void
+chart_axis_minor_gridlines_set_line(lxw_chart_axis *axis,
+                                    lxw_chart_line *line)
+{
+    if (!line)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(axis->minor_gridlines.line);
+
+    axis->minor_gridlines.line = _chart_convert_line_args(line);
+
+    /* If the gridline has a format it should also be visible. */
+    if (axis->minor_gridlines.line)
+        axis->minor_gridlines.visible = LXW_TRUE;
 }
 
 /*

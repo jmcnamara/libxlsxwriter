@@ -621,6 +621,14 @@ typedef struct lxw_chart_series {
 
 } lxw_chart_series;
 
+/* Struct for major/minor axis gridlines. */
+typedef struct lxw_chart_gridline {
+
+    uint8_t visible;
+    lxw_chart_line *line;
+
+} lxw_chart_gridline;
+
 /**
  * @brief Struct to represent an Excel chart axis.
  *
@@ -634,9 +642,11 @@ typedef struct lxw_chart_axis {
     char num_format[LXW_CHART_NUM_FORMAT_LEN];
     char default_num_format[LXW_CHART_NUM_FORMAT_LEN];
 
-    uint8_t default_major_gridlines;
     uint8_t major_tick_mark;
     uint8_t is_horizontal;
+
+    lxw_chart_gridline major_gridlines;
+    lxw_chart_gridline minor_gridlines;
 
     lxw_chart_font *num_font;
     lxw_chart_line *line;
@@ -1381,6 +1391,100 @@ void chart_axis_set_max(lxw_chart_axis *axis, double max);
  *       example. For more information see @ref ww_charts_axes.
  */
 void chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base);
+
+
+/**
+ * @brief Turn on/off the major gridlines for an axis.
+ *
+ * @param axis    A pointer to a chart #lxw_chart_axis object.
+ * @param visible Turn off/on the major gridline. (0/1)
+ *
+ * Turn on or off the major gridlines for an X or Y axis. In most Excel charts
+ * the Y axis major gridlines are on by default and the X axis major
+ * gridlines are off by default.
+ *
+ * Example:
+ *
+ * @code
+ *     // Reverse the normal visible/hidden gridlines for a column chart.
+ *     chart_axis_major_gridlines_set_visible(chart->x_axis, LXW_TRUE);
+ *     chart_axis_major_gridlines_set_visible(chart->y_axis, LXW_FALSE);
+ * @endcode
+ *
+ * @image html chart_gridline1.png
+ */
+void chart_axis_major_gridlines_set_visible(lxw_chart_axis *axis,
+                                            uint8_t visible);
+
+/**
+ * @brief Turn on/off the minor gridlines for an axis.
+ *
+ * @param axis    A pointer to a chart #lxw_chart_axis object.
+ * @param visible Turn off/on the minor gridline. (0/1)
+ *
+ * Turn on or off the minor gridlines for an X or Y axis. In most Excel charts
+ * the X and Y axis minor gridlines are off by default.
+ *
+ * Example, turn on all major and minor gridlines:
+ *
+ * @code
+ *     chart_axis_major_gridlines_set_visible(chart->x_axis, LXW_TRUE);
+ *     chart_axis_minor_gridlines_set_visible(chart->x_axis, LXW_TRUE);
+ *     chart_axis_major_gridlines_set_visible(chart->y_axis, LXW_TRUE);
+ *     chart_axis_minor_gridlines_set_visible(chart->y_axis, LXW_TRUE);
+ * @endcode
+ *
+ * @image html chart_gridline2.png
+ */
+void chart_axis_minor_gridlines_set_visible(lxw_chart_axis *axis,
+                                            uint8_t visible);
+
+/**
+ * @brief Set the line properties for the chart axis major gridlines.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param line A #lxw_chart_line struct.
+ *
+ * Format the line properties of the major gridlines of a chart:
+ *
+ * @code
+ *     lxw_chart_line line1 = {.color = LXW_COLOR_RED,
+ *                             .width = 0.5,
+ *                             .dash_type = LXW_CHART_LINE_DASH_SQUARE_DOT};
+ *
+ *     lxw_chart_line line2 = {.color = LXW_COLOR_YELLOW};
+ *
+ *     lxw_chart_line line3 = {.width = 1.25,
+ *                             .dash_type = LXW_CHART_LINE_DASH_DASH};
+ *
+ *     lxw_chart_line line4 = {.color =  0x00B050};
+ *
+ *     chart_axis_major_gridlines_set_line(chart->x_axis, &line1);
+ *     chart_axis_minor_gridlines_set_line(chart->x_axis, &line2);
+ *     chart_axis_major_gridlines_set_line(chart->y_axis, &line3);
+ *     chart_axis_minor_gridlines_set_line(chart->y_axis, &line4);
+ * @endcode
+ *
+ * @image html chart_gridline3.png
+ *
+ * For more information see @ref chart_lines.
+ */
+void chart_axis_major_gridlines_set_line(lxw_chart_axis *axis,
+                                         lxw_chart_line *line);
+
+/**
+ * @brief Set the line properties for the chart axis minor gridlines.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param line A #lxw_chart_line struct.
+ *
+ * Format the line properties of the minor gridlines of a chart, see the
+ * example above.
+ *
+ * For more information see @ref chart_lines.
+ */
+void chart_axis_minor_gridlines_set_line(lxw_chart_axis *axis,
+                                         lxw_chart_line *line);
 
 /**
  * @brief Set the title of the chart.
