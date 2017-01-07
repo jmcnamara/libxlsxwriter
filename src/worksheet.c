@@ -137,11 +137,7 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     if (init_data && init_data->optimize) {
         FILE *tmpfile;
 
-        if (init_data)
-            tmpfile = lxw_tmpfile(init_data->tmpdir);
-        else
-            tmpfile = lxw_tmpfile(NULL);
-
+        tmpfile = lxw_tmpfile(init_data->tmpdir);
         if (!tmpfile) {
             LXW_ERROR("Error creating tmpfile() for worksheet in "
                       "'constant_memory' mode.");
@@ -2067,11 +2063,14 @@ _process_png(lxw_image_options *image_options)
     uint32_t height = 0;
     double x_dpi = 96;
     double y_dpi = 96;
+    int fseek_err;
 
     FILE *stream = image_options->stream;
 
     /* Skip another 4 bytes to the end of the PNG header. */
-    fseek(stream, 4, SEEK_CUR);
+    fseek_err = fseek(stream, 4, SEEK_CUR);
+    if (fseek_err)
+        goto file_error;
 
     while (!feof(stream)) {
 
@@ -2131,17 +2130,16 @@ _process_png(lxw_image_options *image_options)
         if (memcmp(type, "IEND", 4) == 0)
             break;
 
-        if (!feof(stream))
-            fseek(stream, offset, SEEK_CUR);
+        if (!feof(stream)) {
+            fseek_err = fseek(stream, offset, SEEK_CUR);
+            if (fseek_err)
+                goto file_error;
+        }
     }
 
     /* Ensure that we read some valid data from the file. */
-    if (width == 0) {
-        LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
-                         "no size data found in file: %s.",
-                         image_options->filename);
-        return LXW_ERROR_IMAGE_DIMENSIONS;
-    }
+    if (width == 0)
+        goto file_error;
 
     /* Set the image metadata. */
     image_options->image_type = LXW_IMAGE_PNG;
@@ -2152,6 +2150,13 @@ _process_png(lxw_image_options *image_options)
     image_options->extension = lxw_strdup("png");
 
     return LXW_NO_ERROR;
+
+file_error:
+    LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
+                     "no size data found in file: %s.",
+                     image_options->filename);
+
+    return LXW_ERROR_IMAGE_DIMENSIONS;
 }
 
 /*
@@ -2167,11 +2172,14 @@ _process_jpeg(lxw_image_options *image_options)
     uint16_t height = 0;
     double x_dpi = 96;
     double y_dpi = 96;
+    int fseek_err;
 
     FILE *stream = image_options->stream;
 
     /* Read back 2 bytes to the end of the initial 0xFFD8 marker. */
-    fseek(stream, -2, SEEK_CUR);
+    fseek_err = fseek(stream, -2, SEEK_CUR);
+    if (fseek_err)
+        goto file_error;
 
     /* Search through the image data to read the height and width in the */
     /* 0xFFC0/C2 element. Also read the DPI in the 0xFFE0 element. */
@@ -2193,7 +2201,9 @@ _process_jpeg(lxw_image_options *image_options)
 
         if (marker == 0xFFC0 || marker == 0xFFC2) {
             /* Skip 1 byte to height and width. */
-            fseek(stream, 1, SEEK_CUR);
+            fseek_err = fseek(stream, 1, SEEK_CUR);
+            if (fseek_err)
+                goto file_error;
 
             if (fread(&height, sizeof(height), 1, stream) < 1)
                 break;
@@ -2212,7 +2222,9 @@ _process_jpeg(lxw_image_options *image_options)
             uint16_t y_density = 0;
             uint8_t units = 1;
 
-            fseek(stream, 7, SEEK_CUR);
+            fseek_err = fseek(stream, 7, SEEK_CUR);
+            if (fseek_err)
+                goto file_error;
 
             if (fread(&units, sizeof(units), 1, stream) < 1)
                 break;
@@ -2242,17 +2254,16 @@ _process_jpeg(lxw_image_options *image_options)
         if (marker == 0xFFDA)
             break;
 
-        if (!feof(stream))
-            fseek(stream, offset, SEEK_CUR);
+        if (!feof(stream)) {
+            fseek_err = fseek(stream, offset, SEEK_CUR);
+            if (fseek_err)
+                goto file_error;
+        }
     }
 
     /* Ensure that we read some valid data from the file. */
-    if (width == 0) {
-        LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
-                         "no size data found in file: %s.",
-                         image_options->filename);
-        return LXW_ERROR_IMAGE_DIMENSIONS;
-    }
+    if (width == 0)
+        goto file_error;
 
     /* Set the image metadata. */
     image_options->image_type = LXW_IMAGE_JPEG;
@@ -2263,6 +2274,13 @@ _process_jpeg(lxw_image_options *image_options)
     image_options->extension = lxw_strdup("jpeg");
 
     return LXW_NO_ERROR;
+
+file_error:
+    LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
+                     "no size data found in file: %s.",
+                     image_options->filename);
+
+    return LXW_ERROR_IMAGE_DIMENSIONS;
 }
 
 /*
@@ -2275,11 +2293,14 @@ _process_bmp(lxw_image_options *image_options)
     uint32_t height = 0;
     double x_dpi = 96;
     double y_dpi = 96;
+    int fseek_err;
 
     FILE *stream = image_options->stream;
 
     /* Skip another 14 bytes to the start of the BMP height/width. */
-    fseek(stream, 14, SEEK_CUR);
+    fseek_err = fseek(stream, 14, SEEK_CUR);
+    if (fseek_err)
+        goto file_error;
 
     if (fread(&width, sizeof(width), 1, stream) < 1)
         width = 0;
@@ -2288,12 +2309,8 @@ _process_bmp(lxw_image_options *image_options)
         height = 0;
 
     /* Ensure that we read some valid data from the file. */
-    if (width == 0) {
-        LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
-                         "no size data found in file: %s.",
-                         image_options->filename);
-        return LXW_ERROR_IMAGE_DIMENSIONS;
-    }
+    if (width == 0)
+        goto file_error;
 
     /* Set the image metadata. */
     image_options->image_type = LXW_IMAGE_BMP;
@@ -2304,6 +2321,13 @@ _process_bmp(lxw_image_options *image_options)
     image_options->extension = lxw_strdup("bmp");
 
     return LXW_NO_ERROR;
+
+file_error:
+    LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
+                     "no size data found in file: %s.",
+                     image_options->filename);
+
+    return LXW_ERROR_IMAGE_DIMENSIONS;
 }
 
 /*
@@ -4861,12 +4885,16 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     if (!short_name) {
         LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
                          "couldn't get basename for file: %s.", filename);
+        fclose(image_stream);
         return LXW_ERROR_PARAMETER_VALIDATION;
     }
 
     /* Create a new object to hold the image options. */
     options = calloc(1, sizeof(lxw_image_options));
-    RETURN_ON_MEM_ERROR(options, LXW_ERROR_MEMORY_MALLOC_FAILED);
+    if (!options) {
+        fclose(image_stream);
+        return LXW_ERROR_MEMORY_MALLOC_FAILED;
+    }
 
     if (user_options) {
         memcpy(options, user_options, sizeof(lxw_image_options));

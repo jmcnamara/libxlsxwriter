@@ -243,7 +243,10 @@ lxw_name_to_row(const char *row_str)
     if (p)
         row_num = atoi(p);
 
-    return row_num - 1;
+    if (row_num)
+        return row_num - 1;
+    else
+        return 0;
 }
 
 /*

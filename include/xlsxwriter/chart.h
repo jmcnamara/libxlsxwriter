@@ -1392,7 +1392,6 @@ void chart_axis_set_max(lxw_chart_axis *axis, double max);
  */
 void chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base);
 
-
 /**
  * @brief Turn on/off the major gridlines for an axis.
  *

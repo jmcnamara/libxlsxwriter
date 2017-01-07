@@ -1506,7 +1506,7 @@ _chart_write_a_ln(lxw_chart *self, lxw_chart_line *line)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    float width_flt = line->width;
+    float width_flt;
     uint32_t width_int;
 
     LXW_INIT_ATTRIBUTES();

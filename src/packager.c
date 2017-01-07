@@ -37,7 +37,7 @@ STATIC uint8_t _add_file_to_zip(lxw_packager *self, FILE * file,
 #undef SLIST_ENTRY
 
 #include <windows.h>
-#include "../third_party/iowin32.h"
+#include "../third_party/minizip/iowin32.h"
 
 zipFile
 _open_zipfile_win32(const char *filename)
@@ -329,16 +329,24 @@ _write_app_file(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     lxw_worksheet *worksheet;
     lxw_defined_name *defined_name;
-    lxw_app *app = lxw_app_new();
+    lxw_app *app;
     uint16_t named_range_count = 0;
     char *autofilter;
     char *has_range;
     char number[LXW_ATTR_32] = { 0 };
-    int err;
+    int err = LXW_NO_ERROR;
+
+    app = lxw_app_new();
+    if (!app) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
 
     app->file = lxw_tmpfile(self->tmpdir);
-    if (!app->file)
-        return LXW_ERROR_CREATING_TMPFILE;
+    if (!app->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
 
     lxw_snprintf(number, LXW_ATTR_32, "%d", self->workbook->num_sheets);
 
@@ -373,13 +381,13 @@ _write_app_file(lxw_packager *self)
     lxw_app_assemble_xml_file(app);
 
     err = _add_file_to_zip(self, app->file, "docProps/app.xml");
-    RETURN_ON_ERROR(err);
 
     fclose(app->file);
 
+mem_error:
     lxw_app_free(app);
 
-    return 0;
+    return err;
 }
 
 /*
@@ -388,25 +396,32 @@ _write_app_file(lxw_packager *self)
 STATIC uint8_t
 _write_core_file(lxw_packager *self)
 {
+    int err = LXW_NO_ERROR;
     lxw_core *core = lxw_core_new();
-    int err;
+
+    if (!core) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
 
     core->file = lxw_tmpfile(self->tmpdir);
-    if (!core->file)
-        return LXW_ERROR_CREATING_TMPFILE;
+    if (!core->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
 
     core->properties = self->workbook->properties;
 
     lxw_core_assemble_xml_file(core);
 
     err = _add_file_to_zip(self, core->file, "docProps/core.xml");
-    RETURN_ON_ERROR(err);
 
     fclose(core->file);
 
+mem_error:
     lxw_core_free(core);
 
-    return 0;
+    return err;
 }
 
 /*
@@ -416,29 +431,34 @@ STATIC uint8_t
 _write_custom_file(lxw_packager *self)
 {
     lxw_custom *custom;
-    int err;
+    int err = LXW_NO_ERROR;
 
     if (STAILQ_EMPTY(self->workbook->custom_properties))
         return 0;
 
     custom = lxw_custom_new();
+    if (!custom) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
 
     custom->file = lxw_tmpfile(self->tmpdir);
-    if (!custom->file)
-        return LXW_ERROR_CREATING_TMPFILE;
+    if (!custom->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
 
     custom->custom_properties = self->workbook->custom_properties;
 
     lxw_custom_assemble_xml_file(custom);
 
     err = _add_file_to_zip(self, custom->file, "docProps/custom.xml");
-    RETURN_ON_ERROR(err);
 
     fclose(custom->file);
 
+mem_error:
     lxw_custom_free(custom);
-
-    return 0;
+    return err;
 }
 
 /*
@@ -447,23 +467,30 @@ _write_custom_file(lxw_packager *self)
 STATIC uint8_t
 _write_theme_file(lxw_packager *self)
 {
+    int err = LXW_NO_ERROR;
     lxw_theme *theme = lxw_theme_new();
-    int err;
+
+    if (!theme) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
 
     theme->file = lxw_tmpfile(self->tmpdir);
-    if (!theme->file)
-        return LXW_ERROR_CREATING_TMPFILE;
+    if (!theme->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
 
     lxw_theme_assemble_xml_file(theme);
 
     err = _add_file_to_zip(self, theme->file, "xl/theme/theme1.xml");
-    RETURN_ON_ERROR(err);
 
     fclose(theme->file);
 
+mem_error:
     lxw_theme_free(theme);
 
-    return 0;
+    return err;
 }
 
 /*
@@ -474,13 +501,24 @@ _write_styles_file(lxw_packager *self)
 {
     lxw_styles *styles = lxw_styles_new();
     lxw_hash_element *hash_element;
-    int err;
+    int err = LXW_NO_ERROR;
+
+    if (!styles) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
 
     /* Copy the unique and in-use formats from the workbook to the styles
      * xf_format list. */
     LXW_FOREACH_ORDERED(hash_element, self->workbook->used_xf_formats) {
         lxw_format *workbook_format = (lxw_format *) hash_element->value;
         lxw_format *style_format = lxw_format_new();
+
+        if (!style_format) {
+            err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+            goto mem_error;
+        }
+
         memcpy(style_format, workbook_format, sizeof(lxw_format));
         STAILQ_INSERT_TAIL(styles->xf_formats, style_format, list_pointers);
     }
@@ -492,19 +530,21 @@ _write_styles_file(lxw_packager *self)
     styles->xf_count = self->workbook->used_xf_formats->unique_count;
 
     styles->file = lxw_tmpfile(self->tmpdir);
-    if (!styles->file)
-        return LXW_ERROR_CREATING_TMPFILE;
+    if (!styles->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
 
     lxw_styles_assemble_xml_file(styles);
 
     err = _add_file_to_zip(self, styles->file, "xl/styles.xml");
-    RETURN_ON_ERROR(err);
 
     fclose(styles->file);
 
+mem_error:
     lxw_styles_free(styles);
 
-    return 0;
+    return err;
 }
 
 /*
@@ -518,11 +558,18 @@ _write_content_types_file(lxw_packager *self)
     lxw_worksheet *worksheet;
     char filename[LXW_MAX_ATTRIBUTE_LENGTH] = { 0 };
     uint16_t index = 1;
-    int err;
+    int err = LXW_NO_ERROR;
+
+    if (!content_types) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
 
     content_types->file = lxw_tmpfile(self->tmpdir);
-    if (!content_types->file)
-        return LXW_ERROR_CREATING_TMPFILE;
+    if (!content_types->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
 
     if (workbook->has_png)
         lxw_ct_add_default(content_types, "png", "image/png");
@@ -560,13 +607,13 @@ _write_content_types_file(lxw_packager *self)
     lxw_content_types_assemble_xml_file(content_types);
 
     err = _add_file_to_zip(self, content_types->file, "[Content_Types].xml");
-    RETURN_ON_ERROR(err);
 
     fclose(content_types->file);
 
+mem_error:
     lxw_content_types_free(content_types);
 
-    return 0;
+    return err;
 }
 
 /*
@@ -580,11 +627,18 @@ _write_workbook_rels_file(lxw_packager *self)
     lxw_worksheet *worksheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
-    int err;
+    int err = LXW_NO_ERROR;
+
+    if (!rels) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
 
     rels->file = lxw_tmpfile(self->tmpdir);
-    if (!rels->file)
-        return LXW_ERROR_CREATING_TMPFILE;
+    if (!rels->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
 
     STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
         lxw_snprintf(sheetname, LXW_FILENAME_LENGTH, "worksheets/sheet%d.xml",
@@ -602,12 +656,13 @@ _write_workbook_rels_file(lxw_packager *self)
     lxw_relationships_assemble_xml_file(rels);
 
     err = _add_file_to_zip(self, rels->file, "xl/_rels/workbook.xml.rels");
-    RETURN_ON_ERROR(err);
 
     fclose(rels->file);
+
+mem_error:
     lxw_free_relationships(rels);
 
-    return 0;
+    return err;
 }
 
 /*
@@ -634,9 +689,12 @@ _write_worksheet_rels_file(lxw_packager *self)
             continue;
 
         rels = lxw_relationships_new();
+
         rels->file = lxw_tmpfile(self->tmpdir);
-        if (!rels->file)
+        if (!rels->file) {
+            lxw_free_relationships(rels);
             return LXW_ERROR_CREATING_TMPFILE;
+        }
 
         STAILQ_FOREACH(rel, worksheet->external_hyperlinks, list_pointers) {
             lxw_add_worksheet_relationship(rels, rel->type, rel->target,
@@ -654,10 +712,11 @@ _write_worksheet_rels_file(lxw_packager *self)
         lxw_relationships_assemble_xml_file(rels);
 
         err = _add_file_to_zip(self, rels->file, sheetname);
-        RETURN_ON_ERROR(err);
 
         fclose(rels->file);
         lxw_free_relationships(rels);
+
+        RETURN_ON_ERROR(err);
     }
 
     return 0;
@@ -684,9 +743,12 @@ _write_drawing_rels_file(lxw_packager *self)
             continue;
 
         rels = lxw_relationships_new();
+
         rels->file = lxw_tmpfile(self->tmpdir);
-        if (!rels->file)
+        if (!rels->file) {
+            lxw_free_relationships(rels);
             return LXW_ERROR_CREATING_TMPFILE;
+        }
 
         STAILQ_FOREACH(rel, worksheet->drawing_links, list_pointers) {
             lxw_add_worksheet_relationship(rels, rel->type, rel->target,
@@ -700,10 +762,11 @@ _write_drawing_rels_file(lxw_packager *self)
         lxw_relationships_assemble_xml_file(rels);
 
         err = _add_file_to_zip(self, rels->file, sheetname);
-        RETURN_ON_ERROR(err);
 
         fclose(rels->file);
         lxw_free_relationships(rels);
+
+        RETURN_ON_ERROR(err);
     }
 
     return 0;
@@ -716,11 +779,18 @@ STATIC uint8_t
 _write_root_rels_file(lxw_packager *self)
 {
     lxw_relationships *rels = lxw_relationships_new();
-    int err;
+    int err = LXW_NO_ERROR;
+
+    if (!rels) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
 
     rels->file = lxw_tmpfile(self->tmpdir);
-    if (!rels->file)
-        return LXW_ERROR_CREATING_TMPFILE;
+    if (!rels->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
 
     lxw_add_document_relationship(rels, "/officeDocument", "xl/workbook.xml");
 
@@ -739,13 +809,13 @@ _write_root_rels_file(lxw_packager *self)
     lxw_relationships_assemble_xml_file(rels);
 
     err = _add_file_to_zip(self, rels->file, "_rels/.rels");
-    RETURN_ON_ERROR(err);
 
     fclose(rels->file);
 
+mem_error:
     lxw_free_relationships(rels);
 
-    return 0;
+    return err;
 }
 
 /*****************************************************************************
