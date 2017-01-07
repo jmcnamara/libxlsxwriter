@@ -1,6 +1,11 @@
 /**
 @page changes Changes
 
+## 0.5.2 January 7 2017
+
+- Added option to turn off chart axis: `chart_axis_off()`.
+
+
 ## 0.5.1 January 6 2017
 
 - Added chart major and minor gridlines handling, see:
