@@ -653,6 +653,7 @@ typedef struct lxw_chart_axis {
     lxw_chart_fill *fill;
     lxw_chart_pattern *pattern;
 
+    uint8_t hidden;
     uint8_t reverse;
     uint8_t has_min;
     uint8_t has_max;
@@ -1325,6 +1326,21 @@ void chart_axis_set_pattern(lxw_chart_axis *axis, lxw_chart_pattern *pattern);
  * Applicable to category, date and value axes.
  */
 void chart_axis_set_reverse(lxw_chart_axis *axis);
+
+/**
+ * @brief Turn off/hide an axis.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ *
+ * Turn off, hide, a chart axis:
+ *
+ * @code
+ *     chart_axis_off(chart->x_axis);
+ * @endcode
+ *
+ * @image html chart_axis_off.png
+ */
+void chart_axis_off(lxw_chart_axis *axis);
 
 /**
  * @brief Set the minimum value for a chart axis.

@@ -2692,6 +2692,10 @@ _chart_write_cat_axis(lxw_chart *self)
                          self->x_axis->reverse,
                          LXW_FALSE, 0.0, LXW_FALSE, 0.0, 0);
 
+    /* Write the c:delete element to hide axis. */
+    if (self->x_axis->hidden)
+        _chart_write_delete(self);
+
     /* Write the c:axPos element. */
     _chart_write_axis_pos(self, position, self->y_axis->reverse);
 
@@ -2759,6 +2763,10 @@ _chart_write_val_axis(lxw_chart *self)
                          self->y_axis->has_max, self->y_axis->max,
                          self->y_axis->log_base);
 
+    /* Write the c:delete element to hide axis. */
+    if (self->y_axis->hidden)
+        _chart_write_delete(self);
+
     /* Write the c:axPos element. */
     _chart_write_axis_pos(self, position, self->x_axis->reverse);
 
@@ -2818,6 +2826,10 @@ _chart_write_cat_val_axis(lxw_chart *self)
                          self->x_axis->has_min, self->x_axis->min,
                          self->x_axis->has_max, self->x_axis->max,
                          self->x_axis->log_base);
+
+    /* Write the c:delete element to hide axis. */
+    if (self->x_axis->hidden)
+        _chart_write_delete(self);
 
     /* Write the c:axPos element. */
     _chart_write_axis_pos(self, position, self->y_axis->reverse);
@@ -3882,6 +3894,15 @@ void
 chart_axis_set_reverse(lxw_chart_axis *axis)
 {
     axis->reverse = LXW_TRUE;
+}
+
+/*
+ * Turn off/hide the axis.
+ */
+void
+chart_axis_off(lxw_chart_axis *axis)
+{
+    axis->hidden = LXW_TRUE;
 }
 
 /*
