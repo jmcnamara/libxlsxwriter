@@ -56,7 +56,7 @@ A Scatter chart (but not a Line chart) has 2 value axes:
 
 @image html chart_axes05.png
 
-@note Date axes are supported yet.
+@note Date axes aren't supported yet.
 
 
 @section chart_markers Working with Chart markers
