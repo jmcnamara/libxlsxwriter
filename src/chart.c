@@ -15,6 +15,8 @@
  * Forward declarations.
  */
 
+STATIC void _chart_initialize(lxw_chart *self, uint8_t type);
+
 /*****************************************************************************
  *
  * Private functions.
@@ -231,6 +233,9 @@ lxw_chart_new(uint8_t type)
     chart->has_horiz_val_axis = LXW_TRUE;
 
     chart->legend.position = LXW_CHART_LEGEND_RIGHT;
+
+    /* Initialize the chart specific properties. */
+    _chart_initialize(chart, chart->type);
 
     return chart;
 
@@ -3256,23 +3261,29 @@ _chart_initialize_area_chart(lxw_chart *self, uint8_t type)
 }
 
 /*
+ * Swap/reverse the bar chart axes prior to writing. It is the only chart
+ * with the category axis in the vertical direction.
+ */
+STATIC void
+_chart_swap_bar_axes(lxw_chart *self)
+{
+    lxw_chart_axis *tmp = self->x_axis;
+    self->x_axis = self->y_axis;
+    self->y_axis = tmp;
+}
+
+/*
  * Initialize a bar chart.
  */
 STATIC void
 _chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
 {
-    lxw_chart_axis *tmp;
-
-    /* Reverse the X and Y axes for Bar charts. */
-    tmp = self->x_axis;
-    self->x_axis = self->y_axis;
-    self->y_axis = tmp;
-
-    /*Also reverse some of the defaults. */
-    self->x_axis->major_gridlines.visible = LXW_FALSE;
-    self->y_axis->major_gridlines.visible = LXW_TRUE;
-    self->x_axis->is_category = LXW_TRUE;
-
+    /* Note: Bar chart category/value axis are reversed in comparison to
+     *       other charts. Some of the defaults reflect this. */
+    self->x_axis->major_gridlines.visible = LXW_TRUE;
+    self->y_axis->major_gridlines.visible = LXW_FALSE;
+    self->y_axis->is_category = LXW_TRUE;
+    self->x_axis->is_value = LXW_TRUE;
     self->has_horiz_cat_axis = LXW_TRUE;
     self->has_horiz_val_axis = LXW_FALSE;
 
@@ -3284,7 +3295,7 @@ _chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
 
     if (type == LXW_CHART_BAR_STACKED_PERCENT) {
         self->grouping = LXW_GROUPING_PERCENTSTACKED;
-        lxw_strcpy((self->y_axis)->default_num_format, "0%");
+        lxw_strcpy((self->x_axis)->default_num_format, "0%");
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
@@ -3306,6 +3317,7 @@ _chart_initialize_column_chart(lxw_chart *self, uint8_t type)
 {
     self->has_horiz_val_axis = LXW_FALSE;
     self->x_axis->is_category = LXW_TRUE;
+    self->y_axis->is_value = LXW_TRUE;
 
     if (type == LXW_CHART_COLUMN_STACKED) {
         self->grouping = LXW_GROUPING_STACKED;
@@ -3345,6 +3357,7 @@ _chart_initialize_line_chart(lxw_chart *self)
     _chart_set_default_marker_type(self, LXW_CHART_MARKER_NONE);
     self->grouping = LXW_GROUPING_STANDARD;
     self->x_axis->is_category = LXW_TRUE;
+    self->y_axis->is_value = LXW_TRUE;
 
     /* Initialize the function pointers for this chart type. */
     self->write_chart_type = _chart_write_line_chart;
@@ -3371,6 +3384,8 @@ _chart_initialize_scatter_chart(lxw_chart *self)
     self->has_horiz_val_axis = LXW_FALSE;
     self->default_cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
     self->is_scatter_chart = LXW_TRUE;
+    self->x_axis->is_value = LXW_TRUE;
+    self->y_axis->is_value = LXW_TRUE;
 
     if (self->type == LXW_CHART_SCATTER_STRAIGHT
         || self->type == LXW_CHART_SCATTER_SMOOTH) {
@@ -3394,6 +3409,7 @@ _chart_initialize_radar_chart(lxw_chart *self, uint8_t type)
 
     self->x_axis->major_gridlines.visible = LXW_TRUE;
     self->x_axis->is_category = LXW_TRUE;
+    self->y_axis->is_value = LXW_TRUE;
 
     self->y_axis->major_tick_mark = LXW_TRUE;
 
@@ -3466,8 +3482,10 @@ _chart_initialize(lxw_chart *self, uint8_t type)
 void
 lxw_chart_assemble_xml_file(lxw_chart *self)
 {
-    /* Initialize the chart specific properties. */
-    _chart_initialize(self, self->type);
+    /* Reverse the X and Y axes for Bar charts. */
+    if (self->type == LXW_CHART_BAR || self->type == LXW_CHART_BAR_STACKED
+        || self->type == LXW_CHART_BAR_STACKED_PERCENT)
+        _chart_swap_bar_axes(self);
 
     /* Write the XML declaration. */
     _chart_xml_declaration(self);
@@ -3919,6 +3937,8 @@ chart_axis_off(lxw_chart_axis *axis)
 void
 chart_axis_set_position(lxw_chart_axis *axis, uint8_t position)
 {
+    LXW_WARN_CAT_AND_DATE_AXIS_ONLY("chart_axis_set_position");
+
     axis->position_axis = position;
 }
 
@@ -3928,6 +3948,8 @@ chart_axis_set_position(lxw_chart_axis *axis, uint8_t position)
 void
 chart_axis_set_min(lxw_chart_axis *axis, double min)
 {
+    LXW_WARN_VALUE_AND_DATE_AXIS_ONLY("chart_axis_set_min");
+
     axis->min = min;
     axis->has_min = LXW_TRUE;
 }
@@ -3938,6 +3960,8 @@ chart_axis_set_min(lxw_chart_axis *axis, double min)
 void
 chart_axis_set_max(lxw_chart_axis *axis, double max)
 {
+    LXW_WARN_VALUE_AND_DATE_AXIS_ONLY("chart_axis_set_max");
+
     axis->max = max;
     axis->has_max = LXW_TRUE;
 }
@@ -3948,6 +3972,8 @@ chart_axis_set_max(lxw_chart_axis *axis, double max)
 void
 chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base)
 {
+    LXW_WARN_VALUE_AXIS_ONLY("chart_axis_set_log_base");
+
     /* Excel log range is 2-1000. */
     if (log_base >= 2 && log_base <= 1000)
         axis->log_base = log_base;

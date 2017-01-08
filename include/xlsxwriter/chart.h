@@ -426,6 +426,7 @@ enum lxw_chart_grouping {
  * @brief Axis positions for category axes.
  */
 typedef enum lxw_chart_axis_tick_position {
+
     LXW_CHART_AXIS_POSITION_DEFAULT,
 
     /** Position category axis on tick marks. */
@@ -662,6 +663,8 @@ typedef struct lxw_chart_axis {
     lxw_chart_pattern *pattern;
 
     uint8_t is_category;
+    uint8_t is_date;
+    uint8_t is_value;
     uint8_t position_axis;
     uint8_t hidden;
     uint8_t reverse;
@@ -1196,7 +1199,8 @@ void chart_series_set_marker_pattern(lxw_chart_series *series,
  * See also the `chart_axis_set_name_range()` function to see how to set the
  * name formula programmatically.
  *
- * This function is applicable to category, date and value axes.
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_name(lxw_chart_axis *axis, const char *name);
 
@@ -1216,6 +1220,9 @@ void chart_axis_set_name(lxw_chart_axis *axis, const char *name);
  *     chart_axis_set_name_range(chart->x_axis, "Sheet1", 1, 0);
  *     chart_axis_set_name_range(chart->y_axis, "Sheet1", 2, 0);
  * @endcode
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
                                lxw_row_t row, lxw_col_t col);
@@ -1239,6 +1246,9 @@ void chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
  * @image html chart_axis_set_name_font.png
  *
  * For more information see @ref chart_fonts.
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font);
 
@@ -1260,6 +1270,9 @@ void chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font);
  * @image html chart_axis_set_num_font.png
  *
  * For more information see @ref chart_fonts.
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font);
 
@@ -1281,6 +1294,9 @@ void chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font);
  * @image html chart_axis_set_line.png
  *
  * For more information see @ref chart_lines.
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_line(lxw_chart_axis *axis, lxw_chart_line *line);
 
@@ -1301,6 +1317,9 @@ void chart_axis_set_line(lxw_chart_axis *axis, lxw_chart_line *line);
  * @image html chart_axis_set_fill.png
  *
  * For more information see @ref chart_fills.
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_fill(lxw_chart_axis *axis, lxw_chart_fill *fill);
 
@@ -1317,6 +1336,9 @@ void chart_axis_set_fill(lxw_chart_axis *axis, lxw_chart_fill *fill);
  * @endcode
  *
  * For more information see #lxw_chart_pattern_type and @ref chart_patterns.
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_pattern(lxw_chart_axis *axis, lxw_chart_pattern *pattern);
 
@@ -1333,7 +1355,8 @@ void chart_axis_set_pattern(lxw_chart_axis *axis, lxw_chart_pattern *pattern);
  *
  * @image html chart_reverse.png
  *
- * Applicable to category, date and value axes.
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_reverse(lxw_chart_axis *axis);
 
@@ -1349,6 +1372,9 @@ void chart_axis_set_reverse(lxw_chart_axis *axis);
  * @endcode
  *
  * @image html chart_axis_off.png
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_off(lxw_chart_axis *axis);
 
@@ -1371,7 +1397,8 @@ void chart_axis_off(lxw_chart_axis *axis);
  *
  * @image html chart_axis_set_position.png
  *
- * Applicable to category axes only.
+ * **Axis types**: This function is applicable to category axes only.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_position(lxw_chart_axis *axis, uint8_t position);
 
@@ -1390,10 +1417,8 @@ void chart_axis_set_position(lxw_chart_axis *axis, uint8_t position);
  *
  * @image html chart_max_min.png
  *
- * @note This function is applicable to value and date axes only.
- *       It isn't applicable to the horizontal category axis in the above
- *       example. For more information see @ref ww_charts_axes.
- *
+ * **Axis types**: This function is applicable to value and date axes only.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_min(lxw_chart_axis *axis, double min);
 
@@ -1412,9 +1437,8 @@ void chart_axis_set_min(lxw_chart_axis *axis, double min);
  *
  * See the above image.
  *
- * @note This function is applicable to value and date axes only.
- *       It isn't applicable to the horizontal category axis in the above
- *       example. For more information see @ref ww_charts_axes.
+ * **Axis types**: This function is applicable to value and date axes only.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_max(lxw_chart_axis *axis, double max);
 
@@ -1435,9 +1459,8 @@ void chart_axis_set_max(lxw_chart_axis *axis, double max);
  * The allowable range of values for the log base in Excel is between 2 and
  * 1000.
  *
- * @note This function is applicable to value and date axes only.
- *       It isn't applicable to the horizontal category axis in the above
- *       example. For more information see @ref ww_charts_axes.
+ * **Axis types**: This function is applicable to value axes only.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base);
 
@@ -1460,6 +1483,9 @@ void chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base);
  * @endcode
  *
  * @image html chart_gridline1.png
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_major_gridlines_set_visible(lxw_chart_axis *axis,
                                             uint8_t visible);
@@ -1483,6 +1509,9 @@ void chart_axis_major_gridlines_set_visible(lxw_chart_axis *axis,
  * @endcode
  *
  * @image html chart_gridline2.png
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_minor_gridlines_set_visible(lxw_chart_axis *axis,
                                             uint8_t visible);
@@ -1516,6 +1545,9 @@ void chart_axis_minor_gridlines_set_visible(lxw_chart_axis *axis,
  * @image html chart_gridline3.png
  *
  * For more information see @ref chart_lines.
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_major_gridlines_set_line(lxw_chart_axis *axis,
                                          lxw_chart_line *line);
@@ -1530,6 +1562,9 @@ void chart_axis_major_gridlines_set_line(lxw_chart_axis *axis,
  * example above.
  *
  * For more information see @ref chart_lines.
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
  */
 void chart_axis_minor_gridlines_set_line(lxw_chart_axis *axis,
                                          lxw_chart_line *line);

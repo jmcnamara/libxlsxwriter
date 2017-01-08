@@ -223,6 +223,42 @@ enum lxw_custom_property_types {
 #define LXW_WARN_FORMAT2(message, var1, var2)    \
     fprintf(stderr, "[WARNING]: " message "\n", var1, var2)
 
+/* Chart axis type checks. */
+#define LXW_WARN_CAT_AXIS_ONLY(function)                                   \
+    if (!axis->is_category) {                                              \
+        fprintf(stderr, "[WARNING]: "                                      \
+                function "() is only valid for category axes\n");          \
+       return;                                                             \
+    }
+
+#define LXW_WARN_VALUE_AXIS_ONLY(function)                                 \
+    if (!axis->is_value) {                                                 \
+        fprintf(stderr, "[WARNING]: "                                      \
+                function "() is only valid for value axes\n");             \
+       return;                                                             \
+    }
+
+#define LXW_WARN_DATE_AXIS_ONLY(function)                                  \
+    if (!axis->is_date) {                                                  \
+        fprintf(stderr, "[WARNING]: "                                      \
+                function "() is only valid for date axes\n");              \
+       return;                                                             \
+    }
+
+#define LXW_WARN_CAT_AND_DATE_AXIS_ONLY(function)                          \
+    if (!axis->is_category && !axis->is_date) {                            \
+        fprintf(stderr, "[WARNING]: "                                      \
+                function "() is only valid for category and date axes\n"); \
+       return;                                                             \
+    }
+
+#define LXW_WARN_VALUE_AND_DATE_AXIS_ONLY(function)                        \
+    if (!axis->is_value && !axis->is_date) {                               \
+        fprintf(stderr, "[WARNING]: "                                      \
+                function "() is only valid for value and date axes\n");    \
+       return;                                                             \
+    }
+
 #ifndef LXW_BIG_ENDIAN
 #define LXW_UINT32_NETWORK(n) ((((n) & 0xFF)       << 24) | \
                                (((n) & 0xFF00)     <<  8) | \

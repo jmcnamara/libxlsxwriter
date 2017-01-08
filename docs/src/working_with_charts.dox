@@ -22,16 +22,42 @@ When working with charts it is important to understand how Excel
 differentiates between a chart axis that is used for series categories and a
 chart axis that is used for series values.
 
-In the example above the X axis is the **category** axis and each of the values
-is evenly spaced and sequential. The Y axis is the **value** axis and points
-are displayed according to their value.
+In the majority of Excel charts the X axis is the **category** axis and each
+of the values is evenly spaced and sequential. The Y axis is the **value**
+axis and points are displayed according to their value:
+
+@image html chart_axes01.png
 
 Excel treats these two types of axis differently and exposes different
-properties for each.
+properties for each. For example, here are the properties for a category axis:
+
+@image html chart_axes02.png
+
+Here are properties for a value axis:
+
+@image html chart_axes03.png
 
 As such, some of the `libxlsxwriter` axis properties can be set for a value
 axis, some can be set for a category axis and some properties can be set for
-both. The documentation calls out the type of axis to which functions apply.
+both. The documentation calls out the type of axis to which functions apply
+and the API emits a warning if the wrong type is used.
+
+Some category axes, such as the one in the column chart example above, use
+numbers as the categories. However, these numbers can't be treated like value
+axes. In particular you can't use chart_axis_set_max() and
+chart_axis_set_min() for category axes, as you can see in the respective
+format dialogs above.
+
+For a Bar chart the Category and Value axes are reversed:
+
+@image html chart_axes04.png
+
+A Scatter chart (but not a Line chart) has 2 value axes:
+
+@image html chart_axes05.png
+
+@note Date axes are supported yet.
+
 
 @section chart_markers Working with Chart markers
 
