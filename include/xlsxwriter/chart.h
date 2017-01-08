@@ -422,10 +422,18 @@ enum lxw_chart_grouping {
     LXW_GROUPING_STACKED
 };
 
-enum lxw_chart_axis_tick_position {
-    LXW_CHART_AXIS_POSITION_BETWEEN,
-    LXW_CHART_AXIS_POSITION_ON_TICK
-};
+/**
+ * @brief Axis positions for category axes.
+ */
+typedef enum lxw_chart_axis_tick_position {
+    LXW_CHART_AXIS_POSITION_DEFAULT,
+
+    /** Position category axis on tick marks. */
+    LXW_CHART_AXIS_POSITION_ON_TICK,
+
+    /** Position category axis between tick marks. */
+    LXW_CHART_AXIS_POSITION_BETWEEN
+} lxw_chart_axis_tick_position;
 
 enum lxw_chart_position {
     LXW_CHART_AXIS_RIGHT,
@@ -653,6 +661,8 @@ typedef struct lxw_chart_axis {
     lxw_chart_fill *fill;
     lxw_chart_pattern *pattern;
 
+    uint8_t is_category;
+    uint8_t position_axis;
     uint8_t hidden;
     uint8_t reverse;
     uint8_t has_min;
@@ -716,7 +726,7 @@ typedef struct lxw_chart {
     int series_overlap_1;
 
     uint8_t grouping;
-    uint8_t cross_between;
+    uint8_t default_cross_between;
     uint8_t cat_axis_position;
     uint8_t val_axis_position;
 
@@ -1341,6 +1351,29 @@ void chart_axis_set_reverse(lxw_chart_axis *axis);
  * @image html chart_axis_off.png
  */
 void chart_axis_off(lxw_chart_axis *axis);
+
+/**
+ * @brief Position the axis on or between the axis tick marks.
+ *
+ * @param axis     A pointer to a chart #lxw_chart_axis object.
+ * @param position A #lxw_chart_axis_tick_position value.
+ *
+ * Position a category axis horizontally on, or between, the axis tick marks.
+ *
+ * There are two allowable values:
+ *
+ * - #LXW_CHART_AXIS_POSITION_ON_TICK
+ * - #LXW_CHART_AXIS_POSITION_BETWEEN
+ *
+ * @code
+ *     chart_axis_set_position(chart->x_axis, LXW_CHART_AXIS_POSITION_BETWEEN);
+ * @endcode
+ *
+ * @image html chart_axis_set_position.png
+ *
+ * Applicable to category axes only.
+ */
+void chart_axis_set_position(lxw_chart_axis *axis, uint8_t position);
 
 /**
  * @brief Set the minimum value for a chart axis.

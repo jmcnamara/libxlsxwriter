@@ -2406,14 +2406,17 @@ _chart_write_number_format(lxw_chart *self, lxw_chart_axis *axis)
  * Write the <c:crossBetween> element.
  */
 STATIC void
-_chart_write_cross_between(lxw_chart *self)
+_chart_write_cross_between(lxw_chart *self, uint8_t position)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
+    if (!position)
+        position = self->default_cross_between;
+
     LXW_INIT_ATTRIBUTES();
 
-    if (self->cross_between)
+    if (position == LXW_CHART_AXIS_POSITION_ON_TICK)
         LXW_PUSH_ATTRIBUTES_STR("val", "midCat");
     else
         LXW_PUSH_ATTRIBUTES_STR("val", "between");
@@ -2803,7 +2806,7 @@ _chart_write_val_axis(lxw_chart *self)
     _chart_write_crosses(self);
 
     /* Write the c:crossBetween element. */
-    _chart_write_cross_between(self);
+    _chart_write_cross_between(self, self->x_axis->position_axis);
 
     lxw_xml_end_tag(self->file, "c:valAx");
 }
@@ -2867,7 +2870,7 @@ _chart_write_cat_val_axis(lxw_chart *self)
     _chart_write_crosses(self);
 
     /* Write the c:crossBetween element. */
-    _chart_write_cross_between(self);
+    _chart_write_cross_between(self, self->y_axis->position_axis);
 
     lxw_xml_end_tag(self->file, "c:valAx");
 }
@@ -3233,7 +3236,8 @@ STATIC void
 _chart_initialize_area_chart(lxw_chart *self, uint8_t type)
 {
     self->grouping = LXW_GROUPING_STANDARD;
-    self->cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
+    self->default_cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
+    self->x_axis->is_category = LXW_TRUE;
 
     if (type == LXW_CHART_AREA_STACKED) {
         self->grouping = LXW_GROUPING_STACKED;
@@ -3267,6 +3271,7 @@ _chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
     /*Also reverse some of the defaults. */
     self->x_axis->major_gridlines.visible = LXW_FALSE;
     self->y_axis->major_gridlines.visible = LXW_TRUE;
+    self->x_axis->is_category = LXW_TRUE;
 
     self->has_horiz_cat_axis = LXW_TRUE;
     self->has_horiz_val_axis = LXW_FALSE;
@@ -3300,6 +3305,7 @@ STATIC void
 _chart_initialize_column_chart(lxw_chart *self, uint8_t type)
 {
     self->has_horiz_val_axis = LXW_FALSE;
+    self->x_axis->is_category = LXW_TRUE;
 
     if (type == LXW_CHART_COLUMN_STACKED) {
         self->grouping = LXW_GROUPING_STACKED;
@@ -3338,6 +3344,7 @@ _chart_initialize_line_chart(lxw_chart *self)
 {
     _chart_set_default_marker_type(self, LXW_CHART_MARKER_NONE);
     self->grouping = LXW_GROUPING_STANDARD;
+    self->x_axis->is_category = LXW_TRUE;
 
     /* Initialize the function pointers for this chart type. */
     self->write_chart_type = _chart_write_line_chart;
@@ -3362,7 +3369,7 @@ STATIC void
 _chart_initialize_scatter_chart(lxw_chart *self)
 {
     self->has_horiz_val_axis = LXW_FALSE;
-    self->cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
+    self->default_cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
     self->is_scatter_chart = LXW_TRUE;
 
     if (self->type == LXW_CHART_SCATTER_STRAIGHT
@@ -3386,6 +3393,7 @@ _chart_initialize_radar_chart(lxw_chart *self, uint8_t type)
         _chart_set_default_marker_type(self, LXW_CHART_MARKER_NONE);
 
     self->x_axis->major_gridlines.visible = LXW_TRUE;
+    self->x_axis->is_category = LXW_TRUE;
 
     self->y_axis->major_tick_mark = LXW_TRUE;
 
@@ -3903,6 +3911,15 @@ void
 chart_axis_off(lxw_chart_axis *axis)
 {
     axis->hidden = LXW_TRUE;
+}
+
+/*
+ * Set the category axis position.
+ */
+void
+chart_axis_set_position(lxw_chart_axis *axis, uint8_t position)
+{
+    axis->position_axis = position;
 }
 
 /*
