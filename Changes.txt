@@ -1,6 +1,13 @@
 /**
 @page changes Changes
 
+
+## 0.5.3 January 8 2017
+
+- Added `chart_axis_set_position()` option to position a category axis
+  horizontally on, or between, the axis tick marks.
+
+
 ## 0.5.2 January 7 2017
 
 - Added option to turn off chart axis: `chart_axis_off()`.
