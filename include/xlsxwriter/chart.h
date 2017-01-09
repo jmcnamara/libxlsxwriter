@@ -689,10 +689,17 @@ typedef struct lxw_chart_axis {
     uint8_t label_position;
     uint8_t hidden;
     uint8_t reverse;
+
     uint8_t has_min;
-    uint8_t has_max;
     double min;
+    uint8_t has_max;
     double max;
+
+    uint8_t has_major_unit;
+    double major_unit;
+    uint8_t has_minor_unit;
+    double minor_unit;
+
     uint16_t log_base;
 
 } lxw_chart_axis;
@@ -1521,6 +1528,48 @@ void chart_axis_set_max(lxw_chart_axis *axis, double max);
  *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base);
+
+/**
+ * @brief Set the increment of the major units in the axis.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param unit The increment of the major units.
+ *
+ * Set the increment of the major units in the axis range.
+ *
+ * @code
+ *     // Turn on the minor gridline (it is off by default).
+ *     chart_axis_minor_gridlines_set_visible(chart->y_axis, LXW_TRUE);
+ *
+ *     chart_axis_set_major_unit(chart->y_axis, 4);
+ *     chart_axis_set_minor_unit(chart->y_axis, 2);
+ * @endcode
+ *
+ * @image html chart_set_major_units.png
+ *
+ * **Axis types**: This function is applicable to value and date axes only.
+ *                 See @ref ww_charts_axes.
+ */
+void chart_axis_set_major_unit(lxw_chart_axis *axis, double unit);
+
+/**
+ * @brief Set the increment of the minor units in the axis.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param unit The increment of the minor units.
+ *
+ * Set the increment of the minor units in the axis range.
+ *
+ * @code
+ *     chart_axis_set_minor_unit(chart->y_axis, 2);
+ * @endcode
+ *
+ * See the image above
+ *
+ * **Axis types**: This function is applicable to value and date axes only.
+ *                 See @ref ww_charts_axes.
+ */
+void chart_axis_set_minor_unit(lxw_chart_axis *axis, double unit);
 
 /**
  * @brief Turn on/off the major gridlines for an axis.

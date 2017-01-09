@@ -2320,16 +2320,55 @@ _chart_write_auto(lxw_chart *self)
  * Write the <c:lblAlgn> element.
  */
 STATIC void
-_chart_write_lbl_algn(lxw_chart *self)
+_chart_write_label_align(lxw_chart *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "ctr";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+    LXW_PUSH_ATTRIBUTES_STR("val", "ctr");
 
     lxw_xml_empty_tag(self->file, "c:lblAlgn", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:majorUnit> element.
+ */
+STATIC void
+_chart_write_major_unit(lxw_chart *self, lxw_chart_axis *axis)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!axis->has_major_unit)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_DBL("val", axis->major_unit);
+
+    lxw_xml_empty_tag(self->file, "c:majorUnit", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:minorUnit> element.
+ */
+STATIC void
+_chart_write_minor_unit(lxw_chart *self, lxw_chart_axis *axis)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!axis->has_minor_unit)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_DBL("val", axis->minor_unit);
+
+    lxw_xml_empty_tag(self->file, "c:minorUnit", &attributes);
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -2338,14 +2377,13 @@ _chart_write_lbl_algn(lxw_chart *self)
  * Write the <c:lblOffset> element.
  */
 STATIC void
-_chart_write_lbl_offset(lxw_chart *self)
+_chart_write_label_offset(lxw_chart *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "100";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+    LXW_PUSH_ATTRIBUTES_STR("val", "100");
 
     lxw_xml_empty_tag(self->file, "c:lblOffset", &attributes);
 
@@ -2753,10 +2791,10 @@ _chart_write_cat_axis(lxw_chart *self)
     _chart_write_auto(self);
 
     /* Write the c:lblAlgn element. */
-    _chart_write_lbl_algn(self);
+    _chart_write_label_align(self);
 
     /* Write the c:lblOffset element. */
-    _chart_write_lbl_offset(self);
+    _chart_write_label_offset(self);
 
     lxw_xml_end_tag(self->file, "c:catAx");
 }
@@ -2822,6 +2860,12 @@ _chart_write_val_axis(lxw_chart *self)
     /* Write the c:crossBetween element. */
     _chart_write_cross_between(self, self->x_axis->position_axis);
 
+    /* Write the c:majorUnit element. */
+    _chart_write_major_unit(self, self->y_axis);
+
+    /* Write the c:minorUnit element. */
+    _chart_write_minor_unit(self, self->y_axis);
+
     lxw_xml_end_tag(self->file, "c:valAx");
 }
 
@@ -2885,6 +2929,12 @@ _chart_write_cat_val_axis(lxw_chart *self)
 
     /* Write the c:crossBetween element. */
     _chart_write_cross_between(self, self->y_axis->position_axis);
+
+    /* Write the c:majorUnit element. */
+    _chart_write_major_unit(self, self->x_axis);
+
+    /* Write the c:minorUnit element. */
+    _chart_write_minor_unit(self, self->x_axis);
 
     lxw_xml_end_tag(self->file, "c:valAx");
 }
@@ -3543,7 +3593,7 @@ lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
     /* Initialize the series range data cache. */
     for (i = 0; i < rows; i++) {
         data_point = calloc(1, sizeof(struct lxw_series_data_point));
-	RETURN_ON_MEM_ERROR(data_point, LXW_ERROR_MEMORY_MALLOC_FAILED);
+        RETURN_ON_MEM_ERROR(data_point, LXW_ERROR_MEMORY_MALLOC_FAILED);
         STAILQ_INSERT_TAIL(range->data_cache, data_point, list_pointers);
         data_point->number = data[i * cols + col];
     }
@@ -3996,6 +4046,30 @@ chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base)
     /* Excel log range is 2-1000. */
     if (log_base >= 2 && log_base <= 1000)
         axis->log_base = log_base;
+}
+
+/*
+ * Set major unit for a value axis.
+ */
+void
+chart_axis_set_major_unit(lxw_chart_axis *axis, double unit)
+{
+    LXW_WARN_VALUE_AND_DATE_AXIS_ONLY("chart_axis_set_major_unit");
+
+    axis->has_major_unit = LXW_TRUE;
+    axis->major_unit = unit;
+}
+
+/*
+ * Set minor unit for a value axis.
+ */
+void
+chart_axis_set_minor_unit(lxw_chart_axis *axis, double unit)
+{
+    LXW_WARN_VALUE_AND_DATE_AXIS_ONLY("chart_axis_set_minor_unit");
+
+    axis->has_minor_unit = LXW_TRUE;
+    axis->minor_unit = unit;
 }
 
 /*
