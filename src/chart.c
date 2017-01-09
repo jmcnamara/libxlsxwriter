@@ -2242,14 +2242,21 @@ _chart_write_axis_pos(lxw_chart *self, uint8_t position, uint8_t reverse)
  * Write the <c:tickLblPos> element.
  */
 STATIC void
-_chart_write_tick_lbl_pos(lxw_chart *self)
+_chart_write_tick_label_pos(lxw_chart *self, lxw_chart_axis *axis)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "nextTo";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+
+    if (axis->label_position == LXW_CHART_AXIS_LABEL_POSITION_HIGH)
+        LXW_PUSH_ATTRIBUTES_STR("val", "high");
+    else if (axis->label_position == LXW_CHART_AXIS_LABEL_POSITION_LOW)
+        LXW_PUSH_ATTRIBUTES_STR("val", "low");
+    else if (axis->label_position == LXW_CHART_AXIS_LABEL_POSITION_NONE)
+        LXW_PUSH_ATTRIBUTES_STR("val", "none");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "nextTo");
 
     lxw_xml_empty_tag(self->file, "c:tickLblPos", &attributes);
 
@@ -2727,7 +2734,7 @@ _chart_write_cat_axis(lxw_chart *self)
     _chart_write_major_tick_mark(self, self->x_axis);
 
     /* Write the c:tickLblPos element. */
-    _chart_write_tick_lbl_pos(self);
+    _chart_write_tick_label_pos(self, self->x_axis);
 
     /* Write the c:spPr element for the axis line. */
     _chart_write_sp_pr(self, self->x_axis->line, self->x_axis->fill,
@@ -2797,7 +2804,7 @@ _chart_write_val_axis(lxw_chart *self)
     _chart_write_major_tick_mark(self, self->y_axis);
 
     /* Write the c:tickLblPos element. */
-    _chart_write_tick_lbl_pos(self);
+    _chart_write_tick_label_pos(self, self->y_axis);
 
     /* Write the c:spPr element for the axis line. */
     _chart_write_sp_pr(self, self->y_axis->line, self->y_axis->fill,
@@ -2861,7 +2868,7 @@ _chart_write_cat_val_axis(lxw_chart *self)
     _chart_write_major_tick_mark(self, self->x_axis);
 
     /* Write the c:tickLblPos element. */
-    _chart_write_tick_lbl_pos(self);
+    _chart_write_tick_label_pos(self, self->x_axis);
 
     /* Write the c:spPr element for the axis line. */
     _chart_write_sp_pr(self, self->x_axis->line, self->x_axis->fill,
@@ -3942,6 +3949,15 @@ chart_axis_set_position(lxw_chart_axis *axis, uint8_t position)
     LXW_WARN_CAT_AND_DATE_AXIS_ONLY("chart_axis_set_position");
 
     axis->position_axis = position;
+}
+
+/*
+ * Set the axis label position.
+ */
+void
+chart_axis_set_label_position(lxw_chart_axis *axis, uint8_t position)
+{
+    axis->label_position = position;
 }
 
 /*

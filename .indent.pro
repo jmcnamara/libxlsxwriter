@@ -49,6 +49,7 @@
 -T lxw_cell
 -T lxw_chart
 -T lxw_chart_axis
+-T lxw_chart_axis_label_position
 -T lxw_chart_axis_tick_position
 -T lxw_chart_fill
 -T lxw_chart_font

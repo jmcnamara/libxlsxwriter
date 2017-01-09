@@ -436,6 +436,26 @@ typedef enum lxw_chart_axis_tick_position {
     LXW_CHART_AXIS_POSITION_BETWEEN
 } lxw_chart_axis_tick_position;
 
+/**
+ * @brief Axis label positions.
+ */
+typedef enum lxw_chart_axis_label_position {
+
+    /** Position the axis labels next to the axis. The default. */
+    LXW_CHART_AXIS_LABEL_POSITION_NEXT_TO,
+
+    /** Position the axis labels at the top of the chart, for horizontal
+     * axes, or to the right for vertical axes.*/
+    LXW_CHART_AXIS_LABEL_POSITION_HIGH,
+
+    /** Position the axis labels at the bottom of the chart, for horizontal
+     * axes, or to the left for vertical axes.*/
+    LXW_CHART_AXIS_LABEL_POSITION_LOW,
+
+    /** Turn off the the axis labels. */
+    LXW_CHART_AXIS_LABEL_POSITION_NONE
+} lxw_chart_axis_label_position;
+
 enum lxw_chart_position {
     LXW_CHART_AXIS_RIGHT,
     LXW_CHART_AXIS_LEFT,
@@ -666,6 +686,7 @@ typedef struct lxw_chart_axis {
     uint8_t is_date;
     uint8_t is_value;
     uint8_t position_axis;
+    uint8_t label_position;
     uint8_t hidden;
     uint8_t reverse;
     uint8_t has_min;
@@ -1401,6 +1422,43 @@ void chart_axis_off(lxw_chart_axis *axis);
  *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_position(lxw_chart_axis *axis, uint8_t position);
+
+/**
+ * @brief Position the axis labels.
+ *
+ * @param axis     A pointer to a chart #lxw_chart_axis object.
+ * @param position A #lxw_chart_axis_label_position value.
+ *
+ * Position the axis labels for the chart. The labels are the numbers, or
+ * strings or dates, on the axis that indicate the categories or values of
+ * the axis.
+ *
+ * For example:
+ *
+ * @code
+ *     chart_axis_set_label_position(chart->x_axis, LXW_CHART_AXIS_LABEL_POSITION_HIGH);
+       chart_axis_set_label_position(chart->y_axis, LXW_CHART_AXIS_LABEL_POSITION_HIGH);
+ * @endcode
+ *
+ * @image html chart_label_position2.png
+ *
+ * The allowable values:
+ *
+ * - #LXW_CHART_AXIS_LABEL_POSITION_NEXT_TO - The default.
+ * - #LXW_CHART_AXIS_LABEL_POSITION_HIGH - Also right for vertical axes.
+ * - #LXW_CHART_AXIS_LABEL_POSITION_LOW - Also left for vertical axes.
+ * - #LXW_CHART_AXIS_LABEL_POSITION_NONE
+ *
+ * @image html chart_label_position1.png
+ *
+ * The #LXW_CHART_AXIS_LABEL_POSITION_NONE turns off the axis labels. This
+ * is slightly different from `chart_axis_off()` which also turns off the
+ * labels but also turns off tick marks.
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
+ */
+void chart_axis_set_label_position(lxw_chart_axis *axis, uint8_t position);
 
 /**
  * @brief Set the minimum value for a chart axis.
