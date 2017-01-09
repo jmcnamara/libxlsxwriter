@@ -54,13 +54,15 @@ lxw_styles_free(lxw_styles *styles)
         return;
 
     /* Free the formats in the styles. */
-    while (!STAILQ_EMPTY(styles->xf_formats)) {
-        format = STAILQ_FIRST(styles->xf_formats);
-        STAILQ_REMOVE_HEAD(styles->xf_formats, list_pointers);
-        free(format);
+    if (styles->xf_formats) {
+        while (!STAILQ_EMPTY(styles->xf_formats)) {
+            format = STAILQ_FIRST(styles->xf_formats);
+            STAILQ_REMOVE_HEAD(styles->xf_formats, list_pointers);
+            free(format);
+        }
+        free(styles->xf_formats);
     }
 
-    free(styles->xf_formats);
     free(styles);
 }
 

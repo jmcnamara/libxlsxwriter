@@ -19,8 +19,10 @@
 STATIC int _element_cmp(struct sst_element *element1,
                         struct sst_element *element2);
 
+#ifndef __clang_analyzer__
 LXW_RB_GENERATE_ELEMENT(sst_rb_tree, sst_element, sst_tree_pointers,
                         _element_cmp);
+#endif
 
 /*****************************************************************************
  *

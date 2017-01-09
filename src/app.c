@@ -58,23 +58,27 @@ lxw_app_free(lxw_app *app)
         return;
 
     /* Free the lists in the App object. */
-    while (!STAILQ_EMPTY(app->heading_pairs)) {
-        heading_pair = STAILQ_FIRST(app->heading_pairs);
-        STAILQ_REMOVE_HEAD(app->heading_pairs, list_pointers);
-        free(heading_pair->key);
-        free(heading_pair->value);
-        free(heading_pair);
+    if (app->heading_pairs) {
+        while (!STAILQ_EMPTY(app->heading_pairs)) {
+            heading_pair = STAILQ_FIRST(app->heading_pairs);
+            STAILQ_REMOVE_HEAD(app->heading_pairs, list_pointers);
+            free(heading_pair->key);
+            free(heading_pair->value);
+            free(heading_pair);
+        }
+        free(app->heading_pairs);
     }
 
-    while (!STAILQ_EMPTY(app->part_names)) {
-        part_name = STAILQ_FIRST(app->part_names);
-        STAILQ_REMOVE_HEAD(app->part_names, list_pointers);
-        free(part_name->name);
-        free(part_name);
+    if (app->part_names) {
+        while (!STAILQ_EMPTY(app->part_names)) {
+            part_name = STAILQ_FIRST(app->part_names);
+            STAILQ_REMOVE_HEAD(app->part_names, list_pointers);
+            free(part_name->name);
+            free(part_name);
+        }
+        free(app->part_names);
     }
 
-    free(app->heading_pairs);
-    free(app->part_names);
     free(app);
 }
 

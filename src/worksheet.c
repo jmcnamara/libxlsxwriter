@@ -28,8 +28,10 @@ STATIC void _worksheet_write_rows(lxw_worksheet *self);
 STATIC int _row_cmp(lxw_row *row1, lxw_row *row2);
 STATIC int _cell_cmp(lxw_cell *cell1, lxw_cell *cell2);
 
+#ifndef __clang_analyzer__
 LXW_RB_GENERATE_ROW(lxw_table_rows, lxw_row, tree_pointers, _row_cmp);
 LXW_RB_GENERATE_CELL(lxw_table_cells, lxw_cell, tree_pointers, _cell_cmp);
+#endif
 
 /*****************************************************************************
  *

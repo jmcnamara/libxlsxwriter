@@ -14,8 +14,10 @@
 #include "xlsxwriter/hash_table.h"
 
 STATIC int _name_cmp(lxw_worksheet_name *name1, lxw_worksheet_name *name2);
+#ifndef __clang_analyzer__
 LXW_RB_GENERATE_NAMES(lxw_worksheet_names, lxw_worksheet_name, tree_pointers,
                       _name_cmp);
+#endif
 
 /*
  * Forward declarations.
@@ -85,6 +87,7 @@ lxw_workbook_free(lxw_workbook *workbook)
     lxw_chart *chart;
     lxw_format *format;
     lxw_defined_name *defined_name;
+    lxw_defined_name *defined_name_tmp;
     lxw_custom_property *custom_property;
 
     if (!workbook)
@@ -95,38 +98,56 @@ lxw_workbook_free(lxw_workbook *workbook)
     free(workbook->filename);
 
     /* Free the worksheets in the workbook. */
-    while (!STAILQ_EMPTY(workbook->worksheets)) {
-        worksheet = STAILQ_FIRST(workbook->worksheets);
-        STAILQ_REMOVE_HEAD(workbook->worksheets, list_pointers);
-        lxw_worksheet_free(worksheet);
+    if (workbook->worksheets) {
+        while (!STAILQ_EMPTY(workbook->worksheets)) {
+            worksheet = STAILQ_FIRST(workbook->worksheets);
+            STAILQ_REMOVE_HEAD(workbook->worksheets, list_pointers);
+            lxw_worksheet_free(worksheet);
+        }
+        free(workbook->worksheets);
+
     }
 
     /* Free the charts in the workbook. */
-    while (!STAILQ_EMPTY(workbook->charts)) {
-        chart = STAILQ_FIRST(workbook->charts);
-        STAILQ_REMOVE_HEAD(workbook->charts, list_pointers);
-        lxw_chart_free(chart);
+    if (workbook->charts) {
+        while (!STAILQ_EMPTY(workbook->charts)) {
+            chart = STAILQ_FIRST(workbook->charts);
+            STAILQ_REMOVE_HEAD(workbook->charts, list_pointers);
+            lxw_chart_free(chart);
+        }
+        free(workbook->charts);
     }
 
     /* Free the formats in the workbook. */
-    while (!STAILQ_EMPTY(workbook->formats)) {
-        format = STAILQ_FIRST(workbook->formats);
-        STAILQ_REMOVE_HEAD(workbook->formats, list_pointers);
-        lxw_format_free(format);
+    if (workbook->formats) {
+        while (!STAILQ_EMPTY(workbook->formats)) {
+            format = STAILQ_FIRST(workbook->formats);
+            STAILQ_REMOVE_HEAD(workbook->formats, list_pointers);
+            lxw_format_free(format);
+        }
+        free(workbook->formats);
     }
 
     /* Free the defined_names in the workbook. */
-    while (!TAILQ_EMPTY(workbook->defined_names)) {
+    if (workbook->defined_names) {
         defined_name = TAILQ_FIRST(workbook->defined_names);
-        TAILQ_REMOVE(workbook->defined_names, defined_name, list_pointers);
-        free(defined_name);
+        while (defined_name) {
+
+            defined_name_tmp = TAILQ_NEXT(defined_name, list_pointers);
+            free(defined_name);
+            defined_name = defined_name_tmp;
+        }
+        free(workbook->defined_names);
     }
 
     /* Free the custom_properties in the workbook. */
-    while (!STAILQ_EMPTY(workbook->custom_properties)) {
-        custom_property = STAILQ_FIRST(workbook->custom_properties);
-        STAILQ_REMOVE_HEAD(workbook->custom_properties, list_pointers);
-        _free_custom_doc_property(custom_property);
+    if (workbook->custom_properties) {
+        while (!STAILQ_EMPTY(workbook->custom_properties)) {
+            custom_property = STAILQ_FIRST(workbook->custom_properties);
+            STAILQ_REMOVE_HEAD(workbook->custom_properties, list_pointers);
+            _free_custom_doc_property(custom_property);
+        }
+        free(workbook->custom_properties);
     }
 
     if (workbook->worksheet_names) {
@@ -147,12 +168,7 @@ lxw_workbook_free(lxw_workbook *workbook)
     lxw_hash_free(workbook->used_xf_formats);
     lxw_sst_free(workbook->sst);
     free(workbook->options.tmpdir);
-    free(workbook->worksheets);
-    free(workbook->charts);
     free(workbook->ordered_charts);
-    free(workbook->formats);
-    free(workbook->defined_names);
-    free(workbook->custom_properties);
     free(workbook);
 }
 

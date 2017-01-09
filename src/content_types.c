@@ -72,24 +72,28 @@ lxw_content_types_free(lxw_content_types *content_types)
     if (!content_types)
         return;
 
-    while (!STAILQ_EMPTY(content_types->default_types)) {
-        default_type = STAILQ_FIRST(content_types->default_types);
-        STAILQ_REMOVE_HEAD(content_types->default_types, list_pointers);
-        free(default_type->key);
-        free(default_type->value);
-        free(default_type);
+    if (content_types->default_types) {
+        while (!STAILQ_EMPTY(content_types->default_types)) {
+            default_type = STAILQ_FIRST(content_types->default_types);
+            STAILQ_REMOVE_HEAD(content_types->default_types, list_pointers);
+            free(default_type->key);
+            free(default_type->value);
+            free(default_type);
+        }
+        free(content_types->default_types);
     }
 
-    while (!STAILQ_EMPTY(content_types->overrides)) {
-        override = STAILQ_FIRST(content_types->overrides);
-        STAILQ_REMOVE_HEAD(content_types->overrides, list_pointers);
-        free(override->key);
-        free(override->value);
-        free(override);
+    if (content_types->overrides) {
+        while (!STAILQ_EMPTY(content_types->overrides)) {
+            override = STAILQ_FIRST(content_types->overrides);
+            STAILQ_REMOVE_HEAD(content_types->overrides, list_pointers);
+            free(override->key);
+            free(override->value);
+            free(override);
+        }
+        free(content_types->overrides);
     }
 
-    free(content_types->default_types);
-    free(content_types->overrides);
     free(content_types);
 }
 

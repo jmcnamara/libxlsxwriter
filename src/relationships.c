@@ -53,16 +53,19 @@ lxw_free_relationships(lxw_relationships *rels)
     if (!rels)
         return;
 
-    while (!STAILQ_EMPTY(rels->relationships)) {
-        relationship = STAILQ_FIRST(rels->relationships);
-        STAILQ_REMOVE_HEAD(rels->relationships, list_pointers);
-        free(relationship->type);
-        free(relationship->target);
-        free(relationship->target_mode);
-        free(relationship);
+    if (rels->relationships) {
+        while (!STAILQ_EMPTY(rels->relationships)) {
+            relationship = STAILQ_FIRST(rels->relationships);
+            STAILQ_REMOVE_HEAD(rels->relationships, list_pointers);
+            free(relationship->type);
+            free(relationship->target);
+            free(relationship->target_mode);
+            free(relationship);
+        }
+
+        free(rels->relationships);
     }
 
-    free(rels->relationships);
     free(rels);
 }
 

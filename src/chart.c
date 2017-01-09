@@ -34,15 +34,17 @@ _chart_free_range(lxw_series_range *range)
     if (!range)
         return;
 
-    while (!STAILQ_EMPTY(range->data_cache)) {
-        data_point = STAILQ_FIRST(range->data_cache);
-        free(data_point->string);
-        STAILQ_REMOVE_HEAD(range->data_cache, list_pointers);
+    if (range->data_cache) {
+        while (!STAILQ_EMPTY(range->data_cache)) {
+            data_point = STAILQ_FIRST(range->data_cache);
+            free(data_point->string);
+            STAILQ_REMOVE_HEAD(range->data_cache, list_pointers);
 
-        free(data_point);
+            free(data_point);
+        }
+        free(range->data_cache);
     }
 
-    free(range->data_cache);
     free(range->formula);
     free(range->sheetname);
     free(range);
@@ -4123,6 +4125,9 @@ chart_legend_delete_series(lxw_chart *self, int16_t delete_series[])
 
     while (delete_series[count] > 0)
         count++;
+
+    if (count == 0)
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
     /* The maximum number of series in a chart is 255. */
     if (count > 255)
