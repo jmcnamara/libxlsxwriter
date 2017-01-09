@@ -2334,6 +2334,46 @@ _chart_write_label_align(lxw_chart *self)
 }
 
 /*
+ * Write the <c:tickLblSkip> element.
+ */
+STATIC void
+_chart_write_tick_label_skip(lxw_chart *self, lxw_chart_axis *axis)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!axis->interval_unit)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("val", axis->interval_unit);
+
+    lxw_xml_empty_tag(self->file, "c:tickLblSkip", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:tickMarkSkip> element.
+ */
+STATIC void
+_chart_write_tick_mark_skip(lxw_chart *self, lxw_chart_axis *axis)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!axis->interval_tick)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("val", axis->interval_tick);
+
+    lxw_xml_empty_tag(self->file, "c:tickMarkSkip", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <c:majorUnit> element.
  */
 STATIC void
@@ -2795,6 +2835,12 @@ _chart_write_cat_axis(lxw_chart *self)
 
     /* Write the c:lblOffset element. */
     _chart_write_label_offset(self);
+
+    /* Write the c:tickLblSkip element. */
+    _chart_write_tick_label_skip(self, self->x_axis);
+
+    /* Write the c:tickMarkSkip element. */
+    _chart_write_tick_mark_skip(self, self->x_axis);
 
     lxw_xml_end_tag(self->file, "c:catAx");
 }
@@ -4046,6 +4092,28 @@ chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base)
     /* Excel log range is 2-1000. */
     if (log_base >= 2 && log_base <= 1000)
         axis->log_base = log_base;
+}
+
+/*
+ * Set interval unit for a category axis.
+ */
+void
+chart_axis_set_interval_unit(lxw_chart_axis *axis, uint16_t unit)
+{
+    LXW_WARN_CAT_AND_DATE_AXIS_ONLY("chart_axis_set_major_unit");
+
+    axis->interval_unit = unit;
+}
+
+/*
+ * Set tick interval for a category axis.
+ */
+void
+chart_axis_set_interval_tick(lxw_chart_axis *axis, uint16_t unit)
+{
+    LXW_WARN_CAT_AND_DATE_AXIS_ONLY("chart_axis_set_major_tick");
+
+    axis->interval_tick = unit;
 }
 
 /*

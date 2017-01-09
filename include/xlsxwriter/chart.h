@@ -700,6 +700,9 @@ typedef struct lxw_chart_axis {
     uint8_t has_minor_unit;
     double minor_unit;
 
+    uint16_t interval_unit;
+    uint16_t interval_tick;
+
     uint16_t log_base;
 
 } lxw_chart_axis;
@@ -1528,6 +1531,54 @@ void chart_axis_set_max(lxw_chart_axis *axis, double max);
  *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base);
+
+/**
+ * @brief Set the interval between category values.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param unit The interval between the categories.
+ *
+ * Set the interval between the category values. The default interval is 1
+ * which gives the intervals shown in the charts above:
+ *
+ *     1, 2, 3, 4, 5, etc.
+ *
+ * Setting it to 2 gives:
+ *
+ *     1, 3, 5, 7, etc.
+ *
+ * For example:
+ *
+ * @code
+ *     chart_axis_set_interval_unit(chart->x_axis, 2);
+ * @endcode
+ *
+ * @image html chart_set_interval1.png
+ *
+ * **Axis types**: This function is applicable to category and date axes only.
+ *                 See @ref ww_charts_axes.
+ */
+void chart_axis_set_interval_unit(lxw_chart_axis *axis, uint16_t unit);
+
+/**
+ * @brief Set the interval between category tick marks.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param unit The interval between the category ticks.
+ *
+ * Set the interval between the category tick marks. The default interval is 1
+ * between each category but it can be set to other integer values:
+ *
+ * @code
+ *     chart_axis_set_interval_tick(chart->x_axis, 2);
+ * @endcode
+ *
+ * @image html chart_set_interval2.png
+ *
+ * **Axis types**: This function is applicable to category and date axes only.
+ *                 See @ref ww_charts_axes.
+ */
+void chart_axis_set_interval_tick(lxw_chart_axis *axis, uint16_t unit);
 
 /**
  * @brief Set the increment of the major units in the axis.
