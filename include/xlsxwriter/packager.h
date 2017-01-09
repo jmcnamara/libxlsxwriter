@@ -27,7 +27,7 @@
 
 #define LXW_ZIP_BUFFER_SIZE (16384)
 
-/*  * If zlib returns Z_ERRNO then errno is set and we can trap that. Otherwise
+/* If zlib returns Z_ERRNO then errno is set and we can trap that. Otherwise
  * return a default libxlsxwriter error. */
 #define RETURN_ON_ZIP_ERROR(err, default_err)   \
     if (err == Z_ERRNO)                         \
@@ -64,7 +64,7 @@ extern "C" {
 
 lxw_packager *lxw_packager_new(const char *filename, char *tmpdir);
 void lxw_packager_free(lxw_packager *packager);
-uint8_t lxw_create_package(lxw_packager *self);
+lxw_error lxw_create_package(lxw_packager *self);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

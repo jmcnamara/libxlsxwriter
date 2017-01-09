@@ -1509,7 +1509,7 @@ workbook_close(lxw_workbook *self)
 {
     lxw_worksheet *worksheet = NULL;
     lxw_packager *packager = NULL;
-    uint8_t error = LXW_NO_ERROR;
+    lxw_error error = LXW_NO_ERROR;
 
     /* Add a default worksheet if non have been added. */
     if (!self->num_sheets)

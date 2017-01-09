@@ -1950,8 +1950,8 @@ void chart_set_style(lxw_chart *chart, uint8_t style_id);
 void chart_set_rotation(lxw_chart *chart, uint16_t rotation);
 void chart_set_hole_size(lxw_chart *chart, uint8_t size);
 
-int lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
-                             uint16_t rows, uint8_t cols, uint8_t col);
+lxw_error lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
+                                   uint16_t rows, uint8_t cols, uint8_t col);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

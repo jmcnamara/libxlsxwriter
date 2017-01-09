@@ -32,6 +32,11 @@ endif
 # Flags passed to compiler.
 CFLAGS   += -g -O3 -Wall -Wextra -pedantic -ansi
 
+# Ignore icc remarks about inlining limits.
+ifeq ($(CC),icc)
+CFLAGS   +=-diag-disable=11074,11076
+endif
+
 # Library names.
 LIBXLSXWRITER_A  = libxlsxwriter.a
 LIBXLSXWRITER_SO = libxlsxwriter.so

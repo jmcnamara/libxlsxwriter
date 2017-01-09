@@ -81,15 +81,15 @@ _chart_series_free(lxw_chart_series *series)
 /*
  * Initialize the data cache in a range object.
  */
-STATIC int
+STATIC lxw_error
 _chart_init_data_cache(lxw_series_range *range)
 {
     /* Initialize the series range data cache. */
     range->data_cache = calloc(1, sizeof(struct lxw_series_data_points));
-    RETURN_ON_MEM_ERROR(range->data_cache, -1);
+    RETURN_ON_MEM_ERROR(range->data_cache, LXW_ERROR_MEMORY_MALLOC_FAILED);
     STAILQ_INIT(range->data_cache);
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*
@@ -3530,7 +3530,7 @@ lxw_chart_assemble_xml_file(lxw_chart *self)
 /*
  * Add data to a data cache in a range object, for testing only.
  */
-int
+lxw_error
 lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
                          uint16_t rows, uint8_t cols, uint8_t col)
 {
@@ -3543,11 +3543,12 @@ lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
     /* Initialize the series range data cache. */
     for (i = 0; i < rows; i++) {
         data_point = calloc(1, sizeof(struct lxw_series_data_point));
+	RETURN_ON_MEM_ERROR(data_point, LXW_ERROR_MEMORY_MALLOC_FAILED);
         STAILQ_INSERT_TAIL(range->data_cache, data_point, list_pointers);
         data_point->number = data[i * cols + col];
     }
 
-    return 0;
+    return LXW_NO_ERROR;
 }
 
 /*

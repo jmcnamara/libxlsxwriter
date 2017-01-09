@@ -3559,7 +3559,7 @@ worksheet_write_array_formula_num(lxw_worksheet *self,
 
     /* Define the array range. */
     range = calloc(1, LXW_MAX_CELL_RANGE_LENGTH);
-    RETURN_ON_MEM_ERROR(range, -1);
+    RETURN_ON_MEM_ERROR(range, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     if (first_row == last_row && first_col == last_col)
         lxw_rowcol_to_cell(range, first_row, last_col);
@@ -4145,7 +4145,7 @@ worksheet_merge_range(lxw_worksheet *self, lxw_row_t first_row,
 
     /* Store the merge range. */
     merged_range = calloc(1, sizeof(lxw_merged_range));
-    RETURN_ON_MEM_ERROR(merged_range, 2);
+    RETURN_ON_MEM_ERROR(merged_range, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     merged_range->first_row = first_row;
     merged_range->first_col = first_col;
