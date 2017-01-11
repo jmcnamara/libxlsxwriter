@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 
-#include "xlsxwriter/workbook.h"
+#include "workbook.h"
 #include "common.h"
 
 /*

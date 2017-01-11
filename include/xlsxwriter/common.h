@@ -16,8 +16,8 @@
 #define __LXW_COMMON_H__
 
 #include <time.h>
-#include "xlsxwriter/third_party/queue.h"
-#include "xlsxwriter/third_party/tree.h"
+#include "third_party/queue.h"
+#include "third_party/tree.h"
 
 #ifndef TESTING
 #define STATIC static

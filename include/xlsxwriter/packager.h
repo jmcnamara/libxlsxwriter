@@ -10,7 +10,7 @@
 #define __LXW_PACKAGER_H__
 
 #include <stdint.h>
-#include "xlsxwriter/third_party/zip.h"
+#include "third_party/zip.h"
 
 #include "common.h"
 #include "workbook.h"
