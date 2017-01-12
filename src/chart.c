@@ -2763,7 +2763,7 @@ _chart_write_page_margins(lxw_chart *self)
     LXW_PUSH_ATTRIBUTES_STR("b", "0.75");
     LXW_PUSH_ATTRIBUTES_STR("l", "0.7");
     LXW_PUSH_ATTRIBUTES_STR("r", "0.7");
-    LXW_PUSH_ATTRIBUTES_STR("t", "0.7");
+    LXW_PUSH_ATTRIBUTES_STR("t", "0.75");
     LXW_PUSH_ATTRIBUTES_STR("header", "0.3");
     LXW_PUSH_ATTRIBUTES_STR("footer", "0.3");
 
