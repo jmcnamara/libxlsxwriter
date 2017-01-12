@@ -1,6 +1,11 @@
 /**
 @page changes Changes
 
+## 0.5.7 January 12 2017
+
+- Added `chart_axis_set_display_units()` function to set chart axis display
+  units.
+
 
 ## 0.5.6 January 11 2017
 
