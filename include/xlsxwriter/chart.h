@@ -492,6 +492,27 @@ typedef enum lxw_chart_axis_display_unit {
     LXW_CHART_AXIS_UNITS_TRILLIONS
 } lxw_chart_axis_display_unit;
 
+/**
+ * @brief Tick mark types for an axis.
+ */
+typedef enum lxw_chart_axis_tick_mark {
+
+    /** Default tick mark for the chart axis. Usually outside. */
+    LXW_CHART_AXIS_TICK_MARK_DEFAULT,
+
+    /** No tick mark for the axis. */
+    LXW_CHART_AXIS_TICK_MARK_NONE,
+
+    /** Tick mark inside the axis only. */
+    LXW_CHART_AXIS_TICK_MARK_INSIDE,
+
+    /** Tick mark outside the axis only. */
+    LXW_CHART_AXIS_TICK_MARK_OUTSIDE,
+
+    /** Tick mark inside and outside the axis. */
+    LXW_CHART_AXIS_TICK_MARK_CROSSING
+} lxw_chart_tick_mark;
+
 enum lxw_chart_position {
     LXW_CHART_AXIS_RIGHT,
     LXW_CHART_AXIS_LEFT,
@@ -708,6 +729,7 @@ typedef struct lxw_chart_axis {
     char default_num_format[LXW_CHART_NUM_FORMAT_LEN];
 
     uint8_t major_tick_mark;
+    uint8_t minor_tick_mark;
     uint8_t is_horizontal;
 
     lxw_chart_gridline major_gridlines;
@@ -1570,6 +1592,10 @@ void chart_axis_set_max(lxw_chart_axis *axis, double max);
  *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base);
+
+void chart_axis_set_major_tick_mark(lxw_chart_axis *axis, uint8_t type);
+
+void chart_axis_set_minor_tick_mark(lxw_chart_axis *axis, uint8_t type);
 
 /**
  * @brief Set the interval between category values.

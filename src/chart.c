@@ -1815,9 +1815,45 @@ _chart_write_major_tick_mark(lxw_chart *self, lxw_chart_axis *axis)
         return;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", "cross");
+
+    if (axis->major_tick_mark == LXW_CHART_AXIS_TICK_MARK_NONE)
+        LXW_PUSH_ATTRIBUTES_STR("val", "none");
+    else if (axis->major_tick_mark == LXW_CHART_AXIS_TICK_MARK_INSIDE)
+        LXW_PUSH_ATTRIBUTES_STR("val", "in");
+    else if (axis->major_tick_mark == LXW_CHART_AXIS_TICK_MARK_CROSSING)
+        LXW_PUSH_ATTRIBUTES_STR("val", "cross");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "out");
 
     lxw_xml_empty_tag(self->file, "c:majorTickMark", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:minorTickMark> element.
+ */
+STATIC void
+_chart_write_minor_tick_mark(lxw_chart *self, lxw_chart_axis *axis)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!axis->minor_tick_mark)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (axis->minor_tick_mark == LXW_CHART_AXIS_TICK_MARK_NONE)
+        LXW_PUSH_ATTRIBUTES_STR("val", "none");
+    else if (axis->minor_tick_mark == LXW_CHART_AXIS_TICK_MARK_INSIDE)
+        LXW_PUSH_ATTRIBUTES_STR("val", "in");
+    else if (axis->minor_tick_mark == LXW_CHART_AXIS_TICK_MARK_CROSSING)
+        LXW_PUSH_ATTRIBUTES_STR("val", "cross");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "out");
+
+    lxw_xml_empty_tag(self->file, "c:minorTickMark", &attributes);
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -2721,20 +2757,15 @@ _chart_write_page_margins(lxw_chart *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char b[] = "0.75";
-    char l[] = "0.7";
-    char r[] = "0.7";
-    char t[] = "0.75";
-    char header[] = "0.3";
-    char footer[] = "0.3";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("b", b);
-    LXW_PUSH_ATTRIBUTES_STR("l", l);
-    LXW_PUSH_ATTRIBUTES_STR("r", r);
-    LXW_PUSH_ATTRIBUTES_STR("t", t);
-    LXW_PUSH_ATTRIBUTES_STR("header", header);
-    LXW_PUSH_ATTRIBUTES_STR("footer", footer);
+
+    LXW_PUSH_ATTRIBUTES_STR("b", "0.75");
+    LXW_PUSH_ATTRIBUTES_STR("l", "0.7");
+    LXW_PUSH_ATTRIBUTES_STR("r", "0.7");
+    LXW_PUSH_ATTRIBUTES_STR("t", "0.7");
+    LXW_PUSH_ATTRIBUTES_STR("header", "0.3");
+    LXW_PUSH_ATTRIBUTES_STR("footer", "0.3");
 
     lxw_xml_empty_tag(self->file, "c:pageMargins", &attributes);
 
@@ -2861,6 +2892,9 @@ _chart_write_cat_axis(lxw_chart *self)
     /* Write the c:majorTickMark element. */
     _chart_write_major_tick_mark(self, self->x_axis);
 
+    /* Write the c:minorTickMark element. */
+    _chart_write_minor_tick_mark(self, self->x_axis);
+
     /* Write the c:tickLblPos element. */
     _chart_write_tick_label_pos(self, self->x_axis);
 
@@ -2937,6 +2971,9 @@ _chart_write_val_axis(lxw_chart *self)
     /* Write the c:majorTickMark element. */
     _chart_write_major_tick_mark(self, self->y_axis);
 
+    /* Write the c:minorTickMark element. */
+    _chart_write_minor_tick_mark(self, self->y_axis);
+
     /* Write the c:tickLblPos element. */
     _chart_write_tick_label_pos(self, self->y_axis);
 
@@ -3009,6 +3046,9 @@ _chart_write_cat_val_axis(lxw_chart *self)
 
     /* Write the c:majorTickMark element. */
     _chart_write_major_tick_mark(self, self->x_axis);
+
+    /* Write the c:minorTickMark element. */
+    _chart_write_minor_tick_mark(self, self->x_axis);
 
     /* Write the c:tickLblPos element. */
     _chart_write_tick_label_pos(self, self->x_axis);
@@ -3572,7 +3612,7 @@ _chart_initialize_radar_chart(lxw_chart *self, uint8_t type)
     self->x_axis->is_category = LXW_TRUE;
     self->y_axis->is_value = LXW_TRUE;
 
-    self->y_axis->major_tick_mark = LXW_TRUE;
+    self->y_axis->major_tick_mark = LXW_CHART_AXIS_TICK_MARK_CROSSING;
 
     /* Initialize the function pointers for this chart type. */
     self->write_chart_type = _chart_write_radar_chart;
@@ -4148,6 +4188,24 @@ chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base)
     /* Excel log range is 2-1000. */
     if (log_base >= 2 && log_base <= 1000)
         axis->log_base = log_base;
+}
+
+/*
+ * Set the major mark for an axis.
+ */
+void
+chart_axis_set_major_tick_mark(lxw_chart_axis *axis, uint8_t type)
+{
+    axis->major_tick_mark = type;
+}
+
+/*
+ * Set the minor mark for an axis.
+ */
+void
+chart_axis_set_minor_tick_mark(lxw_chart_axis *axis, uint8_t type)
+{
+    axis->minor_tick_mark = type;
 }
 
 /*
