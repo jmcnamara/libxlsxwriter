@@ -2459,6 +2459,8 @@ _chart_write_disp_units(lxw_chart *self, lxw_chart_axis *axis)
     }
 
     lxw_xml_end_tag(self->file, "c:dispUnits");
+
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
