@@ -1,6 +1,12 @@
 /**
 @page changes Changes
 
+## 0.5.8 January 13 2017
+
+- Added `chart_axis_set_major_tick_mark()` and
+  `chart_axis_set_minor_tick_mark()` functions to chart axis tick marks.
+
+
 ## 0.5.7 January 12 2017
 
 - Added `chart_axis_set_display_units()` function to set chart axis display
