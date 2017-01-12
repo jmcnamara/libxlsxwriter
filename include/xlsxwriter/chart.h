@@ -1593,8 +1593,56 @@ void chart_axis_set_max(lxw_chart_axis *axis, double max);
  */
 void chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base);
 
+/**
+ * @brief Set the major axis tick mark type.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param type The tick mark type, defined by #lxw_chart_tick_mark.
+ *
+ * Set the type of the major axis tick mark:
+ *
+ * @code
+ *     chart_axis_set_major_tick_mark(chart->x_axis, LXW_CHART_AXIS_TICK_MARK_CROSSING);
+ *     chart_axis_set_minor_tick_mark(chart->x_axis, LXW_CHART_AXIS_TICK_MARK_INSIDE);
+ *
+ *     chart_axis_set_major_tick_mark(chart->x_axis, LXW_CHART_AXIS_TICK_MARK_OUTSIDE);
+ *     chart_axis_set_minor_tick_mark(chart->y_axis, LXW_CHART_AXIS_TICK_MARK_INSIDE);
+ *
+ *     // Hide the default gridlines so the tick marks are visible.
+ *     chart_axis_major_gridlines_set_visible(chart->y_axis, LXW_FALSE);
+ * @endcode
+ *
+ * @image html chart_tick_marks.png
+ *
+ * The tick mark types are:
+ *
+ * - #LXW_CHART_AXIS_TICK_MARK_NONE
+ * - #LXW_CHART_AXIS_TICK_MARK_INSIDE
+ * - #LXW_CHART_AXIS_TICK_MARK_OUTSIDE
+ * - #LXW_CHART_AXIS_TICK_MARK_CROSSING
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
+ */
 void chart_axis_set_major_tick_mark(lxw_chart_axis *axis, uint8_t type);
 
+/**
+ * @brief Set the minor axis tick mark type.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param type The tick mark type, defined by #lxw_chart_tick_mark.
+ *
+ * Set the type of the minor axis tick mark:
+ *
+ * @code
+ *     chart_axis_set_minor_tick_mark(chart->x_axis, LXW_CHART_AXIS_TICK_MARK_INSIDE);
+ * @endcode
+ *
+ * See the image and example above.
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
+ */
 void chart_axis_set_minor_tick_mark(lxw_chart_axis *axis, uint8_t type);
 
 /**
