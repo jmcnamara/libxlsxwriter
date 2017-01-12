@@ -456,6 +456,42 @@ typedef enum lxw_chart_axis_label_position {
     LXW_CHART_AXIS_LABEL_POSITION_NONE
 } lxw_chart_axis_label_position;
 
+/**
+ * @brief Display units for chart value axis.
+ */
+typedef enum lxw_chart_axis_display_unit {
+
+    /** Axis display units: None. The default. */
+    LXW_CHART_AXIS_UNITS_NONE,
+
+    /** Axis display units: Hundreds. */
+    LXW_CHART_AXIS_UNITS_HUNDREDS,
+
+    /** Axis display units: Thousands. */
+    LXW_CHART_AXIS_UNITS_THOUSANDS,
+
+    /** Axis display units: Ten thousands. */
+    LXW_CHART_AXIS_UNITS_TEN_THOUSANDS,
+
+    /** Axis display units: Hundred thousands. */
+    LXW_CHART_AXIS_UNITS_HUNDRED_THOUSANDS,
+
+    /** Axis display units: Millions. */
+    LXW_CHART_AXIS_UNITS_MILLIONS,
+
+    /** Axis display units: Ten millions. */
+    LXW_CHART_AXIS_UNITS_TEN_MILLIONS,
+
+    /** Axis display units: Hundred millions. */
+    LXW_CHART_AXIS_UNITS_HUNDRED_MILLIONS,
+
+    /** Axis display units: Billions. */
+    LXW_CHART_AXIS_UNITS_BILLIONS,
+
+    /** Axis display units: Trillions. */
+    LXW_CHART_AXIS_UNITS_TRILLIONS
+} lxw_chart_axis_display_unit;
+
 enum lxw_chart_position {
     LXW_CHART_AXIS_RIGHT,
     LXW_CHART_AXIS_LEFT,
@@ -704,6 +740,9 @@ typedef struct lxw_chart_axis {
     uint16_t interval_tick;
 
     uint16_t log_base;
+
+    uint8_t display_units;
+    uint8_t display_units_visible;
 
 } lxw_chart_axis;
 
@@ -1621,6 +1660,46 @@ void chart_axis_set_major_unit(lxw_chart_axis *axis, double unit);
  *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_minor_unit(lxw_chart_axis *axis, double unit);
+
+/**
+ * @brief Set the display units for a value axis.
+ *
+ * @param axis  A pointer to a chart #lxw_chart_axis object.
+ * @param units The display units: #lxw_chart_axis_display_unit.
+ *
+ * Set the display units for the axis. This can be useful if the axis numbers
+ * are very large but you don't want to represent them in scientific notation:
+ *
+ * @code
+ *     chart_axis_set_display_units(chart->x_axis, LXW_CHART_AXIS_UNITS_THOUSANDS);
+ *     chart_axis_set_display_units(chart->y_axis, LXW_CHART_AXIS_UNITS_MILLIONS);
+ * @endcode
+ *
+ * @image html chart_display_units.png
+ *
+ * **Axis types**: This function is applicable to value axes only.
+ *                 See @ref ww_charts_axes.
+ */
+void chart_axis_set_display_units(lxw_chart_axis *axis, uint8_t units);
+
+/**
+ * @brief Turn on/off the display units for a value axis.
+
+ * @param axis    A pointer to a chart #lxw_chart_axis object.
+ * @param visible Turn off/on the display units. (0/1)
+ *
+ * Turn on or off the display units for the axis. This option is set on
+ * automatically by `chart_axis_set_display_units()`.
+ *
+ * @code
+ *     chart_axis_set_display_units_visible(chart->y_axis, LXW_TRUE);
+ * @endcode
+ *
+ * **Axis types**: This function is applicable to value axes only.
+ *                 See @ref ww_charts_axes.
+ */
+void chart_axis_set_display_units_visible(lxw_chart_axis *axis,
+                                          uint8_t visible);
 
 /**
  * @brief Turn on/off the major gridlines for an axis.

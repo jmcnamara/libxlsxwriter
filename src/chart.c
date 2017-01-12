@@ -2414,6 +2414,54 @@ _chart_write_minor_unit(lxw_chart *self, lxw_chart_axis *axis)
 }
 
 /*
+ * Write the <c:dispUnits> element.
+ */
+STATIC void
+_chart_write_disp_units(lxw_chart *self, lxw_chart_axis *axis)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!axis->display_units)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+
+    lxw_xml_start_tag(self->file, "c:dispUnits", NULL);
+
+    if (axis->display_units == LXW_CHART_AXIS_UNITS_HUNDREDS)
+        LXW_PUSH_ATTRIBUTES_STR("val", "hundreds");
+    else if (axis->display_units == LXW_CHART_AXIS_UNITS_THOUSANDS)
+        LXW_PUSH_ATTRIBUTES_STR("val", "thousands");
+    else if (axis->display_units == LXW_CHART_AXIS_UNITS_TEN_THOUSANDS)
+        LXW_PUSH_ATTRIBUTES_STR("val", "tenThousands");
+    else if (axis->display_units == LXW_CHART_AXIS_UNITS_HUNDRED_THOUSANDS)
+        LXW_PUSH_ATTRIBUTES_STR("val", "hundredThousands");
+    else if (axis->display_units == LXW_CHART_AXIS_UNITS_MILLIONS)
+        LXW_PUSH_ATTRIBUTES_STR("val", "millions");
+    else if (axis->display_units == LXW_CHART_AXIS_UNITS_TEN_MILLIONS)
+        LXW_PUSH_ATTRIBUTES_STR("val", "tenMillions");
+    else if (axis->display_units == LXW_CHART_AXIS_UNITS_HUNDRED_MILLIONS)
+        LXW_PUSH_ATTRIBUTES_STR("val", "hundredMillions");
+    else if (axis->display_units == LXW_CHART_AXIS_UNITS_BILLIONS)
+        LXW_PUSH_ATTRIBUTES_STR("val", "billions");
+    else if (axis->display_units == LXW_CHART_AXIS_UNITS_TRILLIONS)
+        LXW_PUSH_ATTRIBUTES_STR("val", "trillions");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "hundreds");
+
+    lxw_xml_empty_tag(self->file, "c:builtInUnit", &attributes);
+
+    if (axis->display_units_visible) {
+        lxw_xml_start_tag(self->file, "c:dispUnitsLbl", NULL);
+        lxw_xml_empty_tag(self->file, "c:layout", NULL);
+        lxw_xml_end_tag(self->file, "c:dispUnitsLbl");
+    }
+
+    lxw_xml_end_tag(self->file, "c:dispUnits");
+}
+
+/*
  * Write the <c:lblOffset> element.
  */
 STATIC void
@@ -2912,6 +2960,9 @@ _chart_write_val_axis(lxw_chart *self)
     /* Write the c:minorUnit element. */
     _chart_write_minor_unit(self, self->y_axis);
 
+    /* Write the c:dispUnits element. */
+    _chart_write_disp_units(self, self->y_axis);
+
     lxw_xml_end_tag(self->file, "c:valAx");
 }
 
@@ -2981,6 +3032,9 @@ _chart_write_cat_val_axis(lxw_chart *self)
 
     /* Write the c:minorUnit element. */
     _chart_write_minor_unit(self, self->x_axis);
+
+    /* Write the c:dispUnits element. */
+    _chart_write_disp_units(self, self->x_axis);
 
     lxw_xml_end_tag(self->file, "c:valAx");
 }
@@ -4138,6 +4192,29 @@ chart_axis_set_minor_unit(lxw_chart_axis *axis, double unit)
 
     axis->has_minor_unit = LXW_TRUE;
     axis->minor_unit = unit;
+}
+
+/*
+ * Set the display units for a value axis.
+ */
+void
+chart_axis_set_display_units(lxw_chart_axis *axis, uint8_t units)
+{
+    LXW_WARN_VALUE_AXIS_ONLY("chart_axis_set_display_units");
+
+    axis->display_units = units;
+    axis->display_units_visible = LXW_TRUE;
+}
+
+/*
+ * Turn on/off the display units for a value axis.
+ */
+void
+chart_axis_set_display_units_visible(lxw_chart_axis *axis, uint8_t visible)
+{
+    LXW_WARN_VALUE_AXIS_ONLY("chart_axis_set_display_units");
+
+    axis->display_units_visible = visible;
 }
 
 /*
