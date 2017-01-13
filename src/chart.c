@@ -220,8 +220,8 @@ lxw_chart_new(uint8_t type)
     chart->hole_size = 50;
 
     /* Set the default axis positions. */
-    chart->cat_axis_position = LXW_CHART_AXIS_BOTTOM;
-    chart->val_axis_position = LXW_CHART_AXIS_LEFT;
+    chart->x_axis->axis_position = LXW_CHART_AXIS_BOTTOM;
+    chart->y_axis->axis_position = LXW_CHART_AXIS_LEFT;
 
     lxw_strcpy(chart->x_axis->default_num_format, "General");
     lxw_strcpy(chart->y_axis->default_num_format, "General");
@@ -2320,16 +2320,37 @@ _chart_write_cross_axis(lxw_chart *self, uint32_t axis_id)
  * Write the <c:crosses> element.
  */
 STATIC void
-_chart_write_crosses(lxw_chart *self)
+_chart_write_crosses(lxw_chart *self, lxw_chart_axis *axis)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "autoZero";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+
+    if (axis->crossing_max)
+        LXW_PUSH_ATTRIBUTES_STR("val", "max");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "autoZero");
 
     lxw_xml_empty_tag(self->file, "c:crosses", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:crossesAt> element.
+ */
+STATIC void
+_chart_write_crosses_at(lxw_chart *self, lxw_chart_axis *axis)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+
+    LXW_PUSH_ATTRIBUTES_DBL("val", axis->crossing);
+
+    lxw_xml_empty_tag(self->file, "c:crossesAt", &attributes);
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -2856,8 +2877,6 @@ _chart_write_chart_title(lxw_chart *self)
 STATIC void
 _chart_write_cat_axis(lxw_chart *self)
 {
-    uint8_t position = self->cat_axis_position;
-
     lxw_xml_start_tag(self->file, "c:catAx", NULL);
 
     _chart_write_axis_id(self, self->axis_id_1);
@@ -2873,7 +2892,8 @@ _chart_write_cat_axis(lxw_chart *self)
         _chart_write_delete(self);
 
     /* Write the c:axPos element. */
-    _chart_write_axis_pos(self, position, self->y_axis->reverse);
+    _chart_write_axis_pos(self, self->x_axis->axis_position,
+                          self->y_axis->reverse);
 
     /* Write the c:majorGridlines element. */
     _chart_write_major_gridlines(self, self->x_axis);
@@ -2909,7 +2929,10 @@ _chart_write_cat_axis(lxw_chart *self)
     _chart_write_cross_axis(self, self->axis_id_2);
 
     /* Write the c:crosses element. */
-    _chart_write_crosses(self);
+    if (!self->y_axis->has_crossing || self->y_axis->crossing_max)
+        _chart_write_crosses(self, self->y_axis);
+    else
+        _chart_write_crosses_at(self, self->y_axis);
 
     /* Write the c:auto element. */
     _chart_write_auto(self);
@@ -2935,8 +2958,6 @@ _chart_write_cat_axis(lxw_chart *self)
 STATIC void
 _chart_write_val_axis(lxw_chart *self)
 {
-    uint8_t position = self->val_axis_position;
-
     lxw_xml_start_tag(self->file, "c:valAx", NULL);
 
     _chart_write_axis_id(self, self->axis_id_2);
@@ -2953,7 +2974,8 @@ _chart_write_val_axis(lxw_chart *self)
         _chart_write_delete(self);
 
     /* Write the c:axPos element. */
-    _chart_write_axis_pos(self, position, self->x_axis->reverse);
+    _chart_write_axis_pos(self, self->y_axis->axis_position,
+                          self->x_axis->reverse);
 
     /* Write the c:majorGridlines element. */
     _chart_write_major_gridlines(self, self->y_axis);
@@ -2988,7 +3010,10 @@ _chart_write_val_axis(lxw_chart *self)
     _chart_write_cross_axis(self, self->axis_id_1);
 
     /* Write the c:crosses element. */
-    _chart_write_crosses(self);
+    if (!self->x_axis->has_crossing || self->x_axis->crossing_max)
+        _chart_write_crosses(self, self->x_axis);
+    else
+        _chart_write_crosses_at(self, self->x_axis);
 
     /* Write the c:crossBetween element. */
     _chart_write_cross_between(self, self->x_axis->position_axis);
@@ -3011,8 +3036,6 @@ _chart_write_val_axis(lxw_chart *self)
 STATIC void
 _chart_write_cat_val_axis(lxw_chart *self)
 {
-    uint8_t position = self->cat_axis_position;
-
     lxw_xml_start_tag(self->file, "c:valAx", NULL);
 
     _chart_write_axis_id(self, self->axis_id_1);
@@ -3029,7 +3052,8 @@ _chart_write_cat_val_axis(lxw_chart *self)
         _chart_write_delete(self);
 
     /* Write the c:axPos element. */
-    _chart_write_axis_pos(self, position, self->y_axis->reverse);
+    _chart_write_axis_pos(self, self->x_axis->axis_position,
+                          self->y_axis->reverse);
 
     /* Write the c:majorGridlines element. */
     _chart_write_major_gridlines(self, self->x_axis);
@@ -3064,7 +3088,10 @@ _chart_write_cat_val_axis(lxw_chart *self)
     _chart_write_cross_axis(self, self->axis_id_2);
 
     /* Write the c:crosses element. */
-    _chart_write_crosses(self);
+    if (!self->y_axis->has_crossing || self->y_axis->crossing_max)
+        _chart_write_crosses(self, self->y_axis);
+    else
+        _chart_write_crosses_at(self, self->y_axis);
 
     /* Write the c:crossBetween element. */
     _chart_write_cross_between(self, self->y_axis->position_axis);
@@ -3340,6 +3367,19 @@ _chart_write_radar_chart(lxw_chart *self)
 }
 
 /*
+ * Reverse the opposite axis position if crossing position is "max".
+ */
+STATIC void
+_chart_adjust_max_crossing(lxw_chart *self)
+{
+    if (self->x_axis->crossing_max)
+        self->y_axis->axis_position ^= 1;
+
+    if (self->y_axis->crossing_max)
+        self->x_axis->axis_position ^= 1;
+}
+
+/*
  * Write the <c:plotArea> element.
  */
 STATIC void
@@ -3352,6 +3392,9 @@ _chart_write_scatter_plot_area(lxw_chart *self)
 
     /* Write subclass chart type elements for primary and secondary axes. */
     self->write_chart_type(self);
+
+    /* Reverse the opposite axis position if crossing position is "max". */
+    _chart_adjust_max_crossing(self);
 
     /* Write the c:catAx element. */
     _chart_write_cat_val_axis(self);
@@ -3398,6 +3441,9 @@ _chart_write_plot_area(lxw_chart *self)
 
     /* Write subclass chart type elements for primary and secondary axes. */
     self->write_chart_type(self);
+
+    /* Reverse the opposite axis position if crossing position is "max". */
+    _chart_adjust_max_crossing(self);
 
     /* Write the c:catAx element. */
     _chart_write_cat_axis(self);
@@ -3500,10 +3546,6 @@ _chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
-
-    /* Override the default axis positions for a bar chart. */
-    self->cat_axis_position = LXW_CHART_AXIS_LEFT;
-    self->val_axis_position = LXW_CHART_AXIS_BOTTOM;
 
     /* Initialize the function pointers for this chart type. */
     self->write_chart_type = _chart_write_bar_chart;
@@ -4122,6 +4164,26 @@ void
 chart_axis_set_reverse(lxw_chart_axis *axis)
 {
     axis->reverse = LXW_TRUE;
+}
+
+/*
+ * Set the axis crossing position.
+ */
+void
+chart_axis_set_crossing(lxw_chart_axis *axis, double value)
+{
+    axis->has_crossing = LXW_TRUE;
+    axis->crossing = value;
+}
+
+/*
+ * Set the axis crossing position as the max possible value.
+ */
+void
+chart_axis_set_crossing_max(lxw_chart_axis *axis)
+{
+    axis->has_crossing = LXW_TRUE;
+    axis->crossing_max = LXW_TRUE;
 }
 
 /*

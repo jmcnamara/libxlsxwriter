@@ -743,6 +743,7 @@ typedef struct lxw_chart_axis {
     uint8_t is_category;
     uint8_t is_date;
     uint8_t is_value;
+    uint8_t axis_position;
     uint8_t position_axis;
     uint8_t label_position;
     uint8_t hidden;
@@ -765,6 +766,10 @@ typedef struct lxw_chart_axis {
 
     uint8_t display_units;
     uint8_t display_units_visible;
+
+    uint8_t has_crossing;
+    uint8_t crossing_max;
+    double crossing;
 
 } lxw_chart_axis;
 
@@ -822,8 +827,6 @@ typedef struct lxw_chart {
 
     uint8_t grouping;
     uint8_t default_cross_between;
-    uint8_t cat_axis_position;
-    uint8_t val_axis_position;
 
     lxw_chart_legend legend;
     int16_t *delete_series;
@@ -1451,6 +1454,10 @@ void chart_axis_set_pattern(lxw_chart_axis *axis, lxw_chart_pattern *pattern);
  *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_reverse(lxw_chart_axis *axis);
+
+void chart_axis_set_crossing(lxw_chart_axis *axis, double value);
+
+void chart_axis_set_crossing_max(lxw_chart_axis *axis);
 
 /**
  * @brief Turn off/hide an axis.
