@@ -1,6 +1,13 @@
 /**
 @page changes Changes
 
+
+## 0.5.9 January 14 2017
+
+- Added support for chart axis crossing. See `chart_axis_set_crossing()` and
+  `chart_axis_set_crossing_max()`.
+
+
 ## 0.5.8 January 13 2017
 
 - Added `chart_axis_set_major_tick_mark()` and
