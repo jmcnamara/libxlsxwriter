@@ -725,8 +725,9 @@ typedef struct lxw_chart_axis {
 
     lxw_chart_title title;
 
-    char num_format[LXW_CHART_NUM_FORMAT_LEN];
-    char default_num_format[LXW_CHART_NUM_FORMAT_LEN];
+    char *num_format;
+    char *default_num_format;
+    uint8_t source_linked;
 
     uint8_t major_tick_mark;
     uint8_t minor_tick_mark;
@@ -1346,6 +1347,8 @@ void chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
  *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font);
+
+void chart_axis_set_num_format(lxw_chart_axis *axis, char *num_format);
 
 /**
  * @brief Set the font properties for the numbers of a chart axis.

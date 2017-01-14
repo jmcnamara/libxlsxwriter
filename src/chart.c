@@ -16,6 +16,8 @@
  */
 
 STATIC void _chart_initialize(lxw_chart *self, uint8_t type);
+STATIC void _chart_axis_set_default_num_format(lxw_chart_axis *axis,
+                                               char *num_format);
 
 /*****************************************************************************
  *
@@ -139,6 +141,8 @@ lxw_chart_free(lxw_chart *chart)
         free(chart->x_axis->pattern);
         free(chart->x_axis->major_gridlines.line);
         free(chart->x_axis->minor_gridlines.line);
+        free(chart->x_axis->num_format);
+        free(chart->x_axis->default_num_format);
         free(chart->x_axis);
     }
 
@@ -153,6 +157,8 @@ lxw_chart_free(lxw_chart *chart)
         free(chart->y_axis->pattern);
         free(chart->y_axis->major_gridlines.line);
         free(chart->y_axis->minor_gridlines.line);
+        free(chart->y_axis->num_format);
+        free(chart->y_axis->default_num_format);
         free(chart->y_axis);
     }
 
@@ -223,8 +229,9 @@ lxw_chart_new(uint8_t type)
     chart->x_axis->axis_position = LXW_CHART_AXIS_BOTTOM;
     chart->y_axis->axis_position = LXW_CHART_AXIS_LEFT;
 
-    lxw_strcpy(chart->x_axis->default_num_format, "General");
-    lxw_strcpy(chart->y_axis->default_num_format, "General");
+    /* Set the default axis number formats. */
+    _chart_axis_set_default_num_format(chart->x_axis, "General");
+    _chart_axis_set_default_num_format(chart->y_axis, "General");
 
     chart->x_axis->major_gridlines.visible = LXW_FALSE;
     chart->y_axis->major_gridlines.visible = LXW_TRUE;
@@ -391,6 +398,21 @@ _chart_set_default_marker_type(lxw_chart *self, uint8_t type)
     }
 
     self->default_marker->type = type;
+}
+
+/*
+ * Set an axis number format.
+ */
+void
+_chart_axis_set_default_num_format(lxw_chart_axis *axis, char *num_format)
+{
+    if (!num_format)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(axis->default_num_format);
+
+    axis->default_num_format = lxw_strdup(num_format);
 }
 
 /*
@@ -2583,18 +2605,77 @@ _chart_write_minor_gridlines(lxw_chart *self, lxw_chart_axis *axis)
 }
 
 /*
- * Write the <c:numFmt> element.
+ * Write the <c:numberFormat> element. Note: It is assumed that if a user
+ * defined number format is supplied (i.e., non-default) then the sourceLinked
+ * attribute is 0. The user can override this if required.
  */
 STATIC void
 _chart_write_number_format(lxw_chart *self, lxw_chart_axis *axis)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char source_linked[] = "1";
+    char *num_format;
+    uint8_t source_linked = 1;
+
+    /* Set the number format to the axis default if not set. */
+    if (axis->num_format)
+        num_format = axis->num_format;
+    else
+        num_format = axis->default_num_format;
+
+    /* Check if a user defined number format has been set. */
+    if (strcmp(num_format, axis->default_num_format))
+        source_linked = 0;
+
+    /* Allow override of sourceLinked. */
+    if (axis->source_linked)
+        source_linked = 1;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("formatCode", axis->default_num_format);
-    LXW_PUSH_ATTRIBUTES_STR("sourceLinked", source_linked);
+    LXW_PUSH_ATTRIBUTES_STR("formatCode", num_format);
+    LXW_PUSH_ATTRIBUTES_INT("sourceLinked", source_linked);
+
+    lxw_xml_empty_tag(self->file, "c:numFmt", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:numFmt> element. Special case handler for category axes which
+ * don't always have a number format.
+ */
+STATIC void
+_chart_write_cat_number_format(lxw_chart *self, lxw_chart_axis *axis)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char *num_format;
+    uint8_t source_linked = 1;
+    uint8_t default_format = LXW_TRUE;
+
+    /* Set the number format to the axis default if not set. */
+    if (axis->num_format)
+        num_format = axis->num_format;
+    else
+        num_format = axis->default_num_format;
+
+    /* Check if a user defined number format has been set. */
+    if (strcmp(num_format, axis->default_num_format)) {
+        source_linked = 0;
+        default_format = LXW_FALSE;
+    }
+
+    /* Allow override of sourceLinked. */
+    if (axis->source_linked)
+        source_linked = 1;
+
+    /* Skip if cat doesn't have a num format (unless it is non-default). */
+    if (!self->cat_has_num_fmt && default_format)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("formatCode", num_format);
+    LXW_PUSH_ATTRIBUTES_INT("sourceLinked", source_linked);
 
     lxw_xml_empty_tag(self->file, "c:numFmt", &attributes);
 
@@ -2906,8 +2987,7 @@ _chart_write_cat_axis(lxw_chart *self)
     _chart_write_title(self, &self->x_axis->title);
 
     /* Write the c:numFmt element. */
-    if (self->cat_has_num_fmt)
-        _chart_write_number_format(self, self->x_axis);
+    _chart_write_cat_number_format(self, self->x_axis);
 
     /* Write the c:majorTickMark element. */
     _chart_write_major_tick_mark(self, self->x_axis);
@@ -3498,7 +3578,7 @@ _chart_initialize_area_chart(lxw_chart *self, uint8_t type)
 
     if (type == LXW_CHART_AREA_STACKED_PERCENT) {
         self->grouping = LXW_GROUPING_PERCENTSTACKED;
-        lxw_strcpy((self->y_axis)->default_num_format, "0%");
+        _chart_axis_set_default_num_format(self->y_axis, "0%");
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
 
@@ -3542,7 +3622,7 @@ _chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
 
     if (type == LXW_CHART_BAR_STACKED_PERCENT) {
         self->grouping = LXW_GROUPING_PERCENTSTACKED;
-        lxw_strcpy((self->x_axis)->default_num_format, "0%");
+        _chart_axis_set_default_num_format(self->x_axis, "0%");
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
@@ -3570,7 +3650,7 @@ _chart_initialize_column_chart(lxw_chart *self, uint8_t type)
 
     if (type == LXW_CHART_COLUMN_STACKED_PERCENT) {
         self->grouping = LXW_GROUPING_PERCENTSTACKED;
-        lxw_strcpy((self->y_axis)->default_num_format, "0%");
+        _chart_axis_set_default_num_format(self->y_axis, "0%");
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
     }
@@ -4094,6 +4174,9 @@ chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
 void
 chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font)
 {
+    if (!font)
+        return;
+
     /* Free any previously allocated resource. */
     free(axis->title.font);
 
@@ -4106,10 +4189,28 @@ chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font)
 void
 chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font)
 {
+    if (!font)
+        return;
+
     /* Free any previously allocated resource. */
     free(axis->num_font);
 
     axis->num_font = _chart_convert_font_args(font);
+}
+
+/*
+ * Set an axis number format.
+ */
+void
+chart_axis_set_num_format(lxw_chart_axis *axis, char *num_format)
+{
+    if (!num_format)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(axis->num_format);
+
+    axis->num_format = lxw_strdup(num_format);
 }
 
 /*
