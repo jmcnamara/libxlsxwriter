@@ -1348,8 +1348,6 @@ void chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
  */
 void chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font);
 
-void chart_axis_set_num_format(lxw_chart_axis *axis, char *num_format);
-
 /**
  * @brief Set the font properties for the numbers of a chart axis.
  *
@@ -1373,6 +1371,30 @@ void chart_axis_set_num_format(lxw_chart_axis *axis, char *num_format);
  *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font);
+
+/**
+ * @brief Set the number format for a chart axis.
+ *
+ * @param axis       A pointer to a chart #lxw_chart_axis object.
+ * @param num_format The number format string.
+ *
+ * The `%chart_axis_set_num_format()` function is used to set the format of
+ * the numbers on an axis:
+ *
+ * @code
+ *     chart_axis_set_num_format(chart->x_axis, "0.00%");
+ *     chart_axis_set_num_format(chart->y_axis, "$#,##0.00");
+ * @endcode
+ *
+ * The number format is similar to the Worksheet Cell Format num_format,
+ * see `format_set_num_format()`.
+ *
+ * @image html chart_axis_num_format.png
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
+ */
+void chart_axis_set_num_format(lxw_chart_axis *axis, char *num_format);
 
 /**
  * @brief Set the line properties for a chart axis.
