@@ -1918,6 +1918,26 @@ _chart_write_symbol(lxw_chart *self, uint8_t type)
 }
 
 /*
+ * Write the <c:invertIfNegative> element.
+ */
+STATIC void
+_chart_write_invert_if_negative(lxw_chart *self, lxw_chart_series *series)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!series->invert_if_negative)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:invertIfNegative", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <c:size> element.
  */
 STATIC void
@@ -2116,6 +2136,9 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
 
     /* Write the c:marker element. */
     _chart_write_marker(self, series->marker);
+
+    /* Write the c:invertIfNegative element. */
+    _chart_write_invert_if_negative(self, series);
 
     /* Write the c:cat element. */
     _chart_write_cat(self, series);
@@ -4026,6 +4049,15 @@ chart_series_set_fill(lxw_chart_series *series, lxw_chart_fill *fill)
     free(series->fill);
 
     series->fill = _chart_convert_fill_args(fill);
+}
+
+/*
+ * Invert the colors of a fill for a series.
+ */
+void
+chart_series_set_invert_if_negative(lxw_chart_series *series)
+{
+    series->invert_if_negative = LXW_TRUE;
 }
 
 /*

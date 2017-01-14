@@ -703,6 +703,8 @@ typedef struct lxw_chart_series {
     lxw_chart_pattern *pattern;
     lxw_chart_marker *marker;
 
+    uint8_t invert_if_negative;
+
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
 
 } lxw_chart_series;
@@ -1097,6 +1099,21 @@ void chart_series_set_line(lxw_chart_series *series, lxw_chart_line *line);
  * For more information see @ref chart_fills.
  */
 void chart_series_set_fill(lxw_chart_series *series, lxw_chart_fill *fill);
+
+/**
+ * @brief Invert the fill color for negative series values.
+ *
+ * @param series  A series object created via `chart_add_series()`.
+ *
+ * Invert the fill color for negative values. Usually only applicable to
+ * column and bar charts.
+ *
+ * @code
+ *     chart_series_set_invert_if_negative(series);
+ * @endcode
+ *
+ */
+void chart_series_set_invert_if_negative(lxw_chart_series *series);
 
 /**
  * @brief Set the pattern properties for a chart series.

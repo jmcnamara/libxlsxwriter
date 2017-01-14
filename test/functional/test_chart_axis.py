@@ -49,7 +49,7 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_chart_axis13(self):
         self.run_exe_test('test_chart_axis13')
 
-    # Stock chart not supported.
+    # Stock chart not supported yet.
     # def test_chart_axis14(self):
     #     self.run_exe_test('test_chart_axis14')
 
@@ -58,6 +58,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chart_axis17(self):
         self.run_exe_test('test_chart_axis17')
+
+    def test_chart_axis18(self):
+        self.run_exe_test('test_chart_axis18')
 
     def test_chart_axis19(self):
         self.run_exe_test('test_chart_axis19')
