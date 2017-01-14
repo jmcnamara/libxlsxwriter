@@ -1455,8 +1455,49 @@ void chart_axis_set_pattern(lxw_chart_axis *axis, lxw_chart_pattern *pattern);
  */
 void chart_axis_set_reverse(lxw_chart_axis *axis);
 
+/**
+ * @brief Set the position that the axis will cross the opposite axis.
+ *
+ * @param axis  A pointer to a chart #lxw_chart_axis object.
+ * @param value The category or value that the axis crosses at.
+ *
+ * Set the position that the axis will cross the opposite axis:
+ *
+ * @code
+ *     chart_axis_set_crossing(chart->x_axis, 3);
+ *     chart_axis_set_crossing(chart->y_axis, 8);
+ * @endcode
+ *
+ * @image html chart_crossing1.png
+ *
+ * If crossing is omitted (the default) the crossing will be set automatically
+ * by Excel based on the chart data.
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
+ */
 void chart_axis_set_crossing(lxw_chart_axis *axis, double value);
 
+/**
+ * @brief Set the opposite axis crossing position as the axis maximum.
+ *
+ * @param axis  A pointer to a chart #lxw_chart_axis object.
+ *
+ * Set the position that the opposite axis will cross as the axis maximum.
+ * The default axis crossing position is generally the axis minimum so this
+ * function can be used to reverse the location of the axes without reversing
+ * the number sequence:
+ *
+ * @code
+ *     chart_axis_set_crossing_max(chart->x_axis);
+ *     chart_axis_set_crossing_max(chart->y_axis);
+ * @endcode
+ *
+ * @image html chart_crossing2.png
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
+ */
 void chart_axis_set_crossing_max(lxw_chart_axis *axis);
 
 /**
@@ -1478,7 +1519,7 @@ void chart_axis_set_crossing_max(lxw_chart_axis *axis);
 void chart_axis_off(lxw_chart_axis *axis);
 
 /**
- * @brief Position the axis on or between the axis tick marks.
+ * @brief Position a category axis on or between the axis tick marks.
  *
  * @param axis     A pointer to a chart #lxw_chart_axis object.
  * @param position A #lxw_chart_axis_tick_position value.
