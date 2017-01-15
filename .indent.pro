@@ -64,6 +64,7 @@
 -T lxw_chart_marker_type
 -T lxw_chart_pattern
 -T lxw_chart_pattern_type
+-T lxw_chart_point
 -T lxw_chart_series
 -T lxw_chart_title
 -T lxw_chart_type

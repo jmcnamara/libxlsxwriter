@@ -52,6 +52,23 @@ _chart_free_range(lxw_series_range *range)
     free(range);
 }
 
+STATIC void
+_chart_free_points(lxw_chart_series *series)
+{
+    uint16_t index;
+
+    for (index = 0; index < series->point_count; index++) {
+        lxw_chart_point *point = &series->points[index];
+
+        free(point->line);
+        free(point->fill);
+        free(point->pattern);
+    }
+
+    series->point_count = 0;
+    free(series->points);
+}
+
 /*
  * Free a series object.
  */
@@ -76,6 +93,7 @@ _chart_series_free(lxw_chart_series *series)
     _chart_free_range(series->categories);
     _chart_free_range(series->values);
     _chart_free_range(series->title.range);
+    _chart_free_points(series);
 
     free(series);
 }
@@ -1918,6 +1936,50 @@ _chart_write_symbol(lxw_chart *self, uint8_t type)
 }
 
 /*
+ * Write the <c:dPt> element.
+ */
+STATIC void
+_chart_write_d_pt(lxw_chart *self, lxw_chart_point *point, uint16_t index)
+{
+    lxw_xml_start_tag(self->file, "c:dPt", NULL);
+
+    /* Write the c:idx element. */
+    _chart_write_idx(self, index);
+
+    /* Scatter/Line charts have an additional marker for the point. */
+    if (self->is_scatter_chart || self->type == LXW_CHART_LINE)
+        lxw_xml_start_tag(self->file, "c:marker", NULL);
+
+    /* Write the c:spPr element. */
+    _chart_write_sp_pr(self, point->line, point->fill, point->pattern);
+
+    if (self->is_scatter_chart || self->type == LXW_CHART_LINE)
+        lxw_xml_end_tag(self->file, "c:marker");
+
+    lxw_xml_end_tag(self->file, "c:dPt");
+}
+
+/*
+ * Write the <c:dPt> element.
+ */
+STATIC void
+_chart_write_points(lxw_chart *self, lxw_chart_series *series)
+{
+    uint16_t index;
+
+    for (index = 0; index < series->point_count; index++) {
+        lxw_chart_point *point = &series->points[index];
+
+        /* Ignore empty points. */
+        if (!point->line && !point->fill && !point->pattern)
+            continue;
+
+        /* Write the c:dPt element. */
+        _chart_write_d_pt(self, &series->points[index], index);
+    }
+}
+
+/*
  * Write the <c:invertIfNegative> element.
  */
 STATIC void
@@ -2140,6 +2202,9 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
     /* Write the c:invertIfNegative element. */
     _chart_write_invert_if_negative(self, series);
 
+    /* Write the char points. */
+    _chart_write_points(self, series);
+
     /* Write the c:cat element. */
     _chart_write_cat(self, series);
 
@@ -2174,6 +2239,9 @@ _chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
 
     /* Write the c:marker element. */
     _chart_write_marker(self, series->marker);
+
+    /* Write the char points. */
+    _chart_write_points(self, series);
 
     /* Write the c:xVal element. */
     _chart_write_x_val(self, series);
@@ -4167,6 +4235,41 @@ chart_series_set_marker_pattern(lxw_chart_series *series,
     free(series->marker->pattern);
 
     series->marker->pattern = _chart_convert_pattern_args(pattern);
+}
+
+/*
+ * Store the horizontal page breaks on a worksheet.
+ */
+lxw_error
+chart_series_set_points(lxw_chart_series *series, lxw_chart_point *points[])
+{
+    uint16_t i = 0;
+    uint16_t point_count = 0;
+
+    if (points == NULL)
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+
+    while (points[point_count])
+        point_count++;
+
+    /* Free any existing resource. */
+    _chart_free_points(series);
+
+    series->points = calloc(point_count, sizeof(lxw_chart_point));
+    RETURN_ON_MEM_ERROR(series->points, LXW_ERROR_MEMORY_MALLOC_FAILED);
+
+    for (i = 0; i < point_count; i++) {
+        lxw_chart_point *src_point = points[i];
+        lxw_chart_point *dst_point = &series->points[i];
+
+        dst_point->line = _chart_convert_line_args(src_point->line);
+        dst_point->fill = _chart_convert_fill_args(src_point->fill);
+        dst_point->pattern = _chart_convert_pattern_args(src_point->pattern);
+    }
+
+    series->point_count = point_count;
+
+    return LXW_NO_ERROR;
 }
 
 /*

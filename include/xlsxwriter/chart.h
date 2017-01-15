@@ -686,6 +686,14 @@ typedef struct lxw_chart_title {
 
 } lxw_chart_title;
 
+typedef struct lxw_chart_point {
+
+    lxw_chart_line *line;
+    lxw_chart_fill *fill;
+    lxw_chart_pattern *pattern;
+
+} lxw_chart_point;
+
 /**
  * @brief Struct to represent an Excel chart data series.
  *
@@ -702,6 +710,8 @@ typedef struct lxw_chart_series {
     lxw_chart_fill *fill;
     lxw_chart_pattern *pattern;
     lxw_chart_marker *marker;
+    lxw_chart_point *points;
+    uint16_t point_count;
 
     uint8_t invert_if_negative;
 
@@ -1284,6 +1294,9 @@ void chart_series_set_marker_fill(lxw_chart_series *series,
  */
 void chart_series_set_marker_pattern(lxw_chart_series *series,
                                      lxw_chart_pattern *pattern);
+
+lxw_error chart_series_set_points(lxw_chart_series *series,
+                                  lxw_chart_point *points[]);
 
 /**
  * @brief Set the name caption of the an axis.
