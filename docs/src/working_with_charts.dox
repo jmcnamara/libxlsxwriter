@@ -146,6 +146,99 @@ For more information on line/border and fill formatting see @ref chart_lines
 and @ref chart_fills below.
 
 
+@section chart_points Working with Chart points
+
+In general formatting is applied to an entire series in a chart. However, it
+is occasionally required to format individual points within a series.
+
+In Excel charts "points" have a different meaning depending on the type of
+chart:
+
+- Line/Scatter chart: points are used to reference individual markers.
+- Bar/Column/Area charts: points are used to reference individual bars or areas.
+- Pie/Doughnut charts: points are used to reference each segment.
+
+The most common use case is to format segments of a pie chart like this
+example:
+
+@dontinclude chart_pie_colors.c
+@skip include
+@until close
+@until }
+
+@image html chart_points1.png
+
+The #lxw_chart_point objects can be used to set the following properties for a
+chart point:
+
+- Line/Border
+- Fill
+- Pattern
+
+These properties are explained in the Chart Formatting subsections below.
+
+The points should be passed as a NULL terminated array of pointers to
+#lxw_chart_point objects:
+
+@code
+    lxw_chart_point red_point   = {.fill = &red_fill  };
+    lxw_chart_point green_point = {.fill = &green_fill};
+
+    lxw_chart_point *points[] = {&green_point,
+                                 &red_point,
+                                 NULL}; // Indicates the end of the list.
+
+    chart_series_set_points(series, points);
+@endcode
+
+You can skip points in the series that you don't want to format by passing a
+zero-initialized #lxw_chart_point:
+
+@code
+    lxw_chart_point default_point = {0, 0, 0};
+
+
+    lxw_chart_line line         = {.color = LXW_COLOR_BLACK};
+    lxw_chart_fill red_fill     = {.color = LXW_COLOR_RED};
+    lxw_chart_fill green_fill   = {.color = LXW_COLOR_GREEN};
+
+    lxw_chart_point red_point   = {.fill = &red_fill,   .line = &line};
+    lxw_chart_point green_point = {.fill = &green_fill, .line = &line};
+
+    lxw_chart_point *points[] = {&red_point,
+                                 &default_point,
+                                 &green_point,
+                                 &default_point,
+                                 &red_point,
+                                 NULL};
+
+    chart_series_set_points(series, points);
+
+    chart_series_set_marker_type(series, LXW_CHART_MARKER_SQUARE);
+    chart_series_set_marker_size(series, 10);
+@endcode
+
+@image html chart_points2.png
+
+The array of #lxw_chart_point objects pointers corresponds to the order of the
+points in the series starting from the first point. However, it does not have
+to extend to the entire range of the series. It can be NULL terminated at any
+point in the series, such as in the previous example.
+
+For Bar/Column/Area charts "points" refer to bars/areas within the chart:
+
+@code
+    lxw_chart_fill  red_fill      = {.color = LXW_COLOR_RED};
+    lxw_chart_point red_point     = {.fill = &red_fill};
+    lxw_chart_point default_point = {0, 0, 0};
+
+    lxw_chart_point *points[] = {&default_point, &default_point, &red_point, NULL};
+
+    chart_series_set_points(series2, points);
+@endcode
+
+@image html chart_points3.png
+
 @section chart_formatting Chart Formatting
 
 The following chart formatting properties can be set for any chart object that

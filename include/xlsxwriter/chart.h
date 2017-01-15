@@ -686,10 +686,21 @@ typedef struct lxw_chart_title {
 
 } lxw_chart_title;
 
+/**
+ * @brief Struct to represent an Excel chart data point.
+ *
+ * The lxw_chart_point used to set the line, fill and pattern of one or more
+ * points in a chart data series. See @ref chart_points.
+ */
 typedef struct lxw_chart_point {
 
+    /** The line/border for the chart point. See @ref chart_lines. */
     lxw_chart_line *line;
+
+    /** The fill for the chart point. See @ref chart_fills. */
     lxw_chart_fill *fill;
+
+    /** The pattern for the chart point. See @ref chart_patterns.*/
     lxw_chart_pattern *pattern;
 
 } lxw_chart_point;
@@ -1295,6 +1306,30 @@ void chart_series_set_marker_fill(lxw_chart_series *series,
 void chart_series_set_marker_pattern(lxw_chart_series *series,
                                      lxw_chart_pattern *pattern);
 
+/**
+ * @brief Set the formatting for points in the series.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ * @param points An NULL terminated array of #lxw_chart_point pointers.
+ *
+ * @return A #lxw_error.
+ *
+ * In general formatting is applied to an entire series in a chart. However,
+ * it is occasionally required to format individual points in a series. In
+ * particular this is required for Pie/Doughnut charts where each segment is
+ * represented by a point.
+ *
+ * @dontinclude chart_pie_colors.c
+ * @skip Add the data series
+ * @until chart_series_set_points
+ *
+ * @image html chart_points1.png
+ *
+ * @note The array of #lxw_chart_point pointers should be NULL terminated
+ * as shown in the example.
+ *
+ * For more details see @ref chart_points
+ */
 lxw_error chart_series_set_points(lxw_chart_series *series,
                                   lxw_chart_point *points[]);
 
@@ -2303,7 +2338,45 @@ void chart_plotarea_set_pattern(lxw_chart *chart, lxw_chart_pattern *pattern);
  */
 void chart_set_style(lxw_chart *chart, uint8_t style_id);
 
+/**
+ * @brief Set the Pie/Doughnut chart rotation.
+ *
+ * @param chart    Pointer to a lxw_chart instance to be configured.
+ * @param rotation The angle of rotation.
+ *
+ * The `chart_set_rotation()` function is used to set the rotation of the
+ * first segment of a Pie/Doughnut chart. This has the effect of rotating
+ * the entire chart:
+ *
+ * @code
+ *     chart_set_rotation(chart, 28);
+ * @endcode
+ *
+ * The angle of rotation must be in the range `0 <= rotation <= 360`.
+ *
+ * This option is only available for Pie/Doughnut charts.
+ *
+ */
 void chart_set_rotation(lxw_chart *chart, uint16_t rotation);
+
+/**
+ * @brief Set the Doughnut chart hole size.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ * @param size  The hole size as a percentage.
+ *
+ * The `chart_set_hole_size()` function is used to set the hole size of a
+ * Doughnut chart:
+ *
+ * @code
+ *     chart_set_hole_size(chart, 33);
+ * @endcode
+ *
+ * The hole size must be in the range `10 <= size <= 90`.
+ *
+ * This option is only available for Doughnut charts.
+ *
+ */
 void chart_set_hole_size(lxw_chart *chart, uint8_t size);
 
 lxw_error lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,

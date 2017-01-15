@@ -615,10 +615,17 @@ Filled radar chart:
 </tr>
 </table>
 
-Example of creating an Excel Pie chart.
+Examples of creating an Excel Pie chart.
 
 The default pie chart:
 @image html chart_pie1.png
+
+A pie chart with user defined colors:
+@image html chart_pie2.png
+
+A pie chart with rotated segments:
+@image html chart_pie3.png
+
 
 
 
@@ -637,6 +644,14 @@ Example of creating an Excel Doughnut chart.
 
 The default doughnut chart:
 @image html chart_doughnut1.png
+
+It is possible to define chart colors for most types of libxlsxwriter charts
+via the series formatting functions. However, Pie/Doughnut charts are a
+special case since each segment is represented as a point so it is necessary
+to assign formatting to each point in the series.
+
+Chart 4 shows how to set segment colors and other options.
+@image html chart_doughnut2.png
 
 
 

@@ -33,7 +33,7 @@ int main() {
 
     (void)series; /* Do something with series in the real examples. */
 
-     /* Insert the chart into the worksheet. */
+    /* Insert the chart into the worksheet. */
     worksheet_insert_chart(worksheet, CELL("C1"), chart);
 
     return workbook_close(workbook);
