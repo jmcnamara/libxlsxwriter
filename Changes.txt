@@ -2,6 +2,15 @@
 @page changes Changes
 
 
+## 0.6.0 January 14 2017
+
+- Added option to set the number format for a chart axis, see
+  `chart_axis_set_num_format()`.
+
+- Added "invert if negative" option for series fills, see
+  `chart_series_set_invert_if_negative()`.
+
+
 ## 0.5.9 January 14 2017
 
 - Added support for chart axis crossing. See `chart_axis_set_crossing()` and
