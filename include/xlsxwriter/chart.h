@@ -1334,6 +1334,24 @@ void chart_series_set_marker_pattern(lxw_chart_series *series,
 lxw_error chart_series_set_points(lxw_chart_series *series,
                                   lxw_chart_point *points[]);
 
+/**
+ * @brief Smooth a line or scatter chart series.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ * @param smooth Turn off/on the line smoothing. (0/1)
+ *
+ * The `chart_series_set_smooth()` function is used to set the smooth property
+ * of a line series. It is only applicable to the line and scatter chart
+ * types:
+ *
+ * @code
+ *     chart_series_set_smooth(series2, LXW_TRUE);
+ * @endcode
+ *
+ * @image html chart_smooth.png
+ *
+ *
+ */
 void chart_series_set_smooth(lxw_chart_series *series, uint8_t smooth);
 
 /**
