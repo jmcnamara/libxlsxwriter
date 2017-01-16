@@ -2,6 +2,12 @@
 @page changes Changes
 
 
+## 0.6.2 January 17 2017
+
+- Added `chart_series_set_smooth()` function to set the line smoothing
+  property of a line or scatter chart series.
+
+
 ## 0.6.1 January 16 2017
 
 - Added option to set formatting for points in a chart. This allow the colors
