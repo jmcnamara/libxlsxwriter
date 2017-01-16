@@ -612,13 +612,12 @@ The following patterns #lxw_chart_pattern_type can be applied:
 @section ww_charts_limitations Chart Limitations
 
 The following chart features aren't currently supported in libxlsxwriter but
-will be in time. See the [GitHub Chart Feature Request][1].
+will be in time. See the [GitHub Chart Feature Requests][1].
 
-[1]: https://github.com/jmcnamara/libxlsxwriter/issues/51
+[1]: https://github.com/jmcnamara/libxlsxwriter/issues
 
 - Secondary axis.
 - Combined charts.
-- Chart area and plot area formatting.
 - Chart tables.
 - Up down lines.
 - Drop boxes.

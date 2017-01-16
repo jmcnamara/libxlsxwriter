@@ -2,7 +2,13 @@
 @page changes Changes
 
 
-## 0.6.0 January 14 2017
+## 0.6.1 January 16 2017
+
+- Added option to set formatting for points in a chart. This allow the colors
+  of Pie chart segments to be defined. See @ref chart_points.
+
+
+## 0.6.0 January 15 2017
 
 - Added option to set the number format for a chart axis, see
   `chart_axis_set_num_format()`.
