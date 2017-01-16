@@ -724,6 +724,7 @@ typedef struct lxw_chart_series {
     lxw_chart_point *points;
     uint16_t point_count;
 
+    uint8_t smooth;
     uint8_t invert_if_negative;
 
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
@@ -1332,6 +1333,8 @@ void chart_series_set_marker_pattern(lxw_chart_series *series,
  */
 lxw_error chart_series_set_points(lxw_chart_series *series,
                                   lxw_chart_point *points[]);
+
+void chart_series_set_smooth(lxw_chart_series *series, uint8_t smooth);
 
 /**
  * @brief Set the name caption of the an axis.
@@ -2333,7 +2336,6 @@ void chart_plotarea_set_pattern(lxw_chart *chart, lxw_chart_pattern *pattern);
  * are not defined in the file format. They are a collection of modifications
  * to the base chart type. They can not be defined by the `chart_set_style()``
  * function.
- *
  *
  */
 void chart_set_style(lxw_chart *chart, uint8_t style_id);

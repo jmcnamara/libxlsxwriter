@@ -2070,14 +2070,16 @@ _chart_write_marker_value(lxw_chart *self)
  * Write the <c:smooth> element.
  */
 STATIC void
-_chart_write_smooth(lxw_chart *self)
+_chart_write_smooth(lxw_chart *self, uint8_t smooth)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "1";
+
+    if (!smooth)
+        return;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
 
     lxw_xml_empty_tag(self->file, "c:smooth", &attributes);
 
@@ -2211,6 +2213,10 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
     /* Write the c:val element. */
     _chart_write_val(self, series);
 
+    /* Write the c:smooth element. */
+    if (self->is_scatter_chart || self->type == LXW_CHART_LINE)
+        _chart_write_smooth(self, series->smooth);
+
     lxw_xml_end_tag(self->file, "c:ser");
 }
 
@@ -2249,11 +2255,8 @@ _chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
     /* Write the yVal element. */
     _chart_write_y_val(self, series);
 
-    if (self->type == LXW_CHART_SCATTER_SMOOTH
-        || self->type == LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS) {
-        /* Write the c:smooth element. */
-        _chart_write_smooth(self);
-    }
+    /* Write the c:smooth element. */
+    _chart_write_smooth(self, series->smooth);
 
     lxw_xml_end_tag(self->file, "c:ser");
 }
@@ -4000,6 +4003,12 @@ chart_add_series(lxw_chart *self, const char *categories, const char *values)
     if (_chart_init_data_cache(series->title.range) != LXW_NO_ERROR)
         goto mem_error;
 
+    if (self->type == LXW_CHART_SCATTER_SMOOTH)
+        series->smooth = LXW_TRUE;
+
+    if (self->type == LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS)
+        series->smooth = LXW_TRUE;
+
     STAILQ_INSERT_TAIL(self->series_list, series, list_pointers);
 
     return series;
@@ -4270,6 +4279,15 @@ chart_series_set_points(lxw_chart_series *series, lxw_chart_point *points[])
     series->point_count = point_count;
 
     return LXW_NO_ERROR;
+}
+
+/*
+ * Set the smooth property for a line or scatter series.
+ */
+void
+chart_series_set_smooth(lxw_chart_series *series, uint8_t smooth)
+{
+    series->smooth = smooth;
 }
 
 /*
