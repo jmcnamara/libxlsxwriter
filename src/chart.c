@@ -198,6 +198,9 @@ lxw_chart_free(lxw_chart *chart)
     free(chart->plotarea_fill);
     free(chart->plotarea_pattern);
 
+    free(chart->drop_lines_line);
+    free(chart->high_low_lines_line);
+
     free(chart);
 }
 
@@ -3036,6 +3039,27 @@ _chart_write_drop_lines(lxw_chart *self)
 }
 
 /*
+ * Write the <c:hiLowLines> element.
+ */
+STATIC void
+_chart_write_hi_low_lines(lxw_chart *self)
+{
+    if (!self->has_high_low_lines)
+        return;
+
+    if (self->high_low_lines_line) {
+        lxw_xml_start_tag(self->file, "c:hiLowLines", NULL);
+
+        _chart_write_sp_pr(self, self->high_low_lines_line, NULL, NULL);
+
+        lxw_xml_end_tag(self->file, "c:hiLowLines");
+    }
+    else {
+        lxw_xml_empty_tag(self->file, "c:hiLowLines", NULL);
+    }
+}
+
+/*
  * Write the <c:title> element.
  */
 STATIC void
@@ -3458,6 +3482,9 @@ _chart_write_line_chart(lxw_chart *self)
 
     /* Write the c:dropLines element. */
     _chart_write_drop_lines(self);
+
+    /* Write the c:hiLowLines element. */
+    _chart_write_hi_low_lines(self);
 
     /* Write the c:marker element. */
     _chart_write_marker_value(self);
@@ -4348,7 +4375,7 @@ chart_axis_set_name_font(lxw_chart_axis *axis, lxw_chart_font *font)
         return;
 
     /* Free any previously allocated resource. */
-    free(axis->title.font);
+    _chart_free_font(axis->title.font);
 
     axis->title.font = _chart_convert_font_args(font);
 }
@@ -4363,7 +4390,7 @@ chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font)
         return;
 
     /* Free any previously allocated resource. */
-    free(axis->num_font);
+    _chart_free_font(axis->num_font);
 
     axis->num_font = _chart_convert_font_args(font);
 }
@@ -4706,7 +4733,7 @@ void
 chart_title_set_name_font(lxw_chart *self, lxw_chart_font *font)
 {
     /* Free any previously allocated resource. */
-    free(self->title.font);
+    _chart_free_font(self->title.font);
 
     self->title.font = _chart_convert_font_args(font);
 }
@@ -4736,7 +4763,7 @@ void
 chart_legend_set_font(lxw_chart *self, lxw_chart_font *font)
 {
     /* Free any previously allocated resource. */
-    free(self->legend.font);
+    _chart_free_font(self->legend.font);
 
     self->legend.font = _chart_convert_font_args(font);
 }
@@ -4871,6 +4898,19 @@ chart_set_drop_lines(lxw_chart *self, lxw_chart_line *line)
 
     self->has_drop_lines = LXW_TRUE;
     self->drop_lines_line = _chart_convert_line_args(line);
+}
+
+/*
+ * Turn on high_low lines for the chart.
+ */
+void
+chart_set_high_low_lines(lxw_chart *self, lxw_chart_line *line)
+{
+    /* Free any previously allocated resource. */
+    free(self->high_low_lines_line);
+
+    self->has_high_low_lines = LXW_TRUE;
+    self->high_low_lines_line = _chart_convert_line_args(line);
 }
 
 /*
