@@ -865,6 +865,9 @@ typedef struct lxw_chart {
     lxw_chart_fill *plotarea_fill;
     lxw_chart_pattern *plotarea_pattern;
 
+    uint8_t has_drop_lines;
+    lxw_chart_line *drop_lines_line;
+
     struct lxw_chart_series_list *series_list;
 
     STAILQ_ENTRY (lxw_chart) ordered_list_pointers;
@@ -2357,6 +2360,8 @@ void chart_plotarea_set_pattern(lxw_chart *chart, lxw_chart_pattern *pattern);
  *
  */
 void chart_set_style(lxw_chart *chart, uint8_t style_id);
+
+void chart_set_drop_lines(lxw_chart *chart, lxw_chart_line *line);
 
 /**
  * @brief Set the Pie/Doughnut chart rotation.

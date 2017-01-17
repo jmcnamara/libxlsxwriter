@@ -3015,6 +3015,27 @@ _chart_write_overlap(lxw_chart *self, int overlap)
 }
 
 /*
+ * Write the <c:dropLines> element.
+ */
+STATIC void
+_chart_write_drop_lines(lxw_chart *self)
+{
+    if (!self->has_drop_lines)
+        return;
+
+    if (self->drop_lines_line) {
+        lxw_xml_start_tag(self->file, "c:dropLines", NULL);
+
+        _chart_write_sp_pr(self, self->drop_lines_line, NULL, NULL);
+
+        lxw_xml_end_tag(self->file, "c:dropLines");
+    }
+    else {
+        lxw_xml_empty_tag(self->file, "c:dropLines", NULL);
+    }
+}
+
+/*
  * Write the <c:title> element.
  */
 STATIC void
@@ -3317,10 +3338,8 @@ _chart_write_area_chart(lxw_chart *self)
         _chart_write_ser(self, series);
     }
 
-    if (self->has_overlap) {
-        /* Write the c:overlap element. */
-        _chart_write_overlap(self, self->series_overlap_1);
-    }
+    /* Write the c:dropLines element. */
+    _chart_write_drop_lines(self);
 
     /* Write the c:axId elements. */
     _chart_write_axis_ids(self);
@@ -3437,6 +3456,9 @@ _chart_write_line_chart(lxw_chart *self)
         _chart_write_ser(self, series);
     }
 
+    /* Write the c:dropLines element. */
+    _chart_write_drop_lines(self);
+
     /* Write the c:marker element. */
     _chart_write_marker_value(self);
 
@@ -3527,11 +3549,6 @@ _chart_write_radar_chart(lxw_chart *self)
     STAILQ_FOREACH(series, self->series_list, list_pointers) {
         /* Write the c:ser element. */
         _chart_write_ser(self, series);
-    }
-
-    if (self->has_overlap) {
-        /* Write the c:overlap element. */
-        _chart_write_overlap(self, self->series_overlap_1);
     }
 
     /* Write the c:axId elements. */
@@ -4841,6 +4858,19 @@ chart_plotarea_set_pattern(lxw_chart *self, lxw_chart_pattern *pattern)
     free(self->plotarea_pattern);
 
     self->plotarea_pattern = _chart_convert_pattern_args(pattern);
+}
+
+/*
+ * Turn on drop lines for the chart.
+ */
+void
+chart_set_drop_lines(lxw_chart *self, lxw_chart_line *line)
+{
+    /* Free any previously allocated resource. */
+    free(self->drop_lines_line);
+
+    self->has_drop_lines = LXW_TRUE;
+    self->drop_lines_line = _chart_convert_line_args(line);
 }
 
 /*
