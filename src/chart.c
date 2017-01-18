@@ -1562,7 +1562,7 @@ _chart_write_a_ln(lxw_chart *self, lxw_chart_line *line)
     LXW_INIT_ATTRIBUTES();
 
     /* Round width to nearest 0.25, like Excel. */
-    width_flt = (float) (uint32_t) ((line->width + 0.125) * 4.0) / 4.0;
+    width_flt = (float) (uint32_t) ((line->width + 0.125) * 4.0F) / 4.0F;
 
     /* Convert to internal units. */
     width_int = (uint32_t) (0.5 + (12700.0 * width_flt));
