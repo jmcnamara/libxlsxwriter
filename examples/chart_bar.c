@@ -50,7 +50,7 @@ int main() {
 
 
     /*
-     * Create a bar chart.
+     * Chart 1. Create a bar chart.
      */
     lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_BAR);
 
@@ -82,7 +82,7 @@ int main() {
 
 
     /*
-     * Create a stacked bar chart.
+     * Chart 2. Create a stacked bar chart.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_BAR_STACKED);
 
@@ -111,7 +111,7 @@ int main() {
 
 
     /*
-     * Create a percent stacked bar chart.
+     * Chart 3. Create a percent stacked bar chart.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_BAR_STACKED_PERCENT);
 

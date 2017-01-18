@@ -1,5 +1,8 @@
 /*
- * An example of creating an Excel line chart using the libxlsxwriter library.
+ * A demo of an various Excel chart data tools that are available via a
+ * libxlsxwriter chart.
+ *
+ * These include Drop Lines and High-Low Lines.
  *
  * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
  *
@@ -37,9 +40,10 @@ void write_worksheet_data(lxw_worksheet *worksheet, lxw_format *bold) {
  */
 int main() {
 
-    lxw_workbook     *workbook  = new_workbook("chart_line.xlsx");
+    lxw_workbook     *workbook  = new_workbook("chart_data_tools.xlsx");
     lxw_worksheet    *worksheet = workbook_add_worksheet(workbook, NULL);
-    lxw_chart_series *series;
+    lxw_chart_series *series1;
+    lxw_chart_series *series2;
 
     /* Add a bold format to use to highlight the header cells. */
     lxw_format *bold = workbook_add_format(workbook);
@@ -50,35 +54,41 @@ int main() {
 
 
     /*
-     * Chart 1. Create a line chart.
+     * Chart 1. Example with High Low Lines.
      */
     lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_LINE);
 
+    /* Add a chart title. */
+    chart_title_set_name(chart, "Chart with High-Low Lines");
+
     /* Add the first series to the chart. */
-    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
+    series1 = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
+    series2 = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
 
-    /* Set the name for the series instead of the default "Series 1". */
-    chart_series_set_name(series, "=Sheet1!$B1$1");
-
-    /* Add a second series but leave the categories and values undefined. They
-     * can be defined later using the alternative syntax shown below.  */
-    series = chart_add_series(chart, NULL, NULL);
-
-    /* Configure the series using a syntax that is easier to define programmatically. */
-    chart_series_set_categories(series, "Sheet1", 1, 0, 6, 0); /* "=Sheet1!$A$2:$A$7" */
-    chart_series_set_values(series,     "Sheet1", 1, 2, 6, 2); /* "=Sheet1!$C$2:$C$7" */
-    chart_series_set_name_range(series, "Sheet1", 0, 2);       /* "=Sheet1!$C$1"      */
-
-    /* Add a chart title and some axis labels. */
-    chart_title_set_name(chart,        "Results of sample analysis");
-    chart_axis_set_name(chart->x_axis, "Test number");
-    chart_axis_set_name(chart->y_axis, "Sample length (mm)");
-
-    /* Set an Excel chart style. */
-    chart_set_style(chart, 10);
+    /* Add high-low lines to the chart. */
+    chart_set_high_low_lines(chart, NULL);
 
     /* Insert the chart into the worksheet. */
     worksheet_insert_chart(worksheet, CELL("E2"), chart);
+
+
+    /*
+     * Chart 2. Example with Drop Lines.
+     */
+    chart = workbook_add_chart(workbook, LXW_CHART_LINE);
+
+    /* Add a chart title. */
+    chart_title_set_name(chart, "Chart with Drop Lines");
+
+    /* Add the first series to the chart. */
+    series1 = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
+    series2 = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+
+    /* Add drop lines to the chart. */
+    chart_set_drop_lines(chart, NULL);
+
+    /* Insert the chart into the worksheet. */
+    worksheet_insert_chart(worksheet, CELL("E18"), chart);
 
 
     return workbook_close(workbook);

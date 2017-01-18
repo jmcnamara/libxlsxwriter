@@ -50,7 +50,7 @@ int main() {
 
 
     /*
-     * Create a column chart.
+     * Chart 1. Create a column chart.
      */
     lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_COLUMN);
 
@@ -82,7 +82,7 @@ int main() {
 
 
     /*
-     * Create a stacked column chart.
+     * Chart 2. Create a stacked column chart.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_COLUMN_STACKED);
 
@@ -111,7 +111,7 @@ int main() {
 
 
     /*
-     * Create a percent stacked column chart.
+     * Chart 3. Create a percent stacked column chart.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_COLUMN_STACKED_PERCENT);
 

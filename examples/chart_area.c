@@ -50,7 +50,7 @@ int main() {
 
 
     /*
-     * Create a area chart.
+     * Chart 1. Create a area chart.
      */
     lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_AREA);
 
@@ -82,7 +82,7 @@ int main() {
 
 
     /*
-     * Create a stacked area chart.
+     * Chart 2. Create a stacked area chart.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_AREA_STACKED);
 
@@ -111,7 +111,7 @@ int main() {
 
 
     /*
-     * Create a percent stacked area chart.
+     * Chart 3. Create a percent stacked area chart.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_AREA_STACKED_PERCENT);
 

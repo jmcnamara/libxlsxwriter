@@ -50,7 +50,7 @@ int main() {
 
 
     /*
-     * Create a radar chart.
+     * Chart 1. Create a radar chart.
      */
     lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_RADAR);
 
@@ -82,7 +82,7 @@ int main() {
 
 
     /*
-     * Create a radar chart with markers.
+     * Chart 2. Create a radar chart with markers.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_RADAR_WITH_MARKERS);
 
@@ -111,7 +111,7 @@ int main() {
 
 
     /*
-     * Create a filled radar chart.
+     * Chart 3. Create a filled radar chart.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_RADAR_FILLED);
 

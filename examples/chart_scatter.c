@@ -50,7 +50,7 @@ int main() {
 
 
     /*
-     * Create a scatter chart, the default shows points only.
+     * Chart 1. Create a scatter chart, the default shows points only.
      */
     lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_SCATTER);
 
@@ -82,7 +82,8 @@ int main() {
 
 
     /*
-     * Create a scatter chart with straight lines and markers connecting the points.
+     * Chart 2. Create a scatter chart with straight lines and markers
+     *          connecting the points.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_SCATTER_STRAIGHT_WITH_MARKERS);
 
@@ -111,7 +112,8 @@ int main() {
 
 
     /*
-     * Create a scatter chart with straight lines connecting the points.
+     * Chart 3. Create a scatter chart with straight lines connecting the
+     *           points.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_SCATTER_STRAIGHT);
 
@@ -140,7 +142,8 @@ int main() {
 
 
     /*
-     * Create a scatter chart with smooth lines and markers connecting the points.
+     * Chart 4. Create a scatter chart with smooth lines and markers
+     *          connecting the points.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS);
 
@@ -169,7 +172,8 @@ int main() {
 
 
     /*
-     * Create a scatter chart with smooth lines connecting the points.
+     * Chart 5. Create a scatter chart with smooth lines connecting the
+     *          points.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_SCATTER_SMOOTH);
 

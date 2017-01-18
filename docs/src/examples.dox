@@ -636,7 +636,7 @@ A pie chart with rotated segments:
 <table  width="600">
 <tr>
   <td>@ref chart_pie.c "&lt;&lt; chart_pie.c"</td>
-  <td align="right">@ref chart_fonts.c "chart_fonts.c &gt;&gt;"</td>
+  <td align="right">@ref chart_data_tools.c "chart_data_tools.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -657,11 +657,36 @@ Chart 4 shows how to set segment colors and other options.
 
 
 
-@example chart_fonts.c
+@example chart_data_tools.c
 
 <table  width="600">
 <tr>
   <td>@ref chart_doughnut.c "&lt;&lt; chart_doughnut.c"</td>
+  <td align="right">@ref chart_fonts.c "chart_fonts.c &gt;&gt;"</td>
+</tr>
+</table>
+
+A demo of an various Excel chart data tools that are available via a
+libxlsxwriter chart. These include Drop Lines and High-Low Lines.
+
+
+Chart with high-low lines.
+
+@image html chart_data_tools5.png
+
+Chart with drop lines.
+
+@image html chart_data_tools6.png
+
+
+
+
+
+@example chart_fonts.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_data_tools.c "&lt;&lt; chart_data_tools.c"</td>
   <td align="right">@ref chart_pattern.c "chart_pattern.c &gt;&gt;"</td>
 </tr>
 </table>

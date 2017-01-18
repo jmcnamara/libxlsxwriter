@@ -2364,8 +2364,62 @@ void chart_plotarea_set_pattern(lxw_chart *chart, lxw_chart_pattern *pattern);
  */
 void chart_set_style(lxw_chart *chart, uint8_t style_id);
 
+/**
+ * @brief Turn on and format Drop Lines for a chart.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ * @param line  A #lxw_chart_line struct.
+ *
+ * The `%chart_set_drop_lines()` function adds Drop Lines to charts to
+ * show the Category value of points in the data:
+ *
+ * @code
+ *     chart_set_drop_lines(chart, NULL);
+ * @endcode
+ *
+ * @image html chart_data_tools6.png
+ *
+ * It is possible to format the Drop Line line properties if required:
+ *
+ * @code
+ *     lxw_chart_line line = {.color     = LXW_COLOR_RED,
+ *                            .dash_type = LXW_CHART_LINE_DASH_SQUARE_DOT};
+ *
+ *     chart_set_drop_lines(chart, &line);
+ * @endcode
+ *
+ * Drop Lines are only available in Line and Area charts.
+ *
+ */
 void chart_set_drop_lines(lxw_chart *chart, lxw_chart_line *line);
 
+/**
+ * @brief Turn on and format high-low Lines for a chart.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ * @param line  A #lxw_chart_line struct.
+ *
+ * The `%chart_set_high_low_lines()` function adds High-Low Lines to charts
+ * to show the Category value of points in the data:
+ *
+ * @code
+ *     chart_set_high_low_lines(chart, NULL);
+ * @endcode
+ *
+ * @image html chart_data_tools5.png
+ *
+ * It is possible to format the High-Low Line line properties if required:
+ *
+ * @code
+ *     lxw_chart_line line = {.color     = LXW_COLOR_RED,
+ *                            .dash_type = LXW_CHART_LINE_DASH_SQUARE_DOT};
+ *
+ *     chart_set_high_low_lines(chart, &line);
+ * @endcode
+ *
+ * High-Low Lines are only available in Line charts.
+ *
+ */
 void chart_set_high_low_lines(lxw_chart *chart, lxw_chart_line *line);
 
 /**
