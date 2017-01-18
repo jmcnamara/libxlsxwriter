@@ -4305,6 +4305,9 @@ chart_series_set_points(lxw_chart_series *series, lxw_chart_point *points[])
     while (points[point_count])
         point_count++;
 
+    if (point_count == 0)
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+
     /* Free any existing resource. */
     _chart_free_points(series);
 
