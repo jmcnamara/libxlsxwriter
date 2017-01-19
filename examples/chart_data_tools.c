@@ -42,8 +42,6 @@ int main() {
 
     lxw_workbook     *workbook  = new_workbook("chart_data_tools.xlsx");
     lxw_worksheet    *worksheet = workbook_add_worksheet(workbook, NULL);
-    lxw_chart_series *series1;
-    lxw_chart_series *series2;
 
     /* Add a bold format to use to highlight the header cells. */
     lxw_format *bold = workbook_add_format(workbook);
@@ -62,8 +60,8 @@ int main() {
     chart_title_set_name(chart, "Chart with High-Low Lines");
 
     /* Add the first series to the chart. */
-    series1 = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
-    series2 = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
 
     /* Add high-low lines to the chart. */
     chart_set_high_low_lines(chart, NULL);
@@ -81,8 +79,8 @@ int main() {
     chart_title_set_name(chart, "Chart with Drop Lines");
 
     /* Add the first series to the chart. */
-    series1 = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
-    series2 = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
 
     /* Add drop lines to the chart. */
     chart_set_drop_lines(chart, NULL);
