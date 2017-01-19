@@ -873,6 +873,13 @@ typedef struct lxw_chart {
 
     struct lxw_chart_series_list *series_list;
 
+    uint8_t has_table;
+    uint8_t has_table_vertical;
+    uint8_t has_table_horizontal;
+    uint8_t has_table_outline;
+    uint8_t has_table_legend_keys;
+    lxw_chart_font *table_font;
+
     STAILQ_ENTRY (lxw_chart) ordered_list_pointers;
     STAILQ_ENTRY (lxw_chart) list_pointers;
 
@@ -2363,6 +2370,14 @@ void chart_plotarea_set_pattern(lxw_chart *chart, lxw_chart_pattern *pattern);
  *
  */
 void chart_set_style(lxw_chart *chart, uint8_t style_id);
+
+void chart_set_table(lxw_chart *chart);
+
+void chart_set_table_grid(lxw_chart *chart, uint8_t horizontal,
+                          uint8_t vertical, uint8_t outline,
+                          uint8_t legend_keys);
+
+void chart_set_table_font(lxw_chart *self, lxw_chart_font *font);
 
 /**
  * @brief Turn on and format Drop Lines for a chart.

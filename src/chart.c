@@ -201,6 +201,8 @@ lxw_chart_free(lxw_chart *chart)
     free(chart->drop_lines_line);
     free(chart->high_low_lines_line);
 
+    _chart_free_font(chart->table_font);
+
     free(chart);
 }
 
@@ -3018,6 +3020,120 @@ _chart_write_overlap(lxw_chart *self, int overlap)
 }
 
 /*
+ * Write the <c:showHorzBorder> element.
+ */
+STATIC void
+_chart_write_show_horz_border(lxw_chart *self, uint8_t value)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!value)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:showHorzBorder", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:showVertBorder> element.
+ */
+STATIC void
+_chart_write_show_vert_border(lxw_chart *self, uint8_t value)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!value)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:showVertBorder", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:showOutline> element.
+ */
+STATIC void
+_chart_write_show_outline(lxw_chart *self, uint8_t value)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!value)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:showOutline", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:showKeys> element.
+ */
+STATIC void
+_chart_write_show_keys(lxw_chart *self, uint8_t value)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!value)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:showKeys", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:dTable> element.
+ */
+STATIC void
+_chart_write_d_table(lxw_chart *self)
+{
+    if (!self->has_table)
+        return;
+
+    lxw_xml_start_tag(self->file, "c:dTable", NULL);
+
+    /* Write the c:showHorzBorder element. */
+    _chart_write_show_horz_border(self, self->has_table_horizontal);
+
+    /* Write the c:showVertBorder element. */
+    _chart_write_show_vert_border(self, self->has_table_vertical);
+
+    /* Write the c:showOutline element. */
+    _chart_write_show_outline(self, self->has_table_outline);
+
+    /* Write the c:showKeys element. */
+    _chart_write_show_keys(self, self->has_table_legend_keys);
+
+    /* Write the c:txPr element. */
+    if (self->table_font)
+        _chart_write_tx_pr(self, LXW_FALSE, self->table_font);
+
+    lxw_xml_end_tag(self->file, "c:dTable");
+}
+
+/*
  * Write the <c:dropLines> element.
  */
 STATIC void
@@ -3668,6 +3784,9 @@ _chart_write_plot_area(lxw_chart *self)
 
     /* Write the c:valAx element. */
     _chart_write_val_axis(self);
+
+    /* Write the c:dTable element. */
+    _chart_write_d_table(self);
 
     /* Write the c:spPr element for the plotarea formatting. */
     _chart_write_sp_pr(self, self->plotarea_line, self->plotarea_fill,
@@ -4888,6 +5007,47 @@ chart_plotarea_set_pattern(lxw_chart *self, lxw_chart_pattern *pattern)
     free(self->plotarea_pattern);
 
     self->plotarea_pattern = _chart_convert_pattern_args(pattern);
+}
+
+/*
+ * Turn on the chart data table.
+ */
+void
+chart_set_table(lxw_chart *self)
+{
+    self->has_table = LXW_TRUE;
+    self->has_table_horizontal = LXW_TRUE;
+    self->has_table_vertical = LXW_TRUE;
+    self->has_table_outline = LXW_TRUE;
+    self->has_table_legend_keys = LXW_FALSE;
+}
+
+/*
+ * Set the options for the chart data table grid.
+ */
+void
+chart_set_table_grid(lxw_chart *self, uint8_t horizontal, uint8_t vertical,
+                     uint8_t outline, uint8_t legend_keys)
+{
+    self->has_table = LXW_TRUE;
+    self->has_table_horizontal = horizontal;
+    self->has_table_vertical = vertical;
+    self->has_table_outline = outline;
+    self->has_table_legend_keys = legend_keys;
+}
+
+/*
+ * Set the font for the chart data table grid.
+ */
+void
+chart_set_table_font(lxw_chart *self, lxw_chart_font *font)
+{
+    self->has_table = LXW_TRUE;
+
+    /* Free any previously allocated resource. */
+    _chart_free_font(self->table_font);
+
+    self->table_font = _chart_convert_font_args(font);
 }
 
 /*
