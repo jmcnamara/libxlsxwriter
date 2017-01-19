@@ -2,6 +2,13 @@
 @page changes Changes
 
 
+## 0.6.3 January 19 2017
+
+- Added `chart_set_drop_lines()` and `chart_set_high_low_lines()` functions to
+  add chart Drop and High-Low lines to indicate category values.
+  See @ref chart_data_tools.c.
+
+
 ## 0.6.2 January 17 2017
 
 - Added `chart_series_set_smooth()` function to set the line smoothing
