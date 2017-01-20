@@ -47,6 +47,7 @@ my @examples = (
     [ 'chart_radar.c',          'Examples of radar charts' ],
     [ 'chart_pie.c',            'Examples of pie charts' ],
     [ 'chart_doughnut.c',       'Examples of doughnut charts' ],
+    [ 'chart_clustered.c',      'Examples of clustered category chart' ],
     [ 'chart_data_table.c',     'Examples of charts with data tables' ],
     [ 'chart_data_tools.c',     'Examples of charts data tools' ],
     [ 'chart_fonts.c',          'Examples of using charts fonts' ],

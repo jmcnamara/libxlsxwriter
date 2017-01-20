@@ -2,6 +2,14 @@
 @page changes Changes
 
 
+## 0.6.4 January 20 2017
+
+- Added chart data table option, see `chart_set_table()` and
+  `chart_set_table_grid()`.
+
+- Added Clustered Chart example, see @ref chart_clustered.c.
+
+
 ## 0.6.3 January 19 2017
 
 - Added `chart_set_drop_lines()` and `chart_set_high_low_lines()` functions to

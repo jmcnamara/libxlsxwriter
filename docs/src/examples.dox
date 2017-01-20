@@ -636,7 +636,7 @@ A pie chart with rotated segments:
 <table  width="600">
 <tr>
   <td>@ref chart_pie.c "&lt;&lt; chart_pie.c"</td>
-  <td align="right">@ref chart_data_table.c "chart_data_table.c &gt;&gt;"</td>
+  <td align="right">@ref chart_clustered.c "chart_clustered.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -657,11 +657,33 @@ Chart 4 shows how to set segment colors and other options.
 
 
 
-@example chart_data_table.c
+@example chart_clustered.c
 
 <table  width="600">
 <tr>
   <td>@ref chart_doughnut.c "&lt;&lt; chart_doughnut.c"</td>
+  <td align="right">@ref chart_data_table.c "chart_data_table.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of creating a clustered Excel chart where there are two levels of
+category on the X axis.
+
+The categories in clustered charts are 2D ranges, instead of the more normal
+1D ranges. The series are shown as formula strings for clarity but you can
+also use the a list syntax.
+
+@image html chart_clustered.png
+
+
+
+
+
+@example chart_data_table.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_clustered.c "&lt;&lt; chart_clustered.c"</td>
   <td align="right">@ref chart_data_tools.c "chart_data_tools.c &gt;&gt;"</td>
 </tr>
 </table>
