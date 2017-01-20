@@ -2371,8 +2371,68 @@ void chart_plotarea_set_pattern(lxw_chart *chart, lxw_chart_pattern *pattern);
  */
 void chart_set_style(lxw_chart *chart, uint8_t style_id);
 
+/**
+ * @brief Turn on a data table below the horizontal axis.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ *
+ * The `%chart_set_table()` function adds a data table below the horizontal
+ * axis with the data used to plot the chart:
+ *
+ * @code
+ *     // Turn on the data table with default options.
+ *     chart_set_table(chart);
+ * @endcode
+ *
+ * @image html chart_data_table1.png
+ *
+ * The data table can only be shown with Bar, Column, Line and Area charts.
+ *
+ */
 void chart_set_table(lxw_chart *chart);
 
+/**
+ * @brief Turn on/off grid options for a chart data table.
+ *
+ * @param chart       Pointer to a lxw_chart instance to be configured.
+ * @param horizontal  Turn on/off the horizontal grid lines in the table.
+ * @param vertical    Turn on/off the vertical grid lines in the table.
+ * @param outline     Turn on/off the outline lines in the table.
+ * @param legend_keys Turn on/off the legend keys in the table.
+ *
+ * The `%chart_set_table_grid()` function turns on/off grid options for a
+ * chart data table. The data table grid options in Excel are shown in the
+ * dialog below:
+ *
+ * @image html chart_data_table3.png
+ *
+ * These options can be passed to the `%chart_set_table_grid()` function.
+ * The values for a default chart are:
+ *
+ * - `horizontal`: On.
+ * - `vertical`: On.
+ * - `outline`:  On.
+ * - `legend_keys`: Off.
+ *
+ * Example:
+ *
+ * @code
+ *     // Turn on the data table with default options.
+ *     chart_set_table(chart);
+ *
+ *     // Turn on all grid lines and the grid legend.
+ *     chart_set_table_grid(chart, LXW_TRUE, LXW_TRUE, LXW_TRUE, LXW_TRUE);
+ *
+ *     // Turn off the legend since it is show in the table.
+ *     chart_legend_set_position(chart, LXW_CHART_LEGEND_NONE);
+ *
+ * @endcode
+ *
+ * @image html chart_data_table2.png
+ *
+ * The data table can only be shown with Bar, Column, Line and Area charts.
+ *
+ */
 void chart_set_table_grid(lxw_chart *chart, uint8_t horizontal,
                           uint8_t vertical, uint8_t outline,
                           uint8_t legend_keys);

@@ -636,7 +636,7 @@ A pie chart with rotated segments:
 <table  width="600">
 <tr>
   <td>@ref chart_pie.c "&lt;&lt; chart_pie.c"</td>
-  <td align="right">@ref chart_data_tools.c "chart_data_tools.c &gt;&gt;"</td>
+  <td align="right">@ref chart_data_table.c "chart_data_table.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -657,11 +657,33 @@ Chart 4 shows how to set segment colors and other options.
 
 
 
-@example chart_data_tools.c
+@example chart_data_table.c
 
 <table  width="600">
 <tr>
   <td>@ref chart_doughnut.c "&lt;&lt; chart_doughnut.c"</td>
+  <td align="right">@ref chart_data_tools.c "chart_data_tools.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of creating charts with data tables.
+
+Chart 1 in the following example is a column chart with default data table:
+@image html chart_data_table1.png
+
+
+Chart 2 is a column chart with default data table with legend keys:
+@image html chart_data_table2.png
+
+
+
+
+
+@example chart_data_tools.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_data_table.c "&lt;&lt; chart_data_table.c"</td>
   <td align="right">@ref chart_fonts.c "chart_fonts.c &gt;&gt;"</td>
 </tr>
 </table>

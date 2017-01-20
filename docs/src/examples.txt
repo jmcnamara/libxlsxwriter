@@ -331,6 +331,19 @@ Chart 4 shows how to set segment colors and other options.
 
 
 ##############################################################
+@example chart_data_table.c
+
+Example of creating charts with data tables.
+
+Chart 1 in the following example is a column chart with default data table:
+@image html chart_data_table1.png
+
+
+Chart 2 is a column chart with default data table with legend keys:
+@image html chart_data_table2.png
+
+
+##############################################################
 @example chart_data_tools.c
 
 A demo of an various Excel chart data tools that are available via a
