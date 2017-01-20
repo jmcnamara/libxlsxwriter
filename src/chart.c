@@ -4130,6 +4130,14 @@ chart_add_series(lxw_chart *self, const char *categories, const char *values)
 {
     lxw_chart_series *series;
 
+    /* Scatter charts require categories and values. */
+    if (self->is_scatter_chart && values && !categories) {
+        LXW_WARN("chart_add_series(): scatter charts must have "
+                 "'categories' and 'values'");
+
+        return NULL;
+    }
+
     /* Create a new object to hold the series. */
     series = calloc(1, sizeof(lxw_chart_series));
     GOTO_LABEL_ON_MEM_ERROR(series, mem_error);
