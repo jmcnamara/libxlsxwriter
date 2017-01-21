@@ -53,6 +53,7 @@
 -T lxw_chart_axis_label_position
 -T lxw_chart_axis_tick_mark
 -T lxw_chart_axis_tick_position
+-T lxw_chart_blank
 -T lxw_chart_fill
 -T lxw_chart_font
 -T lxw_chart_gridline

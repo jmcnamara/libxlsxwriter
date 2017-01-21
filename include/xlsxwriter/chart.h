@@ -514,6 +514,21 @@ typedef enum lxw_chart_axis_tick_mark {
     LXW_CHART_AXIS_TICK_MARK_CROSSING
 } lxw_chart_tick_mark;
 
+/**
+ * @brief Define how blank values are displayed in a chart.
+ */
+typedef enum lxw_chart_blank {
+
+    /** Show empty chart cells as gaps in the data. The default. */
+    LXW_CHART_BLANKS_AS_GAP,
+
+    /** Show empty chart cells as zeros. */
+    LXW_CHART_BLANKS_AS_ZERO,
+
+    /** Show empty chart cells as connected. Only for charts with lines. */
+    LXW_CHART_BLANKS_AS_CONNECTED
+} lxw_chart_blank;
+
 enum lxw_chart_position {
     LXW_CHART_AXIS_RIGHT,
     LXW_CHART_AXIS_LEFT,
@@ -883,6 +898,9 @@ typedef struct lxw_chart {
     uint8_t has_table_outline;
     uint8_t has_table_legend_keys;
     lxw_chart_font *table_font;
+
+    uint8_t show_blanks_as;
+    uint8_t show_hidden_data;
 
     STAILQ_ENTRY (lxw_chart) ordered_list_pointers;
     STAILQ_ENTRY (lxw_chart) list_pointers;
@@ -2544,6 +2562,42 @@ void chart_set_series_overlap(lxw_chart *chart, int8_t overlap);
  * This option is only available for Bar/Column charts.
  */
 void chart_set_series_gap(lxw_chart *chart, uint16_t gap);
+
+/**
+ * @brief Set the option for displaying blank data in a chart.
+ *
+ * @param chart    Pointer to a lxw_chart instance to be configured.
+ * @param option The display option. A #lxw_chart_blank option.
+ *
+ * The `%chart_show_blanks_as()` function controls how blank data is displayed
+ * in a chart:
+ *
+ * @code
+ *     chart_show_blanks_as(chart, LXW_CHART_BLANKS_AS_CONNECTED);
+ * @endcode
+ *
+ * The `option` parameter can have one of the following values:
+ *
+ * - #LXW_CHART_BLANKS_AS_GAP: Show empty chart cells as gaps in the data.
+ *   This is the default option for Excel charts.
+ * - #LXW_CHART_BLANKS_AS_ZERO: Show empty chart cells as zeros.
+ * - #LXW_CHART_BLANKS_AS_CONNECTED: Show empty chart cells as connected.
+ *   Only for charts with lines.
+ */
+void chart_show_blanks_as(lxw_chart *chart, uint8_t option);
+
+/**
+ * @brief Display data on charts from hidden rows or columns.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ *
+ * Display data that is in hidden rows or columns on the chart:
+ *
+ * @code
+ *     chart_show_hidden_data(chart);
+ * @endcode
+ */
+void chart_show_hidden_data(lxw_chart *chart);
 
 /**
  * @brief Set the Pie/Doughnut chart rotation.

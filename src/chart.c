@@ -2934,6 +2934,9 @@ _chart_write_plot_vis_only(lxw_chart *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
+    if (self->show_hidden_data)
+        return;
+
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("val", "1");
 
@@ -3039,6 +3042,31 @@ _chart_write_gap_width(lxw_chart *self, uint16_t gap)
     LXW_PUSH_ATTRIBUTES_INT("val", gap);
 
     lxw_xml_empty_tag(self->file, "c:gapWidth", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:dispBlanksAs> element.
+ */
+STATIC void
+_chart_write_disp_blanks_as(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (self->show_blanks_as != LXW_CHART_BLANKS_AS_ZERO
+        && self->show_blanks_as != LXW_CHART_BLANKS_AS_CONNECTED)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (self->show_blanks_as == LXW_CHART_BLANKS_AS_ZERO)
+        LXW_PUSH_ATTRIBUTES_STR("val", "zero");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "span");
+
+    lxw_xml_empty_tag(self->file, "c:dispBlanksAs", &attributes);
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -3840,6 +3868,9 @@ _chart_write_chart(lxw_chart *self)
 
     /* Write the c:plotVisOnly element. */
     _chart_write_plot_vis_only(self);
+
+    /* Write the c:dispBlanksAs element. */
+    _chart_write_disp_blanks_as(self);
 
     lxw_xml_end_tag(self->file, "c:chart");
 }
@@ -5127,6 +5158,24 @@ chart_set_series_overlap(lxw_chart *self, int8_t overlap)
         LXW_WARN_FORMAT1("chart_set_series_overlap(): Chart series overlap "
                          "'%d' outside Excel range: -100 <= overlap <= 100",
                          overlap);
+}
+
+/*
+ * Set the option for displaying blank data in a chart.
+ */
+void
+chart_show_blanks_as(lxw_chart *self, uint8_t option)
+{
+    self->show_blanks_as = option;
+}
+
+/*
+ * Display data on charts from hidden rows or columns.
+ */
+void
+chart_show_hidden_data(lxw_chart *self)
+{
+    self->show_hidden_data = LXW_TRUE;
 }
 
 /*
