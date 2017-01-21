@@ -259,12 +259,13 @@ lxw_chart_new(uint8_t type)
     chart->x_axis->major_gridlines.visible = LXW_FALSE;
     chart->y_axis->major_gridlines.visible = LXW_TRUE;
 
-    chart->series_overlap_1 = 100;
-
     chart->has_horiz_cat_axis = LXW_FALSE;
     chart->has_horiz_val_axis = LXW_TRUE;
 
     chart->legend.position = LXW_CHART_LEGEND_RIGHT;
+
+    chart->gap_y1 = LXW_CHART_DEFAULT_GAP;
+    chart->gap_y2 = LXW_CHART_DEFAULT_GAP;
 
     /* Initialize the chart specific properties. */
     _chart_initialize(chart, chart->type);
@@ -3006,15 +3007,38 @@ _chart_write_print_settings(lxw_chart *self)
  * Write the <c:overlap> element.
  */
 STATIC void
-_chart_write_overlap(lxw_chart *self, int overlap)
+_chart_write_overlap(lxw_chart *self, int8_t overlap)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
+
+    if (!overlap)
+        return;
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_INT("val", overlap);
 
     lxw_xml_empty_tag(self->file, "c:overlap", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:gapWidth> element.
+ */
+STATIC void
+_chart_write_gap_width(lxw_chart *self, uint16_t gap)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (gap == LXW_CHART_DEFAULT_GAP)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("val", gap);
+
+    lxw_xml_empty_tag(self->file, "c:gapWidth", &attributes);
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -3508,10 +3532,11 @@ _chart_write_bar_chart(lxw_chart *self)
         _chart_write_ser(self, series);
     }
 
-    if (self->has_overlap) {
-        /* Write the c:overlap element. */
-        _chart_write_overlap(self, self->series_overlap_1);
-    }
+    /* Write the c:gapWidth element. */
+    _chart_write_gap_width(self, self->gap_y1);
+
+    /* Write the c:overlap element. */
+    _chart_write_overlap(self, self->overlap_y1);
 
     /* Write the c:axId elements. */
     _chart_write_axis_ids(self);
@@ -3540,10 +3565,11 @@ _chart_write_column_chart(lxw_chart *self)
         _chart_write_ser(self, series);
     }
 
-    if (self->has_overlap) {
-        /* Write the c:overlap element. */
-        _chart_write_overlap(self, self->series_overlap_1);
-    }
+    /* Write the c:gapWidth element. */
+    _chart_write_gap_width(self, self->gap_y1);
+
+    /* Write the c:overlap element. */
+    _chart_write_overlap(self, self->overlap_y1);
 
     /* Write the c:axId elements. */
     _chart_write_axis_ids(self);
@@ -3875,6 +3901,8 @@ _chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
         self->grouping = LXW_GROUPING_STACKED;
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
+        self->overlap_y1 = 100;
+
     }
 
     if (type == LXW_CHART_BAR_STACKED_PERCENT) {
@@ -3882,6 +3910,7 @@ _chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
         _chart_axis_set_default_num_format(self->x_axis, "0%");
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
+        self->overlap_y1 = 100;
     }
 
     /* Initialize the function pointers for this chart type. */
@@ -3903,6 +3932,7 @@ _chart_initialize_column_chart(lxw_chart *self, uint8_t type)
         self->grouping = LXW_GROUPING_STACKED;
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
+        self->overlap_y1 = 100;
     }
 
     if (type == LXW_CHART_COLUMN_STACKED_PERCENT) {
@@ -3910,6 +3940,7 @@ _chart_initialize_column_chart(lxw_chart *self, uint8_t type)
         _chart_axis_set_default_num_format(self->y_axis, "0%");
         self->has_overlap = LXW_TRUE;
         self->subtype = LXW_CHART_SUBTYPE_STACKED;
+        self->overlap_y1 = 100;
     }
 
     /* Initialize the function pointers for this chart type. */
@@ -5085,6 +5116,33 @@ chart_set_high_low_lines(lxw_chart *self, lxw_chart_line *line)
 }
 
 /*
+ * Set the Bar/Column overlap for all data series.
+ */
+void
+chart_set_series_overlap(lxw_chart *self, int8_t overlap)
+{
+    if (overlap >= -100 && overlap <= 100)
+        self->overlap_y1 = overlap;
+    else
+        LXW_WARN_FORMAT1("chart_set_series_overlap(): Chart series overlap "
+                         "'%d' outside Excel range: -100 <= overlap <= 100",
+                         overlap);
+}
+
+/*
+ * Set the Bar/Column gap for all data series.
+ */
+void
+chart_set_series_gap(lxw_chart *self, uint16_t gap)
+{
+    if (gap <= 500)
+        self->gap_y1 = gap;
+    else
+        LXW_WARN_FORMAT1("chart_set_series_gap(): Chart series gap '%d' "
+                         "outside Excel range: 0 <= gap <= 500", gap);
+}
+
+/*
  * Set the Pie/Doughnut chart rotation: the angle of the first slice.
  */
 void
@@ -5094,7 +5152,7 @@ chart_set_rotation(lxw_chart *self, uint16_t rotation)
         self->rotation = rotation;
     else
         LXW_WARN_FORMAT1("chart_set_rotation(): Chart rotation '%d' outside "
-                         "range: 0 <= rotation <= 360", rotation);
+                         "Excel range: 0 <= rotation <= 360", rotation);
 }
 
 /*

@@ -81,6 +81,7 @@ STAILQ_HEAD(lxw_chart_series_list, lxw_chart_series);
 STAILQ_HEAD(lxw_series_data_points, lxw_series_data_point);
 
 #define LXW_CHART_NUM_FORMAT_LEN 128
+#define LXW_CHART_DEFAULT_GAP 501
 
 /**
  * @brief Available chart types.
@@ -848,7 +849,10 @@ typedef struct lxw_chart {
 
     uint8_t no_title;
     uint8_t has_overlap;
-    int series_overlap_1;
+    int8_t overlap_y1;
+    int8_t overlap_y2;
+    uint16_t gap_y1;
+    uint16_t gap_y2;
 
     uint8_t grouping;
     uint8_t default_cross_between;
@@ -2496,6 +2500,10 @@ void chart_set_drop_lines(lxw_chart *chart, lxw_chart_line *line);
  *
  */
 void chart_set_high_low_lines(lxw_chart *chart, lxw_chart_line *line);
+
+void chart_set_series_overlap(lxw_chart *self, int8_t overlap);
+
+void chart_set_series_gap(lxw_chart *self, uint16_t gap);
 
 /**
  * @brief Set the Pie/Doughnut chart rotation.
