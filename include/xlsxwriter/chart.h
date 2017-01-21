@@ -2501,9 +2501,49 @@ void chart_set_drop_lines(lxw_chart *chart, lxw_chart_line *line);
  */
 void chart_set_high_low_lines(lxw_chart *chart, lxw_chart_line *line);
 
-void chart_set_series_overlap(lxw_chart *self, int8_t overlap);
+/**
+ * @brief Set the overlap between series in a Bar/Column chart.
+ *
+ * @param chart   Pointer to a lxw_chart instance to be configured.
+ * @param overlap The overlap between the series. -100 to 100.
+ *
+ * The `%chart_set_series_overlap()` function sets the overlap between series
+ * in Bar and Column charts.
+ *
+ * @code
+ *     chart_set_series_overlap(chart, -50);
+ * @endcode
+ *
+ * @image html chart_overlap.png
+ *
+ * The overlap value must be in the range `0 <= overlap <= 500`.
+ * The default value is 0.
+ *
+ * This option is only available for Bar/Column charts.
+ */
+void chart_set_series_overlap(lxw_chart *chart, int8_t overlap);
 
-void chart_set_series_gap(lxw_chart *self, uint16_t gap);
+/**
+ * @brief Set the gap between series in a Bar/Column chart.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ * @param gap   The gap between the series.  0 to 500.
+ *
+ * The `%chart_set_series_gap()` function sets the gap between series in
+ * Bar and Column charts.
+ *
+ * @code
+ *     chart_set_series_gap(chart, 400);
+ * @endcode
+ *
+ * @image html chart_gap.png
+ *
+ * The gap value must be in the range `0 <= gap <= 500`. The default value
+ * is 150.
+ *
+ * This option is only available for Bar/Column charts.
+ */
+void chart_set_series_gap(lxw_chart *chart, uint16_t gap);
 
 /**
  * @brief Set the Pie/Doughnut chart rotation.
