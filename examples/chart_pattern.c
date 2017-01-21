@@ -67,6 +67,9 @@ int main() {
     chart_series_set_line(series1, &line1);
     chart_series_set_line(series2, &line2);
 
+    /* Widen the gap between the series/categories. */
+    chart_set_series_gap(chart, 70);
+
     /* Insert the chart into the worksheet. */
     worksheet_insert_chart(worksheet, CELL("D2"), chart);
 

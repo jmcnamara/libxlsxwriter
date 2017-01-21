@@ -2,6 +2,12 @@
 @page changes Changes
 
 
+## 0.6.5 January 21 2017
+
+- Added functions to set the overlap and gap between series: see
+  `chart_set_series_overlap()` and `chart_set_series_gap()`.
+
+
 ## 0.6.4 January 20 2017
 
 - Added chart data table option, see `chart_set_table()` and
