@@ -201,6 +201,11 @@ lxw_chart_free(lxw_chart *chart)
     free(chart->drop_lines_line);
     free(chart->high_low_lines_line);
 
+    free(chart->up_bar_line);
+    free(chart->up_bar_fill);
+    free(chart->down_bar_line);
+    free(chart->down_bar_fill);
+
     _chart_free_font(chart->table_font);
 
     free(chart);
@@ -3186,6 +3191,69 @@ _chart_write_d_table(lxw_chart *self)
 }
 
 /*
+ * Write the <c:upBars> element.
+ */
+STATIC void
+_chart_write_up_bars(lxw_chart *self, lxw_chart_line *line,
+                     lxw_chart_fill *fill)
+{
+    if (line || fill) {
+        lxw_xml_start_tag(self->file, "c:upBars", NULL);
+
+        /* Write the c:spPr element. */
+        _chart_write_sp_pr(self, line, fill, NULL);
+
+        lxw_xml_end_tag(self->file, "c:upBars");
+    }
+    else {
+        lxw_xml_empty_tag(self->file, "c:upBars", NULL);
+    }
+}
+
+/*
+ * Write the <c:downBars> element.
+ */
+STATIC void
+_chart_write_down_bars(lxw_chart *self, lxw_chart_line *line,
+                       lxw_chart_fill *fill)
+{
+    if (line || fill) {
+        lxw_xml_start_tag(self->file, "c:downBars", NULL);
+
+        /* Write the c:spPr element. */
+        _chart_write_sp_pr(self, line, fill, NULL);
+
+        lxw_xml_end_tag(self->file, "c:downBars");
+    }
+    else {
+        lxw_xml_empty_tag(self->file, "c:downBars", NULL);
+    }
+}
+
+/*
+ * Write the <c:upDownBars> element.
+ */
+STATIC void
+_chart_write_up_down_bars(lxw_chart *self)
+{
+    if (!self->has_up_down_bars)
+        return;
+
+    lxw_xml_start_tag(self->file, "c:upDownBars", NULL);
+
+    /* Write the c:gapWidth element. */
+    _chart_write_gap_width(self, 150);
+
+    /* Write the c:upBars element. */
+    _chart_write_up_bars(self, self->up_bar_line, self->up_bar_fill);
+
+    /* Write the c:downBars element. */
+    _chart_write_down_bars(self, self->down_bar_line, self->down_bar_fill);
+
+    lxw_xml_end_tag(self->file, "c:upDownBars");
+}
+
+/*
  * Write the <c:dropLines> element.
  */
 STATIC void
@@ -3655,6 +3723,9 @@ _chart_write_line_chart(lxw_chart *self)
 
     /* Write the c:hiLowLines element. */
     _chart_write_hi_low_lines(self);
+
+    /* Write the c:upDownBars element. */
+    _chart_write_up_down_bars(self);
 
     /* Write the c:marker element. */
     _chart_write_marker_value(self);
@@ -5118,6 +5189,38 @@ chart_set_table_font(lxw_chart *self, lxw_chart_font *font)
     _chart_free_font(self->table_font);
 
     self->table_font = _chart_convert_font_args(font);
+}
+
+/*
+ * Turn on up-down bars for the chart.
+ */
+void
+chart_set_up_down_bars(lxw_chart *self)
+{
+    self->has_up_down_bars = LXW_TRUE;
+}
+
+/*
+ * Turn on up-down bars for the chart, with formatting.
+ */
+void
+chart_set_up_down_bars_format(lxw_chart *self, lxw_chart_line *up_bar_line,
+                              lxw_chart_fill *up_bar_fill,
+                              lxw_chart_line *down_bar_line,
+                              lxw_chart_fill *down_bar_fill)
+{
+    self->has_up_down_bars = LXW_TRUE;
+
+    /* Free any previously allocated resource. */
+    free(self->up_bar_line);
+    free(self->up_bar_fill);
+    free(self->down_bar_line);
+    free(self->down_bar_fill);
+
+    self->up_bar_line = _chart_convert_line_args(up_bar_line);
+    self->up_bar_fill = _chart_convert_fill_args(up_bar_fill);
+    self->down_bar_line = _chart_convert_line_args(down_bar_line);
+    self->down_bar_fill = _chart_convert_fill_args(down_bar_fill);
 }
 
 /*
