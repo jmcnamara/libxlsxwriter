@@ -2467,8 +2467,52 @@ void chart_set_table_grid(lxw_chart *chart, uint8_t horizontal,
 
 void chart_set_table_font(lxw_chart *chart, lxw_chart_font *font);
 
+/**
+ * @brief Turn on up-down bars for the chart.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ *
+ * The `%chart_set_up_down_bars()` function adds Up-Down bars to Line charts
+ * to indicate the difference between the first and last data series:
+ *
+ * @code
+ *     chart_set_up_down_bars(chart);
+ * @endcode
+ *
+ * @image html chart_data_tools4.png
+ *
+ * Up-Down bars are only available in Line charts. By default Up-Down bars are
+ * black and white like in the above example. To format the border or fill
+ * of the bars see the `chart_set_up_down_bars_format()` function below.
+ */
 void chart_set_up_down_bars(lxw_chart *chart);
 
+/**
+ * @brief Turn on up-down bars for the chart, with formatting.
+ *
+ * @param chart         Pointer to a lxw_chart instance to be configured.
+ * @param up_bar_line   A #lxw_chart_line struct for the up-bar border.
+ * @param up_bar_fill   A #lxw_chart_fill struct for the up-bar fill.
+ * @param down_bar_line A #lxw_chart_line struct for the down-bar border.
+ * @param down_bar_fill A #lxw_chart_fill struct for the down-bar fill.
+ *
+ * The `%chart_set_up_down_bars_format()` function adds Up-Down bars to Line
+ * charts to indicate the difference between the first and last data series.
+ * It also allows the up and down bars to be formatted:
+ *
+ * @code
+ *     lxw_chart_line line      = {.color = LXW_COLOR_BLACK};
+ *     lxw_chart_fill up_fill   = {.color = 0x00B050};
+ *     lxw_chart_fill down_fill = {.color = LXW_COLOR_RED};
+ *
+ *     chart_set_up_down_bars_format(chart, &line, &up_fill, &line, &down_fill);
+ * @endcode
+ *
+ * @image html chart_up_down_bars.png
+ *
+ * Up-Down bars are only available in Line charts.
+ * For more format information  see @ref chart_lines and @ref chart_fills.
+ */
 void chart_set_up_down_bars_format(lxw_chart *chart,
                                    lxw_chart_line *up_bar_line,
                                    lxw_chart_fill *up_bar_fill,
@@ -2500,7 +2544,7 @@ void chart_set_up_down_bars_format(lxw_chart *chart,
  * @endcode
  *
  * Drop Lines are only available in Line and Area charts.
- *
+ * For more format information see @ref chart_lines.
  */
 void chart_set_drop_lines(lxw_chart *chart, lxw_chart_line *line);
 
@@ -2529,7 +2573,7 @@ void chart_set_drop_lines(lxw_chart *chart, lxw_chart_line *line);
  * @endcode
  *
  * High-Low Lines are only available in Line charts.
- *
+ * For more format information see @ref chart_lines.
  */
 void chart_set_high_low_lines(lxw_chart *chart, lxw_chart_line *line);
 

@@ -89,5 +89,47 @@ int main() {
     worksheet_insert_chart(worksheet, CELL("E18"), chart);
 
 
+    /*
+     * Chart 3. Example with Up-Down bars.
+     */
+    chart = workbook_add_chart(workbook, LXW_CHART_LINE);
+
+    /* Add a chart title. */
+    chart_title_set_name(chart, "Chart with Up-Down bars");
+
+    /* Add the first series to the chart. */
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+
+    /* Add Up-Down bars to the chart. */
+    chart_set_up_down_bars(chart);
+
+    /* Insert the chart into the worksheet. */
+    worksheet_insert_chart(worksheet, CELL("E34"), chart);
+
+
+    /*
+     * Chart 4. Example with Up-Down bars with formatting.
+     */
+    chart = workbook_add_chart(workbook, LXW_CHART_LINE);
+
+    /* Add a chart title. */
+    chart_title_set_name(chart, "Chart with Up-Down bars");
+
+    /* Add the first series to the chart. */
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+
+    /* Add Up-Down bars to the chart, with formatting. */
+    lxw_chart_line line      = {.color = LXW_COLOR_BLACK};
+    lxw_chart_fill up_fill   = {.color = 0x00B050};
+    lxw_chart_fill down_fill = {.color = LXW_COLOR_RED};
+
+    chart_set_up_down_bars_format(chart, &line, &up_fill, &line, &down_fill);
+    
+    /* Insert the chart into the worksheet. */
+    worksheet_insert_chart(worksheet, CELL("E50"), chart);
+
+
     return workbook_close(workbook);
 }

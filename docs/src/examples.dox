@@ -714,13 +714,21 @@ A demo of an various Excel chart data tools that are available via a
 libxlsxwriter chart. These include Drop Lines and High-Low Lines.
 
 
-Chart with high-low lines.
+Chart 1: chart with high-low lines.
 
 @image html chart_data_tools5.png
 
-Chart with drop lines.
+Chart 2: chart with drop lines.
 
 @image html chart_data_tools6.png
+
+Chart 3: chart with Up-down bars.
+
+@image html chart_data_tools4.png
+
+Chart 4: chart with formatted Up-down bars.
+
+@image html chart_up_down_bars.png
 
 
 
