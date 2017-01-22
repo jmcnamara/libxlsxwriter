@@ -2011,6 +2011,80 @@ _chart_write_invert_if_negative(lxw_chart *self, lxw_chart_series *series)
 }
 
 /*
+ * Write the <c:showVal> element.
+ */
+STATIC void
+_chart_write_show_val(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:showVal", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:dLblPos> element.
+ */
+STATIC void
+_chart_write_d_lbl_pos(lxw_chart *self, uint8_t position)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (position == LXW_CHART_LABEL_POSITION_RIGHT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "r");
+    else if (position == LXW_CHART_LABEL_POSITION_LEFT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "l");
+    else if (position == LXW_CHART_LABEL_POSITION_ABOVE)
+        LXW_PUSH_ATTRIBUTES_STR("val", "t");
+    else if (position == LXW_CHART_LABEL_POSITION_BELOW)
+        LXW_PUSH_ATTRIBUTES_STR("val", "b");
+    else if (position == LXW_CHART_LABEL_POSITION_INSIDE_BASE)
+        LXW_PUSH_ATTRIBUTES_STR("val", "inBase");
+    else if (position == LXW_CHART_LABEL_POSITION_INSIDE_END)
+        LXW_PUSH_ATTRIBUTES_STR("val", "inEnd");
+    else if (position == LXW_CHART_LABEL_POSITION_OUTSIDE_END)
+        LXW_PUSH_ATTRIBUTES_STR("val", "outEnd");
+    else if (position == LXW_CHART_LABEL_POSITION_BEST_FIT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "bestFit");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "ctr");
+
+    lxw_xml_empty_tag(self->file, "c:dLblPos", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:dLbls> element.
+ */
+STATIC void
+_chart_write_d_lbls(lxw_chart *self, lxw_chart_series *series)
+{
+    if (!series->has_labels)
+        return;
+
+    lxw_xml_start_tag(self->file, "c:dLbls", NULL);
+
+    /* Write the c:dLblPos element. */
+    if (series->label_position)
+        _chart_write_d_lbl_pos(self, series->label_position);
+
+    /* Write the c:showVal element. */
+    if (series->show_value)
+        _chart_write_show_val(self);
+
+    lxw_xml_end_tag(self->file, "c:dLbls");
+}
+
+/*
  * Write the <c:size> element.
  */
 STATIC void
@@ -2218,6 +2292,9 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
     /* Write the char points. */
     _chart_write_points(self, series);
 
+    /* Write the c:dLbls element. */
+    _chart_write_d_lbls(self, series);
+
     /* Write the c:cat element. */
     _chart_write_cat(self, series);
 
@@ -2259,6 +2336,9 @@ _chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
 
     /* Write the char points. */
     _chart_write_points(self, series);
+
+    /* Write the c:dLbls element. */
+    _chart_write_d_lbls(self, series);
 
     /* Write the c:xVal element. */
     _chart_write_x_val(self, series);
@@ -3955,6 +4035,7 @@ _chart_initialize_area_chart(lxw_chart *self, uint8_t type)
     self->grouping = LXW_GROUPING_STANDARD;
     self->default_cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
     self->x_axis->is_category = LXW_TRUE;
+    self->default_label_position = LXW_CHART_LABEL_POSITION_CENTER;
 
     if (type == LXW_CHART_AREA_STACKED) {
         self->grouping = LXW_GROUPING_STACKED;
@@ -3998,6 +4079,7 @@ _chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
     self->x_axis->is_value = LXW_TRUE;
     self->has_horiz_cat_axis = LXW_TRUE;
     self->has_horiz_val_axis = LXW_FALSE;
+    self->default_label_position = LXW_CHART_LABEL_POSITION_OUTSIDE_END;
 
     if (type == LXW_CHART_BAR_STACKED) {
         self->grouping = LXW_GROUPING_STACKED;
@@ -4029,6 +4111,7 @@ _chart_initialize_column_chart(lxw_chart *self, uint8_t type)
     self->has_horiz_val_axis = LXW_FALSE;
     self->x_axis->is_category = LXW_TRUE;
     self->y_axis->is_value = LXW_TRUE;
+    self->default_label_position = LXW_CHART_LABEL_POSITION_OUTSIDE_END;
 
     if (type == LXW_CHART_COLUMN_STACKED) {
         self->grouping = LXW_GROUPING_STACKED;
@@ -4059,6 +4142,7 @@ _chart_initialize_doughnut_chart(lxw_chart *self)
     /* Initialize the function pointers for this chart type. */
     self->write_chart_type = _chart_write_doughnut_chart;
     self->write_plot_area = _chart_write_pie_plot_area;
+    self->default_label_position = LXW_CHART_LABEL_POSITION_BEST_FIT;
 }
 
 /*
@@ -4071,6 +4155,7 @@ _chart_initialize_line_chart(lxw_chart *self)
     self->grouping = LXW_GROUPING_STANDARD;
     self->x_axis->is_category = LXW_TRUE;
     self->y_axis->is_value = LXW_TRUE;
+    self->default_label_position = LXW_CHART_LABEL_POSITION_RIGHT;
 
     /* Initialize the function pointers for this chart type. */
     self->write_chart_type = _chart_write_line_chart;
@@ -4086,6 +4171,7 @@ _chart_initialize_pie_chart(lxw_chart *self)
     /* Initialize the function pointers for this chart type. */
     self->write_chart_type = _chart_write_pie_chart;
     self->write_plot_area = _chart_write_pie_plot_area;
+    self->default_label_position = LXW_CHART_LABEL_POSITION_BEST_FIT;
 }
 
 /*
@@ -4099,6 +4185,7 @@ _chart_initialize_scatter_chart(lxw_chart *self)
     self->is_scatter_chart = LXW_TRUE;
     self->x_axis->is_value = LXW_TRUE;
     self->y_axis->is_value = LXW_TRUE;
+    self->default_label_position = LXW_CHART_LABEL_POSITION_RIGHT;
 
     if (self->type == LXW_CHART_SCATTER_STRAIGHT
         || self->type == LXW_CHART_SCATTER_SMOOTH) {
@@ -4123,8 +4210,8 @@ _chart_initialize_radar_chart(lxw_chart *self, uint8_t type)
     self->x_axis->major_gridlines.visible = LXW_TRUE;
     self->x_axis->is_category = LXW_TRUE;
     self->y_axis->is_value = LXW_TRUE;
-
     self->y_axis->major_tick_mark = LXW_CHART_AXIS_TICK_MARK_CROSSING;
+    self->default_label_position = LXW_CHART_LABEL_POSITION_CENTER;
 
     /* Initialize the function pointers for this chart type. */
     self->write_chart_type = _chart_write_radar_chart;
@@ -4312,6 +4399,8 @@ chart_add_series(lxw_chart *self, const char *categories, const char *values)
 
     if (self->type == LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS)
         series->smooth = LXW_TRUE;
+
+    series->default_label_position = self->default_label_position;
 
     STAILQ_INSERT_TAIL(self->series_list, series, list_pointers);
 
@@ -4595,6 +4684,29 @@ void
 chart_series_set_smooth(lxw_chart_series *series, uint8_t smooth)
 {
     series->smooth = smooth;
+}
+
+/*
+ * Turn on default data labels for a series.
+ */
+void
+chart_series_set_labels(lxw_chart_series *series)
+{
+    series->has_labels = LXW_TRUE;
+    series->show_value = LXW_TRUE;
+}
+
+/*
+ * Set the data labels position for a series.
+ */
+void
+chart_series_set_labels_position(lxw_chart_series *series, uint8_t position)
+{
+    series->has_labels = LXW_TRUE;
+    series->show_value = LXW_TRUE;
+
+    if (position != series->default_label_position)
+        series->label_position = position;
 }
 
 /*

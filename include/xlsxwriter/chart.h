@@ -409,6 +409,41 @@ typedef enum lxw_chart_pattern_type {
     LXW_CHART_PATTERN_SOLID_DIAMOND
 } lxw_chart_pattern_type;
 
+/**
+ * @brief Chart data label positions.
+ */
+typedef enum lxw_chart_label_position {
+    /** Series data label position: default position. */
+    LXW_CHART_LABEL_POSITION_DEFAULT,
+
+    /** Series data label position: center. */
+    LXW_CHART_LABEL_POSITION_CENTER,
+
+    /** Series data label position: right. */
+    LXW_CHART_LABEL_POSITION_RIGHT,
+
+    /** Series data label position: left. */
+    LXW_CHART_LABEL_POSITION_LEFT,
+
+    /** Series data label position: above. */
+    LXW_CHART_LABEL_POSITION_ABOVE,
+
+    /** Series data label position: below. */
+    LXW_CHART_LABEL_POSITION_BELOW,
+
+    /** Series data label position: inside base.  */
+    LXW_CHART_LABEL_POSITION_INSIDE_BASE,
+
+    /** Series data label position: inside end. */
+    LXW_CHART_LABEL_POSITION_INSIDE_END,
+
+    /** Series data label position: outside end. */
+    LXW_CHART_LABEL_POSITION_OUTSIDE_END,
+
+    /** Series data label position: best fit. */
+    LXW_CHART_LABEL_POSITION_BEST_FIT
+} lxw_chart_label_position;
+
 enum lxw_chart_subtype {
 
     LXW_CHART_SUBTYPE_NONE = 0,
@@ -743,6 +778,13 @@ typedef struct lxw_chart_series {
     uint8_t smooth;
     uint8_t invert_if_negative;
 
+    uint8_t has_labels;
+    uint8_t show_value;
+    uint8_t show_category;
+    uint8_t show_name;
+    uint8_t label_position;
+    uint8_t default_label_position;
+
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
 
 } lxw_chart_series;
@@ -907,6 +949,8 @@ typedef struct lxw_chart {
     lxw_chart_line *down_bar_line;
     lxw_chart_fill *up_bar_fill;
     lxw_chart_fill *down_bar_fill;
+
+    uint8_t default_label_position;
 
     STAILQ_ENTRY (lxw_chart) ordered_list_pointers;
     STAILQ_ENTRY (lxw_chart) list_pointers;
@@ -1394,6 +1438,11 @@ lxw_error chart_series_set_points(lxw_chart_series *series,
  *
  */
 void chart_series_set_smooth(lxw_chart_series *series, uint8_t smooth);
+
+void chart_series_set_labels(lxw_chart_series *series);
+
+void chart_series_set_labels_position(lxw_chart_series *series,
+                                      uint8_t position);
 
 /**
  * @brief Set the name caption of the an axis.
