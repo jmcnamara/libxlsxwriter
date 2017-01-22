@@ -2,6 +2,15 @@
 @page changes Changes
 
 
+## 0.6.6 January 22 2017
+
+- Added functions to set chart Up-Down bars: see `chart_set_up_down_bars()`
+  and `chart_set_up_down_bars_format()` and @ref chart_data_tools.c.
+
+- Added functions to handle blank and hidden data in charts: see
+  `chart_show_blanks_as()` and `chart_show_hidden_data()`.
+
+
 ## 0.6.5 January 21 2017
 
 - Added functions to set the overlap and gap between series: see
