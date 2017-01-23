@@ -444,6 +444,26 @@ typedef enum lxw_chart_label_position {
     LXW_CHART_LABEL_POSITION_BEST_FIT
 } lxw_chart_label_position;
 
+/**
+ * @brief Chart data label separator.
+ */
+typedef enum lxw_chart_label_separator {
+    /** Series data label separator: comma (the default). */
+    LXW_CHART_LABEL_SEPARATOR_COMMA,
+
+    /** Series data label separator: semicolon. */
+    LXW_CHART_LABEL_SEPARATOR_SEMICOLON,
+
+    /** Series data label separator: period. */
+    LXW_CHART_LABEL_SEPARATOR_PERIOD,
+
+    /** Series data label separator: newline. */
+    LXW_CHART_LABEL_SEPARATOR_NEWLINE,
+
+    /** Series data label separator: space. */
+    LXW_CHART_LABEL_SEPARATOR_SPACE
+} lxw_chart_label_separator;
+
 enum lxw_chart_subtype {
 
     LXW_CHART_SUBTYPE_NONE = 0,
@@ -778,12 +798,19 @@ typedef struct lxw_chart_series {
     uint8_t smooth;
     uint8_t invert_if_negative;
 
+    /* Data label parameters. */
     uint8_t has_labels;
-    uint8_t show_value;
-    uint8_t show_category;
-    uint8_t show_name;
+    uint8_t show_labels_value;
+    uint8_t show_labels_category;
+    uint8_t show_labels_name;
+    uint8_t show_labels_leader;
+    uint8_t show_labels_legend;
+    uint8_t show_labels_percent;
     uint8_t label_position;
+    uint8_t label_separator;
     uint8_t default_label_position;
+    char *label_num_format;
+    lxw_chart_font *label_font;
 
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
 
@@ -1441,8 +1468,27 @@ void chart_series_set_smooth(lxw_chart_series *series, uint8_t smooth);
 
 void chart_series_set_labels(lxw_chart_series *series);
 
+void chart_series_set_labels_options(lxw_chart_series *series,
+                                     uint8_t show_name, uint8_t show_category,
+                                     uint8_t show_value);
+
+void chart_series_set_labels_separator(lxw_chart_series *series,
+                                       uint8_t separator);
+
 void chart_series_set_labels_position(lxw_chart_series *series,
                                       uint8_t position);
+
+void chart_series_set_labels_leader_line(lxw_chart_series *series);
+
+void chart_series_set_labels_legend(lxw_chart_series *series);
+
+void chart_series_set_labels_percentage(lxw_chart_series *series);
+
+void chart_series_set_labels_num_format(lxw_chart_series *series,
+                                        char *num_format);
+
+void chart_series_set_labels_font(lxw_chart_series *series,
+                                  lxw_chart_font *font);
 
 /**
  * @brief Set the name caption of the an axis.

@@ -70,6 +70,20 @@ _chart_free_points(lxw_chart_series *series)
 }
 
 /*
+ * Free a chart font object.
+ */
+STATIC void
+_chart_free_font(lxw_chart_font *font)
+{
+    if (!font)
+        return;
+
+    free(font->name);
+    free(font);
+}
+
+
+/*
  * Free a series object.
  */
 STATIC void
@@ -82,6 +96,8 @@ _chart_series_free(lxw_chart_series *series)
     free(series->line);
     free(series->fill);
     free(series->pattern);
+    free(series->label_num_format);
+    _chart_free_font(series->label_font);
 
     if (series->marker) {
         free(series->marker->line);
@@ -112,18 +128,6 @@ _chart_init_data_cache(lxw_series_range *range)
     return LXW_NO_ERROR;
 }
 
-/*
- * Free a chart font object.
- */
-STATIC void
-_chart_free_font(lxw_chart_font *font)
-{
-    if (!font)
-        return;
-
-    free(font->name);
-    free(font);
-}
 
 /*
  * Free a chart object.
@@ -2028,6 +2032,58 @@ _chart_write_show_val(lxw_chart *self)
 }
 
 /*
+ * Write the <c:showCatName> element.
+ */
+STATIC void
+_chart_write_show_cat_name(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:showCatName", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:showSerName> element.
+ */
+STATIC void
+_chart_write_show_ser_name(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char val[] = "1";
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", val);
+
+    lxw_xml_empty_tag(self->file, "c:showSerName", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:showLeaderLines> element.
+ */
+STATIC void
+_chart_write_show_leader_lines(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:showLeaderLines", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <c:dLblPos> element.
  */
 STATIC void
@@ -2063,6 +2119,76 @@ _chart_write_d_lbl_pos(lxw_chart *self, uint8_t position)
 }
 
 /*
+ * Write the <c:separator> element.
+ */
+STATIC void
+_chart_write_separator(lxw_chart *self, uint8_t separator)
+{
+    if (separator == LXW_CHART_LABEL_SEPARATOR_SEMICOLON)
+        lxw_xml_data_element(self->file, "c:separator", "; ", NULL);
+    else if (separator == LXW_CHART_LABEL_SEPARATOR_PERIOD)
+        lxw_xml_data_element(self->file, "c:separator", ". ", NULL);
+    else if (separator == LXW_CHART_LABEL_SEPARATOR_NEWLINE)
+        lxw_xml_data_element(self->file, "c:separator", "\n", NULL);
+    else if (separator == LXW_CHART_LABEL_SEPARATOR_SPACE)
+        lxw_xml_data_element(self->file, "c:separator", " ", NULL);
+    else
+        lxw_xml_data_element(self->file, "c:separator", ", ", NULL);
+}
+
+/*
+ * Write the <c:showLegendKey> element.
+ */
+STATIC void
+_chart_write_show_legend_key(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:showLegendKey", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:showPercent> element.
+ */
+STATIC void
+_chart_write_show_percent(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:showPercent", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:numFmt> element.
+ */
+STATIC void
+_chart_write_label_num_fmt(lxw_chart *self, char *format)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("formatCode", format);
+    LXW_PUSH_ATTRIBUTES_STR("sourceLinked", "0");
+
+    lxw_xml_empty_tag(self->file, "c:numFmt", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <c:dLbls> element.
  */
 STATIC void
@@ -2073,13 +2199,44 @@ _chart_write_d_lbls(lxw_chart *self, lxw_chart_series *series)
 
     lxw_xml_start_tag(self->file, "c:dLbls", NULL);
 
+    /* Write the c:numFmt element. */
+    if (series->label_num_format)
+        _chart_write_label_num_fmt(self, series->label_num_format);
+
+    if (series->label_font)
+        _chart_write_tx_pr(self, LXW_FALSE, series->label_font);
+
     /* Write the c:dLblPos element. */
     if (series->label_position)
         _chart_write_d_lbl_pos(self, series->label_position);
 
+    /* Write the c:showLegendKey element. */
+    if (series->show_labels_legend)
+        _chart_write_show_legend_key(self);
+
     /* Write the c:showVal element. */
-    if (series->show_value)
+    if (series->show_labels_value)
         _chart_write_show_val(self);
+
+    /* Write the c:showCatName element. */
+    if (series->show_labels_category)
+        _chart_write_show_cat_name(self);
+
+    /* Write the c:showSerName element. */
+    if (series->show_labels_name)
+        _chart_write_show_ser_name(self);
+
+    /* Write the c:showPercent element. */
+    if (series->show_labels_percent)
+        _chart_write_show_percent(self);
+
+    /* Write the c:separator element. */
+    if (series->label_separator)
+        _chart_write_separator(self, series->label_separator);
+
+    /* Write the c:showLeaderLines element. */
+    if (series->show_labels_leader)
+        _chart_write_show_leader_lines(self);
 
     lxw_xml_end_tag(self->file, "c:dLbls");
 }
@@ -4693,7 +4850,30 @@ void
 chart_series_set_labels(lxw_chart_series *series)
 {
     series->has_labels = LXW_TRUE;
-    series->show_value = LXW_TRUE;
+    series->show_labels_value = LXW_TRUE;
+}
+
+/*
+ * Set the data labels options for a series.
+ */
+void
+chart_series_set_labels_options(lxw_chart_series *series, uint8_t show_name,
+                                uint8_t show_category, uint8_t show_value)
+{
+    series->has_labels = LXW_TRUE;
+    series->show_labels_name = show_name;
+    series->show_labels_category = show_category;
+    series->show_labels_value = show_value;
+}
+
+/*
+ * Set the data labels separator for a series.
+ */
+void
+chart_series_set_labels_separator(lxw_chart_series *series, uint8_t separator)
+{
+    series->has_labels = LXW_TRUE;
+    series->label_separator = separator;
 }
 
 /*
@@ -4703,10 +4883,70 @@ void
 chart_series_set_labels_position(lxw_chart_series *series, uint8_t position)
 {
     series->has_labels = LXW_TRUE;
-    series->show_value = LXW_TRUE;
+    series->show_labels_value = LXW_TRUE;
 
     if (position != series->default_label_position)
         series->label_position = position;
+}
+
+/*
+ * Set the data labels position for a series.
+ */
+void
+chart_series_set_labels_leader_line(lxw_chart_series *series)
+{
+    series->has_labels = LXW_TRUE;
+    series->show_labels_leader = LXW_TRUE;
+}
+
+/*
+ * Turn on the data labels legend for a series.
+ */
+void
+chart_series_set_labels_legend(lxw_chart_series *series)
+{
+    series->has_labels = LXW_TRUE;
+    series->show_labels_legend = LXW_TRUE;
+}
+
+/*
+ * Turn on the data labels percentage for a series.
+ */
+void
+chart_series_set_labels_percentage(lxw_chart_series *series)
+{
+    series->has_labels = LXW_TRUE;
+    series->show_labels_percent = LXW_TRUE;
+}
+
+/*
+ * Set an data labels number format.
+ */
+void
+chart_series_set_labels_num_format(lxw_chart_series *series, char *num_format)
+{
+    if (!num_format)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(series->label_num_format);
+
+    series->label_num_format = lxw_strdup(num_format);
+}
+
+/*
+ * Set an data labels font.
+ */
+void
+chart_series_set_labels_font(lxw_chart_series *series, lxw_chart_font *font)
+{
+    if (!font)
+        return;
+
+    /* Free any previously allocated resource. */
+    _chart_free_font(series->label_font);
+
+    series->label_font = _chart_convert_font_args(font);
 }
 
 /*
