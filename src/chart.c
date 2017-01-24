@@ -82,7 +82,6 @@ _chart_free_font(lxw_chart_font *font)
     free(font);
 }
 
-
 /*
  * Free a series object.
  */
@@ -127,7 +126,6 @@ _chart_init_data_cache(lxw_series_range *range)
 
     return LXW_NO_ERROR;
 }
-
 
 /*
  * Free a chart object.

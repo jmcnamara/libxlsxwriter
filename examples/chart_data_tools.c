@@ -42,7 +42,7 @@ int main() {
 
     lxw_workbook     *workbook  = new_workbook("chart_data_tools.xlsx");
     lxw_worksheet    *worksheet = workbook_add_worksheet(workbook, NULL);
-
+    lxw_chart_series *series;
     /* Add a bold format to use to highlight the header cells. */
     lxw_format *bold = workbook_add_format(workbook);
     format_set_bold(bold);
@@ -126,9 +126,31 @@ int main() {
     lxw_chart_fill down_fill = {.color = LXW_COLOR_RED};
 
     chart_set_up_down_bars_format(chart, &line, &up_fill, &line, &down_fill);
-    
+
     /* Insert the chart into the worksheet. */
     worksheet_insert_chart(worksheet, CELL("E50"), chart);
+
+
+    /*
+     * Chart 5. Example with Markers and data labels.
+     */
+    chart = workbook_add_chart(workbook, LXW_CHART_LINE);
+
+    /* Add a chart title. */
+    chart_title_set_name(chart, "Chart with Data Labels and Markers");
+
+    /* Add the first series to the chart. */
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+
+    /* Add series markers. */
+    chart_series_set_marker_type(series, LXW_CHART_MARKER_CIRCLE);
+
+    /* Add sereis data labels. */
+    chart_series_set_labels(series);
+
+    /* Insert the chart into the worksheet. */
+    worksheet_insert_chart(worksheet, CELL("E66"), chart);
 
 
     return workbook_close(workbook);
