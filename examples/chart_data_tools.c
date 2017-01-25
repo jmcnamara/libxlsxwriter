@@ -146,7 +146,7 @@ int main() {
     /* Add series markers. */
     chart_series_set_marker_type(series, LXW_CHART_MARKER_CIRCLE);
 
-    /* Add sereis data labels. */
+    /* Add series data labels. */
     chart_series_set_labels(series);
 
     /* Insert the chart into the worksheet. */

@@ -2,6 +2,11 @@
 @page changes Changes
 
 
+## 0.6.7 January 24 2017
+
+- Added chart data labels. See @ref chart_labels.
+
+
 ## 0.6.6 January 22 2017
 
 - Added functions to set chart Up-Down bars: see `chart_set_up_down_bars()`
