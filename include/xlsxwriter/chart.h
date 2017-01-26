@@ -569,28 +569,6 @@ typedef enum lxw_chart_axis_tick_mark {
     LXW_CHART_AXIS_TICK_MARK_CROSSING
 } lxw_chart_tick_mark;
 
-/**
- * @brief Define how blank values are displayed in a chart.
- */
-typedef enum lxw_chart_blank {
-
-    /** Show empty chart cells as gaps in the data. The default. */
-    LXW_CHART_BLANKS_AS_GAP,
-
-    /** Show empty chart cells as zeros. */
-    LXW_CHART_BLANKS_AS_ZERO,
-
-    /** Show empty chart cells as connected. Only for charts with lines. */
-    LXW_CHART_BLANKS_AS_CONNECTED
-} lxw_chart_blank;
-
-enum lxw_chart_position {
-    LXW_CHART_AXIS_RIGHT,
-    LXW_CHART_AXIS_LEFT,
-    LXW_CHART_AXIS_TOP,
-    LXW_CHART_AXIS_BOTTOM
-};
-
 typedef struct lxw_series_range {
     char *formula;
     char *sheetname;
@@ -777,6 +755,81 @@ typedef struct lxw_chart_point {
 } lxw_chart_point;
 
 /**
+ * @brief Define how blank values are displayed in a chart.
+ */
+typedef enum lxw_chart_blank {
+
+    /** Show empty chart cells as gaps in the data. The default. */
+    LXW_CHART_BLANKS_AS_GAP,
+
+    /** Show empty chart cells as zeros. */
+    LXW_CHART_BLANKS_AS_ZERO,
+
+    /** Show empty chart cells as connected. Only for charts with lines. */
+    LXW_CHART_BLANKS_AS_CONNECTED
+} lxw_chart_blank;
+
+enum lxw_chart_position {
+    LXW_CHART_AXIS_RIGHT,
+    LXW_CHART_AXIS_LEFT,
+    LXW_CHART_AXIS_TOP,
+    LXW_CHART_AXIS_BOTTOM
+};
+
+/**
+ * @brief Type/amount of data series error bar.
+ */
+typedef enum lxw_chart_error_bar_type {
+    /** Error bar type: Standard error. */
+    LXW_CHART_ERROR_BAR_TYPE_STD_ERROR,
+
+    /** Error bar type: Fixed value. */
+    LXW_CHART_ERROR_BAR_TYPE_FIXED,
+
+    /** Error bar type: Percentage. */
+    LXW_CHART_ERROR_BAR_TYPE_PERCENTAGE,
+
+    /** Error bar type: Standard deviation(s). */
+    LXW_CHART_ERROR_BAR_TYPE_STD_DEV
+} lxw_chart_error_bar_type;
+
+/**
+ * @brief Direction for a data series error bar.
+ */
+typedef enum lxw_chart_error_bar_direction {
+
+    /** Error bar extends in both directions. The default. */
+    LXW_CHART_ERROR_BAR_DIR_BOTH,
+
+    /** Error bar extends in positive direction. */
+    LXW_CHART_ERROR_BAR_DIR_PLUS,
+
+    /** Error bar extends in negative direction. */
+    LXW_CHART_ERROR_BAR_DIR_MINUS
+} lxw_chart_error_bar_direction;
+
+/**
+ * @brief End cap styles for a data series error bar.
+ */
+typedef enum lxw_chart_error_bar_cap {
+    /** Flat end cap. The default. */
+    LXW_CHART_ERROR_BAR_END_CAP,
+
+    /** No end cap. */
+    LXW_CHART_ERROR_BAR_NO_CAP
+} lxw_chart_error_bar_cap;
+
+typedef struct lxw_series_error_bar {
+    uint8_t type;
+    uint8_t direction;
+    uint8_t endcap;
+    uint8_t has_value;
+    double value;
+    lxw_chart_line *line;
+
+} lxw_series_error_bar;
+
+/**
  * @brief Struct to represent an Excel chart data series.
  *
  * The lxw_chart_series is created using the chart_add_series function. It is
@@ -811,6 +864,11 @@ typedef struct lxw_chart_series {
     uint8_t default_label_position;
     char *label_num_format;
     lxw_chart_font *label_font;
+
+    lxw_series_error_bar x_error_bar;
+    lxw_series_error_bar y_error_bar;
+    uint8_t has_x_error_bar;
+    uint8_t has_y_error_bar;
 
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
 
@@ -1698,6 +1756,9 @@ void chart_series_set_labels_num_format(lxw_chart_series *series,
  */
 void chart_series_set_labels_font(lxw_chart_series *series,
                                   lxw_chart_font *font);
+
+void chart_series_set_y_error_bars_line(lxw_chart_series *series,
+                                        lxw_chart_line *line);
 
 /**
  * @brief Set the name caption of the an axis.

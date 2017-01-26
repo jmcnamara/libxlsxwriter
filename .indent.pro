@@ -54,6 +54,9 @@
 -T lxw_chart_axis_tick_mark
 -T lxw_chart_axis_tick_position
 -T lxw_chart_blank
+-T lxw_chart_error_bar_cap
+-T lxw_chart_error_bar_direction
+-T lxw_chart_error_bar_type
 -T lxw_chart_fill
 -T lxw_chart_font
 -T lxw_chart_gridline
@@ -108,6 +111,7 @@
 -T lxw_row_t
 -T lxw_selection
 -T lxw_series_data_point
+-T lxw_series_error_bar
 -T lxw_series_range
 -T lxw_sst
 -T lxw_styles

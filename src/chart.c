@@ -110,6 +110,9 @@ _chart_series_free(lxw_chart_series *series)
     _chart_free_range(series->title.range);
     _chart_free_points(series);
 
+    free(series->x_error_bar.line);
+    free(series->y_error_bar.line);
+
     free(series);
 }
 
@@ -2240,6 +2243,161 @@ _chart_write_d_lbls(lxw_chart *self, lxw_chart_series *series)
 }
 
 /*
+ * Write the <c:val> element.
+ */
+STATIC void
+_chart_write_error_val(lxw_chart *self, double value)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_DBL("val", value);
+
+    lxw_xml_empty_tag(self->file, "c:val", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:noEndCap> element.
+ */
+STATIC void
+_chart_write_no_end_cap(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:noEndCap", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:errValType> element.
+ */
+STATIC void
+_chart_write_err_val_type(lxw_chart *self, uint8_t type)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (type == LXW_CHART_ERROR_BAR_TYPE_FIXED)
+        LXW_PUSH_ATTRIBUTES_STR("val", "fixedVal");
+    else if (type == LXW_CHART_ERROR_BAR_TYPE_PERCENTAGE)
+        LXW_PUSH_ATTRIBUTES_STR("val", "percentage");
+    else if (type == LXW_CHART_ERROR_BAR_TYPE_STD_DEV)
+        LXW_PUSH_ATTRIBUTES_STR("val", "stdDev");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "stdErr");
+
+    lxw_xml_empty_tag(self->file, "c:errValType", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:errBarType> element.
+ */
+STATIC void
+_chart_write_err_bar_type(lxw_chart *self, uint8_t direction)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (direction == LXW_CHART_ERROR_BAR_DIR_PLUS)
+        LXW_PUSH_ATTRIBUTES_STR("val", "plus");
+    else if (direction == LXW_CHART_ERROR_BAR_DIR_MINUS)
+        LXW_PUSH_ATTRIBUTES_STR("val", "minus");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "both");
+
+    lxw_xml_empty_tag(self->file, "c:errBarType", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:errDir> element.
+ */
+STATIC void
+_chart_write_err_dir(lxw_chart *self, uint8_t vertical)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (vertical)
+        LXW_PUSH_ATTRIBUTES_STR("val", "y");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "n");
+
+    lxw_xml_empty_tag(self->file, "c:errDir", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:errBars> element.
+ */
+STATIC void
+_chart_write_err_bars(lxw_chart *self, uint8_t vertical,
+                      lxw_chart_series *series)
+{
+    lxw_series_error_bar *error_bar;
+
+    if (vertical)
+        error_bar = &series->y_error_bar;
+    else
+        error_bar = &series->x_error_bar;
+
+    lxw_xml_start_tag(self->file, "c:errBars", NULL);
+
+    /* Write the c:errDir element. */
+    _chart_write_err_dir(self, vertical);
+
+    /* Write the c:errBarType element. */
+    _chart_write_err_bar_type(self, error_bar->direction);
+
+    /* Write the c:errValType element. */
+    _chart_write_err_val_type(self, error_bar->type);
+
+    /* Write the c:noEndCap element. */
+    if (error_bar->endcap == LXW_CHART_ERROR_BAR_NO_CAP)
+        _chart_write_no_end_cap(self);
+
+    /* Write the c:val element. */
+    if (error_bar->has_value)
+        _chart_write_error_val(self, error_bar->value);
+
+    /* Write the c:spPr element. */
+    _chart_write_sp_pr(self, error_bar->line, NULL, NULL);
+
+    lxw_xml_end_tag(self->file, "c:errBars");
+}
+
+/*
+ * Write the <c:errBars> element.
+ */
+STATIC void
+_chart_write_error_bars(lxw_chart *self, lxw_chart_series *series)
+{
+    if (series->has_x_error_bar)
+        _chart_write_err_bars(self, LXW_FALSE, series);
+
+    if (series->has_y_error_bar)
+        _chart_write_err_bars(self, LXW_TRUE, series);
+}
+
+/*
  * Write the <c:size> element.
  */
 STATIC void
@@ -2450,6 +2608,9 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
     /* Write the c:dLbls element. */
     _chart_write_d_lbls(self, series);
 
+    /* Write the c:errBars element. */
+    _chart_write_error_bars(self, series);
+
     /* Write the c:cat element. */
     _chart_write_cat(self, series);
 
@@ -2494,6 +2655,9 @@ _chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
 
     /* Write the c:dLbls element. */
     _chart_write_d_lbls(self, series);
+
+    /* Write the c:errBars element. */
+    _chart_write_error_bars(self, series);
 
     /* Write the c:xVal element. */
     _chart_write_x_val(self, series);
@@ -4945,6 +5109,22 @@ chart_series_set_labels_font(lxw_chart_series *series, lxw_chart_font *font)
     _chart_free_font(series->label_font);
 
     series->label_font = _chart_convert_font_args(font);
+}
+
+/*
+ * Set a line type for a series marker.
+ */
+void
+chart_series_set_y_error_bars_line(lxw_chart_series *series,
+                                   lxw_chart_line *line)
+{
+    if (!line)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(series->y_error_bar.line);
+
+    series->y_error_bar.line = _chart_convert_line_args(line);
 }
 
 /*
