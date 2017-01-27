@@ -2377,7 +2377,7 @@ _chart_write_err_dir(lxw_chart *self, uint8_t is_x)
     LXW_INIT_ATTRIBUTES();
 
     if (is_x)
-        LXW_PUSH_ATTRIBUTES_STR("val", "n");
+        LXW_PUSH_ATTRIBUTES_STR("val", "x");
     else
         LXW_PUSH_ATTRIBUTES_STR("val", "y");
 
@@ -2397,8 +2397,12 @@ _chart_write_err_bars(lxw_chart *self, lxw_series_error_bars *error_bars)
 
     lxw_xml_start_tag(self->file, "c:errBars", NULL);
 
-    /* Write the c:errDir element. */
-    _chart_write_err_dir(self, error_bars->is_x);
+    /* Write the c:errDir element, except for Column/Bar charts. */
+    if (error_bars->chart_group != LXW_CHART_BAR
+        && error_bars->chart_group != LXW_CHART_COLUMN) {
+
+        _chart_write_err_dir(self, error_bars->is_x);
+    }
 
     /* Write the c:errBarType element. */
     _chart_write_err_bar_type(self, error_bars->direction);
