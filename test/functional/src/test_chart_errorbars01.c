@@ -43,7 +43,7 @@ int main() {
     );
 
 
-    series1->has_y_error_bar = 1;
+    series1->y_error_bars->is_set = 1;
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

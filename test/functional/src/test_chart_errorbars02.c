@@ -42,19 +42,19 @@ int main() {
          "=Sheet1!$C$1:$C$5"
     );
 
-    series1->has_y_error_bar = 1;
-    series1->y_error_bar.type = LXW_CHART_ERROR_BAR_TYPE_FIXED;
-    series1->y_error_bar.direction = LXW_CHART_ERROR_BAR_DIR_MINUS;
-    series1->y_error_bar.endcap = LXW_CHART_ERROR_BAR_NO_CAP;
-    series1->y_error_bar.has_value = 1;
-    series1->y_error_bar.value = 2;
+    series1->y_error_bars->is_set = 1;
+    series1->y_error_bars->type = LXW_CHART_ERROR_BAR_TYPE_FIXED;
+    series1->y_error_bars->direction = LXW_CHART_ERROR_BAR_DIR_MINUS;
+    series1->y_error_bars->endcap = LXW_CHART_ERROR_BAR_NO_CAP;
+    series1->y_error_bars->has_value = 1;
+    series1->y_error_bars->value = 2;
 
-    series2->has_y_error_bar = 1;
-    series2->y_error_bar.type = LXW_CHART_ERROR_BAR_TYPE_PERCENTAGE;
-    series2->y_error_bar.direction = LXW_CHART_ERROR_BAR_DIR_PLUS;
-    series2->y_error_bar.endcap = LXW_CHART_ERROR_BAR_END_CAP;
-    series2->y_error_bar.has_value = 1;
-    series2->y_error_bar.value = 5;
+    series2->y_error_bars->is_set = 1;
+    series2->y_error_bars->type = LXW_CHART_ERROR_BAR_TYPE_PERCENTAGE;
+    series2->y_error_bars->direction = LXW_CHART_ERROR_BAR_DIR_PLUS;
+    series2->y_error_bars->endcap = LXW_CHART_ERROR_BAR_END_CAP;
+    series2->y_error_bars->has_value = 1;
+    series2->y_error_bars->value = 5;
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

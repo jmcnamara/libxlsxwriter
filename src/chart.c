@@ -110,8 +110,15 @@ _chart_series_free(lxw_chart_series *series)
     _chart_free_range(series->title.range);
     _chart_free_points(series);
 
-    free(series->x_error_bar.line);
-    free(series->y_error_bar.line);
+    if (series->x_error_bars) {
+        free(series->x_error_bars->line);
+        free(series->x_error_bars);
+    }
+
+    if (series->y_error_bars) {
+        free(series->y_error_bars->line);
+        free(series->y_error_bars);
+    }
 
     free(series);
 }
@@ -447,6 +454,38 @@ _chart_axis_set_default_num_format(lxw_chart_axis *axis, char *num_format)
     free(axis->default_num_format);
 
     axis->default_num_format = lxw_strdup(num_format);
+}
+
+/*
+ * Verify that a X/Y error bar property is support for the chart type.
+ * All chart types, except Bar have Y error bars. Only Bar and Scatter
+ * support X error bars.
+ */
+lxw_error
+_chart_check_error_bars(lxw_series_error_bars * error_bars, char *property)
+{
+    if (error_bars->is_x) {
+        if (error_bars->chart_group != LXW_CHART_SCATTER
+            && error_bars->chart_group != LXW_CHART_BAR) {
+
+            LXW_WARN_FORMAT1("chart_series_set_error_bars_%s(): "
+                             "'X error bar' properties only available for"
+                             " Scatter and Bar charts in Excel", property);
+
+            return LXW_ERROR_PARAMETER_VALIDATION;
+        }
+    }
+    else {
+        if (error_bars->chart_group == LXW_CHART_BAR) {
+            LXW_WARN_FORMAT1("chart_series_set_error_bars_%s(): "
+                             "'Y error bar' properties not available for "
+                             "Bar charts in Excel", property);
+
+            return LXW_ERROR_PARAMETER_VALIDATION;
+        }
+    }
+
+    return LXW_NO_ERROR;
 }
 
 /*
@@ -1963,13 +2002,15 @@ _chart_write_d_pt(lxw_chart *self, lxw_chart_point *point, uint16_t index)
     _chart_write_idx(self, index);
 
     /* Scatter/Line charts have an additional marker for the point. */
-    if (self->is_scatter_chart || self->type == LXW_CHART_LINE)
+    if (self->chart_group == LXW_CHART_SCATTER
+        || self->chart_group == LXW_CHART_LINE)
         lxw_xml_start_tag(self->file, "c:marker", NULL);
 
     /* Write the c:spPr element. */
     _chart_write_sp_pr(self, point->line, point->fill, point->pattern);
 
-    if (self->is_scatter_chart || self->type == LXW_CHART_LINE)
+    if (self->chart_group == LXW_CHART_SCATTER
+        || self->chart_group == LXW_CHART_LINE)
         lxw_xml_end_tag(self->file, "c:marker");
 
     lxw_xml_end_tag(self->file, "c:dPt");
@@ -2328,17 +2369,17 @@ _chart_write_err_bar_type(lxw_chart *self, uint8_t direction)
  * Write the <c:errDir> element.
  */
 STATIC void
-_chart_write_err_dir(lxw_chart *self, uint8_t vertical)
+_chart_write_err_dir(lxw_chart *self, uint8_t is_x)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
 
-    if (vertical)
-        LXW_PUSH_ATTRIBUTES_STR("val", "y");
-    else
+    if (is_x)
         LXW_PUSH_ATTRIBUTES_STR("val", "n");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "y");
 
     lxw_xml_empty_tag(self->file, "c:errDir", &attributes);
 
@@ -2349,37 +2390,32 @@ _chart_write_err_dir(lxw_chart *self, uint8_t vertical)
  * Write the <c:errBars> element.
  */
 STATIC void
-_chart_write_err_bars(lxw_chart *self, uint8_t vertical,
-                      lxw_chart_series *series)
+_chart_write_err_bars(lxw_chart *self, lxw_series_error_bars * error_bars)
 {
-    lxw_series_error_bar *error_bar;
-
-    if (vertical)
-        error_bar = &series->y_error_bar;
-    else
-        error_bar = &series->x_error_bar;
+    if (!error_bars->is_set)
+        return;
 
     lxw_xml_start_tag(self->file, "c:errBars", NULL);
 
     /* Write the c:errDir element. */
-    _chart_write_err_dir(self, vertical);
+    _chart_write_err_dir(self, error_bars->is_x);
 
     /* Write the c:errBarType element. */
-    _chart_write_err_bar_type(self, error_bar->direction);
+    _chart_write_err_bar_type(self, error_bars->direction);
 
     /* Write the c:errValType element. */
-    _chart_write_err_val_type(self, error_bar->type);
+    _chart_write_err_val_type(self, error_bars->type);
 
     /* Write the c:noEndCap element. */
-    if (error_bar->endcap == LXW_CHART_ERROR_BAR_NO_CAP)
+    if (error_bars->endcap == LXW_CHART_ERROR_BAR_NO_CAP)
         _chart_write_no_end_cap(self);
 
     /* Write the c:val element. */
-    if (error_bar->has_value)
-        _chart_write_error_val(self, error_bar->value);
+    if (error_bars->has_value)
+        _chart_write_error_val(self, error_bars->value);
 
     /* Write the c:spPr element. */
-    _chart_write_sp_pr(self, error_bar->line, NULL, NULL);
+    _chart_write_sp_pr(self, error_bars->line, NULL, NULL);
 
     lxw_xml_end_tag(self->file, "c:errBars");
 }
@@ -2390,11 +2426,8 @@ _chart_write_err_bars(lxw_chart *self, uint8_t vertical,
 STATIC void
 _chart_write_error_bars(lxw_chart *self, lxw_chart_series *series)
 {
-    if (series->has_x_error_bar)
-        _chart_write_err_bars(self, LXW_FALSE, series);
-
-    if (series->has_y_error_bar)
-        _chart_write_err_bars(self, LXW_TRUE, series);
+    _chart_write_err_bars(self, series->x_error_bars);
+    _chart_write_err_bars(self, series->y_error_bars);
 }
 
 /*
@@ -2618,7 +2651,8 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
     _chart_write_val(self, series);
 
     /* Write the c:smooth element. */
-    if (self->is_scatter_chart || self->type == LXW_CHART_LINE)
+    if (self->chart_group == LXW_CHART_SCATTER
+        || self->chart_group == LXW_CHART_LINE)
         _chart_write_smooth(self, series->smooth);
 
     lxw_xml_end_tag(self->file, "c:ser");
@@ -3308,7 +3342,8 @@ _chart_write_legend(lxw_chart *self)
     /* Write the c:layout element. */
     _chart_write_layout(self);
 
-    if (self->type == LXW_CHART_PIE || self->type == LXW_CHART_DOUGHNUT) {
+    if (self->chart_group == LXW_CHART_PIE
+        || self->chart_group == LXW_CHART_DOUGHNUT) {
         /* Write the c:overlay element. */
         if (has_overlay)
             _chart_write_overlay(self);
@@ -4351,6 +4386,7 @@ _chart_write_chart(lxw_chart *self)
 STATIC void
 _chart_initialize_area_chart(lxw_chart *self, uint8_t type)
 {
+    self->chart_group = LXW_CHART_AREA;
     self->grouping = LXW_GROUPING_STANDARD;
     self->default_cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
     self->x_axis->is_category = LXW_TRUE;
@@ -4392,6 +4428,7 @@ _chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
 {
     /* Note: Bar chart category/value axis are reversed in comparison to
      *       other charts. Some of the defaults reflect this. */
+    self->chart_group = LXW_CHART_BAR;
     self->x_axis->major_gridlines.visible = LXW_TRUE;
     self->y_axis->major_gridlines.visible = LXW_FALSE;
     self->y_axis->is_category = LXW_TRUE;
@@ -4427,6 +4464,7 @@ _chart_initialize_bar_chart(lxw_chart *self, uint8_t type)
 STATIC void
 _chart_initialize_column_chart(lxw_chart *self, uint8_t type)
 {
+    self->chart_group = LXW_CHART_COLUMN;
     self->has_horiz_val_axis = LXW_FALSE;
     self->x_axis->is_category = LXW_TRUE;
     self->y_axis->is_value = LXW_TRUE;
@@ -4459,6 +4497,7 @@ STATIC void
 _chart_initialize_doughnut_chart(lxw_chart *self)
 {
     /* Initialize the function pointers for this chart type. */
+    self->chart_group = LXW_CHART_DOUGHNUT;
     self->write_chart_type = _chart_write_doughnut_chart;
     self->write_plot_area = _chart_write_pie_plot_area;
     self->default_label_position = LXW_CHART_LABEL_POSITION_BEST_FIT;
@@ -4470,6 +4509,7 @@ _chart_initialize_doughnut_chart(lxw_chart *self)
 STATIC void
 _chart_initialize_line_chart(lxw_chart *self)
 {
+    self->chart_group = LXW_CHART_LINE;
     _chart_set_default_marker_type(self, LXW_CHART_MARKER_NONE);
     self->grouping = LXW_GROUPING_STANDARD;
     self->x_axis->is_category = LXW_TRUE;
@@ -4488,6 +4528,7 @@ STATIC void
 _chart_initialize_pie_chart(lxw_chart *self)
 {
     /* Initialize the function pointers for this chart type. */
+    self->chart_group = LXW_CHART_PIE;
     self->write_chart_type = _chart_write_pie_chart;
     self->write_plot_area = _chart_write_pie_plot_area;
     self->default_label_position = LXW_CHART_LABEL_POSITION_BEST_FIT;
@@ -4499,9 +4540,9 @@ _chart_initialize_pie_chart(lxw_chart *self)
 STATIC void
 _chart_initialize_scatter_chart(lxw_chart *self)
 {
+    self->chart_group = LXW_CHART_SCATTER;
     self->has_horiz_val_axis = LXW_FALSE;
     self->default_cross_between = LXW_CHART_AXIS_POSITION_ON_TICK;
-    self->is_scatter_chart = LXW_TRUE;
     self->x_axis->is_value = LXW_TRUE;
     self->y_axis->is_value = LXW_TRUE;
     self->default_label_position = LXW_CHART_LABEL_POSITION_RIGHT;
@@ -4526,6 +4567,7 @@ _chart_initialize_radar_chart(lxw_chart *self, uint8_t type)
     if (type == LXW_CHART_RADAR)
         _chart_set_default_marker_type(self, LXW_CHART_MARKER_NONE);
 
+    self->chart_group = LXW_CHART_RADAR;
     self->x_axis->major_gridlines.visible = LXW_TRUE;
     self->x_axis->is_category = LXW_TRUE;
     self->y_axis->is_value = LXW_TRUE;
@@ -4670,7 +4712,7 @@ chart_add_series(lxw_chart *self, const char *categories, const char *values)
     lxw_chart_series *series;
 
     /* Scatter charts require categories and values. */
-    if (self->is_scatter_chart && values && !categories) {
+    if (self->chart_group == LXW_CHART_SCATTER && values && !categories) {
         LXW_WARN("chart_add_series(): scatter charts must have "
                  "'categories' and 'values'");
 
@@ -4689,6 +4731,12 @@ chart_add_series(lxw_chart *self, const char *categories, const char *values)
 
     series->title.range = calloc(1, sizeof(lxw_series_range));
     GOTO_LABEL_ON_MEM_ERROR(series->title.range, mem_error);
+
+    series->x_error_bars = calloc(1, sizeof(lxw_series_error_bars));
+    GOTO_LABEL_ON_MEM_ERROR(series->x_error_bars, mem_error);
+
+    series->y_error_bars = calloc(1, sizeof(lxw_series_error_bars));
+    GOTO_LABEL_ON_MEM_ERROR(series->y_error_bars, mem_error);
 
     if (categories) {
         if (categories[0] == '=')
@@ -4718,6 +4766,10 @@ chart_add_series(lxw_chart *self, const char *categories, const char *values)
 
     if (self->type == LXW_CHART_SCATTER_SMOOTH_WITH_MARKERS)
         series->smooth = LXW_TRUE;
+
+    series->y_error_bars->chart_group = self->chart_group;
+    series->x_error_bars->chart_group = self->chart_group;
+    series->x_error_bars->is_x = LXW_TRUE;
 
     series->default_label_position = self->default_label_position;
 
@@ -5115,16 +5167,19 @@ chart_series_set_labels_font(lxw_chart_series *series, lxw_chart_font *font)
  * Set a line type for a series marker.
  */
 void
-chart_series_set_y_error_bars_line(lxw_chart_series *series,
-                                   lxw_chart_line *line)
+chart_series_set_error_bars_line(lxw_series_error_bars * error_bars,
+                                 lxw_chart_line *line)
 {
+    if (_chart_check_error_bars(error_bars, "line"))
+        return;
+
     if (!line)
         return;
 
     /* Free any previously allocated resource. */
-    free(series->y_error_bar.line);
+    free(error_bars->line);
 
-    series->y_error_bar.line = _chart_convert_line_args(line);
+    error_bars->line = _chart_convert_line_args(line);
 }
 
 /*

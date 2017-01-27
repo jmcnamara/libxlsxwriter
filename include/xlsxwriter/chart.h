@@ -819,15 +819,18 @@ typedef enum lxw_chart_error_bar_cap {
     LXW_CHART_ERROR_BAR_NO_CAP
 } lxw_chart_error_bar_cap;
 
-typedef struct lxw_series_error_bar {
+typedef struct lxw_series_error_bars {
     uint8_t type;
     uint8_t direction;
     uint8_t endcap;
     uint8_t has_value;
+    uint8_t is_set;
+    uint8_t is_x;
+    uint8_t chart_group;
     double value;
     lxw_chart_line *line;
 
-} lxw_series_error_bar;
+} lxw_series_error_bars;
 
 /**
  * @brief Struct to represent an Excel chart data series.
@@ -865,10 +868,8 @@ typedef struct lxw_chart_series {
     char *label_num_format;
     lxw_chart_font *label_font;
 
-    lxw_series_error_bar x_error_bar;
-    lxw_series_error_bar y_error_bar;
-    uint8_t has_x_error_bar;
-    uint8_t has_y_error_bar;
+    lxw_series_error_bars *x_error_bars;
+    lxw_series_error_bars *y_error_bars;
 
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
 
@@ -979,7 +980,7 @@ typedef struct lxw_chart {
     uint32_t axis_id_4;
 
     uint8_t in_use;
-    uint8_t is_scatter_chart;
+    uint8_t chart_group;
     uint8_t cat_has_num_fmt;
 
     uint8_t has_horiz_cat_axis;
@@ -1757,8 +1758,8 @@ void chart_series_set_labels_num_format(lxw_chart_series *series,
 void chart_series_set_labels_font(lxw_chart_series *series,
                                   lxw_chart_font *font);
 
-void chart_series_set_y_error_bars_line(lxw_chart_series *series,
-                                        lxw_chart_line *line);
+void chart_series_set_error_bars_line(lxw_series_error_bars * error_bars,
+                                      lxw_chart_line *line);
 
 /**
  * @brief Set the name caption of the an axis.
