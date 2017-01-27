@@ -1758,15 +1758,147 @@ void chart_series_set_labels_num_format(lxw_chart_series *series,
 void chart_series_set_labels_font(lxw_chart_series *series,
                                   lxw_chart_font *font);
 
+/**
+ * Set the X or Y error bars for a chart series.
+ *
+ * @param error_bars A pointer to the series X or Y error bars.
+ * @param type       The type of error bar: #lxw_chart_error_bar_type.
+ * @param value      The error value.
+ *
+ * Error bars can be added to a chart series to indicate error bounds in the
+ * data. The error bars can be vertical `y_error_bars` (the most common type)
+ * or horizontal `x_error_bars` (for Bar and Scatter charts only).
+ *
+ * @image html chart_error_bars0.png
+ *
+ * The `%chart_series_set_error_bars()` function sets the error bar type
+ * and value associated with the type:
+ *
+ * @code
+ *     lxw_chart_series *series = chart_add_series(chart,
+ *                                                 "=Sheet1!$A$1:$A$5",
+ *                                                 "=Sheet1!$B$1:$B$5");
+ *
+ *     chart_series_set_error_bars(series->y_error_bars,
+ *                                 LXW_CHART_ERROR_BAR_TYPE_STD_ERROR, 0);
+ * @endcode
+ *
+ * @image html chart_error_bars1.png
+ *
+ * The error bar types that be used are:
+ *
+ * - #LXW_CHART_ERROR_BAR_TYPE_STD_ERROR: Standard error.
+ * - #LXW_CHART_ERROR_BAR_TYPE_FIXED: Fixed value.
+ * - #LXW_CHART_ERROR_BAR_TYPE_PERCENTAGE: Percentage.
+ * - #LXW_CHART_ERROR_BAR_TYPE_STD_DEV: Standard deviation(s).
+ *
+ * @note Custom error bars are not currently supported.
+ *
+ * All error bar types, apart from Standard error, should have a valid
+ * value to set the error range:
+ *
+ * @code
+ *     chart_series_set_error_bars(series1->y_error_bars,
+ *                                 LXW_CHART_ERROR_BAR_TYPE_FIXED, 2);
+ *
+ *     chart_series_set_error_bars(series2->y_error_bars,
+ *                                 LXW_CHART_ERROR_BAR_TYPE_PERCENTAGE, 5);
+ *
+ *     chart_series_set_error_bars(series3->y_error_bars,
+ *                                 LXW_CHART_ERROR_BAR_TYPE_STD_DEV, 1);
+ * @endcode
+ *
+ * For the Standard error type the value is ignored.
+ *
+ * For more information see @ref chart_error_bars.
+ */
 void chart_series_set_error_bars(lxw_series_error_bars *error_bars,
                                  uint8_t type, double value);
 
+/**
+ * @brief Set the direction (up, down or both) of the error bars for a chart
+ *        series.
+ *
+ * @param error_bars A pointer to the series X or Y error bars.
+ * @param direction  The bar direction: #lxw_chart_error_bar_direction .
+ *
+ * The `%chart_series_set_error_bars_direction()` function sets the
+ * direction of the error bars:
+ *
+ * @code
+ *     chart_series_set_error_bars(series->y_error_bars,
+ *                                 LXW_CHART_ERROR_BAR_TYPE_STD_ERROR, 0);
+ *
+ *     chart_series_set_error_bars_direction(series->y_error_bars,
+ *                                           LXW_CHART_ERROR_BAR_DIR_PLUS);
+ * @endcode
+ *
+ * @image html chart_error_bars2.png
+ *
+ * The valid directions are:
+ *
+ * - #LXW_CHART_ERROR_BAR_DIR_BOTH: Error bar extends in both directions.
+ *   The default.
+ * - #LXW_CHART_ERROR_BAR_DIR_PLUS: Error bar extends in positive direction.
+ * - #LXW_CHART_ERROR_BAR_DIR_MINUS: Error bar extends in negative direction.
+ *
+ * For more information see @ref chart_error_bars.
+ */
 void chart_series_set_error_bars_direction(lxw_series_error_bars *error_bars,
                                            uint8_t direction);
 
+/**
+ * @brief Set the end cap type for the error bars of a chart series.
+ *
+ * @param error_bars A pointer to the series X or Y error bars.
+ * @param endcap     The error bar end cap type: #lxw_chart_error_bar_cap .
+ *
+ * The `%chart_series_set_error_bars_endcap()` function sets the end cap
+ * type for the error bars:
+ *
+ * @code
+ *     chart_series_set_error_bars(series->y_error_bars,
+ *                                 LXW_CHART_ERROR_BAR_TYPE_STD_ERROR, 0);
+ *
+ *     chart_series_set_error_bars_endcap(series->y_error_bars,
+                                          LXW_CHART_ERROR_BAR_NO_CAP);
+ * @endcode
+ *
+ * @image html chart_error_bars3.png
+ *
+ * The valid values are:
+ *
+ * - #LXW_CHART_ERROR_BAR_END_CAP: Flat end cap. The default.
+ * - #LXW_CHART_ERROR_BAR_NO_CAP: No end cap.
+ *
+ * For more information see @ref chart_error_bars.
+ */
 void chart_series_set_error_bars_endcap(lxw_series_error_bars *error_bars,
                                         uint8_t endcap);
 
+/**
+ * @brief Set the line properties for a chart series error bars.
+ *
+ * @param error_bars A pointer to the series X or Y error bars.
+ * @param line       A #lxw_chart_line struct.
+ *
+ * The `%chart_series_set_error_bars_line()` function sets the line
+ * properties for the error bars:
+ *
+ * @code
+ *     lxw_chart_line line = {.color     = LXW_COLOR_RED,
+ *                            .dash_type = LXW_CHART_LINE_DASH_ROUND_DOT};
+ *
+ *     chart_series_set_error_bars(series->y_error_bars,
+ *                                 LXW_CHART_ERROR_BAR_TYPE_STD_ERROR, 0);
+ *
+ *     chart_series_set_error_bars_line(series->y_error_bars, &line);
+ * @endcode
+ *
+ * @image html chart_error_bars4.png
+ *
+ * For more information see @ref chart_lines and @ref chart_error_bars.
+ */
 void chart_series_set_error_bars_line(lxw_series_error_bars *error_bars,
                                       lxw_chart_line *line);
 

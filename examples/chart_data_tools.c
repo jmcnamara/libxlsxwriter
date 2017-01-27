@@ -141,7 +141,7 @@ int main() {
 
     /* Add the first series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
-    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+    chart_add_series(         chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
 
     /* Add series markers. */
     chart_series_set_marker_type(series, LXW_CHART_MARKER_CIRCLE);
@@ -151,6 +151,29 @@ int main() {
 
     /* Insert the chart into the worksheet. */
     worksheet_insert_chart(worksheet, CELL("E66"), chart);
+
+
+    /*
+     * Chart 6. Example with Error Bars.
+     */
+    chart = workbook_add_chart(workbook, LXW_CHART_LINE);
+
+    /* Add a chart title. */
+    chart_title_set_name(chart, "Chart with Error Bars");
+
+    /* Add the first series to the chart. */
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
+    chart_add_series(         chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+
+    /* Add error bars to show Standard Error. */
+    chart_series_set_error_bars(series->y_error_bars,
+                                LXW_CHART_ERROR_BAR_TYPE_STD_ERROR, 0);
+
+    /* Add series data labels. */
+    chart_series_set_labels(series);
+
+    /* Insert the chart into the worksheet. */
+    worksheet_insert_chart(worksheet, CELL("E82"), chart);
 
 
     return workbook_close(workbook);
