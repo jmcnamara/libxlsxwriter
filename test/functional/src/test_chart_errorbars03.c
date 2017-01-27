@@ -46,8 +46,9 @@ int main() {
     lxw_chart_line line = {.color     = LXW_COLOR_RED,
                            .dash_type = LXW_CHART_LINE_DASH_ROUND_DOT};
 
-    series1->y_error_bars->is_set = 1;
-    series1->y_error_bars->type = LXW_CHART_ERROR_BAR_TYPE_STD_ERROR;
+    chart_series_set_error_bars(series1->y_error_bars,
+                                LXW_CHART_ERROR_BAR_TYPE_STD_ERROR, 0);
+
     chart_series_set_error_bars_line(series1->y_error_bars, &line);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);

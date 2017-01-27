@@ -462,13 +462,13 @@ _chart_axis_set_default_num_format(lxw_chart_axis *axis, char *num_format)
  * support X error bars.
  */
 lxw_error
-_chart_check_error_bars(lxw_series_error_bars * error_bars, char *property)
+_chart_check_error_bars(lxw_series_error_bars *error_bars, char *property)
 {
     if (error_bars->is_x) {
         if (error_bars->chart_group != LXW_CHART_SCATTER
             && error_bars->chart_group != LXW_CHART_BAR) {
 
-            LXW_WARN_FORMAT1("chart_series_set_error_bars_%s(): "
+            LXW_WARN_FORMAT1("chart_series_set_error_bars%s(): "
                              "'X error bar' properties only available for"
                              " Scatter and Bar charts in Excel", property);
 
@@ -477,7 +477,7 @@ _chart_check_error_bars(lxw_series_error_bars * error_bars, char *property)
     }
     else {
         if (error_bars->chart_group == LXW_CHART_BAR) {
-            LXW_WARN_FORMAT1("chart_series_set_error_bars_%s(): "
+            LXW_WARN_FORMAT1("chart_series_set_error_bars%s(): "
                              "'Y error bar' properties not available for "
                              "Bar charts in Excel", property);
 
@@ -2390,7 +2390,7 @@ _chart_write_err_dir(lxw_chart *self, uint8_t is_x)
  * Write the <c:errBars> element.
  */
 STATIC void
-_chart_write_err_bars(lxw_chart *self, lxw_series_error_bars * error_bars)
+_chart_write_err_bars(lxw_chart *self, lxw_series_error_bars *error_bars)
 {
     if (!error_bars->is_set)
         return;
@@ -5164,13 +5164,58 @@ chart_series_set_labels_font(lxw_chart_series *series, lxw_chart_font *font)
 }
 
 /*
- * Set a line type for a series marker.
+ * Set the error bars and type for a chart series.
  */
 void
-chart_series_set_error_bars_line(lxw_series_error_bars * error_bars,
+chart_series_set_error_bars(lxw_series_error_bars *error_bars,
+                            uint8_t type, double value)
+{
+    if (_chart_check_error_bars(error_bars, ""))
+        return;
+
+    error_bars->type = type;
+    error_bars->value = value;
+    error_bars->has_value = LXW_TRUE;
+    error_bars->is_set = LXW_TRUE;
+
+    if (type == LXW_CHART_ERROR_BAR_TYPE_STD_ERROR)
+        error_bars->has_value = LXW_FALSE;
+}
+
+/*
+ * Set the error bars direction for a chart series.
+ */
+void
+chart_series_set_error_bars_direction(lxw_series_error_bars *error_bars,
+                                      uint8_t direction)
+{
+    if (_chart_check_error_bars(error_bars, "_direction"))
+        return;
+
+    error_bars->direction = direction;
+}
+
+/*
+ * Set the error bars end cap type for a chart series.
+ */
+void
+chart_series_set_error_bars_endcap(lxw_series_error_bars *error_bars,
+                                   uint8_t endcap)
+{
+    if (_chart_check_error_bars(error_bars, "_endcap"))
+        return;
+
+    error_bars->endcap = endcap;
+}
+
+/*
+ * Set a line type for a series error bars.
+ */
+void
+chart_series_set_error_bars_line(lxw_series_error_bars *error_bars,
                                  lxw_chart_line *line)
 {
-    if (_chart_check_error_bars(error_bars, "line"))
+    if (_chart_check_error_bars(error_bars, "_line"))
         return;
 
     if (!line)

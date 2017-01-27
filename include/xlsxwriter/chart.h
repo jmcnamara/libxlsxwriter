@@ -1758,7 +1758,16 @@ void chart_series_set_labels_num_format(lxw_chart_series *series,
 void chart_series_set_labels_font(lxw_chart_series *series,
                                   lxw_chart_font *font);
 
-void chart_series_set_error_bars_line(lxw_series_error_bars * error_bars,
+void chart_series_set_error_bars(lxw_series_error_bars *error_bars,
+                                 uint8_t type, double value);
+
+void chart_series_set_error_bars_direction(lxw_series_error_bars *error_bars,
+                                           uint8_t direction);
+
+void chart_series_set_error_bars_endcap(lxw_series_error_bars *error_bars,
+                                        uint8_t endcap);
+
+void chart_series_set_error_bars_line(lxw_series_error_bars *error_bars,
                                       lxw_chart_line *line);
 
 /**
