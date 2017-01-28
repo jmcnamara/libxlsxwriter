@@ -464,6 +464,16 @@ _chart_axis_set_default_num_format(lxw_chart_axis *axis, char *num_format)
 lxw_error
 _chart_check_error_bars(lxw_series_error_bars *error_bars, char *property)
 {
+    /* Check that the error bar type has been set for all error bar
+     * functions except the one that is used to set the type. */
+    if (strlen(property) && !error_bars->is_set) {
+        LXW_WARN_FORMAT1("chart_series_set_error_bars%s(): "
+                         "error bar type must be set first using "
+                         "chart_series_set_error_bars()", property);
+
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+
     if (error_bars->is_x) {
         if (error_bars->chart_group != LXW_CHART_SCATTER
             && error_bars->chart_group != LXW_CHART_BAR) {
