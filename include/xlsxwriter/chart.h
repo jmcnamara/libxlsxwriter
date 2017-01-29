@@ -1795,21 +1795,217 @@ void chart_series_set_labels_num_format(lxw_chart_series *series,
 void chart_series_set_labels_font(lxw_chart_series *series,
                                   lxw_chart_font *font);
 
+/**
+ * @brief Turn on a trendline for a chart data series.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ * @param type   The type of trendline: #lxw_chart_trendline_type.
+ * @param value  The order/period value for polynomial and moving average
+ *               trendlines.
+ *
+ * A trendline can be added to a chart series to indicate trends in the data
+ * such as a moving average or a polynomial fit. The trendlines types are
+ * shown in the following Excel dialog:
+ *
+ * @image html chart_trendline0.png
+ *
+ * The `%chart_series_set_trendline()` function turns on these trendlines for
+ * a data series:
+ *
+ * @code
+ *     chart = workbook_add_chart(workbook, LXW_CHART_LINE);
+ *     series = chart_add_series(chart, NULL, "Sheet1!$A$1:$A$6");
+ *
+ *     chart_series_set_trendline(series, LXW_CHART_TRENDLINE_TYPE_LINEAR, 0);
+ * @endcode
+ *
+ * @image html chart_trendline2.png
+ *
+ * The `value` parameter corresponds to *order* for a polynomial trendline
+ * and *period* for a Moving Average trendline. It both cases it must be >= 2.
+ * The `value` parameter  is ignored for all other trendlines:
+ *
+ * @code
+ *     chart_series_set_trendline(series, LXW_CHART_TRENDLINE_TYPE_AVERAGE, 2);
+ * @endcode
+ *
+ * @image html chart_trendline3.png
+ *
+ * The allowable values for the the trendline `type` are:
+ *
+ * - #LXW_CHART_TRENDLINE_TYPE_LINEAR: Linear trendline.
+ * - #LXW_CHART_TRENDLINE_TYPE_LOG: Logarithm trendline.
+ * - #LXW_CHART_TRENDLINE_TYPE_POLY: Polynomial trendline. The `value`
+ *   parameter corresponds to *order*.
+ * - #LXW_CHART_TRENDLINE_TYPE_POWER: Power trendline.
+ * - #LXW_CHART_TRENDLINE_TYPE_EXP: Exponential trendline.
+ * - #LXW_CHART_TRENDLINE_TYPE_AVERAGE: Moving Average trendline. The `value`
+ *   parameter corresponds to *period*.
+ *
+ * Other trendline options, such as those shown in the following Excel
+ * dialog, can be set using the functions below.
+ *
+ * @image html chart_trendline1.png
+ *
+ * For more information see @ref chart_trendlines.
+ */
 void chart_series_set_trendline(lxw_chart_series *series, uint8_t type,
                                 uint8_t value);
 
+/**
+ * @brief Set the trendline forecast for a chart data series.
+ *
+ * @param series   A series object created via `chart_add_series()`.
+ * @param forward  The forward period.
+ * @param backward The backwards period.
+ *
+ * The `%chart_series_set_trendline_forecast()` function sets the forward
+ * and backward forecast periods for the trendline:
+ *
+ * @code
+ *     chart_series_set_trendline(series, LXW_CHART_TRENDLINE_TYPE_LINEAR, 0);
+ *     chart_series_set_trendline_forecast(series, 0.5, 0.5);
+ * @endcode
+ *
+ * @image html chart_trendline4.png
+ *
+ * @note This feature isn't available for Moving Average in Excel.
+ *
+ * For more information see @ref chart_trendlines.
+ */
 void chart_series_set_trendline_forecast(lxw_chart_series *series,
                                          double forward, double backward);
 
+/**
+ * @brief Display the equation of a trendline for a chart data series.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ *
+ * The `%chart_series_set_trendline_equation()` function displays the
+ * equation of the trendline on the chart:
+ *
+ * @code
+ *     chart_series_set_trendline(series, LXW_CHART_TRENDLINE_TYPE_LINEAR, 0);
+ *     chart_series_set_trendline_equation(series);
+ * @endcode
+ *
+ * @image html chart_trendline5.png
+ *
+ * @note This feature isn't available for Moving Average in Excel.
+ *
+ * For more information see @ref chart_trendlines.
+ */
 void chart_series_set_trendline_equation(lxw_chart_series *series);
 
+/**
+ * @brief Display the R squared value of a trendline for a chart data series.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ *
+ * The `%chart_series_set_trendline_r_squared()` function displays the
+ * R-squared value for the trendline on the chart:
+ *
+ * @code
+ *     chart_series_set_trendline(series, LXW_CHART_TRENDLINE_TYPE_LINEAR, 0);
+ *     chart_series_set_trendline_r_squared(series);
+ * @endcode
+ *
+ * @image html chart_trendline6.png
+ *
+ * @note This feature isn't available for Moving Average in Excel.
+ *
+ * For more information see @ref chart_trendlines.
+ */
 void chart_series_set_trendline_r_squared(lxw_chart_series *series);
 
+/**
+ * @brief Set the trendline Y-axis intercept for a chart data series.
+ *
+ * @param series    A series object created via `chart_add_series()`.
+ * @param intercept Y-axis intercept value.
+ *
+ * The `%chart_series_set_trendline_intercept()` function sets the Y-axis
+ * intercept for the trendline:
+ *
+ * @code
+ *     chart_series_set_trendline(series, LXW_CHART_TRENDLINE_TYPE_LINEAR, 0);
+ *     chart_series_set_trendline_equation(series);
+ *     chart_series_set_trendline_intercept(series, 0.8);
+ * @endcode
+ *
+ * @image html chart_trendline7.png
+ *
+ * As can be seen from the equation on the chart the intercept point
+ * (when X=0) is the same as the value set in the equation.
+ *
+ * @note The intercept feature is only available in Excel for Exponential,
+ *       Linear and Polynomial trendline types.
+ *
+ * For more information see @ref chart_trendlines.
+ */
 void chart_series_set_trendline_intercept(lxw_chart_series *series,
                                           double intercept);
 
+/**
+ * @brief Set the trendline name for a chart data series.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ * @param name   The name of the trendline to display in the legend.
+ *
+ * The `%chart_series_set_trendline_name()` function sets the name of the
+ * trendline that is displayed in the chart legend. In the examples above
+ * the trendlines are displayed with default names like "Linear (Series 1)"
+ * and "2 per Mov. Avg. (Series 1)". If these names are too verbose or not
+ * descriptive enough you can set your own trendline name:
+ *
+ * @code
+ *     chart_series_set_trendline(series, LXW_CHART_TRENDLINE_TYPE_LINEAR, 0);
+ *     chart_series_set_trendline_name(series, "My trendline");
+ * @endcode
+ *
+ * @image html chart_trendline8.png
+ *
+ * It is often preferable to turn off the trendline caption in the legend.
+ * This is down in Excel by deleting the trendline name from the legend.
+ * In libxlsxwriter this is done using the `chart_legend_delete_series()`
+ * function to delete the zero based series numbers:
+ *
+ * @code
+ *     chart_series_set_trendline(series, LXW_CHART_TRENDLINE_TYPE_LINEAR, 0);
+ *
+ *     // Delete the series name for the second series (=1 in zero base).
+ *     // The -1 value indicates the end of the array of values.
+ *     int16_t names[] = {1, -1};
+ *     chart_legend_delete_series(chart, names);
+ * @endcode
+ *
+ * @image html chart_trendline9.png
+ *
+ * For more information see @ref chart_trendlines.
+ */
 void chart_series_set_trendline_name(lxw_chart_series *series, char *name);
 
+/**
+ * @brief Set the trendline line properties for a chart data series.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ * @param line   A #lxw_chart_line struct.
+ *
+ * The `%chart_series_set_trendline_line()` function is used to set the line
+ * properties of a trendline:
+ *
+ * @code
+ *     lxw_chart_line line = {.color     = LXW_COLOR_RED,
+ *                            .dash_type = LXW_CHART_LINE_DASH_LONG_DASH};
+ *
+ *     chart_series_set_trendline(series, LXW_CHART_TRENDLINE_TYPE_LINEAR, 0);
+ *     chart_series_set_trendline_line(series, &line);
+ * @endcode
+ *
+ * @image html chart_trendline10.png
+ *
+ * For more information see @ref chart_trendlines and @ref chart_lines.
+ */
 void chart_series_set_trendline_line(lxw_chart_series *series,
                                      lxw_chart_line *line);
 

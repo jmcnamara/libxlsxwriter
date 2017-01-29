@@ -176,5 +176,28 @@ int main() {
     worksheet_insert_chart(worksheet, CELL("E82"), chart);
 
 
+    /*
+     * Chart 7. Example with a trendline
+     */
+    chart = workbook_add_chart(workbook, LXW_CHART_LINE);
+
+    /* Add a chart title. */
+    chart_title_set_name(chart, "Chart with a Trendline");
+
+    /* Add the first series to the chart. */
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
+    chart_add_series(         chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+
+    /* Add a polynomial trendline. */
+    lxw_chart_line poly_line = {.color     = LXW_COLOR_GRAY,
+                                .dash_type = LXW_CHART_LINE_DASH_LONG_DASH};
+
+    chart_series_set_trendline(series, LXW_CHART_TRENDLINE_TYPE_POLY, 3);
+    chart_series_set_trendline_line(series, &poly_line);
+
+    /* Insert the chart into the worksheet. */
+    worksheet_insert_chart(worksheet, CELL("E98"), chart);
+
+
     return workbook_close(workbook);
 }

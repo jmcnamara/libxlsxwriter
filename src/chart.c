@@ -5418,7 +5418,7 @@ chart_series_set_trendline(lxw_chart_series *series, uint8_t type,
                            uint8_t value)
 {
     if (type == LXW_CHART_TRENDLINE_TYPE_POLY
-        || type == LXW_CHART_TRENDLINE_TYPE_POLY) {
+        || type == LXW_CHART_TRENDLINE_TYPE_AVERAGE) {
 
         if (value < 2) {
             LXW_WARN("chart_series_set_trendline(): order/period value must "
@@ -5516,6 +5516,7 @@ chart_series_set_trendline_intercept(lxw_chart_series *series,
     if (series->trendline_type != LXW_CHART_TRENDLINE_TYPE_EXP
         && series->trendline_type != LXW_CHART_TRENDLINE_TYPE_LINEAR
         && series->trendline_type != LXW_CHART_TRENDLINE_TYPE_POLY) {
+
         LXW_WARN("chart_series_set_trendline_intercept(): intercept is only "
                  "available in Excel for Exponential, Linear and Polynomial "
                  "trendline types");

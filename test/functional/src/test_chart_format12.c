@@ -48,7 +48,6 @@ int main() {
 
     chart_series_set_trendline(series, LXW_CHART_TRENDLINE_TYPE_AVERAGE, 2);
     chart_series_set_trendline_line(series, &line);
-    chart_series_set_trendline_forecast(series, 0.5, 0.5);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 
