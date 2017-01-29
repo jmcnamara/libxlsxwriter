@@ -120,6 +120,9 @@ _chart_series_free(lxw_chart_series *series)
         free(series->y_error_bars);
     }
 
+    free(series->trendline_line);
+    free(series->trendline_name);
+
     free(series);
 }
 
@@ -2108,10 +2111,9 @@ _chart_write_show_ser_name(lxw_chart *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "1";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
 
     lxw_xml_empty_tag(self->file, "c:showSerName", &attributes);
 
@@ -2291,6 +2293,233 @@ _chart_write_d_lbls(lxw_chart *self, lxw_chart_series *series)
         _chart_write_show_leader_lines(self);
 
     lxw_xml_end_tag(self->file, "c:dLbls");
+}
+
+/*
+ * Write the <c:intercept> element.
+ */
+STATIC void
+_chart_write_intercept(lxw_chart *self, double value)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_DBL("val", value);
+
+    lxw_xml_empty_tag(self->file, "c:intercept", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:dispRSqr> element.
+ */
+STATIC void
+_chart_write_disp_rsqr(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:dispRSqr", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:trendlineLbl> element.
+ */
+STATIC void
+_chart_write_trendline_lbl(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    lxw_xml_start_tag(self->file, "c:trendlineLbl", NULL);
+
+    lxw_xml_empty_tag(self->file, "c:layout", NULL);
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("formatCode", "General");
+    LXW_PUSH_ATTRIBUTES_INT("sourceLinked", 0);
+
+    lxw_xml_empty_tag(self->file, "c:numFmt", &attributes);
+
+    lxw_xml_end_tag(self->file, "c:trendlineLbl");
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:dispEq> element.
+ */
+STATIC void
+_chart_write_disp_eq(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:dispEq", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:period> element.
+ */
+STATIC void
+_chart_write_period(lxw_chart *self, uint8_t value)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("val", value);
+
+    lxw_xml_empty_tag(self->file, "c:period", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:forward> element.
+ */
+STATIC void
+_chart_write_forward(lxw_chart *self, double value)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_DBL("val", value);
+
+    lxw_xml_empty_tag(self->file, "c:forward", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:backward> element.
+ */
+STATIC void
+_chart_write_backward(lxw_chart *self, double value)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_DBL("val", value);
+
+    lxw_xml_empty_tag(self->file, "c:backward", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:name> element.
+ */
+STATIC void
+_chart_write_name(lxw_chart *self, char *name)
+{
+    lxw_xml_data_element(self->file, "c:name", name, NULL);
+}
+
+/*
+ * Write the <c:trendlineType> element.
+ */
+STATIC void
+_chart_write_trendline_type(lxw_chart *self, uint8_t type)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (type == LXW_CHART_TRENDLINE_TYPE_LOG)
+        LXW_PUSH_ATTRIBUTES_STR("val", "log");
+    else if (type == LXW_CHART_TRENDLINE_TYPE_POLY)
+        LXW_PUSH_ATTRIBUTES_STR("val", "poly");
+    else if (type == LXW_CHART_TRENDLINE_TYPE_POWER)
+        LXW_PUSH_ATTRIBUTES_STR("val", "power");
+    else if (type == LXW_CHART_TRENDLINE_TYPE_EXP)
+        LXW_PUSH_ATTRIBUTES_STR("val", "exp");
+    else if (type == LXW_CHART_TRENDLINE_TYPE_AVERAGE)
+        LXW_PUSH_ATTRIBUTES_STR("val", "movingAvg");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "linear");
+
+    lxw_xml_empty_tag(self->file, "c:trendlineType", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:trendline> element.
+ */
+STATIC void
+_chart_write_trendline(lxw_chart *self, lxw_chart_series *series)
+{
+    if (!series->has_trendline)
+        return;
+
+    lxw_xml_start_tag(self->file, "c:trendline", NULL);
+
+    /* Write the c:name element. */
+    if (series->trendline_name)
+        _chart_write_name(self, series->trendline_name);
+
+    /* Write the c:spPr element. */
+    _chart_write_sp_pr(self, series->trendline_line, NULL, NULL);
+
+    /* Write the c:trendlineType element. */
+    _chart_write_trendline_type(self, series->trendline_type);
+
+    /* Write the c:order element. */
+    if (series->trendline_type == LXW_CHART_TRENDLINE_TYPE_POLY
+        && series->trendline_value >= 2) {
+
+        _chart_write_order(self, series->trendline_value);
+    }
+
+    /* Write the c:period element. */
+    if (series->trendline_type == LXW_CHART_TRENDLINE_TYPE_AVERAGE
+        && series->trendline_value >= 2) {
+
+        _chart_write_period(self, series->trendline_value);
+    }
+
+    if (series->has_trendline_forecast) {
+        /* Write the c:forward element. */
+        _chart_write_forward(self, series->trendline_forward);
+
+        /* Write the c:backward element. */
+        _chart_write_backward(self, series->trendline_backward);
+    }
+
+    /* Write the c:intercept element. */
+    if (series->has_trendline_intercept)
+        _chart_write_intercept(self, series->trendline_intercept);
+
+    /* Write the c:dispRSqr element. */
+    if (series->has_trendline_r_squared)
+        _chart_write_disp_rsqr(self);
+
+    if (series->has_trendline_equation) {
+        /* Write the c:dispEq element. */
+        _chart_write_disp_eq(self);
+
+        /* Write the c:trendlineLbl element. */
+        _chart_write_trendline_lbl(self);
+
+    }
+
+    lxw_xml_end_tag(self->file, "c:trendline");
 }
 
 /*
@@ -2501,10 +2730,9 @@ _chart_write_marker_value(lxw_chart *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "1";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
 
     lxw_xml_empty_tag(self->file, "c:marker", &attributes);
 
@@ -2655,6 +2883,9 @@ _chart_write_ser(lxw_chart *self, lxw_chart_series *series)
     /* Write the c:dLbls element. */
     _chart_write_d_lbls(self, series);
 
+    /* Write the c:trendline element. */
+    _chart_write_trendline(self, series);
+
     /* Write the c:errBars element. */
     _chart_write_error_bars(self, series);
 
@@ -2703,6 +2934,9 @@ _chart_write_xval_ser(lxw_chart *self, lxw_chart_series *series)
 
     /* Write the c:dLbls element. */
     _chart_write_d_lbls(self, series);
+
+    /* Write the c:trendline element. */
+    _chart_write_trendline(self, series);
 
     /* Write the c:errBars element. */
     _chart_write_error_bars(self, series);
@@ -2937,10 +3171,9 @@ _chart_write_auto(lxw_chart *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char val[] = "1";
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", val);
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
 
     lxw_xml_empty_tag(self->file, "c:auto", &attributes);
 
@@ -5178,6 +5411,153 @@ chart_series_set_labels_font(lxw_chart_series *series, lxw_chart_font *font)
 }
 
 /*
+ * Set the trendline for a chart series.
+ */
+void
+chart_series_set_trendline(lxw_chart_series *series, uint8_t type,
+                           uint8_t value)
+{
+    if (type == LXW_CHART_TRENDLINE_TYPE_POLY
+        || type == LXW_CHART_TRENDLINE_TYPE_POLY) {
+
+        if (value < 2) {
+            LXW_WARN("chart_series_set_trendline(): order/period value must "
+                     "be >= 2 for Polynomial and Moving Average types");
+            return;
+        }
+
+        series->trendline_value_type = type;
+    }
+
+    series->has_trendline = LXW_TRUE;
+    series->trendline_type = type;
+    series->trendline_value = value;
+}
+
+/*
+ * Set the trendline forecast for a chart series.
+ */
+void
+chart_series_set_trendline_forecast(lxw_chart_series *series, double forward,
+                                    double backward)
+{
+    if (!series->has_trendline) {
+        LXW_WARN("chart_series_set_trendline_forecast(): trendline type "
+                 "must be set first using chart_series_set_trendline()");
+        return;
+    }
+
+    if (series->trendline_type == LXW_CHART_TRENDLINE_TYPE_AVERAGE) {
+        LXW_WARN("chart_series_set_trendline(): forecast isn't available "
+                 "in Excel for a Moving Average trendline");
+        return;
+    }
+
+    series->has_trendline_forecast = LXW_TRUE;
+    series->trendline_forward = forward;
+    series->trendline_backward = backward;
+}
+
+/*
+ * Display the equation for a series trendline.
+ */
+void
+chart_series_set_trendline_equation(lxw_chart_series *series)
+{
+    if (!series->has_trendline) {
+        LXW_WARN("chart_series_set_trendline_equation(): trendline type "
+                 "must be set first using chart_series_set_trendline()");
+        return;
+    }
+
+    if (series->trendline_type == LXW_CHART_TRENDLINE_TYPE_AVERAGE) {
+        LXW_WARN("chart_series_set_trendline_equation(): equation isn't "
+                 "available in Excel for a Moving Average trendline");
+        return;
+    }
+
+    series->has_trendline_equation = LXW_TRUE;
+}
+
+/*
+ * Display the R squared value for a series trendline.
+ */
+void
+chart_series_set_trendline_r_squared(lxw_chart_series *series)
+{
+    if (!series->has_trendline) {
+        LXW_WARN("chart_series_set_trendline_r_squared(): trendline type "
+                 "must be set first using chart_series_set_trendline()");
+        return;
+    }
+
+    if (series->trendline_type == LXW_CHART_TRENDLINE_TYPE_AVERAGE) {
+        LXW_WARN("chart_series_set_trendline_r_squared(): R squared isn't "
+                 "available in Excel for a Moving Average trendline");
+        return;
+    }
+
+    series->has_trendline_r_squared = LXW_TRUE;
+}
+
+/*
+ * Set the trendline intercept for a chart series.
+ */
+void
+chart_series_set_trendline_intercept(lxw_chart_series *series,
+                                     double intercept)
+{
+    if (!series->has_trendline) {
+        LXW_WARN("chart_series_set_trendline_intercept(): trendline type "
+                 "must be set first using chart_series_set_trendline()");
+        return;
+    }
+
+    if (series->trendline_type != LXW_CHART_TRENDLINE_TYPE_EXP
+        && series->trendline_type != LXW_CHART_TRENDLINE_TYPE_LINEAR
+        && series->trendline_type != LXW_CHART_TRENDLINE_TYPE_POLY) {
+        LXW_WARN("chart_series_set_trendline_intercept(): intercept is only "
+                 "available in Excel for Exponential, Linear and Polynomial "
+                 "trendline types");
+        return;
+    }
+
+    series->has_trendline_intercept = LXW_TRUE;
+    series->trendline_intercept = intercept;
+}
+
+/*
+ * Set a line type for a series trendline.
+ */
+void
+chart_series_set_trendline_name(lxw_chart_series *series, char *name)
+{
+    if (!name)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(series->trendline_name);
+
+    series->trendline_name = lxw_strdup(name);
+}
+
+/*
+ * Set a line type for a series trendline.
+ */
+void
+chart_series_set_trendline_line(lxw_chart_series *series,
+                                lxw_chart_line *line)
+{
+    if (!line)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(series->trendline_line);
+
+    series->trendline_line = _chart_convert_line_args(line);
+}
+
+/*
  * Set the error bars and type for a chart series.
  */
 void
@@ -5686,7 +6066,7 @@ chart_legend_delete_series(lxw_chart *self, int16_t delete_series[])
     if (delete_series == NULL)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
-    while (delete_series[count] > 0)
+    while (delete_series[count] >= 0)
         count++;
 
     if (count == 0)

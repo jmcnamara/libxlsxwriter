@@ -73,6 +73,7 @@
 -T lxw_chart_point
 -T lxw_chart_series
 -T lxw_chart_title
+-T lxw_chart_trendline_type
 -T lxw_chart_type
 -T lxw_col_options
 -T lxw_col_t

@@ -34,18 +34,47 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_chart_format07(self):
         self.run_exe_test('test_chart_format07')
 
-
+    def test_chart_format08(self):
+        self.run_exe_test('test_chart_format08')
 
     def test_chart_format09(self):
         self.run_exe_test('test_chart_format09')
 
+    def test_chart_format10(self):
+        self.run_exe_test('test_chart_format10')
 
+    def test_chart_format11(self):
+        self.run_exe_test('test_chart_format11')
+
+    def test_chart_format12(self):
+        self.run_exe_test('test_chart_format12')
+
+    def test_chart_format13(self):
+        self.run_exe_test('test_chart_format13')
+
+    def test_chart_format14(self):
+        self.run_exe_test('test_chart_format14')
+
+    def test_chart_format14(self):
+        self.run_exe_test('test_chart_format14')
+
+    def test_chart_format15(self):
+        self.run_exe_test('test_chart_format15')
+
+    def test_chart_format16(self):
+        self.run_exe_test('test_chart_format16')
 
     def test_chart_format17(self):
         self.run_exe_test('test_chart_format17')
 
     def test_chart_format18(self):
         self.run_exe_test('test_chart_format18')
+
+    def test_chart_format19(self):
+        self.run_exe_test('test_chart_format19')
+
+    def test_chart_format20(self):
+        self.run_exe_test('test_chart_format20')
 
     def test_chart_format21(self):
         self.run_exe_test('test_chart_format21')
@@ -61,3 +90,21 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chart_format25(self):
         self.run_exe_test('test_chart_format25')
+
+    def test_chart_format26(self):
+        self.run_exe_test('test_chart_format26')
+
+    def test_chart_format27(self):
+        self.run_exe_test('test_chart_format27')
+
+    def test_chart_format28(self):
+        self.run_exe_test('test_chart_format28')
+
+    def test_chart_format29(self):
+        self.run_exe_test('test_chart_format29')
+
+    def test_chart_format30(self):
+        self.run_exe_test('test_chart_format30')
+
+    def test_chart_format31(self):
+        self.run_exe_test('test_chart_format31')

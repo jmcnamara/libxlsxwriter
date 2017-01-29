@@ -833,6 +833,29 @@ typedef struct lxw_series_error_bars {
 } lxw_series_error_bars;
 
 /**
+ * @brief Series trendline/regression types.
+ */
+typedef enum lxw_chart_trendline_type {
+    /** Trendline type: Linear. */
+    LXW_CHART_TRENDLINE_TYPE_LINEAR,
+
+    /** Trendline type: Logarithm. */
+    LXW_CHART_TRENDLINE_TYPE_LOG,
+
+    /** Trendline type: Polynomial. */
+    LXW_CHART_TRENDLINE_TYPE_POLY,
+
+    /** Trendline type: Power. */
+    LXW_CHART_TRENDLINE_TYPE_POWER,
+
+    /** Trendline type: Exponential. */
+    LXW_CHART_TRENDLINE_TYPE_EXP,
+
+    /** Trendline type: Moving Average. */
+    LXW_CHART_TRENDLINE_TYPE_AVERAGE
+} lxw_chart_trendline_type;
+
+/**
  * @brief Struct to represent an Excel chart data series.
  *
  * The lxw_chart_series is created using the chart_add_series function. It is
@@ -870,6 +893,20 @@ typedef struct lxw_chart_series {
 
     lxw_series_error_bars *x_error_bars;
     lxw_series_error_bars *y_error_bars;
+
+    uint8_t has_trendline;
+    uint8_t has_trendline_forecast;
+    uint8_t has_trendline_equation;
+    uint8_t has_trendline_r_squared;
+    uint8_t has_trendline_intercept;
+    uint8_t trendline_type;
+    uint8_t trendline_value;
+    double trendline_forward;
+    double trendline_backward;
+    uint8_t trendline_value_type;
+    char *trendline_name;
+    lxw_chart_line *trendline_line;
+    double trendline_intercept;
 
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
 
@@ -1757,6 +1794,24 @@ void chart_series_set_labels_num_format(lxw_chart_series *series,
  */
 void chart_series_set_labels_font(lxw_chart_series *series,
                                   lxw_chart_font *font);
+
+void chart_series_set_trendline(lxw_chart_series *series, uint8_t type,
+                                uint8_t value);
+
+void chart_series_set_trendline_forecast(lxw_chart_series *series,
+                                         double forward, double backward);
+
+void chart_series_set_trendline_equation(lxw_chart_series *series);
+
+void chart_series_set_trendline_r_squared(lxw_chart_series *series);
+
+void chart_series_set_trendline_intercept(lxw_chart_series *series,
+                                          double intercept);
+
+void chart_series_set_trendline_name(lxw_chart_series *series, char *name);
+
+void chart_series_set_trendline_line(lxw_chart_series *series,
+                                     lxw_chart_line *line);
 
 /**
  * Set the X or Y error bars for a chart series.
