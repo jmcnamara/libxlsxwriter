@@ -2,6 +2,12 @@
 @page changes Changes
 
 
+## 0.6.9 January 30 2017
+
+- Added chart trendlines. See @ref chart_trendlines and
+  @ref chart_data_tools.c.
+
+
 ## 0.6.8 January 28 2017
 
 - Added chart error bars. See @ref chart_error_bars and
