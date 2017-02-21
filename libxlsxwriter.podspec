@@ -37,7 +37,7 @@ Pod::Spec.new do |s|
   s.source_files          = "src/**/*.c", "third_party/**/{zip.c,ioapi.c,tmpfileplus.c}", "include/**/*.h"
 
   s.header_dir            = "xlsxwriter"
-  s.header_mappings_dir   = "include/xlsxwriter"
+  s.header_mappings_dir   = "include"
   s.library               = "z"
   s.compiler_flags        = "-DNOCRYPT=1", "-DNOUNCRYPT=1"
   s.pod_target_xcconfig   = { 'USER_HEADER_SEARCH_PATHS' => '${PODS_ROOT}/libxlsxwriter/include' }
