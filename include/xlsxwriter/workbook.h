@@ -378,6 +378,12 @@ lxw_worksheet *workbook_add_worksheet(lxw_workbook *workbook,
 lxw_format *workbook_add_format(lxw_workbook *workbook);
 
 /**
+ * @brief Gives default format for workbook, so you can edit it
+ * @return A lxw_worksheet object.
+ */
+lxw_format *workbook_default_format(lxw_workbook *workbook);
+
+/**
  * @brief Create a new chart to be added to a worksheet:
  *
  * @param workbook   Pointer to a lxw_workbook instance.
