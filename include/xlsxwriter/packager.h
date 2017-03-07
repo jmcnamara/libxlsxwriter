@@ -24,6 +24,7 @@
 #include "format.h"
 #include "content_types.h"
 #include "relationships.h"
+#include "vml.h"
 
 #define LXW_ZIP_BUFFER_SIZE (16384)
 

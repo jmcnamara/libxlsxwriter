@@ -830,6 +830,54 @@ _add_chart_cache_data(lxw_workbook *self)
 }
 
 /*
+ * Iterate through the worksheets and set up the VML objects.
+ */
+STATIC void
+_prepare_vml(lxw_workbook *self)
+{
+	lxw_worksheet *worksheet;
+	uint32_t comment_files = 0;
+	uint32_t vml_files = 0;
+	uint32_t comment_id = 0;
+	uint32_t vml_drawing_id = 0;
+	uint32_t vml_data_id = 1;
+	uint32_t vml_shape_id = 1024;
+	lxw_format *format = NULL;
+
+	STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
+		if (worksheet->has_vml || worksheet->has_header_vml) {
+			vml_files++;
+
+			if (worksheet->comment_count) {
+				comment_files++;
+				comment_id++;
+			}
+
+			vml_drawing_id++;
+
+			lxw_worksheet_prepare_vml_objects(worksheet, vml_data_id, vml_shape_id, vml_drawing_id, comment_id);
+
+			// Each VML should start with a shape id incremented by 1024.
+			vml_data_id += 1 * (uint32_t)((1024 + worksheet->comment_count) / 1024);
+			vml_shape_id += 1024 * (uint32_t)((1024 + worksheet->comment_count) / 1024);
+		}
+	}
+
+	self->num_vml_files = vml_files;
+	self->num_comment_files = comment_files;
+
+	if (comment_files > 0) {
+		format = workbook_add_format(self);
+		format_set_font_name(format, "Tahoma");
+		format_set_font_size(format, 8);
+		format->font_only = LXW_TRUE;
+		format->color_indexed = 81;
+
+		lxw_format_get_xf_index(format);
+	}
+}
+
+/*
  * Iterate through the worksheets and set up any chart or image drawings.
  */
 STATIC void
@@ -1527,6 +1575,9 @@ workbook_close(lxw_workbook *self)
         if (worksheet->index == self->active_sheet)
             worksheet->active = 1;
     }
+
+	/* Prepare the worksheet VML elements such as comments and buttons. */
+	_prepare_vml(self);
 
     /* Set the defined names for the worksheets such as Print Titles. */
     _prepare_defined_names(self);

@@ -343,3 +343,27 @@ lxw_ct_add_custom_properties(lxw_content_types *self)
     lxw_ct_add_override(self, "/docProps/custom.xml",
                         LXW_APP_DOCUMENT "custom-properties+xml");
 }
+
+/*
+ * Add the comment to the ContentTypes overrides.
+ */
+void
+lxw_ct_add_comment(lxw_content_types *self, uint16_t num)
+{
+	uint16_t i;
+	char str[32];
+	for (i = 1; i < num + 1; ++i) {
+		lxw_snprintf(str, sizeof(str), "/xl/comments%d.xml", i);
+		lxw_ct_add_override(self, str,
+			LXW_APP_DOCUMENT "spreadsheetml.comments+xml");
+	}
+}
+
+/*
+ * Add the comment to the ContentTypes overrides.
+ */
+void
+lxw_ct_add_vml(lxw_content_types *self)
+{
+	lxw_ct_add_default(self, "vml", LXW_APP_DOCUMENT "vmlDrawing");
+}

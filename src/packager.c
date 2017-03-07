@@ -294,6 +294,83 @@ _write_drawing_files(lxw_packager *self)
 }
 
 /*
+ * Write the comment VML files
+ */
+STATIC lxw_error
+_write_vml_files(lxw_packager *self)
+{
+	lxw_workbook *workbook = self->workbook;
+	lxw_worksheet *worksheet;
+	char filename[LXW_FILENAME_LENGTH] = { 0 };
+	uint16_t index = 1;
+	lxw_error err;
+	lxw_vml *vml;
+
+	STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+		if (worksheet->has_vml) {
+			lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+				"xl/drawings/vmlDrawing%d.vml", index++);
+
+			vml = lxw_vml_new();
+			vml->file = lxw_tmpfile(self->tmpdir);
+			if (!vml->file) {
+				lxw_vml_free(vml);
+				return LXW_ERROR_CREATING_TMPFILE;
+			}
+
+			lxw_vml_assemble_xml_file(vml, worksheet);
+
+			err = _add_file_to_zip(self, vml->file, filename);
+
+			fclose(vml->file);
+			vml->file = NULL;
+			lxw_vml_free(vml);
+
+			RETURN_ON_ERROR(err);
+		}
+	}
+
+	return LXW_NO_ERROR;
+}
+
+/*
+ * Write the comment files.
+ */
+STATIC lxw_error
+_write_comment_files(lxw_packager *self)
+{
+	lxw_workbook *workbook = self->workbook;
+	lxw_worksheet *worksheet;
+	lxw_comment *comment;
+	char filename[LXW_FILENAME_LENGTH] = { 0 };
+	uint16_t index = 1;
+	lxw_error err;
+
+	STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+		comment = worksheet->comment;
+
+		if (comment && !RB_EMPTY(comment->comment_row_list)) {
+			lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+				"xl/comments%d.xml", index++);
+
+			comment->file = lxw_tmpfile(self->tmpdir);
+			if (!comment->file)
+				return LXW_ERROR_CREATING_TMPFILE;
+
+			lxw_comment_assemble_xml_file(comment);
+			err = _add_file_to_zip(self, comment->file, filename);
+
+			fclose(comment->file);
+			comment->file = NULL;
+
+			RETURN_ON_ERROR(err);
+		}
+	}
+
+	return LXW_NO_ERROR;
+}
+
+/*
  * Write the sharedStrings.xml file.
  */
 STATIC lxw_error
@@ -592,11 +669,17 @@ _write_content_types_file(lxw_packager *self)
         lxw_ct_add_chart_name(content_types, filename);
     }
 
+	if (workbook->num_vml_files > 0) {
+		lxw_ct_add_vml(content_types);
+	}
+
     for (index = 1; index <= self->drawing_count; index++) {
         lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                      "/xl/drawings/drawing%d.xml", index);
         lxw_ct_add_drawing_name(content_types, filename);
     }
+
+	lxw_ct_add_comment(content_types, self->workbook->num_comment_files);
 
     if (workbook->sst->string_count)
         lxw_ct_add_shared_strings(content_types);
@@ -685,7 +768,9 @@ _write_worksheet_rels_file(lxw_packager *self)
         index++;
 
         if (STAILQ_EMPTY(worksheet->external_hyperlinks) &&
-            STAILQ_EMPTY(worksheet->external_drawing_links))
+            STAILQ_EMPTY(worksheet->external_drawing_links) &&
+			STAILQ_EMPTY(worksheet->external_comment_links) &&
+			STAILQ_EMPTY(worksheet->external_vml_links))
             continue;
 
         rels = lxw_relationships_new();
@@ -705,6 +790,16 @@ _write_worksheet_rels_file(lxw_packager *self)
             lxw_add_worksheet_relationship(rels, rel->type, rel->target,
                                            rel->target_mode);
         }
+
+		STAILQ_FOREACH(rel, worksheet->external_vml_links, list_pointers) {
+			lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+				rel->target_mode);
+		}
+
+		STAILQ_FOREACH(rel, worksheet->external_comment_links, list_pointers) {
+			lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+										   rel->target_mode);
+		}
 
         lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
                      "xl/worksheets/_rels/sheet%d.xml.rels", index);
@@ -902,6 +997,12 @@ lxw_create_package(lxw_packager *self)
 
     error = _write_drawing_files(self);
     RETURN_ON_ERROR(error);
+
+	error = _write_vml_files(self);
+	RETURN_ON_ERROR(error);
+
+	error = _write_comment_files(self);
+	RETURN_ON_ERROR(error);
 
     error = _write_shared_strings_file(self);
     RETURN_ON_ERROR(error);
