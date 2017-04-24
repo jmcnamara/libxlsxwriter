@@ -53,7 +53,8 @@ unset(ZLIB_SEARCH_HKEY)
 SetSuffixes(ZLIB)
 foreach(search ${ZLIB_SEARCH_PATHS})
     FIND_PATH(ZLIB_INCLUDE_DIR
-        zlib.h ${search}
+        NAMES zlib.h 
+        PATHS ${search}
         PATH_SUFFIXES include
     )
 endforeach(search)
@@ -71,7 +72,7 @@ endif()
 foreach(search ${ZLIB_SEARCH_PATHS})
     FIND_LIBRARY(ZLIB_LIBRARY
         NAMES ${ZLIB_LIBRARY_NAMES}
-        ${search}
+        PATHS ${search}
         PATH_SUFFIXES lib
     )
 endforeach(search)
