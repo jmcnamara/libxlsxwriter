@@ -218,7 +218,9 @@ _free_cell(lxw_cell *cell)
         return;
 
     if (cell->type != NUMBER_CELL && cell->type != STRING_CELL
-        && cell->type != BLANK_CELL && cell->type != BOOLEAN_CELL) {
+        && cell->type != BLANK_CELL && cell->type != BOOLEAN_CELL
+        && cell->type != NULL_CELL
+        ) {
 
         free(cell->u.string);
     }
@@ -574,6 +576,25 @@ _new_boolean_cell(lxw_row_t row_num, lxw_col_t col_num, int value,
 }
 
 /*
+ * Create a new worksheet null cell object.
+ */
+STATIC lxw_cell *
+_new_null_cell(lxw_row_t row_num, lxw_col_t col_num,
+                  lxw_format *format)
+{
+    lxw_cell *cell = calloc(1, sizeof(lxw_cell));
+    RETURN_ON_MEM_ERROR(cell, cell);
+
+    cell->row_num = row_num;
+    cell->col_num = col_num;
+    cell->type = NULL_CELL;
+    cell->format = format;
+    cell->u.string = 0;
+
+    return cell;
+}
+
+/*
  * Create a new worksheet hyperlink cell object.
  */
 STATIC lxw_cell *
@@ -659,6 +680,7 @@ STATIC void
 _insert_cell_list(struct lxw_table_cells *cell_list,
                   lxw_cell *cell, lxw_col_t col_num)
 {
+    lxw_format *format;
     lxw_cell *existing_cell;
 
     cell->col_num = col_num;
@@ -668,6 +690,15 @@ _insert_cell_list(struct lxw_table_cells *cell_list,
     /* If existing_cell is not NULL, then that cell already existed. */
     /* Remove existing_cell and add new one in again. */
     if (existing_cell) {
+        format = cell->format;
+        *cell  = *existing_cell;
+        cell->format = format;
+        /*Waiting comment on this point from the author
+         *  How to do it properly ?
+         */
+        memset(existing_cell, 0, sizeof(lxw_cell));
+        existing_cell->type = BLANK_CELL;
+
         RB_REMOVE(lxw_table_cells, cell_list, existing_cell);
 
         /* Add it in again. */
@@ -685,6 +716,7 @@ STATIC void
 _insert_cell(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
              lxw_cell *cell)
 {
+    lxw_format *format;
     lxw_row *row = _get_row(self, row_num);
 
     if (!self->optimize) {
@@ -696,8 +728,19 @@ _insert_cell(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
             row->data_changed = LXW_TRUE;
 
             /* Overwrite an existing cell if necessary. */
-            if (self->array[col_num])
+            if (self->array[col_num]) {
+                if (cell->type == NULL_CELL) {
+                    format = cell->format;
+                    *cell  = *self->array[col_num];
+                    cell->format = format;
+                    /*Waiting comment on this point from the author
+                     *  How to do it properly ?
+                     */
+                    memset(self->array[col_num], 0, sizeof(lxw_cell));
+                    self->array[col_num]->type = BLANK_CELL;
+                }
                 _free_cell(self->array[col_num]);
+            }
 
             self->array[col_num] = cell;
         }
@@ -2596,7 +2639,7 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
         _write_formula_num_cell(self, cell);
         lxw_xml_end_tag(self->file, "c");
     }
-    else if (cell->type == BLANK_CELL) {
+    else if (cell->type == BLANK_CELL || cell->type == NULL_CELL) {
         lxw_xml_empty_tag(self->file, "c", &attributes);
     }
     else if (cell->type == BOOLEAN_CELL) {
@@ -3663,6 +3706,68 @@ worksheet_write_boolean(lxw_worksheet *self,
     cell = _new_boolean_cell(row_num, col_num, value, format);
 
     _insert_cell(self, row_num, col_num, cell);
+
+    return LXW_NO_ERROR;
+}
+
+/*
+ * Write a cell with a format; doesn't change cell content
+ */
+lxw_error
+worksheet_write_format(lxw_worksheet *self,
+                        lxw_row_t row_num, lxw_col_t col_num,
+                        lxw_format *format)
+{
+    lxw_cell *cell;
+    lxw_error err;
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
+
+    if (err)
+        return err;
+
+    cell = _new_null_cell(row_num, col_num, format);
+
+    _insert_cell(self, row_num, col_num, cell);
+
+    return LXW_NO_ERROR;
+}
+
+/*
+ * Write a range of cells with a format; doesn't change cells content
+ */
+lxw_error
+worksheet_write_range_format(lxw_worksheet *self, lxw_row_t first_row,
+                       lxw_col_t first_col, lxw_row_t last_row,
+                       lxw_col_t last_col,
+                       lxw_format *format)
+{
+    lxw_row_t i, tmp_row;
+    lxw_col_t j, tmp_col;
+    lxw_error err;
+
+    /* Excel doesn't allow a single cell to be merged */
+    if (first_row == last_row && first_col == last_col)
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    /* Swap last row/col with first row/col as necessary */
+    if (first_row > last_row) {
+        tmp_row = last_row;
+        last_row = first_row;
+        first_row = tmp_row;
+    }
+    if (first_col > last_col) {
+        tmp_col = last_col;
+        last_col = first_col;
+        first_col = tmp_col;
+    }
+    /* Check that column number is valid and store the max value */
+    err = _check_dimensions(self, last_row, last_col, LXW_FALSE, LXW_FALSE);
+    if (err)
+        return err;
+    for( i = first_row ; i <= last_row ; i++)
+        for( j = first_col ; j <= last_col ; j++)
+            if ((err = worksheet_write_format(self, i, j, format)) != LXW_NO_ERROR)
+              return err;
 
     return LXW_NO_ERROR;
 }

@@ -92,6 +92,7 @@ enum cell_types {
     ARRAY_FORMULA_CELL,
     BLANK_CELL,
     BOOLEAN_CELL,
+    NULL_CELL,
     HYPERLINK_URL,
     HYPERLINK_INTERNAL,
     HYPERLINK_EXTERNAL
@@ -919,6 +920,52 @@ lxw_error worksheet_write_boolean(lxw_worksheet *worksheet,
                                   lxw_row_t row, lxw_col_t col,
                                   int value, lxw_format *format);
 
+/**
+ * @brief Write a format information in a worksheet cell.
+ *
+ * @param worksheet pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param format    A pointer to a Format instance or NULL.
+ *
+ * @return A #lxw_error code.
+ *
+ * Write an Excel format into the cell specified by `row` and `column`:
+ *
+ * @code
+ *     worksheet_write_format(worksheet, 2, 2, my_format);
+ * @endcode
+ *
+ */
+lxw_error
+worksheet_write_format(lxw_worksheet *self,
+                        lxw_row_t row_num, lxw_col_t col_num,
+                        lxw_format *format);
+
+/**
+ * @brief Write a format information in a worksheet range of cells.
+ *
+ * @param worksheet pointer to a lxw_worksheet instance to be updated.
+ * @param first_row   The zero indexed row number.
+ * @param first_col   The zero indexed column number.
+ * @param last_row    The zero indexed row number.
+ * @param last_col    The zero indexed column number.
+ * @param format    A pointer to a Format instance or NULL.
+ *
+ * @return A #lxw_error code.
+ *
+ * Write an Excel format into the cells specified by (`first_row`, `first_col`) and (`last_row`, `last_col`)
+ *
+ * @code
+ *     worksheet_write_format(worksheet, 2, 2, 4, 4, my_format);
+ * @endcode
+ *
+ */
+lxw_error
+worksheet_write_range_format(lxw_worksheet *self, lxw_row_t first_row,
+                       lxw_col_t first_col, lxw_row_t last_row,
+                       lxw_col_t last_col,
+                       lxw_format *format);
 /**
  * @brief Write a formatted blank worksheet cell.
  *
