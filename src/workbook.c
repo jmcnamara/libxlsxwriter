@@ -1493,6 +1493,15 @@ workbook_add_format(lxw_workbook *self)
     lxw_format *format = lxw_format_new();
     RETURN_ON_MEM_ERROR(format, NULL);
 
+    if (!STAILQ_EMPTY(self->formats)) {
+        memcpy(format, STAILQ_FIRST(self->formats), sizeof(lxw_format));
+        format->xf_format_indices = NULL;
+        format->num_xf_formats = NULL;
+        format->list_pointers.stqe_next = NULL;
+        format->xf_index = LXW_PROPERTY_UNSET;
+        format->dxf_index = LXW_PROPERTY_UNSET;
+    }
+
     format->xf_format_indices = self->used_xf_formats;
     format->num_xf_formats = &self->num_xf_formats;
 
@@ -1500,6 +1509,16 @@ workbook_add_format(lxw_workbook *self)
 
     return format;
 }
+
+/*
+ * Returns default format for workbook.
+ */
+lxw_format *
+workbook_default_format(lxw_workbook *self)
+{
+    return STAILQ_FIRST(self->formats);
+}
+
 
 /*
  * Call finalization code and close file.
