@@ -669,7 +669,7 @@ lxw_error worksheet_write_formula(lxw_worksheet *worksheet,
 /**
  * @brief Write an array formula to a worksheet cell.
  *
- * @param worksheet
+ * @param worksheet pointer to a lxw_worksheet instance to be updated.
  * @param first_row   The first row of the range. (All zero indexed.)
  * @param first_col   The first column of the range.
  * @param last_row    The last row of the range.
