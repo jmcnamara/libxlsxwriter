@@ -101,14 +101,19 @@ dependencies. If you are interested see @ref running_the_tests.
 @subsection gsg_install Install the library
 
 Libxlsxwriter supports a simplified installation scheme for a static and
-dynamic/shared library and header files. The installation has been tested on
-Linux and OS X:
+dynamic/shared library and header files.
 
     sudo make install
 
-This isn't fool proof but if it fails on your system you will probably know
-exactly how to fix it or have no idea how to fix it. I'm hoping for the
-former.
+The files are installed to `/usr/local` by default but this can be overridden
+by using the `INSTALL_DIR` environmental variable:
+
+    INSTALL_DIR=/usr/third_party make install
+
+This installation method isn't fool proof but if it fails on your system you
+will probably know exactly how to fix it or have no idea how to fix it. I'm
+hoping for the former.
+
 
 @subsection gsg_using Using the library
 

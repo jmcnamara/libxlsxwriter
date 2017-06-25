@@ -11,6 +11,8 @@ ifdef V
 Q=
 endif
 
+INSTALL_DIR ?= /usr/local
+
 .PHONY: docs tags examples
 
 # Build the libs.
@@ -90,13 +92,13 @@ docs:
 
 # Simple minded install.
 install:
-	$(Q)cp -r include/* /usr/include
-	$(Q)cp lib/* /usr/lib
+	$(Q)cp -R include/* $(INSTALL_DIR)/include
+	$(Q)cp lib/* $(INSTALL_DIR)/lib
 
 # Simpler minded uninstall.
 uninstall:
-	$(Q)rm -rf /usr/include/xlsxwriter*
-	$(Q)rm /usr/lib/libxlsxwriter.*
+	$(Q)rm -rf $(INSTALL_DIR)/include/xlsxwriter*
+	$(Q)rm $(INSTALL_DIR)/lib/libxlsxwriter.*
 
 # Strip the lib files.
 strip:
