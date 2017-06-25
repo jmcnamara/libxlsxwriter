@@ -1768,7 +1768,7 @@ void chart_series_set_labels_percentage(lxw_chart_series *series);
  * For more information see @ref chart_labels.
  */
 void chart_series_set_labels_num_format(lxw_chart_series *series,
-                                        char *num_format);
+                                        const char *num_format);
 
 /**
  * @brief Set the font properties for chart data labels in a series
@@ -1983,7 +1983,7 @@ void chart_series_set_trendline_intercept(lxw_chart_series *series,
  *
  * For more information see @ref chart_trendlines.
  */
-void chart_series_set_trendline_name(lxw_chart_series *series, char *name);
+void chart_series_set_trendline_name(lxw_chart_series *series, const char *name);
 
 /**
  * @brief Set the trendline line properties for a chart data series.
@@ -2279,7 +2279,7 @@ void chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font);
  * **Axis types**: This function is applicable to to all axes types.
  *                 See @ref ww_charts_axes.
  */
-void chart_axis_set_num_format(lxw_chart_axis *axis, char *num_format);
+void chart_axis_set_num_format(lxw_chart_axis *axis, const char *num_format);
 
 /**
  * @brief Set the line properties for a chart axis.

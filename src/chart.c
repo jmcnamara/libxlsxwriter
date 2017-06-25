@@ -5384,7 +5384,7 @@ chart_series_set_labels_percentage(lxw_chart_series *series)
  * Set an data labels number format.
  */
 void
-chart_series_set_labels_num_format(lxw_chart_series *series, char *num_format)
+chart_series_set_labels_num_format(lxw_chart_series *series, const char *num_format)
 {
     if (!num_format)
         return;
@@ -5531,7 +5531,7 @@ chart_series_set_trendline_intercept(lxw_chart_series *series,
  * Set a line type for a series trendline.
  */
 void
-chart_series_set_trendline_name(lxw_chart_series *series, char *name)
+chart_series_set_trendline_name(lxw_chart_series *series, const char *name)
 {
     if (!name)
         return;
@@ -5687,7 +5687,7 @@ chart_axis_set_num_font(lxw_chart_axis *axis, lxw_chart_font *font)
  * Set an axis number format.
  */
 void
-chart_axis_set_num_format(lxw_chart_axis *axis, char *num_format)
+chart_axis_set_num_format(lxw_chart_axis *axis, const char *num_format)
 {
     if (!num_format)
         return;

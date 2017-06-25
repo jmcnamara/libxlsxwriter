@@ -43,6 +43,12 @@ endif
 # Run the unit tests.
 test : all test_functional test_unit
 
+# Test for C++ const correctness on APIs.
+test_const : all
+	$(Q)$(MAKE) clean -C test/functional/src
+	$(Q)! $(MAKE) -C test/functional/src CFLAGS=-Wwrite-strings 2>&1 | grep -A 1 "note:"
+
+
 # Run the functional tests.
 test_functional : all
 	$(Q)$(MAKE) -C test/functional/src
