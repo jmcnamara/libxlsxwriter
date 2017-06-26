@@ -194,6 +194,62 @@ X with Objective-C and Swift see [libxlsxwriter Cocoa
 Examples](https://github.com/lrossi/libxlsxwriterCocoaExamples), provided by
 Ludovico Rossi.
 
+@section gsg_cmake Install using CMake
+
+Libxlsxwriter also supports [CMake](https://cmake.org) for building and
+installing the library, as follows:
+
+    cmake $SOURCE_DIR $FLAGS
+
+For example:
+
+    cd cmake
+    cmake ..
+    make
+    make install
+
+@subsection gsg_cmake_flags CMake Flags
+
+Certain build features can be controlled by passing flags to Cmake. For
+example:
+
+    cd cmake
+    cmake .. -DBUILD_TESTS=ON
+    make
+    make check_xlsxwriter_unit
+
+Some of the Libxlsxwriter specific flags are:
+
+- `BUILD_STATIC`: Build static libraries (default on). To build shared
+   libraries, pass `-DBUILD_STATIC=OFF` during configuration.
+
+- `BUILD_EXAMPLES`: Build example files (default off). To build the examples,
+   pass `-DBUILD_EXAMPLES=ON` during configuration.
+
+- `BUILD_TESTS`: Build unittests (default off). To build the unittests, pass
+  `-DBUILD_TESTS=ON` during configuration.
+
+- `ZLIB_ROOT`: The ZLIB root directory can be specified either through an
+   environment variable (`export ZLIB_ROOT=/usr/include`) or using a flag with
+   CMake (`-DZLIB_ROOT:STRING=/usr/include`). This sets the preferred search
+   path for the ZLIB installation.
+
+@subsection gsg_cmake_options CMake Options
+
+CMake sets debug and release builds with the `CMAKE_BUILD_TYPE` option. To
+build in release mode, pass `-DCMAKE_BUILD_TYPE=Release` during configuration.
+
+@subsection gsg_cmake_generators CMake Generators
+
+CMake also supports custom build generators, such as Makefiles, Ninja, Visual
+Studio, and Xcode. For example, to generate a Visual Studio solution,
+configure with:
+
+    cmake .. -G "Visual Studio 14 2015 Win64"
+
+For more information on using generators see:
+[cmake-generators](https://cmake.org/cmake/help/v3.0/manual/cmake-generators.7.html).
+
 
 @section gsg_msvc Installation on Windows using Microsoft Visual Studio
 
