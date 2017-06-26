@@ -2,6 +2,17 @@
 @page changes Changes
 
 
+## 0.7.0 June 26 2017
+
+- Added support for CMake build system. See @ref gsg_cmake.
+  Thanks to Alex Huszagh.
+
+- Fixed issue where image filehandles weren't closed until the overall file
+  was closed causing the system to run out of filehandles.
+  Issue [#106][gh_106].
+
+  [gh_106]: https://github.com/jmcnamara/libxlsxwriter/issues/106
+
 ## 0.6.9 January 30 2017
 
 - Added chart trendlines. See @ref chart_trendlines and
