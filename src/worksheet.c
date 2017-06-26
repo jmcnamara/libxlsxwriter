@@ -136,6 +136,16 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     GOTO_LABEL_ON_MEM_ERROR(worksheet->drawing_links, mem_error);
     STAILQ_INIT(worksheet->drawing_links);
 
+	worksheet->external_vml_links =	calloc(1, sizeof(struct lxw_rel_tuples));
+	GOTO_LABEL_ON_MEM_ERROR(worksheet->external_vml_links, mem_error);
+	STAILQ_INIT(worksheet->external_vml_links);
+
+	worksheet->external_comment_links =	calloc(1, sizeof(struct lxw_rel_tuples));
+	GOTO_LABEL_ON_MEM_ERROR(worksheet->external_comment_links, mem_error);
+	STAILQ_INIT(worksheet->external_comment_links);
+
+	worksheet->comment = lxw_comment_new();
+
     if (init_data && init_data->optimize) {
         FILE *tmpfile;
 
@@ -409,6 +419,31 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     free(worksheet->vbreaks);
     free(worksheet->name);
     free(worksheet->quoted_name);
+
+	while (!STAILQ_EMPTY(worksheet->external_vml_links)) {
+		relationship = STAILQ_FIRST(worksheet->external_vml_links);
+		STAILQ_REMOVE_HEAD(worksheet->external_vml_links, list_pointers);
+		free(relationship->type);
+		free(relationship->target);
+		free(relationship->target_mode);
+		free(relationship);
+	}
+	free(worksheet->external_vml_links);
+
+	while (!STAILQ_EMPTY(worksheet->external_comment_links)) {
+		relationship = STAILQ_FIRST(worksheet->external_comment_links);
+		STAILQ_REMOVE_HEAD(worksheet->external_comment_links, list_pointers);
+		free(relationship->type);
+		free(relationship->target);
+		free(relationship->target_mode);
+		free(relationship);
+	}
+	free(worksheet->external_comment_links);
+
+	if (worksheet->comment)
+		lxw_comment_free(worksheet->comment);
+
+	free(worksheet->vml_data_id_str);
 
     free(worksheet);
     worksheet = NULL;
@@ -3313,6 +3348,42 @@ _write_drawings(lxw_worksheet *self)
 }
 
 /*
+ * Write the <drawing> element.
+ */
+STATIC void
+_write_legacy_drawing(lxw_worksheet *self, uint16_t id)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char r_id[LXW_MAX_ATTRIBUTE_LENGTH];
+
+    lxw_snprintf(r_id, LXW_ATTR_32, "rId%d", id);
+
+    LXW_INIT_ATTRIBUTES();
+
+    LXW_PUSH_ATTRIBUTES_STR("r:id", r_id);
+
+    lxw_xml_empty_tag(self->file, "legacyDrawing", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+
+}
+
+/*
+ * Write the <legacyDrawing> elements.
+ */
+STATIC void
+_write_legacy_drawings(lxw_worksheet *self)
+{
+    if (!self->has_vml)
+        return;
+
+    self->rel_count++;
+
+    _write_legacy_drawing(self, self->rel_count);
+}
+
+/*
  * Assemble and write the XML file.
  */
 void
@@ -3377,6 +3448,9 @@ lxw_worksheet_assemble_xml_file(lxw_worksheet *self)
 
     /* Write the drawing element. */
     _write_drawings(self);
+
+	/* Write the legacyDrawing element. */
+	_write_legacy_drawings(self);
 
     /* Close the worksheet tag. */
     lxw_xml_end_tag(self->file, "worksheet");
@@ -5019,4 +5093,121 @@ worksheet_insert_chart(lxw_worksheet *self,
                        lxw_row_t row_num, lxw_col_t col_num, lxw_chart *chart)
 {
     return worksheet_insert_chart_opt(self, row_num, col_num, chart, NULL);
+}
+
+/*
+ * Write a comment to an Excel file.
+ */
+lxw_error
+worksheet_write_comment(lxw_worksheet *self, 
+						lxw_row_t row_num, lxw_col_t col_num, const char *text, lxw_comment_option *option)
+{
+	lxw_error err;
+
+	err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
+	if (err)
+		return err;
+
+	if (!text && lxw_utf8_strlen(text) > LXW_STR_MAX)
+		return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
+
+	err = lxw_comment_write(self, row_num, col_num, text, option);
+
+	if (err == LXW_NO_ERROR) {
+		self->comment_count++;
+		self->has_vml = LXW_TRUE;
+	}
+	
+	return err;
+}
+
+STATIC char *
+_build_vml_data_str(uint32_t count, uint32_t start_data_id)
+{
+#define TMP_BUF_SIZE 16
+	size_t str_len = 0;
+	uint32_t alc_base = 1;
+	uint32_t buf_len = alc_base * 1024;
+	char tmpbuf[TMP_BUF_SIZE];
+	size_t tmpbuf_len = 0;
+	uint32_t size = count / 1024;
+	char *buf = NULL;
+	char *tmp = NULL;
+	uint32_t i;
+
+	buf = malloc(buf_len);
+	lxw_snprintf(buf, buf_len, "%d,", start_data_id);
+	str_len = strlen(buf);
+
+	for (i = 0; i < size; ++i) {
+		lxw_snprintf(tmpbuf, TMP_BUF_SIZE, "%d,", start_data_id + i + 1);
+
+		tmpbuf_len = strlen(tmpbuf);
+		if (tmpbuf_len + 1 + str_len + 1> buf_len) {
+			buf_len = ++alc_base * 1024;
+			tmp = malloc(buf_len);
+			memcpy(tmp, buf, str_len);
+			memcpy(tmp + str_len, tmpbuf, tmpbuf_len + 1);
+			free(buf);
+			buf = tmp;
+		}
+		else {
+			memcpy(buf + str_len, tmpbuf, tmpbuf_len + 1);
+		}
+
+		str_len += tmpbuf_len;
+	}
+
+	buf[str_len - 1] = 0;
+
+	return buf;
+}
+
+void lxw_worksheet_prepare_vml_objects(lxw_worksheet *self, uint32_t vml_data_id, uint32_t vml_shape_id, uint32_t vml_drawing_id, uint32_t comment_id)
+{
+	lxw_rel_tuple *relationship = NULL;
+	char filename[LXW_FILENAME_LENGTH];
+
+	relationship = calloc(1, sizeof(lxw_rel_tuple));
+	GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
+
+	relationship->type = lxw_strdup("/vmlDrawing");
+	GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
+
+	lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+		"../drawings/vmlDrawing%d.vml", vml_drawing_id);
+
+	relationship->target = lxw_strdup(filename);
+	GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+
+	STAILQ_INSERT_TAIL(self->external_vml_links, relationship, list_pointers);
+
+	if (self->comment_count) {
+		relationship = calloc(1, sizeof(lxw_rel_tuple));
+		GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
+
+		relationship->type = lxw_strdup("/comments");
+		GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
+
+		lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+			"../comments%d.xml", comment_id);
+
+		relationship->target = lxw_strdup(filename);
+		GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+
+		STAILQ_INSERT_TAIL(self->external_comment_links, relationship, list_pointers);
+	}	
+
+	self->vml_data_id_str = _build_vml_data_str(self->comment_count, vml_data_id);
+	self->vml_shape_id = vml_shape_id;
+
+	return;
+
+mem_error:
+	if (relationship) {
+		free(relationship->type);
+		free(relationship->target);
+		free(relationship->target_mode);
+		free(relationship);
+	}
 }

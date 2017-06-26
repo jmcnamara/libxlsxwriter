@@ -54,6 +54,7 @@
 #include "common.h"
 #include "format.h"
 #include "utility.h"
+#include "comment.h"
 
 #define LXW_ROW_MAX 1048576
 #define LXW_COL_MAX 16384
@@ -338,6 +339,21 @@ typedef struct lxw_protection {
     char hash[5];
 } lxw_protection;
 
+typedef struct lxw_comment_option {
+	char *author;
+	char *color;
+	char * start_cell;
+	uint32_t col_start;
+	uint32_t row_start;
+	uint32_t width;
+	uint32_t height;
+	uint32_t x_offset;
+	float x_scale;
+	uint32_t y_offset;
+	float y_scale;
+	enum lxw_boolean visible;
+} lxw_comment_option;
+
 /**
  * @brief Struct to represent an Excel worksheet.
  *
@@ -457,6 +473,15 @@ typedef struct lxw_worksheet {
     struct lxw_protection protection;
 
     lxw_drawing *drawing;
+
+	struct lxw_comment *comment;
+	uint8_t has_vml;
+	uint8_t has_header_vml;
+	uint16_t comment_count;
+	struct lxw_rel_tuples *external_comment_links;
+	struct lxw_rel_tuples *external_vml_links;
+	char* vml_data_id_str;
+	uint32_t vml_shape_id;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -614,6 +639,29 @@ lxw_error worksheet_write_string(lxw_worksheet *worksheet,
                                  lxw_row_t row,
                                  lxw_col_t col, const char *string,
                                  lxw_format *format);
+/**
+ * @brief Write a comment to a worksheet cell.
+ *
+ * @param worksheet pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param comment   String to write to cell as a comment.
+ * @param option    Comment formatting option or NULL.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_write_comment()` function writes a string to the cell
+ * specified by `row` and `column`:
+ *
+ * @code
+ *     worksheet_write_comment(worksheet, 0, 0, "This is a comment", NULL);
+ * @endcode
+ *
+ */
+lxw_error worksheet_write_comment(lxw_worksheet *worksheet,
+								  lxw_row_t row,
+								  lxw_col_t col, const char *comment,
+								  lxw_comment_option *option);
 /**
  * @brief Write a formula to a worksheet cell.
  *
@@ -2599,6 +2647,8 @@ void lxw_worksheet_prepare_chart(lxw_worksheet *worksheet,
 
 lxw_row *lxw_worksheet_find_row(lxw_worksheet *worksheet, lxw_row_t row_num);
 lxw_cell *lxw_worksheet_find_cell(lxw_row *row, lxw_col_t col_num);
+
+void lxw_worksheet_prepare_vml_objects(lxw_worksheet *worksheet, uint32_t vml_data_id, uint32_t vml_shape_id, uint32_t vml_drawing_id, uint32_t comment_id);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

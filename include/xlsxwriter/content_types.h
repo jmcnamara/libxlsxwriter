@@ -53,7 +53,8 @@ void lxw_ct_add_drawing_name(lxw_content_types *content_types,
 void lxw_ct_add_shared_strings(lxw_content_types *content_types);
 void lxw_ct_add_calc_chain(lxw_content_types *content_types);
 void lxw_ct_add_custom_properties(lxw_content_types *content_types);
-
+void lxw_ct_add_comment(lxw_content_types *self, uint16_t num);
+void lxw_ct_add_vml(lxw_content_types *self);
 /* Declarations required for unit testing. */
 #ifdef TESTING
 
