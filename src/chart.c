@@ -5384,7 +5384,8 @@ chart_series_set_labels_percentage(lxw_chart_series *series)
  * Set an data labels number format.
  */
 void
-chart_series_set_labels_num_format(lxw_chart_series *series, const char *num_format)
+chart_series_set_labels_num_format(lxw_chart_series *series,
+                                   const char *num_format)
 {
     if (!num_format)
         return;

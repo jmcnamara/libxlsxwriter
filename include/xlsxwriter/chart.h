@@ -1983,7 +1983,8 @@ void chart_series_set_trendline_intercept(lxw_chart_series *series,
  *
  * For more information see @ref chart_trendlines.
  */
-void chart_series_set_trendline_name(lxw_chart_series *series, const char *name);
+void chart_series_set_trendline_name(lxw_chart_series *series,
+                                     const char *name);
 
 /**
  * @brief Set the trendline line properties for a chart data series.
