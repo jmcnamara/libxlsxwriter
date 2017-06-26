@@ -196,6 +196,7 @@ _write_image_files(lxw_packager *self)
     lxw_worksheet *worksheet;
     lxw_image_options *image;
     lxw_error err;
+    FILE *image_stream;
 
     char filename[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
@@ -210,12 +211,19 @@ _write_image_files(lxw_packager *self)
             lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                          "xl/media/image%d.%s", index++, image->extension);
 
-            rewind(image->stream);
+            /* Check that the image file exists and can be opened. */
+            image_stream = fopen(image->filename, "rb");
+            if (!image_stream) {
+                LXW_WARN_FORMAT1("Error adding image to xlsx file: file "
+                                 "doesn't exist or can't be opened: %s.",
+                                 image->filename);
+                return LXW_ERROR_CREATING_TMPFILE;
+            }
 
-            err = _add_file_to_zip(self, image->stream, filename);
+            err = _add_file_to_zip(self, image_stream, filename);
             RETURN_ON_ERROR(err);
 
-            fclose(image->stream);
+            fclose(image_stream);
         }
     }
 
@@ -934,7 +942,7 @@ lxw_create_package(lxw_packager *self)
     RETURN_ON_ERROR(error);
 
     error = _write_image_files(self);
-    RETURN_ON_ERROR(error);;
+    RETURN_ON_ERROR(error);
 
     error = _write_root_rels_file(self);
     RETURN_ON_ERROR(error);

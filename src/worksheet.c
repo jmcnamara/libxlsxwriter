@@ -4919,10 +4919,12 @@ worksheet_insert_image_opt(lxw_worksheet *self,
 
     if (_get_image_properties(options) == LXW_NO_ERROR) {
         STAILQ_INSERT_TAIL(self->image_data, options, list_pointers);
+        fclose(image_stream);
         return LXW_NO_ERROR;
     }
     else {
         free(options);
+        fclose(image_stream);
         return LXW_ERROR_IMAGE_DIMENSIONS;
     }
 }
