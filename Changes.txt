@@ -2,6 +2,14 @@
 @page changes Changes
 
 
+## 0.7.2 July 26 2017
+
+- Changed font sizes from integer to double to allow fractional font sizes.
+  Issue [#114][gh_114].
+
+  [gh_114]: https://github.com/jmcnamara/libxlsxwriter/issues/114
+
+
 ## 0.7.1 July 24 2017
 
 - Fixed issue where internal file creation and modification dates were in the
