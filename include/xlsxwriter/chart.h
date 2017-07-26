@@ -675,7 +675,7 @@ typedef struct lxw_chart_font {
     char *name;
 
     /** The chart font size. The default is 11. */
-    uint16_t size;
+    double size;
 
     /** The chart font bold property. Set to 0 or 1. */
     uint8_t bold;

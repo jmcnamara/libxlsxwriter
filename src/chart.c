@@ -316,8 +316,8 @@ _chart_convert_font_args(lxw_chart_font *user_font)
     font->name = lxw_strdup(user_font->name);
 
     /* Convert font size units. */
-    if (font->size)
-        font->size = font->size * 100;
+    if (font->size > 0.0)
+        font->size = font->size * 100.0;
 
     /* Convert rotation into 60,000ths of a degree. */
     if (font->rotation)
@@ -836,8 +836,8 @@ _chart_write_a_def_rpr(lxw_chart *self, lxw_chart_font *font)
         use_font_default = !(has_color || has_latin || font->baseline == -1);
 
         /* Set the font attributes. */
-        if (font->size)
-            LXW_PUSH_ATTRIBUTES_INT("sz", font->size);
+        if (font->size > 0.0)
+            LXW_PUSH_ATTRIBUTES_DBL("sz", font->size);
 
         if (use_font_default || font->bold)
             LXW_PUSH_ATTRIBUTES_INT("b", font->bold & 0x1);
@@ -908,8 +908,8 @@ _chart_write_a_r_pr(lxw_chart *self, lxw_chart_font *font)
         use_font_default = !(has_color || has_latin || font->baseline == -1);
 
         /* Set the font attributes. */
-        if (font->size)
-            LXW_PUSH_ATTRIBUTES_INT("sz", font->size);
+        if (font->size > 0.0)
+            LXW_PUSH_ATTRIBUTES_DBL("sz", font->size);
 
         if (use_font_default || font->bold)
             LXW_PUSH_ATTRIBUTES_INT("b", font->bold & 0x1);

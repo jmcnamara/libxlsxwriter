@@ -81,8 +81,8 @@ typedef int32_t lxw_color_t;
 #define LXW_PROPERTY_UNSET              -1
 #define LXW_COLOR_UNSET                 -1
 #define LXW_COLOR_MASK                  0xFFFFFF
-#define LXW_MIN_FONT_SIZE               1
-#define LXW_MAX_FONT_SIZE               409
+#define LXW_MIN_FONT_SIZE               1.0
+#define LXW_MAX_FONT_SIZE               409.0
 
 #define LXW_FORMAT_FIELD_COPY(dst, src)             \
     do{                                             \
@@ -360,7 +360,7 @@ typedef struct lxw_format {
     uint16_t font_index;
     uint8_t has_font;
     uint8_t has_dxf_font;
-    uint16_t font_size;
+    double font_size;
     uint8_t bold;
     uint8_t italic;
     lxw_color_t font_color;
@@ -427,7 +427,7 @@ typedef struct lxw_format {
 typedef struct lxw_font {
 
     char font_name[LXW_FORMAT_FIELD_LEN];
-    uint16_t font_size;
+    double font_size;
     uint8_t bold;
     uint8_t italic;
     uint8_t underline;
@@ -529,7 +529,7 @@ void format_set_font_name(lxw_format *format, const char *font_name);
  * size in the row. You can also explicitly specify the height of a
  * row using the worksheet_set_row() function.
  */
-void format_set_font_size(lxw_format *format, uint16_t size);
+void format_set_font_size(lxw_format *format, double size);
 
 /**
  * @brief Set the color of the font used in the cell.

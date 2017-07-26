@@ -38,7 +38,7 @@ lxw_format_new()
     format->font_index = 0;
     format->has_font = LXW_FALSE;
     format->has_dxf_font = LXW_FALSE;
-    format->font_size = 11;
+    format->font_size = 11.0;
     format->bold = LXW_FALSE;
     format->italic = LXW_FALSE;
     format->font_color = LXW_COLOR_UNSET;
@@ -309,7 +309,7 @@ format_set_font_name(lxw_format *self, const char *font_name)
  * Set the font_size property.
  */
 void
-format_set_font_size(lxw_format *self, uint16_t size)
+format_set_font_size(lxw_format *self, double size)
 {
 
     if (size >= LXW_MIN_FONT_SIZE && size <= LXW_MAX_FONT_SIZE)
