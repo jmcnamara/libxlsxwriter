@@ -208,6 +208,11 @@ For example:
     make
     make install
 
+@note The CMake build system is currently experimental and should be
+considered as a secondary build system. The make build system described in the
+previous sections should be used in preference when integrating libxlsxwriter
+with applications or packaging.
+
 @subsection gsg_cmake_flags CMake Flags
 
 Certain build features can be controlled by passing flags to Cmake. For
