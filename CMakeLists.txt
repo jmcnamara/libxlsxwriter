@@ -118,6 +118,11 @@ message("zlib version: " ${ZLIB_VERSION})
 
 add_definitions(-DNOCRYPT -DNOUNCRYPT)
 
+# Fix for modified zconf.h on Gentoo.
+if(${CMAKE_HOST_SYSTEM} MATCHES gentoo)
+    add_definitions(-DOF=_Z_OF)
+endif()
+
 include_directories(include include/xlsxwriter)
 file(GLOB LXW_SOURCES src/*.c)
 list(APPEND LXW_SOURCES third_party/minizip/ioapi.c third_party/minizip/zip.c)
