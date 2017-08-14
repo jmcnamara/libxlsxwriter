@@ -1,4 +1,5 @@
 language: c
+dist: trusty
 
 compiler:
   - clang
@@ -8,19 +9,22 @@ env:
   -                                      CFLAGS='-Werror'
   - NO_VALGRIND=1 USE_STANDARD_TMPFILE=1 CFLAGS='-Werror'
   - NO_VALGRIND=1                        CFLAGS='-Werror -m32'
-
-# Minizip not currently availavle in TravisCI
-# - NO_VALGRIND=1 USE_SYSTEM_MINIZIP=1   CFLAGS='-Werror'
+  - NO_VALGRIND=1 USE_SYSTEM_MINIZIP=1   CFLAGS='-Werror'
 
 install:
   - sudo pip install pytest
   - sudo apt-get update
   - sudo apt-get install -y gcc-multilib
   - sudo apt-get install -y zlib1g-dev
-# - sudo apt-get install -y libminizip-dev
+  - sudo apt-get install -y libminizip-dev
   - sudo apt-get install -y zlib1g-dev:i386
   - sudo apt-get install -y gcc
   - sudo apt-get install -y valgrind
+
+  - wget http://mirrors.kernel.org/ubuntu/pool/universe/m/minizip/libminizip-dev_1.1-8_amd64.deb
+  - wget http://mirrors.kernel.org/ubuntu/pool/universe/m/minizip/libminizip1_1.1-8_amd64.deb
+  - sudo dpkg -i libminizip1_1.1-8_amd64.deb
+  - sudo dpkg -i libminizip-dev_1.1-8_amd64.deb
 
 script:
   - make V=1
