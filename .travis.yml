@@ -29,4 +29,5 @@ script:
   - make V=1
   - make test_functional V=1
   - make test_unit V=1
+  - make examples V=1
   - make test_valgrind V=1
