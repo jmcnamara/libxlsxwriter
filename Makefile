@@ -17,7 +17,9 @@ INSTALL_DIR ?= /usr/local
 
 # Build the libs.
 all :
+ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) -C third_party/minizip
+endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
 endif
@@ -33,11 +35,13 @@ clean :
 	$(Q)$(MAKE) clean -C test/unit
 	$(Q)$(MAKE) clean -C test/functional/src
 	$(Q)$(MAKE) clean -C examples
-	$(Q)$(MAKE) clean -C third_party/minizip
 	$(Q)rm -rf docs/html
 	$(Q)rm -rf test/functional/__pycache__
 	$(Q)rm -f  test/functional/*.pyc
 	$(Q)rm -f  lib/*
+ifndef USE_STANDARD_TMPFILE
+	$(Q)$(MAKE) clean -C third_party/minizip
+endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) clean -C third_party/tmpfileplus
 endif
@@ -59,7 +63,9 @@ test_functional : all
 # Run all tests.
 test_unit :
 	@echo "Compiling unit tests ..."
+ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) -C third_party/minizip
+endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
 endif
@@ -106,7 +112,9 @@ strip:
 
 # Run a coverity static analysis.
 coverity:
+ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) -C third_party/minizip
+endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
 endif
@@ -121,7 +129,9 @@ endif
 
 # Run a scan-build static analysis.
 scan_build:
+ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) -C third_party/minizip
+endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
 endif

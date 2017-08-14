@@ -24,6 +24,9 @@ EXES = $(patsubst %.c,%,$(SRCS))
 LIBXLSXWRITER = ../src/libxlsxwriter.a
 
 LIBS = $(LIBXLSXWRITER) -lz
+ifdef USE_SYSTEM_MINIZIP
+LIBS += -lminizip
+endif
 
 all : $(LIBXLSXWRITER) $(EXES)
 

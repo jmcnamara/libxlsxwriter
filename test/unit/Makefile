@@ -44,6 +44,9 @@ OBJS  = $(patsubst %.c,%.o,$(SRCS))
 # Libs to link.
 LIBS_A = $(LIB_DIR)/libxlsxwriter_test.a
 LIBS_O = -lz
+ifdef USE_SYSTEM_MINIZIP
+LIBS_O += -lminizip
+endif
 # End of LIBS
 
 # House-keeping build targets.
@@ -95,4 +98,3 @@ test_all : test_all.o $(OBJS) $(LIBS_A)
 #
 test : all test_all
 	$(Q)./test_all
-

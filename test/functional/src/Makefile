@@ -24,6 +24,9 @@ EXES = $(patsubst %.c,%,$(SRCS))
 LIBXLSXWRITER = ../../../src/libxlsxwriter.a
 
 LIBS = $(LIBXLSXWRITER) -lz
+ifdef USE_SYSTEM_MINIZIP
+LIBS += -lminizip
+endif
 
 all : $(LIBXLSXWRITER) $(EXES)
 
@@ -41,4 +44,3 @@ clean :
 
 test_valgrind: all
 	$(Q)$(foreach exe,$(EXES),valgrind -q --error-exitcode=1 --leak-check=full ./$(exe) || exit;)
-
