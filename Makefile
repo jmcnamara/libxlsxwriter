@@ -97,14 +97,16 @@ docs:
 	$(Q)$(MAKE) -C docs
 
 # Simple minded install.
-install:
+install: all
+	$(Q)mkdir -p        $(INSTALL_DIR)/include
 	$(Q)cp -R include/* $(INSTALL_DIR)/include
-	$(Q)cp lib/* $(INSTALL_DIR)/lib
+	$(Q)mkdir -p        $(INSTALL_DIR)/lib
+	$(Q)cp lib/*        $(INSTALL_DIR)/lib
 
 # Simpler minded uninstall.
 uninstall:
 	$(Q)rm -rf $(INSTALL_DIR)/include/xlsxwriter*
-	$(Q)rm $(INSTALL_DIR)/lib/libxlsxwriter.*
+	$(Q)rm     $(INSTALL_DIR)/lib/libxlsxwriter.*
 
 # Strip the lib files.
 strip:

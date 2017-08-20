@@ -31,3 +31,5 @@ script:
   - make test_unit V=1
   - make examples V=1
   - make test_valgrind V=1
+  - sudo make install V=1
+  - sudo make uninstall V=1
