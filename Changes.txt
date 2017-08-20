@@ -1,7 +1,14 @@
 /**
 @page changes Changes
 
+## 0.7.4 August 20 2017
+
+- Fix make build system "install" target for compatibility with macOS "brew"
+  installer.
+
+
 ## 0.7.3 August 12 2017
+
 
 - Build system fixes for Gentoo.
   Issue [#116][gh_116].
