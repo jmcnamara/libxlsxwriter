@@ -18,7 +18,8 @@ INC_DIR     = ../include
 LIBS = -lz
 
 ifdef USE_SYSTEM_MINIZIP
-LIBS += -lminizip
+LIBS   += -lminizip
+CFLAGS += -DUSE_SYSTEM_MINIZIP
 else
 # Use the local copy of minizip.
 MINIZIP_DIR = ../third_party/minizip

@@ -108,7 +108,7 @@ dynamic/shared library and header files.
 The files are installed to `/usr/local` by default but this can be overridden
 by using the `INSTALL_DIR` environmental variable:
 
-    INSTALL_DIR=/usr/third_party make install
+    make install INSTALL_DIR=/usr/third_party
 
 This installation method isn't fool proof but if it fails on your system you
 will probably know exactly how to fix it or have no idea how to fix it. I'm

@@ -10,7 +10,12 @@
 #define __LXW_PACKAGER_H__
 
 #include <stdint.h>
+
+#ifdef USE_SYSTEM_MINIZIP
+#include "minizip/zip.h"
+#else
 #include "third_party/zip.h"
+#endif
 
 #include "common.h"
 #include "workbook.h"

@@ -25,13 +25,16 @@ LIBXLSXWRITER = ../../../src/libxlsxwriter.a
 
 LIBS = $(LIBXLSXWRITER) -lz
 ifdef USE_SYSTEM_MINIZIP
-LIBS += -lminizip
+LIBS   += -lminizip
+CFLAGS += -DUSE_SYSTEM_MINIZIP
 endif
 
 all : $(LIBXLSXWRITER) $(EXES)
 
 $(LIBXLSXWRITER):
+ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) -C ../../../third_party/minizip
+endif
 	$(Q)$(MAKE) -C ../../../src
 
 clean :

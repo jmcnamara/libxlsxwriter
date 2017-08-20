@@ -37,7 +37,13 @@ STATIC lxw_error _add_file_to_zip(lxw_packager *self, FILE * file,
 #undef SLIST_ENTRY
 
 #include <windows.h>
+
+
+#ifdef USE_SYSTEM_MINIZIP
+#include "minizip/iowin32.h"
+#else
 #include "../third_party/minizip/iowin32.h"
+#endif
 
 zipFile
 _open_zipfile_win32(const char *filename)
