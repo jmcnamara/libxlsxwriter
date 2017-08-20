@@ -141,6 +141,11 @@ should be able to compile the program as follows:
 
     cc myexcel.c -o myexcel -lxlsxwriter
 
+In some environments, or if you changed the `INSTALL_DIR` location, you may
+have to provide explicit `include` and `lib` paths:
+
+cc myexcel.c -o myexcel -I/usr/local/include -L/usr/local/lib -lxlsxwriter
+
 This will create an executable that you can run to generate an Excel
 spreadsheet:
 
@@ -176,23 +181,35 @@ Then follow the instructions in the Linux section to
 @ref gsg_using "use the library".
 
 
-@section gsg_macos Installation on Mac OS X and iOS
+@section gsg_macos Installation on macOS and iOS
 
-The instructions for installing on Linux, shown above, will also work on Mac
-OS X.
+The instructions for installing on Linux, shown above, will also work on
+macOS.
 
 To install for Xcode and iOS use the Cocoa Pods method shown in the next
 section.
 
+On macOS you can also use [brew/homebrew](https://brew.sh), see below.
+
 @subsection gsg_cocoapods Install using Cocoa Pods for Xcode
 
-For iOS and OS X projects in Xcode you can install libxlsxwriter using
+For iOS and macOS projects in Xcode you can install libxlsxwriter using
 [CocoaPods](https://cocoapods.org).
 
-For a sample Xcode project that uses the libxlsxwriter cocoapod for iOS and OS
-X with Objective-C and Swift see [libxlsxwriter Cocoa
+For a sample Xcode project that uses the libxlsxwriter cocoapod for iOS and
+macOS with Objective-C and Swift see [libxlsxwriter Cocoa
 Examples](https://github.com/lrossi/libxlsxwriterCocoaExamples), provided by
 Ludovico Rossi.
+
+@subsection gsg_brew Installation on macOS with homebrew
+
+On macOS you can also use [brew/homebrew](https://brew.sh):
+
+    brew install libxlsxwriter
+
+    # Once installed you can compile and run a libxlsxwriter program as follows.
+    cc myexcel.c -o myexcel -I/usr/local/include -L/usr/local/lib -lxlsxwriter
+    ./myexcel
 
 @section gsg_cmake Install using CMake
 
@@ -352,7 +369,7 @@ library which is included in the source tree. If you wish to use the standard
 library `tmpfile()` function instead you can compile without `tmpfileplus` as
 follows:
 
-    USE_STANDARD_TMPFILE=1 make
+    make USE_STANDARD_TMPFILE=1
 
 @note When using the the standard library `tmpfile()` the `tmpdir` parameter,
 shown above, is ignored.
