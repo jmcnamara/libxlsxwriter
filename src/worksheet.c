@@ -3431,7 +3431,7 @@ worksheet_write_string(lxw_worksheet *self,
         if (format)
             return worksheet_write_blank(self, row_num, col_num, format);
         else
-            return LXW_ERROR_NULL_PARAMETER_IGNORED;
+            return LXW_NO_ERROR;
     }
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
