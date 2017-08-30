@@ -94,7 +94,9 @@ Tree.h from FreeBSD:
     THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-[Zlib](http://www.zlib.net) has the following License/Copyright:
+The `minizip` files used in the libxlsxwriter source tree are taken from the
+`zlib` ` contrib/minizip` directory. [Zlib](http://www.zlib.net) has the
+following License/Copyright:
 
     (C) 1995-2013 Jean-loup Gailly and Mark Adler
 
@@ -117,10 +119,20 @@ Tree.h from FreeBSD:
     Jean-loup Gailly        Mark Adler
     jloup@gzip.org          madler@alumni.caltech.edu
 
+The `minizip` files have the following additional copyright declarations:
+
+    Copyright (C) 1998-2010 Gilles Vollant
+    (minizip) ( http://www.winimage.com/zLibDll/minizip.html )
+
+    Modifications for Zip64 support
+    Copyright (C) 2009-2010 Mathias Svensson ( http://result42.com )
+
+Note, it is possible to compile libxlsxwriter without statically linking the
+`minizip` files and instead dynamically linking to `lminizip`, see
+@ref gsg_minizip.
 
 [Tmpfileplus](http://www.di-mgt.com.au/c_function_to_create_temp_file.html)
 has the following license:
-
 
      This Source Code Form is subject to the terms of the Mozilla Public
      License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -130,6 +142,9 @@ has the following license:
      <http://www.di-mgt.com.au/contact/>.
 
 See the [Mozilla Public License, v. 2.0](http://mozilla.org/MPL/2.0/).
+
+Note, it is possible to compile libxlsxwriter using the standard library
+`tmpfile()` function instead of `tmpfileplus`, see @ref gsg_tmpdir.
 
 Next: @ref changes
 */

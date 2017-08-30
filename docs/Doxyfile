@@ -776,7 +776,7 @@ INPUT                  = src/mainpage.dox                  \
                          src/faq.dox                       \
                          src/bugs.dox                      \
                          src/author.dox                    \
-                         src/license.dox                   \
+                         ../License.txt                    \
                          ../Changes.txt
 
 # This tag can be used to specify the character encoding of the source files

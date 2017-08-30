@@ -407,10 +407,22 @@ work in all of these environments.
 
 See also @ref gsg_tmpdir.
 
+@section gsg_minizip Linking against system minizip
+
+Libxlsxwriter uses the `minizip` component of [Zlib](http://www.zlib.net) to
+create the xlsx zip file container. The source files for `minizip` are
+included in the src tree of libxlsxwriter and are statically linked by
+default.
+
+If you have a `lminizip` library already installed on your system and prefer
+to dynamically link against that you can use the following compilation option:
+
+    make USE_SYSTEM_MINIZIP=1
+
 @section gsg_next Next steps
 
-If you got libxlsxwriter built and working then the next sections will look at
-some more detailed examples.
+If you got libxlsxwriter built and working successfully then the next sections
+will look at how to create some more in-depth examples.
 
 Next: @ref tutorial01
 
