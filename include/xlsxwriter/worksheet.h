@@ -561,6 +561,10 @@ extern "C" {
  *
  * @image html write_number02.png
  *
+ * @note Excel doesn't support `NaN`, `Inf` or `-Inf` as a number value. If
+ * you are writing data that contains these values then your application
+ * should convert them to a string or handle them in some other way.
+ *
  */
 lxw_error worksheet_write_number(lxw_worksheet *worksheet,
                                  lxw_row_t row,
