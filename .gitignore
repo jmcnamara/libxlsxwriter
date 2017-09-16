@@ -36,8 +36,10 @@ examples/*
 !examples/*.c
 !examples/logo.png
 !examples/Makefile
+!examples/meson.build
 cov-int
 libxlsxwriter-coverity.tgz
+builddir
 
 third_party/zlib-1.2.8/configure.log
 third_party/zlib-1.2.8/contrib/minizip/miniunz
