@@ -76,12 +76,66 @@
 enum lxw_gridlines {
     /** Hide screen and print gridlines. */
     LXW_HIDE_ALL_GRIDLINES = 0,
+
     /** Show screen gridlines. */
     LXW_SHOW_SCREEN_GRIDLINES,
+
     /** Show print gridlines. */
     LXW_SHOW_PRINT_GRIDLINES,
+
     /** Show screen and print gridlines. */
     LXW_SHOW_ALL_GRIDLINES
+};
+
+/** Data validation property values. */
+enum lxw_validation_boolean {
+    LXW_VALIDATION_DEFAULT,
+
+    /** Turn a data validation property off. */
+    LXW_VALIDATION_OFF,
+
+    /** Turn a data validation property on. Data validation properties are
+     * generally on by default. */
+    LXW_VALIDATION_ON
+};
+
+enum lxw_validation_types {
+    LXW_VALIDATION_TYPE_NONE,
+    LXW_VALIDATION_TYPE_INTEGER,
+    LXW_VALIDATION_TYPE_INTEGER_FORMULA,
+    LXW_VALIDATION_TYPE_DECIMAL,
+    LXW_VALIDATION_TYPE_DECIMAL_FORMULA,
+    LXW_VALIDATION_TYPE_LIST,
+    LXW_VALIDATION_TYPE_LIST_FORMULA,
+    LXW_VALIDATION_TYPE_DATE,
+    LXW_VALIDATION_TYPE_DATE_FORMULA,
+    LXW_VALIDATION_TYPE_DATE_NUMBER,
+    LXW_VALIDATION_TYPE_TIME,
+    LXW_VALIDATION_TYPE_TIME_FORMULA,
+    LXW_VALIDATION_TYPE_TIME_NUMBER,
+    LXW_VALIDATION_TYPE_LENGTH,
+    LXW_VALIDATION_TYPE_LENGTH_FORMULA,
+    LXW_VALIDATION_TYPE_CUSTOM_FORMULA,
+    LXW_VALIDATION_TYPE_ANY
+};
+
+enum lxw_validation_criteria {
+    LXW_VALIDATION_CRITERIA_NONE,
+    LXW_VALIDATION_CRITERIA_EQUAL,
+    LXW_VALIDATION_CRITERIA_NOT_EQUAL,
+    LXW_VALIDATION_CRITERIA_LESS_THAN,
+    LXW_VALIDATION_CRITERIA_LESS_THAN_OR_EQUAL,
+    LXW_VALIDATION_CRITERIA_GREATER_THAN,
+    LXW_VALIDATION_CRITERIA_GREATER_THAN_OR_EQUAL,
+    LXW_VALIDATION_CRITERIA_BETWEEN,
+    LXW_VALIDATION_CRITERIA_NOT_BETWEEN
+};
+
+enum lxw_validation_error_types {
+    LXW_VALIDATION_ERROR_TYPE_DEFAULT,
+    LXW_VALIDATION_ERROR_TYPE_STOP,
+    LXW_VALIDATION_ERROR_TYPE_WARNING,
+    LXW_VALIDATION_ERROR_TYPE_INFORMATION
 };
 
 enum cell_types {
@@ -140,6 +194,7 @@ struct lxw_table_rows {
 
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
 STAILQ_HEAD(lxw_selections, lxw_selection);
+STAILQ_HEAD(lxw_data_validations, lxw_data_validation);
 STAILQ_HEAD(lxw_image_data, lxw_image_options);
 STAILQ_HEAD(lxw_chart_data, lxw_image_options);
 
@@ -228,6 +283,41 @@ typedef struct lxw_selection {
     STAILQ_ENTRY (lxw_selection) list_pointers;
 
 } lxw_selection;
+
+typedef struct lxw_data_validation {
+
+    uint8_t validate;
+    uint8_t criteria;
+    uint8_t ignore_blank;
+    uint8_t show_input;
+    uint8_t show_error;
+    uint8_t error_type;
+    uint8_t dropdown;
+    uint8_t is_between;
+
+    double value_number;
+    char *value_formula;
+    char **value_list;
+    lxw_datetime value_datetime;
+
+    double minimum_number;
+    char *minimum_formula;
+    lxw_datetime minimum_datetime;
+
+    double maximum_number;
+    char *maximum_formula;
+    lxw_datetime maximum_datetime;
+
+    char *input_title;
+    char *input_message;
+    char *error_title;
+    char *error_message;
+
+    char sqref[LXW_MAX_CELL_RANGE_LENGTH];
+
+    STAILQ_ENTRY (lxw_data_validation) list_pointers;
+
+} lxw_data_validation;
 
 /**
  * @brief Options for inserted images
@@ -354,6 +444,7 @@ typedef struct lxw_worksheet {
     struct lxw_cell **array;
     struct lxw_merged_ranges *merged_ranges;
     struct lxw_selections *selections;
+    struct lxw_data_validations *data_validations;
     struct lxw_image_data *image_data;
     struct lxw_chart_data *chart_data;
 
@@ -416,6 +507,7 @@ typedef struct lxw_worksheet {
     uint8_t vba_codename;
     uint8_t vcenter;
     uint8_t zoom_scale_normal;
+    uint8_t num_validations;
 
     lxw_color_t tab_color;
 
@@ -1473,6 +1565,17 @@ lxw_error worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
 lxw_error worksheet_autofilter(lxw_worksheet *worksheet, lxw_row_t first_row,
                                lxw_col_t first_col, lxw_row_t last_row,
                                lxw_col_t last_col);
+
+lxw_error worksheet_data_validation_cell(lxw_worksheet *worksheet,
+                                         lxw_row_t row_num, lxw_col_t col_num,
+                                         lxw_data_validation *user_options);
+
+lxw_error worksheet_data_validation_range(lxw_worksheet *worksheet,
+                                          lxw_row_t first_row,
+                                          lxw_col_t first_col,
+                                          lxw_row_t last_row,
+                                          lxw_col_t last_col,
+                                          lxw_data_validation *validation);
 
  /**
   * @brief Make a worksheet the active, i.e., visible worksheet.
@@ -2634,6 +2737,7 @@ STATIC void _worksheet_write_print_options(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_pr(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_tab_color(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_protection(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_data_validations(lxw_worksheet *self);
 #endif /* TESTING */
 
 /* *INDENT-OFF* */

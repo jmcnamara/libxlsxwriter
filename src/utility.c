@@ -28,6 +28,7 @@ char *error_strings[LXW_MAX_ERRNO + 1] = {
     "Worksheet name exceeds Excel's limit of 31 characters.",
     "Worksheet name contains invalid Excel character: '[]:*?/\\'",
     "Worksheet name is already in use.",
+    "Parameter exceeds Excel's limit of 32 characters.",
     "Parameter exceeds Excel's limit of 128 characters.",
     "Parameter exceeds Excel's limit of 255 characters.",
     "String exceeds Excel's limit of 32,767 characters.",
@@ -417,6 +418,19 @@ lxw_strdup(const char *str)
         memcpy(copy, str, len);
 
     return copy;
+}
+
+/* Simple function to strdup() a formula string without the leading "=". */
+char *
+lxw_strdup_formula(const char *formula)
+{
+    if (!formula)
+        return NULL;
+
+    if (formula[0] == '=')
+        return lxw_strdup(formula + 1);
+    else
+        return lxw_strdup(formula);
 }
 
 /* Simple strlen that counts UTF-8 characters. Assumes well formed UTF-8. */

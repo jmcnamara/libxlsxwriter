@@ -38,7 +38,6 @@ STATIC lxw_error _add_file_to_zip(lxw_packager *self, FILE * file,
 
 #include <windows.h>
 
-
 #ifdef USE_SYSTEM_MINIZIP
 #include "minizip/iowin32.h"
 #else
