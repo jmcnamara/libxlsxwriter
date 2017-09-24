@@ -3461,7 +3461,6 @@ _worksheet_write_data_validation(lxw_worksheet *self,
 
     LXW_INIT_ATTRIBUTES();
 
-    /* TODO. marker. */
     switch (validation->validate) {
         case LXW_VALIDATION_TYPE_INTEGER:
         case LXW_VALIDATION_TYPE_INTEGER_FORMULA:
@@ -5351,6 +5350,7 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
     lxw_data_validation *copy;
     uint8_t is_between = LXW_FALSE;
     uint8_t is_formula = LXW_FALSE;
+    uint8_t has_criteria = LXW_TRUE;
     lxw_error err;
     lxw_row_t tmp_row;
     lxw_col_t tmp_col;
@@ -5364,26 +5364,6 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
         return LXW_NO_ERROR;
     }
 
-    /* Check that a validation parameter has been specified
-     * except for 'list', 'any' and 'custom'. */
-    if (validation->criteria == LXW_VALIDATION_CRITERIA_NONE
-        && !(validation->validate == LXW_VALIDATION_TYPE_LIST
-             || validation->validate == LXW_VALIDATION_TYPE_LIST_FORMULA
-             || validation->validate == LXW_VALIDATION_TYPE_ANY
-             || validation->validate == LXW_VALIDATION_TYPE_CUSTOM_FORMULA)) {
-
-        LXW_WARN_FORMAT("worksheet_data_validation_cell()/_range(): "
-                        "criteria parameter must be specified.");
-        return LXW_ERROR_PARAMETER_VALIDATION;
-    }
-
-    /* Check for "between" criteria so we can do additional checks. */
-    if (validation->criteria == LXW_VALIDATION_CRITERIA_BETWEEN
-        || validation->criteria == LXW_VALIDATION_CRITERIA_NOT_BETWEEN) {
-
-        is_between = LXW_TRUE;
-    }
-
     /* Check for formula types. */
     switch (validation->validate) {
         case LXW_VALIDATION_TYPE_INTEGER_FORMULA:
@@ -5395,6 +5375,33 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
         case LXW_VALIDATION_TYPE_CUSTOM_FORMULA:
             is_formula = LXW_TRUE;
             break;
+    }
+
+    /* Check for types without a criteria. */
+    switch (validation->validate) {
+        case LXW_VALIDATION_TYPE_LIST:
+        case LXW_VALIDATION_TYPE_LIST_FORMULA:
+        case LXW_VALIDATION_TYPE_ANY:
+        case LXW_VALIDATION_TYPE_CUSTOM_FORMULA:
+            has_criteria = LXW_FALSE;
+            break;
+    }
+
+    /* Check that a validation parameter has been specified
+     * except for 'list', 'any' and 'custom'. */
+    if (has_criteria && validation->criteria == LXW_VALIDATION_CRITERIA_NONE) {
+
+        LXW_WARN_FORMAT("worksheet_data_validation_cell()/_range(): "
+                        "criteria parameter must be specified.");
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+
+    /* Check for "between" criteria so we can do additional checks. */
+    if (has_criteria
+        && (validation->criteria == LXW_VALIDATION_CRITERIA_BETWEEN
+            || validation->criteria == LXW_VALIDATION_CRITERIA_NOT_BETWEEN)) {
+
+        is_between = LXW_TRUE;
     }
 
     /* Check that formula values are non NULL. */
@@ -5508,11 +5515,13 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
 
     /* Copy the parameters from the user data validation. */
     copy->validate = validation->validate;
-    copy->criteria = validation->criteria;
     copy->value_number = validation->value_number;
     copy->error_type = validation->error_type;
     copy->dropdown = validation->dropdown;
     copy->is_between = is_between;
+
+    if (has_criteria)
+        copy->criteria = validation->criteria;
 
     if (is_between) {
         copy->value_number = validation->minimum_number;
@@ -5540,7 +5549,6 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
         GOTO_LABEL_ON_MEM_ERROR(copy->error_message, mem_error);
     }
 
-    /* TODO */
     /* Copy the formula strings. */
     if (is_formula) {
         if (is_between) {
