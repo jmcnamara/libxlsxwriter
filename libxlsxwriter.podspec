@@ -16,6 +16,7 @@ Pod::Spec.new do |s|
                             * Defined names.
                             * Autofilters.
                             * Charts.
+                            * Data validation and drop down lists.
                             * Worksheet PNG/JPEG images.
                             * Memory optimisation mode for writing large files.
                             * Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter).

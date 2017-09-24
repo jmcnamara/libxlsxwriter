@@ -68,7 +68,7 @@ CTEST(worksheet, test_write_data_validations_203) {
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_INTEGER;
-    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL;
+    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL_TO;
     data_validation->value_number = 1;
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
@@ -91,7 +91,7 @@ CTEST(worksheet, test_write_data_validations_204) {
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_INTEGER;
-    data_validation->criteria = LXW_VALIDATION_CRITERIA_NOT_EQUAL;
+    data_validation->criteria = LXW_VALIDATION_CRITERIA_NOT_EQUAL_TO;
     data_validation->value_number = 1;
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
@@ -160,7 +160,7 @@ CTEST(worksheet, test_write_data_validations_207) {
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_INTEGER;
-    data_validation->criteria = LXW_VALIDATION_CRITERIA_GREATER_THAN_OR_EQUAL;
+    data_validation->criteria = LXW_VALIDATION_CRITERIA_GREATER_THAN_OR_EQUAL_TO;
     data_validation->value_number = 1;
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
@@ -183,7 +183,7 @@ CTEST(worksheet, test_write_data_validations_208) {
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_INTEGER;
-    data_validation->criteria = LXW_VALIDATION_CRITERIA_LESS_THAN_OR_EQUAL;
+    data_validation->criteria = LXW_VALIDATION_CRITERIA_LESS_THAN_OR_EQUAL_TO;
     data_validation->value_number = 1;
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
@@ -466,7 +466,7 @@ CTEST(worksheet, test_write_data_validations_219) {
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_DECIMAL;
-    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL;
+    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL_TO;
     data_validation->value_number = 1.2345;
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
@@ -558,7 +558,7 @@ CTEST(worksheet, test_write_data_validations_223) {
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_DATE_NUMBER;
-    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL;
+    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL_TO;
     data_validation->value_number = 39653;
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
@@ -582,7 +582,7 @@ CTEST(worksheet, test_write_data_validations_224) {
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_DATE;
-    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL;
+    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL_TO;
     data_validation->value_datetime = datetime1;
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
@@ -631,7 +631,7 @@ CTEST(worksheet, test_write_data_validations_226) {
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_TIME_NUMBER;
-    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL;
+    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL_TO;
     data_validation->value_number = 0.5;
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
@@ -655,7 +655,7 @@ CTEST(worksheet, test_write_data_validations_227) {
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_TIME;
-    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL;
+    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL_TO;
     data_validation->value_datetime = datetime1;
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
@@ -849,7 +849,7 @@ CTEST(worksheet, test_write_data_validations_235) {
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_DATE_FORMULA;
-    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL;
+    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL_TO;
     data_validation->value_formula = "=H1";
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
@@ -922,7 +922,7 @@ CTEST(worksheet, test_write_data_validations_238) {
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_TIME_FORMULA;
-    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL;
+    data_validation->criteria = LXW_VALIDATION_CRITERIA_EQUAL_TO;
     data_validation->value_formula = "=H1";
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);

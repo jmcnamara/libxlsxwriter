@@ -3494,22 +3494,22 @@ _worksheet_write_data_validation(lxw_worksheet *self,
     }
 
     switch (validation->criteria) {
-        case LXW_VALIDATION_CRITERIA_EQUAL:
+        case LXW_VALIDATION_CRITERIA_EQUAL_TO:
             LXW_PUSH_ATTRIBUTES_STR("operator", "equal");
             break;
-        case LXW_VALIDATION_CRITERIA_NOT_EQUAL:
+        case LXW_VALIDATION_CRITERIA_NOT_EQUAL_TO:
             LXW_PUSH_ATTRIBUTES_STR("operator", "notEqual");
             break;
         case LXW_VALIDATION_CRITERIA_LESS_THAN:
             LXW_PUSH_ATTRIBUTES_STR("operator", "lessThan");
             break;
-        case LXW_VALIDATION_CRITERIA_LESS_THAN_OR_EQUAL:
+        case LXW_VALIDATION_CRITERIA_LESS_THAN_OR_EQUAL_TO:
             LXW_PUSH_ATTRIBUTES_STR("operator", "lessThanOrEqual");
             break;
         case LXW_VALIDATION_CRITERIA_GREATER_THAN:
             LXW_PUSH_ATTRIBUTES_STR("operator", "greaterThan");
             break;
-        case LXW_VALIDATION_CRITERIA_GREATER_THAN_OR_EQUAL:
+        case LXW_VALIDATION_CRITERIA_GREATER_THAN_OR_EQUAL_TO:
             LXW_PUSH_ATTRIBUTES_STR("operator", "greaterThanOrEqual");
             break;
         case LXW_VALIDATION_CRITERIA_BETWEEN:
@@ -5614,11 +5614,9 @@ mem_error:
  * Add a data validation to a worksheet, for a cell.
  */
 lxw_error
-worksheet_data_validation_cell(lxw_worksheet *self, lxw_row_t row_num,
-                               lxw_col_t col_num,
-                               lxw_data_validation *validation)
+worksheet_data_validation_cell(lxw_worksheet *self, lxw_row_t row,
+                               lxw_col_t col, lxw_data_validation *validation)
 {
-    return worksheet_data_validation_range(self,
-                                           row_num, col_num,
-                                           row_num, col_num, validation);
+    return worksheet_data_validation_range(self, row, col,
+                                           row, col, validation);
 }
