@@ -1,6 +1,14 @@
 /**
 @page changes Changes
 
+## 0.7.5 September 25 2017
+
+- Added support for data validations and dropdown lists. See @ref
+  working_with_data_validation and @ref data_validate.c.
+  Feature request [#31][gh_31].
+
+  [gh_31]: https://github.com/jmcnamara/libxlsxwriter/issues/31
+
 ## 0.7.4 August 20 2017
 
 - Fix make build system "install" target for compatibility with macOS
