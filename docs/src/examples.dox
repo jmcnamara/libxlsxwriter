@@ -270,7 +270,7 @@ Example of merging cells in a worksheet.
 <table  width="600">
 <tr>
   <td>@ref merge_range.c "&lt;&lt; merge_range.c"</td>
-  <td align="right">@ref images.c "images.c &gt;&gt;"</td>
+  <td align="right">@ref data_validate.c "data_validate.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -281,11 +281,27 @@ Example of adding an autofilter to a worksheet.
 
 
 
-@example images.c
+@example data_validate.c
 
 <table  width="600">
 <tr>
   <td>@ref autofilter.c "&lt;&lt; autofilter.c"</td>
+  <td align="right">@ref images.c "images.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of adding data validations to a worksheet.
+
+@image html data_validate4.png
+
+
+
+
+@example images.c
+
+<table  width="600">
+<tr>
+  <td>@ref data_validate.c "&lt;&lt; data_validate.c"</td>
   <td align="right">@ref headers_footers.c "headers_footers.c &gt;&gt;"</td>
 </tr>
 </table>

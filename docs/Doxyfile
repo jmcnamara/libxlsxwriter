@@ -754,29 +754,30 @@ WARN_LOGFILE           =
 # spaces.
 # Note: If this tag is empty the current directory is searched.
 
-INPUT                  = src/mainpage.dox                  \
-                         src/introduction.dox              \
-                         src/getting_started.dox           \
-                         src/tutorial01.dox                \
-                         src/tutorial02.dox                \
-                         src/tutorial03.dox                \
-                         ../include/xlsxwriter/workbook.h  \
-                         ../include/xlsxwriter/worksheet.h \
-                         ../include/xlsxwriter/format.h    \
-                         ../include/xlsxwriter/chart.h     \
-                         ../include/xlsxwriter/utility.h   \
-                         ../include/xlsxwriter/common.h    \
-                         src/working_with_formats.dox      \
-                         src/working_with_colors.dox       \
-                         src/working_with_dates.dox        \
-                         src/working_with_charts.dox       \
-                         src/working_with_memory.dox       \
-                         src/examples.dox                  \
-                         src/running_the_tests.dox         \
-                         src/faq.dox                       \
-                         src/bugs.dox                      \
-                         src/author.dox                    \
-                         src/license.dox                   \
+INPUT                  = src/mainpage.dox                     \
+                         src/introduction.dox                 \
+                         src/getting_started.dox              \
+                         src/tutorial01.dox                   \
+                         src/tutorial02.dox                   \
+                         src/tutorial03.dox                   \
+                         ../include/xlsxwriter/workbook.h     \
+                         ../include/xlsxwriter/worksheet.h    \
+                         ../include/xlsxwriter/format.h       \
+                         ../include/xlsxwriter/chart.h        \
+                         ../include/xlsxwriter/utility.h      \
+                         ../include/xlsxwriter/common.h       \
+                         src/working_with_formats.dox         \
+                         src/working_with_colors.dox          \
+                         src/working_with_dates.dox           \
+                         src/working_with_charts.dox          \
+                         src/working_with_data_validation.dox \
+                         src/working_with_memory.dox          \
+                         src/examples.dox                     \
+                         src/running_the_tests.dox            \
+                         src/faq.dox                          \
+                         src/bugs.dox                         \
+                         src/author.dox                       \
+                         ../License.txt                       \
                          ../Changes.txt
 
 # This tag can be used to specify the character encoding of the source files

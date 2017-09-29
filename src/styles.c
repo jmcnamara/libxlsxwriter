@@ -153,13 +153,13 @@ _write_num_fmts(lxw_styles *self)
  * Write the <sz> element.
  */
 STATIC void
-_write_font_size(lxw_styles *self, uint16_t font_size)
+_write_font_size(lxw_styles *self, double font_size)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_INT("val", font_size);
+    LXW_PUSH_ATTRIBUTES_DBL("val", font_size);
 
     lxw_xml_empty_tag(self->file, "sz", &attributes);
 
@@ -337,7 +337,7 @@ _write_font(lxw_styles *self, lxw_format *format)
     if (format->font_script == LXW_FONT_SUBSCRIPT)
         _write_vert_align(self, "subscript");
 
-    if (format->font_size)
+    if (format->font_size > 0.0)
         _write_font_size(self, format->font_size);
 
     if (format->theme)

@@ -1,6 +1,57 @@
 /**
 @page changes Changes
 
+## 0.7.5 September 25 2017
+
+- Added support for data validations and dropdown lists. See @ref
+  working_with_data_validation and @ref data_validate.c.
+  Feature request [#31][gh_31].
+
+  [gh_31]: https://github.com/jmcnamara/libxlsxwriter/issues/31
+
+## 0.7.4 August 20 2017
+
+- Fix make build system "install" target for compatibility with macOS
+  [brew/homebrew](https://brew.sh) installer. See @ref gsg_brew.
+
+
+## 0.7.3 August 12 2017
+
+
+- Build system fixes for Gentoo.
+  Issue [#116][gh_116].
+
+  [gh_116]: https://github.com/jmcnamara/libxlsxwriter/issues/116
+
+
+
+## 0.7.2 July 26 2017
+
+- Changed font sizes from integer to double to allow fractional font sizes.
+  Issue [#114][gh_114].
+
+  [gh_114]: https://github.com/jmcnamara/libxlsxwriter/issues/114
+
+
+## 0.7.1 July 24 2017
+
+- Fixed issue where internal file creation and modification dates were in the
+  local timezone instead of UTC.
+  Issue [#110][gh_110].
+
+  [gh_110]: https://github.com/jmcnamara/libxlsxwriter/issues/110
+
+
+## 0.7.0 June 26 2017
+
+- Added support for CMake build system. See @ref gsg_cmake.
+  Thanks to Alex Huszagh.
+
+- Fixed issue where image filehandles weren't closed until the overall file
+  was closed causing the system to run out of filehandles.
+  Issue [#106][gh_106].
+
+  [gh_106]: https://github.com/jmcnamara/libxlsxwriter/issues/106
 
 ## 0.6.9 January 30 2017
 

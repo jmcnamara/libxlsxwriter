@@ -101,14 +101,19 @@ dependencies. If you are interested see @ref running_the_tests.
 @subsection gsg_install Install the library
 
 Libxlsxwriter supports a simplified installation scheme for a static and
-dynamic/shared library and header files. The installation has been tested on
-Linux and OS X:
+dynamic/shared library and header files.
 
     sudo make install
 
-This isn't fool proof but if it fails on your system you will probably know
-exactly how to fix it or have no idea how to fix it. I'm hoping for the
-former.
+The files are installed to `/usr/local` by default but this can be overridden
+by using the `INSTALL_DIR` environmental variable:
+
+    make install INSTALL_DIR=/usr/third_party
+
+This installation method isn't fool proof but if it fails on your system you
+will probably know exactly how to fix it or have no idea how to fix it. I'm
+hoping for the former.
+
 
 @subsection gsg_using Using the library
 
@@ -135,6 +140,11 @@ If you executed the `"make install"` command in the previous section then you
 should be able to compile the program as follows:
 
     cc myexcel.c -o myexcel -lxlsxwriter
+
+In some environments, or if you changed the `INSTALL_DIR` location, you may
+have to provide explicit `include` and `lib` paths:
+
+cc myexcel.c -o myexcel -I/usr/local/include -L/usr/local/lib -lxlsxwriter
 
 This will create an executable that you can run to generate an Excel
 spreadsheet:
@@ -171,23 +181,96 @@ Then follow the instructions in the Linux section to
 @ref gsg_using "use the library".
 
 
-@section gsg_macos Installation on Mac OS X and iOS
+@section gsg_macos Installation on macOS and iOS
 
-The instructions for installing on Linux, shown above, will also work on Mac
-OS X.
+The instructions for installing on Linux, shown above, will also work on
+macOS.
 
 To install for Xcode and iOS use the Cocoa Pods method shown in the next
 section.
 
+On macOS you can also use [brew/homebrew](https://brew.sh), see below.
+
 @subsection gsg_cocoapods Install using Cocoa Pods for Xcode
 
-For iOS and OS X projects in Xcode you can install libxlsxwriter using
+For iOS and macOS projects in Xcode you can install libxlsxwriter using
 [CocoaPods](https://cocoapods.org).
 
-For a sample Xcode project that uses the libxlsxwriter cocoapod for iOS and OS
-X with Objective-C and Swift see [libxlsxwriter Cocoa
+For a sample Xcode project that uses the libxlsxwriter cocoapod for iOS and
+macOS with Objective-C and Swift see [libxlsxwriter Cocoa
 Examples](https://github.com/lrossi/libxlsxwriterCocoaExamples), provided by
 Ludovico Rossi.
+
+@subsection gsg_brew Installation on macOS with homebrew
+
+On macOS you can also use [brew/homebrew](https://brew.sh):
+
+    brew install libxlsxwriter
+
+    # Once installed you can compile and run a libxlsxwriter program as follows.
+    cc myexcel.c -o myexcel -I/usr/local/include -L/usr/local/lib -lxlsxwriter
+    ./myexcel
+
+@section gsg_cmake Install using CMake
+
+Libxlsxwriter also supports [CMake](https://cmake.org) for building and
+installing the library, as follows:
+
+    cmake $SOURCE_DIR $FLAGS
+
+For example:
+
+    cd cmake
+    cmake ..
+    make
+    make install
+
+@note The CMake build system is currently experimental and should be
+considered as a secondary build system. The make build system described in the
+previous sections should be used in preference when integrating libxlsxwriter
+with applications or packaging.
+
+@subsection gsg_cmake_flags CMake Flags
+
+Certain build features can be controlled by passing flags to Cmake. For
+example:
+
+    cd cmake
+    cmake .. -DBUILD_TESTS=ON
+    make
+    make check_xlsxwriter_unit
+
+Some of the Libxlsxwriter specific flags are:
+
+- `BUILD_STATIC`: Build static libraries (default on). To build shared
+   libraries, pass `-DBUILD_STATIC=OFF` during configuration.
+
+- `BUILD_EXAMPLES`: Build example files (default off). To build the examples,
+   pass `-DBUILD_EXAMPLES=ON` during configuration.
+
+- `BUILD_TESTS`: Build unittests (default off). To build the unittests, pass
+  `-DBUILD_TESTS=ON` during configuration.
+
+- `ZLIB_ROOT`: The ZLIB root directory can be specified either through an
+   environment variable (`export ZLIB_ROOT=/usr/include`) or using a flag with
+   CMake (`-DZLIB_ROOT:STRING=/usr/include`). This sets the preferred search
+   path for the ZLIB installation.
+
+@subsection gsg_cmake_options CMake Options
+
+CMake sets debug and release builds with the `CMAKE_BUILD_TYPE` option. To
+build in release mode, pass `-DCMAKE_BUILD_TYPE=Release` during configuration.
+
+@subsection gsg_cmake_generators CMake Generators
+
+CMake also supports custom build generators, such as Makefiles, Ninja, Visual
+Studio, and Xcode. For example, to generate a Visual Studio solution,
+configure with:
+
+    cmake .. -G "Visual Studio 14 2015 Win64"
+
+For more information on using generators see:
+[cmake-generators](https://cmake.org/cmake/help/v3.0/manual/cmake-generators.7.html).
 
 
 @section gsg_msvc Installation on Windows using Microsoft Visual Studio
@@ -286,7 +369,7 @@ library which is included in the source tree. If you wish to use the standard
 library `tmpfile()` function instead you can compile without `tmpfileplus` as
 follows:
 
-    USE_STANDARD_TMPFILE=1 make
+    make USE_STANDARD_TMPFILE=1
 
 @note When using the the standard library `tmpfile()` the `tmpdir` parameter,
 shown above, is ignored.
@@ -324,10 +407,22 @@ work in all of these environments.
 
 See also @ref gsg_tmpdir.
 
+@section gsg_minizip Linking against system minizip
+
+Libxlsxwriter uses the `minizip` component of [Zlib](http://www.zlib.net) to
+create the xlsx zip file container. The source files for `minizip` are
+included in the src tree of libxlsxwriter and are statically linked by
+default.
+
+If you have a `lminizip` library already installed on your system and prefer
+to dynamically link against that you can use the following compilation option:
+
+    make USE_SYSTEM_MINIZIP=1
+
 @section gsg_next Next steps
 
-If you got libxlsxwriter built and working then the next sections will look at
-some more detailed examples.
+If you got libxlsxwriter built and working successfully then the next sections
+will look at how to create some more in-depth examples.
 
 Next: @ref tutorial01
 

@@ -60,11 +60,13 @@
 #           https://cmake.org/cmake/help/v3.0/manual/cmake-generators.7.html
 #
 
+set(CMAKE_LEGACY_CYGWIN_WIN32 1)
 cmake_minimum_required(VERSION 2.8)
 
 SET(PROJECT_NAME "xlsxwriter" CACHE STRING "Optional project and binary name")
 
 project(${PROJECT_NAME} C)
+enable_testing()
 
 # OPTIONS
 # -------
@@ -75,8 +77,13 @@ option(BUILD_STATIC "Build static libxlsxwriter" ON)
 option(BUILD_TESTS "Build libxlsxwriter tests" OFF)
 option(BUILD_EXAMPLES "Build libxlsxwriter examples" OFF)
 option(USE_STANDARD_TMPFILE "Use the C standard library's tmpfile()" OFF)
+option(IOAPI_NO_64 "Disable 64-bit filesystem support" OFF)
 if(DEFINED ENV{${ZLIB_ROOT}})
     set(ZLIB_ROOT $ENV{ZLIB_ROOT})
+endif()
+
+if(IOAPI_NO_64)
+    add_definitions(-DIOAPI_NO_64=1)
 endif()
 
 # CONFIGURATIONS
@@ -89,7 +96,7 @@ endif()
 if(BUILD_STATIC)
     if(UNIX)
         set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-    elseif(${MINGW} OR ${MSYS})
+    elseif(MINGW OR MSYS)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static -static-libgcc -Wno-char-subscripts -Wno-long-long")
         add_definitions(-DUSE_FILE32API)
     elseif(MSVC)
@@ -111,9 +118,17 @@ message("zlib version: " ${ZLIB_VERSION})
 
 add_definitions(-DNOCRYPT -DNOUNCRYPT)
 
+# Fix for modified zconf.h on Gentoo.
+if(${CMAKE_HOST_SYSTEM} MATCHES gentoo)
+    add_definitions(-DOF=_Z_OF)
+endif()
+
 include_directories(include include/xlsxwriter)
 file(GLOB LXW_SOURCES src/*.c)
 list(APPEND LXW_SOURCES third_party/minizip/ioapi.c third_party/minizip/zip.c)
+if(MSVC)
+    list(APPEND LXW_SOURCES third_party/minizip/iowin32.c)
+endif()
 if (NOT ${USE_STANDARD_TMPFILE})
     include_directories(third_party/tmpfileplus)
     list(APPEND LXW_SOURCES third_party/tmpfileplus/tmpfileplus.c)
@@ -151,9 +166,9 @@ macro(CreateTest sources target)
 
     add_executable(${output_name} ${${sources}})
     target_link_libraries(${output_name} ${PROJECT_NAME} ${ZLIB_LIBRARIES})
-    add_custom_target(check_${output_name}
-        COMMAND $<TARGET_FILE:${output_name}>
-        DEPENDS ${dependencies}
+    add_test(NAME ${output_name}
+        COMMAND ${output_name}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
 endmacro(CreateTest)
 
@@ -241,7 +256,7 @@ if(MSVC)
         install(FILES $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}.pdb
             DESTINATION "lib/Win32/\${CMAKE_INSTALL_CONFIG_NAME}"
         )
-    endif()   
+    endif()
 else(MSVC)
     install(TARGETS ${PROJECT_NAME}
         LIBRARY DESTINATION lib

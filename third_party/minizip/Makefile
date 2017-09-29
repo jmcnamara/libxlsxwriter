@@ -9,7 +9,7 @@ ifdef V
 Q=
 endif
 
-UNAME := $(shell uname)
+UNAME := $(shell uname -sr)
 
 # Check for MinGW/MinGW64/Cygwin environments.
 ifneq (,$(findstring MINGW, $(UNAME)))
@@ -30,6 +30,11 @@ ifdef MING_LIKE
 FPIC =
 CC = gcc
 CFLAGS += -DUSE_FILE32API
+endif
+
+# Fix for modified zconf.h on Gentoo.
+ifneq (,$(findstring gentoo, $(UNAME)))
+CFLAGS += -DOF=_Z_OF
 endif
 
 all: ioapi.o zip.o  ioapi.so zip.so

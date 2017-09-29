@@ -11,6 +11,10 @@
 #include "xlsxwriter/core.h"
 #include "xlsxwriter/workbook.h"
 
+#ifdef _WIN32
+#define timegm _mkgmtime
+#endif
+
 // Test assembling a complete core file.
 CTEST(core, core01) {
 
@@ -42,7 +46,7 @@ CTEST(core, core01) {
     tmp_tm.tm_sec   = 0;
     tmp_tm.tm_isdst = -1;
 
-    core->properties->created = mktime(&tmp_tm);
+    core->properties->created = timegm(&tmp_tm);
     core->properties->author  = strdup("A User");
 
     lxw_core_assemble_xml_file(core);
@@ -91,7 +95,7 @@ CTEST(core, core02) {
     tmp_tm.tm_sec   = 15;
     tmp_tm.tm_isdst = -1;
 
-    core->properties->created  = mktime(&tmp_tm);
+    core->properties->created  = timegm(&tmp_tm);
     core->properties->title    = strdup("This is an example spreadsheet");
     core->properties->subject  = strdup("With document properties");
     core->properties->author   = strdup("A Person");
