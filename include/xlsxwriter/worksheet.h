@@ -1172,7 +1172,7 @@ lxw_error worksheet_write_url_opt(lxw_worksheet *worksheet,
  * @endcode
  *
  *
- * Alternatively, you can use Windows style forward slashes. These are
+ * Alternatively, you can use Unix style forward slashes. These are
  * translated internally to backslashes:
  *
  * @code
