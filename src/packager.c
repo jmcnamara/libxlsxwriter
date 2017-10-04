@@ -226,9 +226,9 @@ _write_image_files(lxw_packager *self)
             }
 
             err = _add_file_to_zip(self, image_stream, filename);
-            RETURN_ON_ERROR(err);
-
             fclose(image_stream);
+
+            RETURN_ON_ERROR(err);
         }
     }
 
