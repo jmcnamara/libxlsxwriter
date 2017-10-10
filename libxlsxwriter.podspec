@@ -45,4 +45,9 @@ Pod::Spec.new do |s|
   s.prepare_command       = <<-CMD
                             cp cocoapods/libxlsxwriter-umbrella.h include/xlsxwriter/libxlsxwriter-umbrella.h
                           CMD
+  
+  s.subspec 'StaticLibrary' do |static_library|
+    static_library.module_map = "cocoapods/libxlsxwriter.modulemap"
+    static_library.summary    = "Libxlsxwriter: A C library for creating Excel XLSX files. (CocoaPod variant that can be used as a static library.)"
+  end
 end
