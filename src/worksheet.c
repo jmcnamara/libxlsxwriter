@@ -15,11 +15,13 @@
 #include "xlsxwriter/utility.h"
 #include "xlsxwriter/relationships.h"
 
-#define LXW_STR_MAX      32767
-#define LXW_BUFFER_SIZE  4096
-#define LXW_PORTRAIT     1
-#define LXW_LANDSCAPE    0
-#define LXW_PRINT_ACROSS 1
+#define LXW_STR_MAX                      32767
+#define LXW_BUFFER_SIZE                  4096
+#define LXW_PORTRAIT                     1
+#define LXW_LANDSCAPE                    0
+#define LXW_PRINT_ACROSS                 1
+#define LXW_VALIDATION_MAX_TITLE_LENGTH  32
+#define LXW_VALIDATION_MAX_STRING_LENGTH 255
 
 /*
  * Forward declarations.
@@ -122,6 +124,11 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     worksheet->selections = calloc(1, sizeof(struct lxw_selections));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->selections, mem_error);
     STAILQ_INIT(worksheet->selections);
+
+    worksheet->data_validations =
+        calloc(1, sizeof(struct lxw_data_validations));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->data_validations, mem_error);
+    STAILQ_INIT(worksheet->data_validations);
 
     worksheet->external_hyperlinks = calloc(1, sizeof(struct lxw_rel_tuples));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->external_hyperlinks, mem_error);
@@ -269,6 +276,26 @@ _free_image_options(lxw_image_options *image)
 }
 
 /*
+ * Free a worksheet data_validation.
+ */
+STATIC void
+_free_data_validation(lxw_data_validation *data_validation)
+{
+    if (!data_validation)
+        return;
+
+    free(data_validation->value_formula);
+    free(data_validation->maximum_formula);
+    free(data_validation->input_title);
+    free(data_validation->input_message);
+    free(data_validation->error_title);
+    free(data_validation->error_message);
+    free(data_validation->minimum_formula);
+
+    free(data_validation);
+}
+
+/*
  * Free a worksheet object.
  */
 void
@@ -280,6 +307,7 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     lxw_merged_range *merged_range;
     lxw_image_options *image_options;
     lxw_selection *selection;
+    lxw_data_validation *data_validation;
     lxw_rel_tuple *relationship;
 
     if (!worksheet)
@@ -309,7 +337,6 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     }
 
     if (worksheet->hyperlinks) {
-
         for (row = RB_MIN(lxw_table_rows, worksheet->hyperlinks); row;
              row = next_row) {
 
@@ -359,6 +386,16 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
         }
 
         free(worksheet->selections);
+    }
+
+    if (worksheet->data_validations) {
+        while (!STAILQ_EMPTY(worksheet->data_validations)) {
+            data_validation = STAILQ_FIRST(worksheet->data_validations);
+            STAILQ_REMOVE_HEAD(worksheet->data_validations, list_pointers);
+            _free_data_validation(data_validation);
+        }
+
+        free(worksheet->data_validations);
     }
 
     /* TODO. Add function for freeing the relationship lists. */
@@ -858,6 +895,61 @@ lxw_basename(const char *path)
         return forward_slash + 1;
     else
         return back_slash + 1;
+}
+
+/* Function to count the total concatenated length of the strings in a
+ * validation list array, including commas. */
+size_t
+_validation_list_length(char **list)
+{
+    uint8_t i = 0;
+    size_t length = 0;
+
+    if (!list || !list[0])
+        return 0;
+
+    while (list[i] && length <= LXW_VALIDATION_MAX_STRING_LENGTH) {
+        /* Include commas in the length. */
+        length += 1 + lxw_utf8_strlen(list[i]);
+        i++;
+    }
+
+    /* Adjust the count for extraneous comma at end. */
+    length--;
+
+    return length;
+}
+
+/* Function to convert an array of strings into a CSV string for data
+ * validation lists. */
+char *
+_validation_list_to_csv(char **list)
+{
+    uint8_t i = 0;
+    char *str;
+
+    /* Create a buffer for the concatenated, and quoted, string. */
+    /* Add +3 for quotes and EOL. */
+    str = calloc(1, LXW_VALIDATION_MAX_STRING_LENGTH + 3);
+    if (!str)
+        return NULL;
+
+    /* Add the start quote and first element. */
+    strcat(str, "\"");
+    strcat(str, list[0]);
+
+    /* Add the other elements preceded by a comma. */
+    i = 1;
+    while (list[i]) {
+        strcat(str, ",");
+        strcat(str, list[i]);
+        i++;
+    }
+
+    /* Add the end quote. */
+    strcat(str, "\"");
+
+    return str;
 }
 
 /*****************************************************************************
@@ -3313,6 +3405,224 @@ _write_drawings(lxw_worksheet *self)
 }
 
 /*
+ * Write the <formula1> element for numbers.
+ */
+STATIC void
+_worksheet_write_formula1_num(lxw_worksheet *self, double number)
+{
+    char data[LXW_ATTR_32];
+
+    lxw_snprintf(data, LXW_ATTR_32, "%.16g", number);
+
+    lxw_xml_data_element(self->file, "formula1", data, NULL);
+}
+
+/*
+ * Write the <formula1> element for strings/formulas.
+ */
+STATIC void
+_worksheet_write_formula1_str(lxw_worksheet *self, char *str)
+{
+    lxw_xml_data_element(self->file, "formula1", str, NULL);
+}
+
+/*
+ * Write the <formula2> element for numbers.
+ */
+STATIC void
+_worksheet_write_formula2_num(lxw_worksheet *self, double number)
+{
+    char data[LXW_ATTR_32];
+
+    lxw_snprintf(data, LXW_ATTR_32, "%.16g", number);
+
+    lxw_xml_data_element(self->file, "formula2", data, NULL);
+}
+
+/*
+ * Write the <formula2> element for strings/formulas.
+ */
+STATIC void
+_worksheet_write_formula2_str(lxw_worksheet *self, char *str)
+{
+    lxw_xml_data_element(self->file, "formula2", str, NULL);
+}
+
+/*
+ * Write the <dataValidation> element.
+ */
+STATIC void
+_worksheet_write_data_validation(lxw_worksheet *self,
+                                 lxw_data_validation *validation)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    uint8_t is_between = 0;
+
+    LXW_INIT_ATTRIBUTES();
+
+    switch (validation->validate) {
+        case LXW_VALIDATION_TYPE_INTEGER:
+        case LXW_VALIDATION_TYPE_INTEGER_FORMULA:
+            LXW_PUSH_ATTRIBUTES_STR("type", "whole");
+            break;
+        case LXW_VALIDATION_TYPE_DECIMAL:
+        case LXW_VALIDATION_TYPE_DECIMAL_FORMULA:
+            LXW_PUSH_ATTRIBUTES_STR("type", "decimal");
+            break;
+        case LXW_VALIDATION_TYPE_LIST:
+        case LXW_VALIDATION_TYPE_LIST_FORMULA:
+            LXW_PUSH_ATTRIBUTES_STR("type", "list");
+            break;
+        case LXW_VALIDATION_TYPE_DATE:
+        case LXW_VALIDATION_TYPE_DATE_FORMULA:
+        case LXW_VALIDATION_TYPE_DATE_NUMBER:
+            LXW_PUSH_ATTRIBUTES_STR("type", "date");
+            break;
+        case LXW_VALIDATION_TYPE_TIME:
+        case LXW_VALIDATION_TYPE_TIME_FORMULA:
+        case LXW_VALIDATION_TYPE_TIME_NUMBER:
+            LXW_PUSH_ATTRIBUTES_STR("type", "time");
+            break;
+        case LXW_VALIDATION_TYPE_LENGTH:
+        case LXW_VALIDATION_TYPE_LENGTH_FORMULA:
+            LXW_PUSH_ATTRIBUTES_STR("type", "textLength");
+            break;
+        case LXW_VALIDATION_TYPE_CUSTOM_FORMULA:
+            LXW_PUSH_ATTRIBUTES_STR("type", "custom");
+            break;
+    }
+
+    switch (validation->criteria) {
+        case LXW_VALIDATION_CRITERIA_EQUAL_TO:
+            LXW_PUSH_ATTRIBUTES_STR("operator", "equal");
+            break;
+        case LXW_VALIDATION_CRITERIA_NOT_EQUAL_TO:
+            LXW_PUSH_ATTRIBUTES_STR("operator", "notEqual");
+            break;
+        case LXW_VALIDATION_CRITERIA_LESS_THAN:
+            LXW_PUSH_ATTRIBUTES_STR("operator", "lessThan");
+            break;
+        case LXW_VALIDATION_CRITERIA_LESS_THAN_OR_EQUAL_TO:
+            LXW_PUSH_ATTRIBUTES_STR("operator", "lessThanOrEqual");
+            break;
+        case LXW_VALIDATION_CRITERIA_GREATER_THAN:
+            LXW_PUSH_ATTRIBUTES_STR("operator", "greaterThan");
+            break;
+        case LXW_VALIDATION_CRITERIA_GREATER_THAN_OR_EQUAL_TO:
+            LXW_PUSH_ATTRIBUTES_STR("operator", "greaterThanOrEqual");
+            break;
+        case LXW_VALIDATION_CRITERIA_BETWEEN:
+            /* Between is the default for 2 formulas and isn't added. */
+            is_between = 1;
+            break;
+        case LXW_VALIDATION_CRITERIA_NOT_BETWEEN:
+            is_between = 1;
+            LXW_PUSH_ATTRIBUTES_STR("operator", "notBetween");
+            break;
+    }
+
+    if (validation->error_type == LXW_VALIDATION_ERROR_TYPE_WARNING)
+        LXW_PUSH_ATTRIBUTES_STR("errorStyle", "warning");
+
+    if (validation->error_type == LXW_VALIDATION_ERROR_TYPE_INFORMATION)
+        LXW_PUSH_ATTRIBUTES_STR("errorStyle", "information");
+
+    if (validation->ignore_blank)
+        LXW_PUSH_ATTRIBUTES_INT("allowBlank", 1);
+
+    if (validation->dropdown == LXW_VALIDATION_OFF)
+        LXW_PUSH_ATTRIBUTES_INT("showDropDown", 1);
+
+    if (validation->show_input)
+        LXW_PUSH_ATTRIBUTES_INT("showInputMessage", 1);
+
+    if (validation->show_error)
+        LXW_PUSH_ATTRIBUTES_INT("showErrorMessage", 1);
+
+    if (validation->error_title)
+        LXW_PUSH_ATTRIBUTES_STR("errorTitle", validation->error_title);
+
+    if (validation->error_message)
+        LXW_PUSH_ATTRIBUTES_STR("error", validation->error_message);
+
+    if (validation->input_title)
+        LXW_PUSH_ATTRIBUTES_STR("promptTitle", validation->input_title);
+
+    if (validation->input_message)
+        LXW_PUSH_ATTRIBUTES_STR("prompt", validation->input_message);
+
+    LXW_PUSH_ATTRIBUTES_STR("sqref", validation->sqref);
+
+    if (validation->validate == LXW_VALIDATION_TYPE_ANY)
+        lxw_xml_empty_tag(self->file, "dataValidation", &attributes);
+    else
+        lxw_xml_start_tag(self->file, "dataValidation", &attributes);
+
+    /* Write the formula1 and formula2 elements. */
+    switch (validation->validate) {
+        case LXW_VALIDATION_TYPE_INTEGER:
+        case LXW_VALIDATION_TYPE_DECIMAL:
+        case LXW_VALIDATION_TYPE_LENGTH:
+        case LXW_VALIDATION_TYPE_DATE:
+        case LXW_VALIDATION_TYPE_TIME:
+        case LXW_VALIDATION_TYPE_DATE_NUMBER:
+        case LXW_VALIDATION_TYPE_TIME_NUMBER:
+            _worksheet_write_formula1_num(self, validation->value_number);
+            if (is_between)
+                _worksheet_write_formula2_num(self,
+                                              validation->maximum_number);
+            break;
+        case LXW_VALIDATION_TYPE_INTEGER_FORMULA:
+        case LXW_VALIDATION_TYPE_DECIMAL_FORMULA:
+        case LXW_VALIDATION_TYPE_LENGTH_FORMULA:
+        case LXW_VALIDATION_TYPE_DATE_FORMULA:
+        case LXW_VALIDATION_TYPE_TIME_FORMULA:
+        case LXW_VALIDATION_TYPE_LIST:
+        case LXW_VALIDATION_TYPE_LIST_FORMULA:
+        case LXW_VALIDATION_TYPE_CUSTOM_FORMULA:
+            _worksheet_write_formula1_str(self, validation->value_formula);
+            if (is_between)
+                _worksheet_write_formula2_str(self,
+                                              validation->maximum_formula);
+            break;
+    }
+
+    if (validation->validate != LXW_VALIDATION_TYPE_ANY)
+        lxw_xml_end_tag(self->file, "dataValidation");
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <dataValidations> element.
+ */
+STATIC void
+_worksheet_write_data_validations(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    lxw_data_validation *data_validation;
+
+    if (self->num_validations == 0)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("count", self->num_validations);
+
+    lxw_xml_start_tag(self->file, "dataValidations", &attributes);
+
+    STAILQ_FOREACH(data_validation, self->data_validations, list_pointers) {
+        /* Write the dataValidation element. */
+        _worksheet_write_data_validation(self, data_validation);
+    }
+
+    lxw_xml_end_tag(self->file, "dataValidations");
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Assemble and write the XML file.
  */
 void
@@ -3353,6 +3663,9 @@ lxw_worksheet_assemble_xml_file(lxw_worksheet *self)
 
     /* Write the mergeCells element. */
     _worksheet_write_merge_cells(self);
+
+    /* Write the dataValidations element. */
+    _worksheet_write_data_validations(self);
 
     /* Write the hyperlink element. */
     _worksheet_write_hyperlinks(self);
@@ -3431,7 +3744,7 @@ worksheet_write_string(lxw_worksheet *self,
         if (format)
             return worksheet_write_blank(self, row_num, col_num, format);
         else
-            return LXW_ERROR_NULL_PARAMETER_IGNORED;
+            return LXW_NO_ERROR;
     }
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
@@ -4919,10 +5232,12 @@ worksheet_insert_image_opt(lxw_worksheet *self,
 
     if (_get_image_properties(options) == LXW_NO_ERROR) {
         STAILQ_INSERT_TAIL(self->image_data, options, list_pointers);
+        fclose(image_stream);
         return LXW_NO_ERROR;
     }
     else {
         free(options);
+        fclose(image_stream);
         return LXW_ERROR_IMAGE_DIMENSIONS;
     }
 }
@@ -5019,4 +5334,289 @@ worksheet_insert_chart(lxw_worksheet *self,
                        lxw_row_t row_num, lxw_col_t col_num, lxw_chart *chart)
 {
     return worksheet_insert_chart_opt(self, row_num, col_num, chart, NULL);
+}
+
+/*
+ * Add a data validation to a worksheet, for a range. Ironically this requires
+ * a lot of validation of the user input.
+ */
+lxw_error
+worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
+                                lxw_col_t first_col,
+                                lxw_row_t last_row,
+                                lxw_col_t last_col,
+                                lxw_data_validation *validation)
+{
+    lxw_data_validation *copy;
+    uint8_t is_between = LXW_FALSE;
+    uint8_t is_formula = LXW_FALSE;
+    uint8_t has_criteria = LXW_TRUE;
+    lxw_error err;
+    lxw_row_t tmp_row;
+    lxw_col_t tmp_col;
+    size_t length;
+
+    /* No action is required for validation type 'any' unless there are
+     * input messages to display.*/
+    if (validation->validate == LXW_VALIDATION_TYPE_ANY
+        && !(validation->input_title || validation->input_message)) {
+
+        return LXW_NO_ERROR;
+    }
+
+    /* Check for formula types. */
+    switch (validation->validate) {
+        case LXW_VALIDATION_TYPE_INTEGER_FORMULA:
+        case LXW_VALIDATION_TYPE_DECIMAL_FORMULA:
+        case LXW_VALIDATION_TYPE_LIST_FORMULA:
+        case LXW_VALIDATION_TYPE_LENGTH_FORMULA:
+        case LXW_VALIDATION_TYPE_DATE_FORMULA:
+        case LXW_VALIDATION_TYPE_TIME_FORMULA:
+        case LXW_VALIDATION_TYPE_CUSTOM_FORMULA:
+            is_formula = LXW_TRUE;
+            break;
+    }
+
+    /* Check for types without a criteria. */
+    switch (validation->validate) {
+        case LXW_VALIDATION_TYPE_LIST:
+        case LXW_VALIDATION_TYPE_LIST_FORMULA:
+        case LXW_VALIDATION_TYPE_ANY:
+        case LXW_VALIDATION_TYPE_CUSTOM_FORMULA:
+            has_criteria = LXW_FALSE;
+            break;
+    }
+
+    /* Check that a validation parameter has been specified
+     * except for 'list', 'any' and 'custom'. */
+    if (has_criteria && validation->criteria == LXW_VALIDATION_CRITERIA_NONE) {
+
+        LXW_WARN_FORMAT("worksheet_data_validation_cell()/_range(): "
+                        "criteria parameter must be specified.");
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+
+    /* Check for "between" criteria so we can do additional checks. */
+    if (has_criteria
+        && (validation->criteria == LXW_VALIDATION_CRITERIA_BETWEEN
+            || validation->criteria == LXW_VALIDATION_CRITERIA_NOT_BETWEEN)) {
+
+        is_between = LXW_TRUE;
+    }
+
+    /* Check that formula values are non NULL. */
+    if (is_formula) {
+        if (is_between) {
+            if (!validation->minimum_formula) {
+                LXW_WARN_FORMAT("worksheet_data_validation_cell()/_range(): "
+                                "minimum_formula parameter cannot be NULL.");
+                return LXW_ERROR_PARAMETER_VALIDATION;
+            }
+            if (!validation->maximum_formula) {
+                LXW_WARN_FORMAT("worksheet_data_validation_cell()/_range(): "
+                                "maximum_formula parameter cannot be NULL.");
+                return LXW_ERROR_PARAMETER_VALIDATION;
+            }
+        }
+        else {
+            if (!validation->value_formula) {
+                LXW_WARN_FORMAT("worksheet_data_validation_cell()/_range(): "
+                                "formula parameter cannot be NULL.");
+                return LXW_ERROR_PARAMETER_VALIDATION;
+            }
+        }
+    }
+
+    /* Check Excel limitations on input strings. */
+    if (validation->input_title) {
+        length = lxw_utf8_strlen(validation->input_title);
+        if (length > LXW_VALIDATION_MAX_TITLE_LENGTH) {
+            LXW_WARN_FORMAT1("worksheet_data_validation_cell()/_range(): "
+                             "input_title length > Excel limit of %d.",
+                             LXW_VALIDATION_MAX_TITLE_LENGTH);
+            return LXW_ERROR_32_STRING_LENGTH_EXCEEDED;
+        }
+    }
+
+    if (validation->error_title) {
+        length = lxw_utf8_strlen(validation->error_title);
+        if (length > LXW_VALIDATION_MAX_TITLE_LENGTH) {
+            LXW_WARN_FORMAT1("worksheet_data_validation_cell()/_range(): "
+                             "error_title length > Excel limit of %d.",
+                             LXW_VALIDATION_MAX_TITLE_LENGTH);
+            return LXW_ERROR_32_STRING_LENGTH_EXCEEDED;
+        }
+    }
+
+    if (validation->input_message) {
+        length = lxw_utf8_strlen(validation->input_message);
+        if (length > LXW_VALIDATION_MAX_STRING_LENGTH) {
+            LXW_WARN_FORMAT1("worksheet_data_validation_cell()/_range(): "
+                             "input_message length > Excel limit of %d.",
+                             LXW_VALIDATION_MAX_STRING_LENGTH);
+            return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
+        }
+    }
+
+    if (validation->error_message) {
+        length = lxw_utf8_strlen(validation->error_message);
+        if (length > LXW_VALIDATION_MAX_STRING_LENGTH) {
+            LXW_WARN_FORMAT1("worksheet_data_validation_cell()/_range(): "
+                             "error_message length > Excel limit of %d.",
+                             LXW_VALIDATION_MAX_STRING_LENGTH);
+            return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
+        }
+    }
+
+    if (validation->validate == LXW_VALIDATION_TYPE_LIST) {
+        length = _validation_list_length(validation->value_list);
+
+        if (length == 0) {
+            LXW_WARN_FORMAT("worksheet_data_validation_cell()/_range(): "
+                            "list parameters cannot be zero.");
+            return LXW_ERROR_PARAMETER_VALIDATION;
+        }
+
+        if (length > LXW_VALIDATION_MAX_STRING_LENGTH) {
+            LXW_WARN_FORMAT1("worksheet_data_validation_cell()/_range(): "
+                             "list length with commas > Excel limit of %d.",
+                             LXW_VALIDATION_MAX_STRING_LENGTH);
+            return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
+        }
+    }
+
+    /* Swap last row/col with first row/col as necessary */
+    if (first_row > last_row) {
+        tmp_row = last_row;
+        last_row = first_row;
+        first_row = tmp_row;
+    }
+    if (first_col > last_col) {
+        tmp_col = last_col;
+        last_col = first_col;
+        first_col = tmp_col;
+    }
+
+    /* Check that dimensions are valid but don't store them. */
+    err = _check_dimensions(self, last_row, last_col, LXW_TRUE, LXW_TRUE);
+    if (err)
+        return err;
+
+    /* Create a copy of the parameters from the user data validation. */
+    copy = calloc(1, sizeof(lxw_data_validation));
+    GOTO_LABEL_ON_MEM_ERROR(copy, mem_error);
+
+    /* Create the data validation range. */
+    if (first_row == last_row && first_col == last_col)
+        lxw_rowcol_to_cell(copy->sqref, first_row, last_col);
+    else
+        lxw_rowcol_to_range(copy->sqref, first_row, first_col, last_row,
+                            last_col);
+
+    /* Copy the parameters from the user data validation. */
+    copy->validate = validation->validate;
+    copy->value_number = validation->value_number;
+    copy->error_type = validation->error_type;
+    copy->dropdown = validation->dropdown;
+    copy->is_between = is_between;
+
+    if (has_criteria)
+        copy->criteria = validation->criteria;
+
+    if (is_between) {
+        copy->value_number = validation->minimum_number;
+        copy->maximum_number = validation->maximum_number;
+    }
+
+    /* Copy the input/error titles and messages. */
+    if (validation->input_title) {
+        copy->input_title = lxw_strdup_formula(validation->input_title);
+        GOTO_LABEL_ON_MEM_ERROR(copy->input_title, mem_error);
+    }
+
+    if (validation->input_message) {
+        copy->input_message = lxw_strdup_formula(validation->input_message);
+        GOTO_LABEL_ON_MEM_ERROR(copy->input_message, mem_error);
+    }
+
+    if (validation->error_title) {
+        copy->error_title = lxw_strdup_formula(validation->error_title);
+        GOTO_LABEL_ON_MEM_ERROR(copy->error_title, mem_error);
+    }
+
+    if (validation->error_message) {
+        copy->error_message = lxw_strdup_formula(validation->error_message);
+        GOTO_LABEL_ON_MEM_ERROR(copy->error_message, mem_error);
+    }
+
+    /* Copy the formula strings. */
+    if (is_formula) {
+        if (is_between) {
+            copy->value_formula =
+                lxw_strdup_formula(validation->minimum_formula);
+            GOTO_LABEL_ON_MEM_ERROR(copy->value_formula, mem_error);
+            copy->maximum_formula =
+                lxw_strdup_formula(validation->maximum_formula);
+            GOTO_LABEL_ON_MEM_ERROR(copy->maximum_formula, mem_error);
+        }
+        else {
+            copy->value_formula =
+                lxw_strdup_formula(validation->value_formula);
+            GOTO_LABEL_ON_MEM_ERROR(copy->value_formula, mem_error);
+        }
+    }
+
+    /* Copy the validation list as a csv string. */
+    if (validation->validate == LXW_VALIDATION_TYPE_LIST) {
+        copy->value_formula = _validation_list_to_csv(validation->value_list);
+        GOTO_LABEL_ON_MEM_ERROR(copy->value_formula, mem_error);
+    }
+
+    if (validation->validate == LXW_VALIDATION_TYPE_LIST_FORMULA) {
+        copy->value_formula = lxw_strdup_formula(validation->value_formula);
+        GOTO_LABEL_ON_MEM_ERROR(copy->value_formula, mem_error);
+    }
+
+    if (validation->validate == LXW_VALIDATION_TYPE_DATE
+        || validation->validate == LXW_VALIDATION_TYPE_TIME) {
+        if (is_between) {
+            copy->value_number =
+                lxw_datetime_to_excel_date(&validation->minimum_datetime,
+                                           LXW_EPOCH_1900);
+            copy->maximum_number =
+                lxw_datetime_to_excel_date(&validation->maximum_datetime,
+                                           LXW_EPOCH_1900);
+        }
+        else {
+            copy->value_number =
+                lxw_datetime_to_excel_date(&validation->value_datetime,
+                                           LXW_EPOCH_1900);
+        }
+    }
+
+    /* These options are on by default so we can't take plain booleans. */
+    copy->ignore_blank = validation->ignore_blank ^ 1;
+    copy->show_input = validation->show_input ^ 1;
+    copy->show_error = validation->show_error ^ 1;
+
+    STAILQ_INSERT_TAIL(self->data_validations, copy, list_pointers);
+
+    self->num_validations++;
+
+    return LXW_NO_ERROR;
+
+mem_error:
+    _free_data_validation(copy);
+    return LXW_ERROR_MEMORY_MALLOC_FAILED;
+}
+
+/*
+ * Add a data validation to a worksheet, for a cell.
+ */
+lxw_error
+worksheet_data_validation_cell(lxw_worksheet *self, lxw_row_t row,
+                               lxw_col_t col, lxw_data_validation *validation)
+{
+    return worksheet_data_validation_range(self, row, col,
+                                           row, col, validation);
 }

@@ -1,0 +1,501 @@
+/**
+@page working_with_data_validation Working with Data Validation
+
+@tableofcontents
+
+
+Data validation is a feature of Excel which allows restrictions to be placed
+on the data that a user enters in a cell and to display associated help and
+warning messages. It can also be used to restrict input to values in a drop
+down list.
+
+A typical use case might be to restrict data in a cell to integer values in a
+certain range, to provide a help message to indicate the required value and to
+issue a warning if the input data doesn't meet the stated criteria. In
+`libxlsxwriter` this can be done as follows:
+
+@code
+
+   lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
+
+   data_validation->validate       = LXW_VALIDATION_TYPE_INTEGER;
+   data_validation->criteria       = LXW_VALIDATION_CRITERIA_BETWEEN;
+   data_validation->minimum_number = 1;
+   data_validation->maximum_number = 10;
+
+   worksheet_data_validation_cell(worksheet, CELL("B3"), data_validation);
+
+@endcode
+
+@image html data_validate1.png
+
+If the user inputs a value that doesn't match the specified criteria an error
+message is displayed:
+
+@image html data_validate4.png
+
+
+For more information on data validation see the Microsoft support article
+[Description and examples of data validation in Excel](http://support.microsoft.com/kb/211485).
+
+The following sections describe how to use the
+`worksheet_data_validation_cell()` and `worksheet_data_validation_range()`
+functions and the various options of #lxw_data_validation.
+
+
+@section ww_data_validate_functions The data validation functions
+
+
+The `worksheet_data_validation_cell()` and `worksheet_data_validation_range()`
+functions are used to construct an Excel data validation.
+
+The data validation can be applied to a single cell or a range of cells:
+
+@code
+   worksheet_data_validation_cell( worksheet, 2, 1,       data_validation);
+   worksheet_data_validation_range(worksheet, 2, 1, 4, 1, data_validation);
+
+   // Same as above using the CELL() and RANGE() macros.
+   worksheet_data_validation_cell( worksheet, CELL("B3"),     data_validation);
+   worksheet_data_validation_range(worksheet, RANGE("B3:B5"), data_validation);
+
+@endcode
+
+The lxw_data_validation struct used in these functions is explained below.
+
+
+@section ww_data_validate_struct The lxw_data_validation struct
+
+The lxw_data_validation struct is used to set the properties of a data
+validation. A typical usage would look something like this:
+
+@code
+    lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
+    data_validation->validate     = LXW_VALIDATION_TYPE_INTEGER;
+    data_validation->criteria     = LXW_VALIDATION_CRITERIA_GREATER_THAN;
+    data_validation->value_number = 10;
+    data_validation->show_input   = LXW_VALIDATION_OFF;
+@endcode
+
+This example shows the main properties of lxw_data_validation and Excel data
+validations:
+
+- `validate`: The type of data to restrict the validation to. In this case it
+  is whole numbers.
+
+- `criteria`: The criteria by which the data will be evaluated. In this case
+  whether the input is greater than a value.
+
+- `value`: The value that the criteria applies to. This has several different
+  versions for different types of data. This could also be a `minimum` and
+  `maximum` value if the criteria used is a "BETWEEN" criteria. This is
+  explained in the @ref ww_data_validate_value section below.
+
+- Other options such as `show_input` or `input_message`. These parameters are
+  explained in the @ref ww_data_validate_options section.
+
+Note, in the examples in this document the `data_validation` variable is shown
+as dynamically allocated, however an address of a static or automatic variable
+could also be used. In these cases make sure that the struct members are
+initialized to zero before setting other parameters.
+
+@subsection ww_data_validate_validate validate
+
+The `validate` parameter is used to set the type of data that you wish to
+validate:
+
+@code
+    data_validation->validate = LXW_VALIDATION_TYPE_INTEGER;
+@endcode
+
+It is always required and it has no default value. In Excel the validate
+parameters are:
+
+- Whole
+- Decimal
+- List
+- Date
+- Time
+- Text Length
+- Custom
+- Any
+
+The equivalent parameters in libxlsxwriter are defined in
+#lxw_validation_types:
+
+ - #LXW_VALIDATION_TYPE_INTEGER: Restrict cell input to whole/integer numbers
+   only.
+
+ - #LXW_VALIDATION_TYPE_INTEGER_FORMULA: Restrict cell input to whole/integer
+   numbers only, using a cell reference.
+
+ - #LXW_VALIDATION_TYPE_DECIMAL: Restrict cell input to decimal numbers only.
+
+ - #LXW_VALIDATION_TYPE_DECIMAL_FORMULA: Restrict cell input to decimal
+   numbers only, using a cell reference.
+
+ - #LXW_VALIDATION_TYPE_LIST: Restrict cell input to a list of strings in a
+   dropdown.
+
+ - #LXW_VALIDATION_TYPE_LIST_FORMULA: Restrict cell input to a list of strings
+   in a dropdown, using a cell range.
+
+ - #LXW_VALIDATION_TYPE_DATE: Restrict cell input to date values only, using a
+   lxw_datetime type.
+
+ - #LXW_VALIDATION_TYPE_DATE_FORMULA: Restrict cell input to date values only,
+   using a cell reference.
+
+ - #LXW_VALIDATION_TYPE_TIME: Restrict cell input to time values only, using a
+   lxw_datetime type.
+
+ - #LXW_VALIDATION_TYPE_TIME_FORMULA: Restrict cell input to time values only,
+   using a cell reference.
+
+ - #LXW_VALIDATION_TYPE_LENGTH: Restrict cell input to strings of defined
+   length, using a cell reference.
+
+ - #LXW_VALIDATION_TYPE_LENGTH_FORMULA: Restrict cell input to strings of
+   defined length, using a cell reference.
+
+ - #LXW_VALIDATION_TYPE_CUSTOM_FORMULA: Restrict cell to input controlled by a
+   custom formula that returns `TRUE/FALSE`.
+
+ - #LXW_VALIDATION_TYPE_ANY: Allow any type of input. Mainly only useful for
+   pop-up messages.
+
+
+
+@subsection ww_data_validate_criteria criteria
+
+The `criteria` parameter is used to set the criteria by which the data in the
+cell is validated. It is almost always required except for the `list`,
+`custom` and `any` validate options. It has no default value:
+
+@code
+    data_validation->criteria = LXW_VALIDATION_CRITERIA_GREATER_THAN;
+@endcode
+
+
+Allowable values are defined in #lxw_validation_criteria:
+
+- #LXW_VALIDATION_CRITERIA_BETWEEN: Select data between two values.
+
+- #LXW_VALIDATION_CRITERIA_NOT_BETWEEN: Select data that is not between two values.
+
+- #LXW_VALIDATION_CRITERIA_EQUAL_TO: Select data equal to a value.
+
+- #LXW_VALIDATION_CRITERIA_NOT_EQUAL_TO: Select data not equal to a value.
+
+- #LXW_VALIDATION_CRITERIA_GREATER_THAN: Select data greater than a value.
+
+- #LXW_VALIDATION_CRITERIA_LESS_THAN: Select data less than a value.
+
+- #LXW_VALIDATION_CRITERIA_GREATER_THAN_OR_EQUAL_TO: Select data greater than or equal to a value.
+
+- #LXW_VALIDATION_CRITERIA_LESS_THAN_OR_EQUAL_TO: Select data less than or equal to a value.
+
+
+The `list`, `custom` and `any` validate options don't require a
+`criteria`. If you specify one it will be ignored.
+
+
+@subsection ww_data_validate_value value, minimum, maximum
+
+The `value` parameters are used to set the limiting value to which the
+`criteria` is applied. It is always required and it has no default
+value. There are different types of `value` parameter associated with
+different types of data. They are:
+
+`value_number`:
+
+The `value_number` parameter is used to set the limiting value
+to which the criteria is applied using a whole or decimal number. It is
+typically used with #LXW_VALIDATION_TYPE_INTEGER and
+#LXW_VALIDATION_TYPE_DECIMAL and #LXW_VALIDATION_TYPE_LENGTH.
+
+@code
+    data_validation->validate     = LXW_VALIDATION_TYPE_INTEGER;
+    data_validation->criteria     = LXW_VALIDATION_CRITERIA_GREATER_THAN;
+    data_validation->value_number = 0;
+
+    data_validation->validate     = LXW_VALIDATION_TYPE_DECIMAL;
+    data_validation->criteria     = LXW_VALIDATION_CRITERIA_GREATER_THAN;
+    data_validation->value_number = 10.5;
+
+    data_validation->validate     = LXW_VALIDATION_TYPE_LENGTH;
+    data_validation->criteria     = LXW_VALIDATION_CRITERIA_GREATER_THAN;
+    data_validation->value_number = 3;
+@endcode
+
+
+`value_formula`:
+
+The `value_formula` parameter is used to set the limiting value to which the
+criteria is applied using a cell reference. It is valid for any of the
+#lxw_validation_types types that end in `_FORMULA`:
+
+@code
+    data_validation->validate      = LXW_VALIDATION_TYPE_INTEGER_FORMULA;
+    data_validation->criteria      = LXW_VALIDATION_CRITERIA_GREATER_THAN;
+    data_validation->value_formula = "=E3";
+
+    data_validation->validate      = LXW_VALIDATION_TYPE_TIME_FORMULA;
+    data_validation->criteria      = LXW_VALIDATION_CRITERIA_EQUAL;
+    data_validation->value_formula = "=H1";
+
+    data_validation->validate      = LXW_VALIDATION_TYPE_LIST_FORMULA;
+    data_validation->value_formula = "=$E$4:$G$4";
+@endcode
+
+`value_list`:
+
+The `value_list` parameter is used to set a list of strings for a drop down
+list.  The list should be a `NULL` terminated array of char* strings:
+
+@code
+    char *list[] = {"open", "high", "close", NULL};
+
+    data_validation->validate   = LXW_VALIDATION_TYPE_LIST;
+    data_validation->value_list = list;
+@endcode
+
+Note, when using the #LXW_VALIDATION_TYPE_LIST validation with a list of
+strings, like in the last example above, Excel stores the strings internally
+as a Comma Separated Variable string. The total length for this string,
+including commas, cannot exceed the Excel limit of 255 characters. For longer
+sets of data you should use a range reference like the previous example above.
+
+`value_datetime`:
+
+The `value_datetime` parameter is used to set the limiting value to which the
+#LXW_VALIDATION_TYPE_DATE or #LXW_VALIDATION_TYPE_TIME criteria is applied
+using a #lxw_datetime struct:
+
+@code
+    lxw_datetime datetime1          = {2017,  9,  24,  0,  0, 0};
+    lxw_datetime datetime2          = {   0,  0,   0, 12, 30, 0};
+
+    data_validation->validate       = LXW_VALIDATION_TYPE_DATE;
+    data_validation->criteria       = LXW_VALIDATION_CRITERIA_EQUAL;
+    data_validation->value_datetime = datetime1;
+
+    data_validation->validate       = LXW_VALIDATION_TYPE_TIME;
+    data_validation->criteria       = LXW_VALIDATION_CRITERIA_EQUAL;
+    data_validation->value_datetime = datetime2;
+@endcode
+
+The `minimum` and `maximum` parameters are used to set the lower and upper
+limiting values when the `criteria` is either #LXW_VALIDATION_CRITERIA_BETWEEN
+or #LXW_VALIDATION_CRITERIA_NOT_BETWEEN. The parameters are:
+
+- `minimum_number`
+- `minimum_formula`
+- `minimum_datetime`
+- `maximum_number`
+- `maximum_formula`
+- `maximum_datetime`
+
+They are similar to the `value` parameters described above. For example:
+
+@code
+    data_validation->validate         = LXW_VALIDATION_TYPE_INTEGER;
+    data_validation->criteria         = LXW_VALIDATION_CRITERIA_BETWEEN;
+    data_validation->minimum_number   = 1;
+    data_validation->maximum_number   = 10;
+
+    data_validation->validate         = LXW_VALIDATION_TYPE_INTEGER;
+    data_validation->criteria         = LXW_VALIDATION_CRITERIA_NOT_BETWEEN;
+    data_validation->minimum_formula  = "=E3";
+    data_validation->maximum_formula  = "=F3";
+
+    data_validation->validate         = LXW_VALIDATION_TYPE_DATE;
+    data_validation->criteria         = LXW_VALIDATION_CRITERIA_BETWEEN;
+    data_validation->minimum_datetime = datetime1;
+    data_validation->maximum_datetime = datetime2;
+@endcode
+
+@section ww_data_validate_options Data validation options
+
+
+@subsection ww_data_validate_ignore_blank ignore_blank
+
+
+The `ignore_blank` parameter is used to toggle on and off the 'Ignore blank'
+option in the Excel data validation dialog. When the option is on the data
+validation is not applied to blank data in the cell. It is on by default:
+
+@code
+    data_validation->validate       = LXW_VALIDATION_TYPE_INTEGER;
+    data_validation->criteria       = LXW_VALIDATION_CRITERIA_BETWEEN;
+    data_validation->minimum_number = 1;
+    data_validation->maximum_number = 10;
+    data_validation->ignore_blank   = LXW_VALIDATION_OFF;
+@endcode
+
+
+@subsection ww_data_validate_dropdown dropdown
+
+The `dropdown` parameter is used to toggle on and off the 'In-cell dropdown'
+option in the Excel data validation dialog. When the option is on a dropdown
+list will be shown for `list` validations. It is on by default.
+
+@code
+    data_validation->validate   = LXW_VALIDATION_TYPE_LIST;
+    data_validation->value_list = list;
+    data_validation->dropdown   = LXW_VALIDATION_OFF;
+@endcode
+
+
+@subsection ww_data_validate_input_title input_title
+
+The `input_title` parameter is used to set the title of the input message that
+is displayed when a cell is entered. It has no default value and is only
+displayed if the input message is also displayed. See the `input_message`
+parameter below.
+
+The maximum title length is 32 characters.
+
+
+@subsection ww_data_validate_input_message input_message
+
+The `input_message` parameter is used to set the input message that is
+displayed when a cell is entered. It has no default value:
+
+@code
+    data_validation->validate       = LXW_VALIDATION_TYPE_INTEGER;
+    data_validation->criteria       = LXW_VALIDATION_CRITERIA_BETWEEN;
+    data_validation->minimum_number = 1;
+    data_validation->maximum_number = 100;
+    data_validation->input_title    = "Enter an integer:";
+    data_validation->input_message  = "between 1 and 100";
+@endcode
+
+The input message generated from the above example is:
+
+@image html data_validate3.png
+
+The message can be split over several lines using newlines. The maximum message
+length is 255 characters.
+
+
+@subsection ww_data_validate_show_input show_input
+
+The `show_input` parameter is used to toggle on and off the 'Show input
+message when cell is selected' option in the Excel data validation dialog.
+When the option is off an input message is not displayed even if it has been
+set using `input_message`. It is on by default.
+
+
+@subsection ww_data_validate_error_title error_title
+
+The `error_title` parameter is used to set the title of the error message
+that is displayed when the data validation criteria is not met. The default
+error title is 'Microsoft Excel'. The maximum title length is 32 characters.
+
+
+@subsection ww_data_validate_error_message error_message
+
+The `error_message` parameter is used to set the error message that is
+displayed when a cell is entered. The default error message is "The value you
+entered is not valid. A user has restricted values that can be entered into
+the cell". A non-default error message can be displayed as follows:
+
+@code
+    data_validation->validate       = LXW_VALIDATION_TYPE_INTEGER;
+    data_validation->criteria       = LXW_VALIDATION_CRITERIA_BETWEEN;
+    data_validation->minimum_number = 1;
+    data_validation->maximum_number = 100;
+    data_validation->input_title    = "Enter an integer:";
+    data_validation->input_message  = "between 1 and 100";
+    data_validation->error_title    = "Input value is not valid!";
+    data_validation->error_message  = "It should be an integer between 1 and 100";
+@endcode
+
+Which give the following message:
+
+@image html data_validate2.png
+
+The message can be split over several lines using newlines. The maximum message
+length is 255 characters.
+
+
+@subsection ww_data_validate_error_type error_type
+
+The `error_type` parameter is used to specify the type of error dialog that is
+displayed. There are 3 #lxw_validation_error_types options:
+
+- #LXW_VALIDATION_ERROR_TYPE_STOP, the default.
+- #LXW_VALIDATION_ERROR_TYPE_WARNING
+- #LXW_VALIDATION_ERROR_TYPE_INFORMATION
+
+@subsection ww_data_validate_show_error show_error
+
+The `show_error` parameter is used to toggle on and off the 'Show error alert
+after invalid data is entered' option in the Excel data validation dialog.
+When the option is off an error message is not displayed even if it has been
+set using `error_message`. It is on by default.
+
+@section ww_data_validate_examples Examples
+
+@code
+    // Restrict input to an integer between 1 and 10.
+    data_validation->validate         = LXW_VALIDATION_TYPE_INTEGER;
+    data_validation->criteria         = LXW_VALIDATION_CRITERIA_BETWEEN;
+    data_validation->minimum_number   = 1;
+    data_validation->maximum_number   = 10;
+
+    // Restrict input to an integer not between 1 and 10 (using cell references).
+    data_validation->validate         = LXW_VALIDATION_TYPE_INTEGER;
+    data_validation->criteria         = LXW_VALIDATION_CRITERIA_NOT_BETWEEN;
+    data_validation->minimum_formula  = "=E3";
+    data_validation->maximum_formula  = "=F3";
+
+    // Restrict input to a decimal between 0.1 and 0.5.
+    data_validation->validate         = LXW_VALIDATION_TYPE_DECIMAL;
+    data_validation->criteria         = LXW_VALIDATION_CRITERIA_BETWEEN;
+    data_validation->minimum_number   = 0.1;
+    data_validation->maximum_number   = 0.5;
+
+    // Select a value from a drop down list.
+    char *list[]                      = {"open", "high", "close", NULL};
+
+    data_validation->validate         = LXW_VALIDATION_TYPE_LIST;
+    data_validation->value_list       = list;
+
+    // Select a value from a drop down list (using a cell range).
+    data_validation->validate         = LXW_VALIDATION_TYPE_LIST;
+    data_validation->value_formula    = "=$E$4:$G$4";
+
+    // Restrict input to a date between 1/1/2008 and 12/12/2008.
+    lxw_datetime datetime1            = {2008,  1,  1, 0, 0, 0};
+    lxw_datetime datetime2            = {2008, 12, 12, 0, 0, 0};
+
+    data_validation->validate         = LXW_VALIDATION_TYPE_DATE;
+    data_validation->criteria         = LXW_VALIDATION_CRITERIA_BETWEEN;
+    data_validation->minimum_datetime = datetime1;
+    data_validation->maximum_datetime = datetime2;
+
+    // Restrict input to a string longer than 3 characters.
+    data_validation->validate         = LXW_VALIDATION_TYPE_LENGTH;
+    data_validation->criteria         = LXW_VALIDATION_CRITERIA_GREATER_THAN;
+    data_validation->value_number     = 3;
+
+    // Restrict input to a value if a formula is true.
+    data_validation->validate         = LXW_VALIDATION_TYPE_CUSTOM_FORMULA;
+    data_validation->value_formula    = "=AND(F5=50,G5=60)";
+
+    // Display a custom info message when integer isn't between 1 and 100.
+    data_validation->validate         = LXW_VALIDATION_TYPE_INTEGER;
+    data_validation->criteria         = LXW_VALIDATION_CRITERIA_BETWEEN;
+    data_validation->minimum_number   = 1;
+    data_validation->maximum_number   = 100;
+    data_validation->input_title      = "Enter an integer:";
+    data_validation->input_message    = "between 1 and 100";
+    data_validation->error_title      = "Input value is not valid!";
+    data_validation->error_message    = "It should be an integer between 1 and 100";
+@endcode
+
+For a full example see @ref data_validate.c.
+
+*/

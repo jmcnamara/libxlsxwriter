@@ -1,4 +1,5 @@
 language: c
+dist: trusty
 
 compiler:
   - clang
@@ -8,6 +9,7 @@ env:
   -                                      CFLAGS='-Werror'
   - NO_VALGRIND=1 USE_STANDARD_TMPFILE=1 CFLAGS='-Werror'
   - NO_VALGRIND=1                        CFLAGS='-Werror -m32'
+  - NO_VALGRIND=1 USE_SYSTEM_MINIZIP=1   CFLAGS='-Werror'
 
 install:
   - sudo pip install pytest
@@ -18,8 +20,16 @@ install:
   - sudo apt-get install -y gcc
   - sudo apt-get install -y valgrind
 
+  - wget http://mirrors.kernel.org/ubuntu/pool/universe/m/minizip/libminizip-dev_1.1-8_amd64.deb
+  - wget http://mirrors.kernel.org/ubuntu/pool/universe/m/minizip/libminizip1_1.1-8_amd64.deb
+  - sudo dpkg -i libminizip1_1.1-8_amd64.deb
+  - sudo dpkg -i libminizip-dev_1.1-8_amd64.deb
+
 script:
   - make V=1
   - make test_functional V=1
   - make test_unit V=1
+  - make examples V=1
   - make test_valgrind V=1
+  - sudo make install V=1
+  - sudo make uninstall V=1

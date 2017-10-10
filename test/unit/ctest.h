@@ -43,6 +43,8 @@ struct ctest {
 #define __CTEST_MAGIC (0xdeadbeef)
 #ifdef __APPLE__
 #define __Test_Section __attribute__ ((unused,section ("__DATA, .ctest")))
+#elif defined(_MSC_VER)
+#define __Test_Section
 #else
 #define __Test_Section __attribute__ ((unused,section (".ctest")))
 #endif
@@ -54,17 +56,23 @@ struct ctest {
         .run = __FNAME(sname, tname), \
         .skip = _skip, \
         .data = __data, \
-        .setup = (SetupFunc)__setup,					\
-        .teardown = (TearDownFunc)__teardown,				\
+        .setup = (SetupFunc)__setup,                    \
+        .teardown = (TearDownFunc)__teardown,               \
         .magic = __CTEST_MAGIC };
 
 #define CTEST_DATA(sname) struct sname##_data
 
+#ifndef _MSC_VER
+#define ATTR_WEAK __attribute__ ((weak))
+#else
+#define ATTR_WEAK
+#endif
+
 #define CTEST_SETUP(sname) \
-    void __attribute__ ((weak)) sname##_setup(struct sname##_data* data)
+    void ATTR_WEAK sname##_setup(struct sname##_data* data)
 
 #define CTEST_TEARDOWN(sname) \
-    void __attribute__ ((weak)) sname##_teardown(struct sname##_data* data)
+    void ATTR_WEAK sname##_teardown(struct sname##_data* data)
 
 #define __CTEST_INTERNAL(sname, tname, _skip) \
     void __FNAME(sname, tname)(); \
@@ -137,10 +145,17 @@ void assert_fail(const char* caller, int line);
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/time.h>
-#include <unistd.h>
 #include <stdint.h>
 #include <stdlib.h>
+
+#ifndef _MSC_VER
+#include <sys/time.h>
+#include <unistd.h>
+#else
+#define WIN32_LEAN_AND_MEAN
+#include <winsock2.h>
+#include <windows.h>
+#endif
 
 #ifdef __APPLE__
 #include <dlfcn.h>
@@ -313,6 +328,36 @@ static int suite_all(struct ctest* t) {
 static int suite_filter(struct ctest* t) {
     return strncmp(suite_name, t->ssname, strlen(suite_name)) == 0;
 }
+
+
+#ifdef _MSC_VER
+// We need a portable `gettimeofday` implementation.
+// winsock2.h includes `struct timeval`.
+
+#define EPOCH_TIME 116444736000000000ull
+#define HECTONANOSEC_PER_SEC 10000000ull
+
+static int gettimeofday(struct timeval* tp, void* tz)
+{
+    int res = 0;
+    union {
+        uint64_t ns100;
+        FILETIME file_time;
+    } now;
+    SYSTEMTIME system_time;
+    uint64_t value;
+
+    if (tp != NULL) {
+        GetSystemTimeAsFileTime(&now.file_time);
+        now.ns100 -= EPOCH_TIME;
+        tp->tv_sec = now.ns100 / HECTONANOSEC_PER_SEC;
+        tp->tv_usec = (long) (now.ns100 % HECTONANOSEC_PER_SEC) / 10;
+    }
+
+    return res;
+}
+#endif
+
 
 static uint64_t getCurrentTime() {
     struct timeval now;

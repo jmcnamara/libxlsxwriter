@@ -53,17 +53,17 @@ lxw_core_free(lxw_core *core)
  * Convert a time_t struct to a ISO 8601 style "2010-01-01T00:00:00Z" date.
  */
 static void
-_localtime_to_iso8601_date(time_t *timer, char *str, size_t size)
+_datetime_to_iso8601_date(time_t *timer, char *str, size_t size)
 {
-    struct tm *tmp_localtime;
+    struct tm *tmp_datetime;
     time_t current_time = time(NULL);
 
     if (*timer)
-        tmp_localtime = localtime(timer);
+        tmp_datetime = gmtime(timer);
     else
-        tmp_localtime = localtime(&current_time);
+        tmp_datetime = gmtime(&current_time);
 
-    strftime(str, size - 1, "%Y-%m-%dT%H:%M:%SZ", tmp_localtime);
+    strftime(str, size - 1, "%Y-%m-%dT%H:%M:%SZ", tmp_datetime);
 }
 
 /*****************************************************************************
@@ -144,8 +144,8 @@ _write_dcterms_created(lxw_core *self)
     struct xml_attribute *attribute;
     char datetime[LXW_ATTR_32];
 
-    _localtime_to_iso8601_date(&self->properties->created, datetime,
-                               LXW_ATTR_32);
+    _datetime_to_iso8601_date(&self->properties->created, datetime,
+                              LXW_ATTR_32);
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("xsi:type", "dcterms:W3CDTF");
@@ -166,8 +166,8 @@ _write_dcterms_modified(lxw_core *self)
     struct xml_attribute *attribute;
     char datetime[LXW_ATTR_32];
 
-    _localtime_to_iso8601_date(&self->properties->created, datetime,
-                               LXW_ATTR_32);
+    _datetime_to_iso8601_date(&self->properties->created, datetime,
+                              LXW_ATTR_32);
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("xsi:type", "dcterms:W3CDTF");

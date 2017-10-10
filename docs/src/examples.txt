@@ -126,6 +126,13 @@ Example of adding an autofilter to a worksheet.
 @image html autofilter.png
 
 ##############################################################
+@example data_validate.c
+
+Example of adding data validations to a worksheet.
+
+@image html data_validate4.png
+
+##############################################################
 @example images.c
 
 Example of adding images to a worksheet.

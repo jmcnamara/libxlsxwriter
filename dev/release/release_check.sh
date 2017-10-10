@@ -34,6 +34,33 @@ function check_test_status {
     fi
 }
 
+#############################################################
+#
+# Run test for C++ const correctness.
+#
+function check_test_const {
+
+    echo
+    echo -n     "Is the const test passing?             [y/N]: "
+    read RESPONSE
+
+    if [ "$RESPONSE" != "y" ]; then
+
+        echo -n "    Run test now?                      [y/N]: "
+        read RESPONSE
+
+        if [ "$RESPONSE" != "y" ]; then
+            echo
+            echo -e "Please run: make test_const\n";
+            exit 1
+        else
+            echo "    Running test...";
+            make test_const
+            check_test_const
+         fi
+    fi
+}
+
 
 #############################################################
 #
@@ -268,6 +295,8 @@ function check_git_status {
 }
 
 check_test_status
+clear
+check_test_const
 clear
 check_spellcheck
 clear

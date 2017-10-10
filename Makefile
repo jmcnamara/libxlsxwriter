@@ -11,11 +11,15 @@ ifdef V
 Q=
 endif
 
+INSTALL_DIR ?= /usr/local
+
 .PHONY: docs tags examples
 
 # Build the libs.
 all :
+ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) -C third_party/minizip
+endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
 endif
@@ -31,17 +35,25 @@ clean :
 	$(Q)$(MAKE) clean -C test/unit
 	$(Q)$(MAKE) clean -C test/functional/src
 	$(Q)$(MAKE) clean -C examples
-	$(Q)$(MAKE) clean -C third_party/minizip
 	$(Q)rm -rf docs/html
 	$(Q)rm -rf test/functional/__pycache__
 	$(Q)rm -f  test/functional/*.pyc
 	$(Q)rm -f  lib/*
+ifndef USE_STANDARD_TMPFILE
+	$(Q)$(MAKE) clean -C third_party/minizip
+endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) clean -C third_party/tmpfileplus
 endif
 
 # Run the unit tests.
 test : all test_functional test_unit
+
+# Test for C++ const correctness on APIs.
+test_const : all
+	$(Q)$(MAKE) clean -C test/functional/src
+	$(Q)! $(MAKE) -C test/functional/src CFLAGS=-Wwrite-strings 2>&1 | grep -A 1 "note:"
+
 
 # Run the functional tests.
 test_functional : all
@@ -51,7 +63,9 @@ test_functional : all
 # Run all tests.
 test_unit :
 	@echo "Compiling unit tests ..."
+ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) -C third_party/minizip
+endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
 endif
@@ -83,14 +97,16 @@ docs:
 	$(Q)$(MAKE) -C docs
 
 # Simple minded install.
-install:
-	$(Q)cp -r include/* /usr/include
-	$(Q)cp lib/* /usr/lib
+install: all
+	$(Q)mkdir -p        $(INSTALL_DIR)/include
+	$(Q)cp -R include/* $(INSTALL_DIR)/include
+	$(Q)mkdir -p        $(INSTALL_DIR)/lib
+	$(Q)cp lib/*        $(INSTALL_DIR)/lib
 
 # Simpler minded uninstall.
 uninstall:
-	$(Q)rm -rf /usr/include/xlsxwriter*
-	$(Q)rm /usr/lib/libxlsxwriter.*
+	$(Q)rm -rf $(INSTALL_DIR)/include/xlsxwriter*
+	$(Q)rm     $(INSTALL_DIR)/lib/libxlsxwriter.*
 
 # Strip the lib files.
 strip:
@@ -98,7 +114,9 @@ strip:
 
 # Run a coverity static analysis.
 coverity:
+ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) -C third_party/minizip
+endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
 endif
@@ -113,7 +131,9 @@ endif
 
 # Run a scan-build static analysis.
 scan_build:
+ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) -C third_party/minizip
+endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
 endif

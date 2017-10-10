@@ -46,7 +46,7 @@ void lxw_styles_assemble_xml_file(lxw_styles *self);
 
 STATIC void _styles_xml_declaration(lxw_styles *self);
 STATIC void _write_style_sheet(lxw_styles *self);
-STATIC void _write_font_size(lxw_styles *self, uint16_t font_size);
+STATIC void _write_font_size(lxw_styles *self, double font_size);
 STATIC void _write_font_color_theme(lxw_styles *self, uint8_t theme);
 STATIC void _write_font_name(lxw_styles *self, const char *font_name);
 STATIC void _write_font_family(lxw_styles *self, uint8_t font_family);
