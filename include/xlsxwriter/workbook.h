@@ -672,7 +672,7 @@ lxw_error workbook_define_name(lxw_workbook *workbook, const char *name,
  * @brief Get a worksheet object from its name.
  *
  * @param workbook Pointer to a lxw_workbook instance.
- * @param name     Worksheet name.
+ * @param name     The name to search for.
  *
  * @return A lxw_worksheet object.
  *
