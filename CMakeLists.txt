@@ -143,6 +143,8 @@ else()
     add_library(${PROJECT_NAME} SHARED ${LXW_SOURCES})
 endif()
 
+target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
+
 if(MSVC)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E rename
@@ -221,6 +223,10 @@ if (BUILD_TESTS)
     #    add_executable(${basename} ${source})
     #    target_link_libraries(${basename} xlsxwriter ${ZLIB_LIBRARIES})
     #endforeach(source)
+endif()
+
+if(MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
 # EXAMPLES
