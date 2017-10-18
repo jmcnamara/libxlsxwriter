@@ -143,6 +143,8 @@ else()
     add_library(${PROJECT_NAME} SHARED ${LXW_SOURCES})
 endif()
 
+target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
+
 if(MSVC)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E rename
