@@ -14,6 +14,7 @@ env:
 install:
   - sudo pip install pytest
   - sudo apt-get update
+  - sudo apt-get remove -y oracle-java9-installer
   - sudo apt-get install -y gcc-multilib
   - sudo apt-get install -y zlib1g-dev
   - sudo apt-get install -y zlib1g-dev:i386
