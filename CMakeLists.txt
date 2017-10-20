@@ -61,10 +61,14 @@
 #
 
 set(CMAKE_LEGACY_CYGWIN_WIN32 1)
-cmake_minimum_required(VERSION 2.8)
+if(MSVC)
+    cmake_minimum_required(VERSION 3.4)
+else()
+    cmake_minimum_required(VERSION 2.8)
+endif()
 
 SET(PROJECT_NAME "xlsxwriter" CACHE STRING "Optional project and binary name")
-
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 project(${PROJECT_NAME} C)
 enable_testing()
 
@@ -146,11 +150,13 @@ endif()
 target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
 
 if(MSVC)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E rename
-        ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb
-        $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}.pdb
-    )
+    if (BUILD_STATIC)
+        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E rename
+            ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb
+            $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}.pdb
+        )
+    endif()
 endif()
 
 # TESTS
@@ -247,26 +253,27 @@ endif()
 
 if(MSVC)
     if(CMAKE_CL_64)
-        install(TARGETS ${PROJECT_NAME}
-            LIBRARY DESTINATION "lib/x64/\${CMAKE_INSTALL_CONFIG_NAME}"
-            ARCHIVE DESTINATION "lib/x64/\${CMAKE_INSTALL_CONFIG_NAME}"
-        )
-        install(FILES $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}.pdb
-            DESTINATION "lib/x64/\${CMAKE_INSTALL_CONFIG_NAME}"
-        )
+        set(MSVC_FOLDER_PREFIX x64)
     else()
-        install(TARGETS ${PROJECT_NAME}
-            LIBRARY DESTINATION "lib/Win32/\${CMAKE_INSTALL_CONFIG_NAME}"
-            ARCHIVE DESTINATION "lib/Win32/\${CMAKE_INSTALL_CONFIG_NAME}"
-        )
+        set(MSVC_FOLDER_PREFIX Win32)
+    endif()
+
+    install(TARGETS ${PROJECT_NAME}
+        LIBRARY DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
+        ARCHIVE DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
+        RUNTIME DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
+    )
+    if (BUILD_STATIC)
         install(FILES $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}.pdb
-            DESTINATION "lib/Win32/\${CMAKE_INSTALL_CONFIG_NAME}"
+            DESTINATION "lib/{MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
         )
     endif()
+
 else(MSVC)
     install(TARGETS ${PROJECT_NAME}
         LIBRARY DESTINATION lib
         ARCHIVE DESTINATION lib
+        RUNTIME DESTINATION lib
     )
 endif(MSVC)
 install(FILES include/xlsxwriter.h DESTINATION include)
