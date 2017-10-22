@@ -1,4 +1,3 @@
-
 build:
   image: teaci/msys$$arch
   pull: true
@@ -8,12 +7,21 @@ build:
     - if [ $$arch = 64 ]; then target=x86_64; fi
     - pacman -S --needed --noconfirm --noprogressbar mingw-w64-${target}-pkg-config cmake zlib-devel
     - git submodule update --init --recursive
-    - cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DIOAPI_NO_64=ON .
+    - cmake -DBUILD_STATIC=$STATIC -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_TESTS=ON -DIOAPI_NO_64=ON .
     - make -j 8
-    - ctest -C Release -V
+    - make install
+    - ctest -C $BUILD_TYPE -V
 
 matrix:
   arch:
 # Bug with 64-bit MSYS2 on WINE currently, disable temporarily.
 #    - 64
     - 32
+
+  STATIC:
+    - OFF
+    - ON
+
+  BUILD_TYPE:
+    - Debug
+    - Release
