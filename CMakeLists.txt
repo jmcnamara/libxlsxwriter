@@ -80,6 +80,7 @@ SET(ZLIB_ROOT "" CACHE STRING "Optional root for the ZLIB installation")
 
 option(BUILD_TESTS "Build libxlsxwriter tests" OFF)
 option(BUILD_EXAMPLES "Build libxlsxwriter examples" OFF)
+option(USE_SYSTEM_MINIZIP "Use system minizip installation" OFF)
 option(USE_STANDARD_TMPFILE "Use the C standard library's tmpfile()" OFF)
 option(IOAPI_NO_64 "Disable 64-bit filesystem support" OFF)
 if(DEFINED ENV{${ZLIB_ROOT}})
@@ -92,6 +93,10 @@ endif()
 
 # CONFIGURATIONS
 # --------------
+
+if(USE_SYSTEM_MINIZIP)
+    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_SYSTEM_MINIZIP)
+endif()
 
 if(USE_STANDARD_TMPFILE)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_STANDARD_TMPFILE)
@@ -122,6 +127,12 @@ find_package(ZLIB REQUIRED "1.0")
 list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
 message("zlib version: " ${ZLIB_VERSION})
 
+# MINIZIP
+if (USE_SYSTEM_MINIZIP)
+    find_package(MINIZIP REQUIRED "1.0")
+    list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${MINIZIP_INCLUDE_DIRS})
+endif()
+
 # LIBRARY
 # -------
 
@@ -144,9 +155,11 @@ endif()
 
 file(GLOB LXW_SOURCES src/*.c)
 file(GLOB_RECURSE LXW_HEADERS RELATIVE include *.h)
-list(APPEND LXW_SOURCES third_party/minizip/ioapi.c third_party/minizip/zip.c)
-if(MSVC)
-    list(APPEND LXW_SOURCES third_party/minizip/iowin32.c)
+if(NOT USE_SYSTEM_MINIZIP)
+    list(APPEND LXW_SOURCES third_party/minizip/ioapi.c third_party/minizip/zip.c)
+    if(MSVC)
+        list(APPEND LXW_SOURCES third_party/minizip/iowin32.c)
+    endif()
 endif()
 if (NOT USE_STANDARD_TMPFILE)
     list(APPEND LXW_SOURCES third_party/tmpfileplus/tmpfileplus.c)
@@ -159,7 +172,7 @@ target_sources(${PROJECT_NAME}
     PRIVATE ${LXW_SOURCES}
     PUBLIC ${LXW_HEADERS}
 )
-target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LIBRARIES} ${MINIZIP_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LXW_PRIVATE_COMPILE_DEFINITIONS})
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${LXW_PRIVATE_INCLUDE_DIRS}
