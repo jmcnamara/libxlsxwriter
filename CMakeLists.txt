@@ -26,10 +26,6 @@
 #           or using a flag with CMake (`-DZLIB_ROOT:STRING=/usr/include`).
 #           This sets the preferred search path for the ZLIB installation.
 #
-#       BUILD_STATIC
-#           Build static libraries (default on). To build shared
-#           libraries, pass `-DBUILD_STATIC=OFF` during configuration.
-#
 #       BUILD_TESTS
 #           Build unittests (default off). To build the unittests,
 #           pass `-DBUILD_TESTS=ON` during configuration.
@@ -50,6 +46,11 @@
 #       To build in release mode, pass `-DCMAKE_BUILD_TYPE=Release`
 #       during configuration.
 #
+#       CMake sets the creation of static and shared libraries with the
+#       `BUILD_SHARED_LIBS` option, which can be set as a flag during
+#       configuration. To build a static library, pass
+#       `-DBUILD_SHARED_LIBS=OFF` during configuration.
+#
 #   Generators:
 #       CMake also supports custom build generators, such as MakeFiles,
 #       Ninja, Visual Studio, and XCode. For example, to generate
@@ -64,7 +65,7 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 1)
 if(MSVC)
     cmake_minimum_required(VERSION 3.4)
 else()
-    cmake_minimum_required(VERSION 2.8)
+    cmake_minimum_required(VERSION 2.8.7)
 endif()
 
 SET(PROJECT_NAME "xlsxwriter" CACHE STRING "Optional project and binary name")
@@ -77,7 +78,6 @@ enable_testing()
 
 SET(ZLIB_ROOT "" CACHE STRING "Optional root for the ZLIB installation")
 
-option(BUILD_STATIC "Build static libxlsxwriter" ON)
 option(BUILD_TESTS "Build libxlsxwriter tests" OFF)
 option(BUILD_EXAMPLES "Build libxlsxwriter examples" OFF)
 option(USE_STANDARD_TMPFILE "Use the C standard library's tmpfile()" OFF)
@@ -87,22 +87,22 @@ if(DEFINED ENV{${ZLIB_ROOT}})
 endif()
 
 if(IOAPI_NO_64)
-    add_definitions(-DIOAPI_NO_64=1)
+    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS IOAPI_NO_64=1)
 endif()
 
 # CONFIGURATIONS
 # --------------
 
 if(USE_STANDARD_TMPFILE)
-    add_definitions(-DUSE_STANDARD_TMPFILE)
+    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_STANDARD_TMPFILE)
 endif()
 
-if(BUILD_STATIC)
+if(NOT BUILD_SHARED_LIBS)
     if(UNIX)
         set(CMAKE_POSITION_INDEPENDENT_CODE ON)
     elseif(MINGW OR MSYS)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static -static-libgcc -Wno-char-subscripts -Wno-long-long")
-        add_definitions(-DUSE_FILE32API)
+        list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_FILE32API)
     elseif(MSVC)
         set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd /O0 /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT /Ox /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
@@ -111,46 +111,63 @@ if(BUILD_STATIC)
     endif()
 endif()
 
+# INCLUDES
+# --------
+
 enable_language(CXX)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+# ZLIB
 find_package(ZLIB REQUIRED "1.0")
-include_directories(${ZLIB_INCLUDE_DIRS})
+list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
 message("zlib version: " ${ZLIB_VERSION})
 
 # LIBRARY
 # -------
 
-add_definitions(-DNOCRYPT -DNOUNCRYPT)
+list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS NOCRYPT NOUNCRYPT)
 
 # Fix for modified zconf.h on Gentoo.
 if(${CMAKE_HOST_SYSTEM} MATCHES gentoo)
-    add_definitions(-DOF=_Z_OF)
+    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS OF=_Z_OF)
 endif()
 
-include_directories(include include/xlsxwriter)
+# Ensure CRT Secure warnings are disabled
+if(MSVC)
+    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
+endif()
+
+# Ensure "TESTING" macro is defined if building tests
+if(BUILD_TESTS)
+    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS TESTING)
+endif()
+
 file(GLOB LXW_SOURCES src/*.c)
+file(GLOB_RECURSE LXW_HEADERS RELATIVE include *.h)
 list(APPEND LXW_SOURCES third_party/minizip/ioapi.c third_party/minizip/zip.c)
 if(MSVC)
     list(APPEND LXW_SOURCES third_party/minizip/iowin32.c)
 endif()
-if (NOT ${USE_STANDARD_TMPFILE})
-    include_directories(third_party/tmpfileplus)
+if (NOT USE_STANDARD_TMPFILE)
     list(APPEND LXW_SOURCES third_party/tmpfileplus/tmpfileplus.c)
 endif()
 
 set(LXW_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(LXW_LIB_DIR "${LXW_PROJECT_DIR}/lib")
-
-if(BUILD_STATIC)
-    add_library(${PROJECT_NAME} STATIC ${LXW_SOURCES})
-else()
-    add_library(${PROJECT_NAME} SHARED ${LXW_SOURCES})
-endif()
-
-target_link_libraries(${PROJECT_NAME} ${ZLIB_LIBRARIES})
+add_library(${PROJECT_NAME} "")
+target_sources(${PROJECT_NAME}
+    PRIVATE ${LXW_SOURCES}
+    PUBLIC ${LXW_HEADERS}
+)
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LIBRARIES})
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${LXW_PRIVATE_COMPILE_DEFINITIONS})
+target_include_directories(${PROJECT_NAME}
+    PRIVATE ${LXW_PRIVATE_INCLUDE_DIRS}
+    PUBLIC include include/xlsxwriter
+)
 
 if(MSVC)
-    if (BUILD_STATIC)
+    if (NOT BUILD_SHARED_LIBS)
         add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
             COMMAND ${CMAKE_COMMAND} -E rename
             ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb
@@ -173,7 +190,8 @@ macro(CreateTest sources target)
     set(dependencies ${output_name})
 
     add_executable(${output_name} ${${sources}})
-    target_link_libraries(${output_name} ${PROJECT_NAME} ${ZLIB_LIBRARIES})
+    target_link_libraries(${output_name} ${PROJECT_NAME})
+    target_compile_definitions(${output_name} PRIVATE TESTING COLOR_OK)
     add_test(NAME ${output_name}
         COMMAND ${output_name}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -215,9 +233,8 @@ set(LXW_UNIT_SOURCES
     ${LXW_CUSTOM_SOURCES}
 )
 
-if (BUILD_TESTS)
+if(BUILD_TESTS)
     # unit tests
-    add_definitions(-DTESTING -DCOLOR_OK)
     CreateTest(LXW_UNIT_SOURCES unit)
 
     # functional tests
@@ -227,12 +244,8 @@ if (BUILD_TESTS)
     #foreach(source ${LXW_FUNCTIONAL_SOURCES})
     #    get_filename_component(basename ${source} NAME_WE)
     #    add_executable(${basename} ${source})
-    #    target_link_libraries(${basename} xlsxwriter ${ZLIB_LIBRARIES})
+    #    target_link_libraries(${basename} xlsxwriter)
     #endforeach(source)
-endif()
-
-if(MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
 # EXAMPLES
@@ -244,7 +257,7 @@ if(BUILD_EXAMPLES)
     foreach(source ${LXW_EXAMPLE_SOURCES})
         get_filename_component(basename ${source} NAME_WE)
         add_executable(${basename} ${source})
-        target_link_libraries(${basename} ${PROJECT_NAME} ${ZLIB_LIBRARIES})
+        target_link_libraries(${basename} ${PROJECT_NAME})
     endforeach(source)
 endif()
 
@@ -263,7 +276,7 @@ if(MSVC)
         ARCHIVE DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
         RUNTIME DESTINATION "bin/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
     )
-    if (BUILD_STATIC)
+    if (NOT BUILD_SHARED_LIBS)
         install(FILES $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}.pdb
             DESTINATION "lib/{MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
         )
