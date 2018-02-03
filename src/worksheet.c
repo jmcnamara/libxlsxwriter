@@ -2607,8 +2607,10 @@ _write_boolean_cell(lxw_worksheet *self, lxw_cell *cell)
 STATIC void
 _calculate_spans(struct lxw_row *row, char *span, int32_t *block_num)
 {
-    lxw_col_t span_col_min = RB_MIN(lxw_table_cells, row->cells)->col_num;
-    lxw_col_t span_col_max = RB_MAX(lxw_table_cells, row->cells)->col_num;
+    lxw_cell *cell_min = RB_MIN(lxw_table_cells, row->cells);
+    lxw_cell *cell_max = RB_MAX(lxw_table_cells, row->cells);
+    lxw_col_t span_col_min = cell_min->col_num;
+    lxw_col_t span_col_max = cell_max->col_num;
     lxw_col_t col_min;
     lxw_col_t col_max;
     *block_num = row->row_num / 16;
@@ -2618,8 +2620,10 @@ _calculate_spans(struct lxw_row *row, char *span, int32_t *block_num)
     while (row && (int32_t) (row->row_num / 16) == *block_num) {
 
         if (!RB_EMPTY(row->cells)) {
-            col_min = RB_MIN(lxw_table_cells, row->cells)->col_num;
-            col_max = RB_MAX(lxw_table_cells, row->cells)->col_num;
+            cell_min = RB_MIN(lxw_table_cells, row->cells);
+            cell_max = RB_MAX(lxw_table_cells, row->cells);
+            col_min = cell_min->col_num;
+            col_max = cell_max->col_num;
 
             if (col_min < span_col_min)
                 span_col_min = col_min;
