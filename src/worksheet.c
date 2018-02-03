@@ -4780,7 +4780,7 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
                          lxw_header_footer_options *options)
 {
     if (options) {
-        if (options->margin > 0)
+        if (options->margin >= 0.0)
             self->margin_header = options->margin;
     }
 
@@ -4804,7 +4804,7 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
                          lxw_header_footer_options *options)
 {
     if (options) {
-        if (options->margin > 0)
+        if (options->margin >= 0.0)
             self->margin_footer = options->margin;
     }
 
