@@ -1464,6 +1464,12 @@ _worksheet_write_sheet_format_pr(lxw_worksheet *self)
     if (self->default_row_zeroed)
         LXW_PUSH_ATTRIBUTES_STR("zeroHeight", "1");
 
+    if (self->outline_row_level)
+        LXW_PUSH_ATTRIBUTES_INT("outlineLevelRow", self->outline_row_level);
+
+    if (self->outline_col_level)
+        LXW_PUSH_ATTRIBUTES_INT("outlineLevelCol", self->outline_col_level);
+
     lxw_xml_empty_tag(self->file, "sheetFormatPr", &attributes);
 
     LXW_FREE_ATTRIBUTES();
@@ -1699,6 +1705,9 @@ _write_row(lxw_worksheet *self, lxw_row *row, char *spans)
 
     if (height != LXW_DEF_ROW_HEIGHT)
         LXW_PUSH_ATTRIBUTES_STR("customHeight", "1");
+
+    if (row->level)
+        LXW_PUSH_ATTRIBUTES_INT("outlineLevel", row->level);
 
     if (row->collapsed)
         LXW_PUSH_ATTRIBUTES_STR("collapsed", "1");
@@ -4327,6 +4336,14 @@ worksheet_set_column_opt(lxw_worksheet *self,
     copied_options = calloc(1, sizeof(lxw_col_options));
     RETURN_ON_MEM_ERROR(copied_options, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
+    /* Ensure the level is <= 7). */
+    if (level > 7)
+        level = 7;
+
+    if (level > self->outline_col_level)
+        self->outline_col_level = level;
+
+    /* Set the column properties. */
     copied_options->firstcol = firstcol;
     copied_options->lastcol = lastcol;
     copied_options->width = width;
@@ -4399,6 +4416,14 @@ worksheet_set_row_opt(lxw_worksheet *self,
         height = self->default_row_height;
     }
 
+    /* Ensure the level is <= 7). */
+    if (level > 7)
+        level = 7;
+
+    if (level > self->outline_row_level)
+        self->outline_row_level = level;
+
+    /* Store the row properties. */
     row = _get_row(self, row_num);
 
     row->height = height;

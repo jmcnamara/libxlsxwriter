@@ -725,6 +725,8 @@ typedef struct lxw_worksheet {
     uint32_t default_col_pixels;
     uint8_t default_row_zeroed;
     uint8_t default_row_set;
+    uint8_t outline_row_level;
+    uint8_t outline_col_level;
 
     uint8_t header_footer_changed;
     char header[LXW_HEADER_FOOTER_MAX];
@@ -1377,7 +1379,7 @@ lxw_error worksheet_set_row(lxw_worksheet *worksheet,
  *     lxw_row_col_options options = {.hidden = 1, .level = 0, .collapsed = 0};
  *
  *     // Hide the fourth row.
- *     worksheet_set_row(worksheet, 3, 20, NULL, &options);
+ *     worksheet_set_row_opt(worksheet, 3, 20, NULL, &options);
  * @endcode
  *
  */
