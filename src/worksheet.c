@@ -5136,11 +5136,23 @@ worksheet_protect(lxw_worksheet *self, const char *password,
     struct lxw_protection *protect = &self->protection;
 
     /* Copy any user parameters to the internal structure. */
-    if (options)
-        memcpy(protect, options, sizeof(lxw_protection));
-
-    /* Zero the hash storage in case of copied initialization data. */
-    protect->hash[0] = '\0';
+    if (options) {
+        protect->no_select_locked_cells = options->no_select_locked_cells;
+        protect->no_select_unlocked_cells = options->no_select_unlocked_cells;
+        protect->format_cells = options->format_cells;
+        protect->format_columns = options->format_columns;
+        protect->format_rows = options->format_rows;
+        protect->insert_columns = options->insert_columns;
+        protect->insert_rows = options->insert_rows;
+        protect->insert_hyperlinks = options->insert_hyperlinks;
+        protect->delete_columns = options->delete_columns;
+        protect->delete_rows = options->delete_rows;
+        protect->sort = options->sort;
+        protect->autofilter = options->autofilter;
+        protect->pivot_tables = options->pivot_tables;
+        protect->scenarios = options->scenarios;
+        protect->objects = options->objects;
+    }
 
     if (password) {
         uint16_t hash = _hash_password(password);
@@ -5216,9 +5228,10 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     }
 
     if (user_options) {
-        memcpy(options, user_options, sizeof(lxw_image_options));
-        options->url = lxw_strdup(user_options->url);
-        options->tip = lxw_strdup(user_options->tip);
+        options->x_offset = user_options->x_offset;
+        options->y_offset = user_options->y_offset;
+        options->x_scale = user_options->x_scale;
+        options->y_scale = user_options->y_scale;
     }
 
     /* Copy other options or set defaults. */
@@ -5303,8 +5316,12 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
     options = calloc(1, sizeof(lxw_image_options));
     RETURN_ON_MEM_ERROR(options, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
-    if (user_options)
-        memcpy(options, user_options, sizeof(lxw_image_options));
+    if (user_options) {
+        options->x_offset = user_options->x_offset;
+        options->y_offset = user_options->y_offset;
+        options->x_scale = user_options->x_scale;
+        options->y_scale = user_options->y_scale;
+    }
 
     /* Copy other options or set defaults. */
     options->row = row_num;

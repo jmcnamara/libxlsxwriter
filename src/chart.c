@@ -311,9 +311,17 @@ _chart_convert_font_args(lxw_chart_font *user_font)
     font = calloc(1, sizeof(struct lxw_chart_font));
     RETURN_ON_MEM_ERROR(font, NULL);
 
-    memcpy(font, user_font, sizeof(lxw_chart_font));
-
+    /* Copy the user supplied properties. */
     font->name = lxw_strdup(user_font->name);
+    font->size = user_font->size;
+    font->bold = user_font->bold;
+    font->italic = user_font->italic;
+    font->underline = user_font->underline;
+    font->rotation = user_font->rotation;
+    font->color = user_font->color;
+    font->pitch_family = user_font->pitch_family;
+    font->charset = user_font->charset;
+    font->baseline = user_font->baseline;
 
     /* Convert font size units. */
     if (font->size > 0.0)
@@ -345,7 +353,12 @@ _chart_convert_line_args(lxw_chart_line *user_line)
     line = calloc(1, sizeof(struct lxw_chart_line));
     RETURN_ON_MEM_ERROR(line, NULL);
 
-    memcpy(line, user_line, sizeof(lxw_chart_line));
+    /* Copy the user supplied properties. */
+    line->color = user_line->color;
+    line->none = user_line->none;
+    line->width = user_line->width;
+    line->dash_type = user_line->dash_type;
+    line->transparency = user_line->transparency;
 
     if (line->color) {
         line->color = lxw_format_check_color(line->color);
@@ -372,7 +385,10 @@ _chart_convert_fill_args(lxw_chart_fill *user_fill)
     fill = calloc(1, sizeof(struct lxw_chart_fill));
     RETURN_ON_MEM_ERROR(fill, NULL);
 
-    memcpy(fill, user_fill, sizeof(lxw_chart_fill));
+    /* Copy the user supplied properties. */
+    fill->color = user_fill->color;
+    fill->none = user_fill->none;
+    fill->transparency = user_fill->transparency;
 
     if (fill->color) {
         fill->color = lxw_format_check_color(fill->color);
@@ -409,7 +425,10 @@ _chart_convert_pattern_args(lxw_chart_pattern *user_pattern)
     pattern = calloc(1, sizeof(struct lxw_chart_pattern));
     RETURN_ON_MEM_ERROR(pattern, NULL);
 
-    memcpy(pattern, user_pattern, sizeof(lxw_chart_pattern));
+    /* Copy the user supplied properties. */
+    pattern->fg_color = user_pattern->fg_color;
+    pattern->bg_color = user_pattern->bg_color;
+    pattern->type = user_pattern->type;
 
     pattern->fg_color = lxw_format_check_color(pattern->fg_color);
     pattern->has_fg_color = LXW_TRUE;
@@ -423,8 +442,6 @@ _chart_convert_pattern_args(lxw_chart_pattern *user_pattern)
         pattern->bg_color = LXW_COLOR_WHITE;
         pattern->has_bg_color = LXW_TRUE;
     }
-
-    pattern->type = user_pattern->type;
 
     return pattern;
 }

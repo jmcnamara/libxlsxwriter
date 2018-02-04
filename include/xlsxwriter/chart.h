@@ -613,7 +613,7 @@ typedef struct lxw_chart_line {
     /** The line dash type. See #lxw_chart_line_dash_type. */
     uint8_t dash_type;
 
-    /* Transparency for lines isn't generally useful. Undocumented for now. */
+    /** Set the transparency of the line. 0 - 100. Default 0. */
     uint8_t transparency;
 
     /* Members for internal use only. */
@@ -692,10 +692,17 @@ typedef struct lxw_chart_font {
     /** The chart font color. See @ref working_with_colors. */
     lxw_color_t color;
 
-    /* Members for internal use only. */
+    /** The chart font pitch family property. Rarely required. set to 0. */
     uint8_t pitch_family;
+
+    /** The chart font character set property. Rarely required. set to 0. */
     uint8_t charset;
+
+    /** The chart font baseline property. Rarely required. set to 0. */
     int8_t baseline;
+
+    /* Members for internal use only. */
+
     uint8_t has_color;
 
 } lxw_chart_font;
