@@ -36,3 +36,15 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
                              '[Content_Types].xml',
                              'xl/_rels/workbook.xml.rels']
         self.run_exe_test('test_outline04')
+
+    def test_outline05(self):
+        self.ignore_files = ['xl/calcChain.xml',
+                             '[Content_Types].xml',
+                             'xl/_rels/workbook.xml.rels']
+        self.run_exe_test('test_outline05')
+
+    def test_outline06(self):
+        self.ignore_files = ['xl/calcChain.xml',
+                             '[Content_Types].xml',
+                             'xl/_rels/workbook.xml.rels']
+        self.run_exe_test('test_outline06')

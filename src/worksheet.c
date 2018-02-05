@@ -194,6 +194,9 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     worksheet->zoom_scale_normal = LXW_TRUE;
     worksheet->show_zeros = LXW_TRUE;
     worksheet->outline_on = LXW_TRUE;
+    worksheet->outline_style = LXW_TRUE;
+    worksheet->outline_below = LXW_TRUE;
+    worksheet->outline_right = LXW_FALSE;
     worksheet->tab_color = LXW_COLOR_UNSET;
 
     if (init_data) {
@@ -3028,6 +3031,37 @@ _worksheet_write_tab_color(lxw_worksheet *self)
 }
 
 /*
+ * Write the <outlinePr> element.
+ */
+STATIC void
+_worksheet_write_outline_pr(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (!self->outline_changed)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+
+    if (self->outline_style)
+        LXW_PUSH_ATTRIBUTES_STR("applyStyles", "1");
+
+    if (!self->outline_below)
+        LXW_PUSH_ATTRIBUTES_STR("summaryBelow", "0");
+
+    if (!self->outline_right)
+        LXW_PUSH_ATTRIBUTES_STR("summaryRight", "0");
+
+    if (!self->outline_on)
+        LXW_PUSH_ATTRIBUTES_STR("showOutlineSymbols", "0");
+
+    lxw_xml_empty_tag(self->file, "outlinePr", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <sheetPr> element for Sheet level properties.
  */
 STATIC void
@@ -3055,7 +3089,7 @@ _worksheet_write_sheet_pr(lxw_worksheet *self)
         || self->outline_changed) {
         lxw_xml_start_tag(self->file, "sheetPr", &attributes);
         _worksheet_write_tab_color(self);
-        /* _worksheet_write_outline_pr(self); */
+        _worksheet_write_outline_pr(self);
         _worksheet_write_page_set_up_pr(self);
         lxw_xml_end_tag(self->file, "sheetPr");
     }
@@ -5185,6 +5219,23 @@ worksheet_protect(lxw_worksheet *self, const char *password,
     }
 
     protect->is_configured = LXW_TRUE;
+}
+
+/*
+ * Set the worksheet properties for outlines and grouping.
+ */
+void
+worksheet_outline_settings(lxw_worksheet *self,
+                           uint8_t visible,
+                           uint8_t symbols_below,
+                           uint8_t symbols_right, uint8_t auto_style)
+{
+    self->outline_on = visible;
+    self->outline_below = symbols_below;
+    self->outline_right = symbols_right;
+    self->outline_style = auto_style;
+
+    self->outline_changed = LXW_TRUE;
 }
 
 /*

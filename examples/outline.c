@@ -57,33 +57,33 @@ int main() {
 
     /* Add data and formulas to the worksheet. */
     worksheet_write_string(worksheet1, CELL("A1"), "Region", bold);
-    worksheet_write_string(worksheet1, CELL("A2"), "North" , NULL);
-    worksheet_write_string(worksheet1, CELL("A3"), "North" , NULL);
-    worksheet_write_string(worksheet1, CELL("A4"), "North" , NULL);
-    worksheet_write_string(worksheet1, CELL("A5"), "North" , NULL);
+    worksheet_write_string(worksheet1, CELL("A2"), "North",  NULL);
+    worksheet_write_string(worksheet1, CELL("A3"), "North",  NULL);
+    worksheet_write_string(worksheet1, CELL("A4"), "North",  NULL);
+    worksheet_write_string(worksheet1, CELL("A5"), "North",  NULL);
     worksheet_write_string(worksheet1, CELL("A6"), "North Total", bold);
 
     worksheet_write_string(worksheet1, CELL("B1"), "Sales", bold);
-    worksheet_write_number(worksheet1, CELL("B2"), 1000 , NULL);
-    worksheet_write_number(worksheet1, CELL("B3"), 1200 , NULL);
-    worksheet_write_number(worksheet1, CELL("B4"), 900 , NULL);
-    worksheet_write_number(worksheet1, CELL("B5"), 1200 , NULL);
-    worksheet_write_formula_num(worksheet1, CELL("B6"), "=SUBTOTAL(9,B2:B5)", bold, 4300);
+    worksheet_write_number(worksheet1, CELL("B2"), 1000,    NULL);
+    worksheet_write_number(worksheet1, CELL("B3"), 1200,    NULL);
+    worksheet_write_number(worksheet1, CELL("B4"), 900,     NULL);
+    worksheet_write_number(worksheet1, CELL("B5"), 1200,    NULL);
+    worksheet_write_formula(worksheet1, CELL("B6"), "=SUBTOTAL(9,B2:B5)", bold);
 
-    worksheet_write_string(worksheet1, CELL("A7"), "South" , NULL);
-    worksheet_write_string(worksheet1, CELL("A8"), "South" , NULL);
-    worksheet_write_string(worksheet1, CELL("A9"), "South" , NULL);
-    worksheet_write_string(worksheet1, CELL("A10"), "South" , NULL);
+    worksheet_write_string(worksheet1, CELL("A7"), "South",  NULL);
+    worksheet_write_string(worksheet1, CELL("A8"), "South",  NULL);
+    worksheet_write_string(worksheet1, CELL("A9"), "South",  NULL);
+    worksheet_write_string(worksheet1, CELL("A10"), "South", NULL);
     worksheet_write_string(worksheet1, CELL("A11"), "South Total", bold);
 
-    worksheet_write_number(worksheet1, CELL("B7"), 400 , NULL);
-    worksheet_write_number(worksheet1, CELL("B8"), 600 , NULL);
-    worksheet_write_number(worksheet1, CELL("B9"), 500 , NULL);
-    worksheet_write_number(worksheet1, CELL("B10"), 600 , NULL);
-    worksheet_write_formula_num(worksheet1, CELL("B11"), "=SUBTOTAL(9,B7:B10)", bold, 2100);
+    worksheet_write_number(worksheet1, CELL("B7"),  400, NULL);
+    worksheet_write_number(worksheet1, CELL("B8"),  600, NULL);
+    worksheet_write_number(worksheet1, CELL("B9"),  500, NULL);
+    worksheet_write_number(worksheet1, CELL("B10"), 600, NULL);
+    worksheet_write_formula(worksheet1, CELL("B11"), "=SUBTOTAL(9,B7:B10)", bold);
 
     worksheet_write_string(worksheet1, CELL("A12"), "Grand Total", bold);
-    worksheet_write_formula_num(worksheet1, CELL("B12"), "=SUBTOTAL(9,B2:B10)", bold, 6400);
+    worksheet_write_formula(worksheet1, CELL("B12"), "=SUBTOTAL(9,B2:B10)", bold);
 
 
    /*
@@ -117,33 +117,33 @@ int main() {
 
     /* Add data and formulas to the worksheet. */
     worksheet_write_string(worksheet2, CELL("A1"), "Region", bold);
-    worksheet_write_string(worksheet2, CELL("A2"), "North" , NULL);
-    worksheet_write_string(worksheet2, CELL("A3"), "North" , NULL);
-    worksheet_write_string(worksheet2, CELL("A4"), "North" , NULL);
-    worksheet_write_string(worksheet2, CELL("A5"), "North" , NULL);
+    worksheet_write_string(worksheet2, CELL("A2"), "North",  NULL);
+    worksheet_write_string(worksheet2, CELL("A3"), "North",  NULL);
+    worksheet_write_string(worksheet2, CELL("A4"), "North",  NULL);
+    worksheet_write_string(worksheet2, CELL("A5"), "North",  NULL);
     worksheet_write_string(worksheet2, CELL("A6"), "North Total", bold);
 
     worksheet_write_string(worksheet2, CELL("B1"), "Sales", bold);
-    worksheet_write_number(worksheet2, CELL("B2"), 1000 , NULL);
-    worksheet_write_number(worksheet2, CELL("B3"), 1200 , NULL);
-    worksheet_write_number(worksheet2, CELL("B4"), 900 , NULL);
-    worksheet_write_number(worksheet2, CELL("B5"), 1200 , NULL);
-    worksheet_write_formula_num(worksheet2, CELL("B6"), "=SUBTOTAL(9,B2:B5)", bold, 4300);
+    worksheet_write_number(worksheet2, CELL("B2"), 1000, NULL);
+    worksheet_write_number(worksheet2, CELL("B3"), 1200, NULL);
+    worksheet_write_number(worksheet2, CELL("B4"), 900,  NULL);
+    worksheet_write_number(worksheet2, CELL("B5"), 1200, NULL);
+    worksheet_write_formula(worksheet2, CELL("B6"), "=SUBTOTAL(9,B2:B5)", bold);
 
-    worksheet_write_string(worksheet2, CELL("A7"), "South" , NULL);
-    worksheet_write_string(worksheet2, CELL("A8"), "South" , NULL);
-    worksheet_write_string(worksheet2, CELL("A9"), "South" , NULL);
-    worksheet_write_string(worksheet2, CELL("A10"), "South" , NULL);
+    worksheet_write_string(worksheet2, CELL("A7"),  "South", NULL);
+    worksheet_write_string(worksheet2, CELL("A8"),  "South", NULL);
+    worksheet_write_string(worksheet2, CELL("A9"),  "South", NULL);
+    worksheet_write_string(worksheet2, CELL("A10"), "South", NULL);
     worksheet_write_string(worksheet2, CELL("A11"), "South Total", bold);
 
-    worksheet_write_number(worksheet2, CELL("B7"), 400 , NULL);
-    worksheet_write_number(worksheet2, CELL("B8"), 600 , NULL);
-    worksheet_write_number(worksheet2, CELL("B9"), 500 , NULL);
-    worksheet_write_number(worksheet2, CELL("B10"), 600 , NULL);
-    worksheet_write_formula_num(worksheet2, CELL("B11"), "=SUBTOTAL(9,B7:B10)", bold, 2100);
+    worksheet_write_number(worksheet2, CELL("B7"),  400, NULL);
+    worksheet_write_number(worksheet2, CELL("B8"),  600, NULL);
+    worksheet_write_number(worksheet2, CELL("B9"),  500, NULL);
+    worksheet_write_number(worksheet2, CELL("B10"), 600, NULL);
+    worksheet_write_formula(worksheet2, CELL("B11"), "=SUBTOTAL(9,B7:B10)", bold);
 
     worksheet_write_string(worksheet2, CELL("A12"), "Grand Total", bold);
-    worksheet_write_formula_num(worksheet2, CELL("B12"), "=SUBTOTAL(9,B2:B10)", bold, 6400);
+    worksheet_write_formula(worksheet2, CELL("B12"), "=SUBTOTAL(9,B2:B10)", bold);
 
 
     /*
@@ -168,7 +168,7 @@ int main() {
     worksheet_write_number(worksheet3, CELL("E2"), 25,      NULL);
     worksheet_write_number(worksheet3, CELL("F2"), 65,      NULL);
     worksheet_write_number(worksheet3, CELL("G2"), 80,      NULL);
-    worksheet_write_formula_num(worksheet3, CELL("H2"), "=SUM(B2:G2)", NULL, 255);
+    worksheet_write_formula(worksheet3, CELL("H2"), "=SUM(B2:G2)", NULL);
 
     worksheet_write_string(worksheet3, CELL("A3"), "South", NULL);
     worksheet_write_number(worksheet3, CELL("B3"), 10,      NULL);
@@ -177,7 +177,7 @@ int main() {
     worksheet_write_number(worksheet3, CELL("E3"), 50,      NULL);
     worksheet_write_number(worksheet3, CELL("F3"), 50,      NULL);
     worksheet_write_number(worksheet3, CELL("G3"), 50,      NULL);
-    worksheet_write_formula_num(worksheet3, CELL("H3"), "=SUM(B3:G3)", NULL, 210);
+    worksheet_write_formula(worksheet3, CELL("H3"), "=SUM(B3:G3)", NULL);
 
     worksheet_write_string(worksheet3, CELL("A4"), "East",  NULL);
     worksheet_write_number(worksheet3, CELL("B4"), 45,      NULL);
@@ -186,7 +186,7 @@ int main() {
     worksheet_write_number(worksheet3, CELL("E4"), 15,      NULL);
     worksheet_write_number(worksheet3, CELL("F4"), 75,      NULL);
     worksheet_write_number(worksheet3, CELL("G4"), 100,     NULL);
-    worksheet_write_formula_num(worksheet3, CELL("H4"), "=SUM(B4:G4)", NULL, 360);
+    worksheet_write_formula(worksheet3, CELL("H4"), "=SUM(B4:G4)", NULL);
 
     worksheet_write_string(worksheet3, CELL("A5"), "West",  NULL);
     worksheet_write_number(worksheet3, CELL("B5"), 15,      NULL);
@@ -195,9 +195,9 @@ int main() {
     worksheet_write_number(worksheet3, CELL("E5"), 35,      NULL);
     worksheet_write_number(worksheet3, CELL("F5"), 20,      NULL);
     worksheet_write_number(worksheet3, CELL("G5"), 50,      NULL);
-    worksheet_write_formula_num(worksheet3, CELL("H5"), "=SUM(B5:G5)", NULL, 190);
+    worksheet_write_formula(worksheet3, CELL("H5"), "=SUM(B5:G5)", NULL);
 
-    worksheet_write_formula_num(worksheet3, CELL("H6"), "=SUM(H2:H5)", bold, 1015);
+    worksheet_write_formula(worksheet3, CELL("H6"), "=SUM(H2:H5)", bold);
 
     /* Add bold format to the first row. */
     worksheet_set_row(worksheet3, 0, LXW_DEF_ROW_HEIGHT, bold);

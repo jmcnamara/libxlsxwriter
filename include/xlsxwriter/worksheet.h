@@ -696,6 +696,9 @@ typedef struct lxw_worksheet {
     uint8_t orientation;
     uint8_t outline_changed;
     uint8_t outline_on;
+    uint8_t outline_style;
+    uint8_t outline_below;
+    uint8_t outline_right;
     uint8_t page_order;
     uint8_t page_setup_changed;
     uint8_t page_view;
@@ -2933,6 +2936,10 @@ void worksheet_set_tab_color(lxw_worksheet *worksheet, lxw_color_t color);
  */
 void worksheet_protect(lxw_worksheet *worksheet, const char *password,
                        lxw_protection *options);
+
+void worksheet_outline_settings(lxw_worksheet *worksheet, uint8_t visible,
+                                uint8_t symbols_below, uint8_t symbols_right,
+                                uint8_t auto_style);
 
 /**
  * @brief Set the default row properties.
