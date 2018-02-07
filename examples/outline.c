@@ -204,8 +204,8 @@ int main() {
 
     /* Set column formatting and the outline level. */
     worksheet_set_column(    worksheet3, COLS("A:A"), 10, bold);
+    worksheet_set_column_opt(worksheet3, COLS("B:G"),  5, NULL, &options6);
     worksheet_set_column(    worksheet3, COLS("H:H"), 10, NULL);
-    worksheet_set_column_opt(worksheet3, COLS("B:G"),  6, NULL, &options6);
 
 
 
