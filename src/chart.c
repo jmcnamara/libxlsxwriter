@@ -5577,6 +5577,24 @@ chart_series_set_trendline_line(lxw_chart_series *series,
 }
 
 /*
+ * Set the X or Y error bars from a chart series.
+ */
+lxw_series_error_bars *
+chart_series_get_error_bars(lxw_chart_series *series,
+                            lxw_chart_error_bar_axis axis_type)
+{
+    if (!series)
+        return NULL;
+
+    if (axis_type == LXW_CHART_ERROR_BAR_AXIS_X)
+        return series->x_error_bars;
+    else if (axis_type == LXW_CHART_ERROR_BAR_AXIS_Y)
+        return series->y_error_bars;
+    else
+        return NULL;
+}
+
+/*
  * Set the error bars and type for a chart series.
  */
 void
@@ -5641,6 +5659,23 @@ chart_series_set_error_bars_line(lxw_series_error_bars *error_bars,
 }
 
 /*
+ * Get an axis pointer from a chart.
+ */
+lxw_chart_axis *
+chart_axis_get(lxw_chart *self, lxw_chart_axis_type axis_type)
+{
+    if (!self)
+        return NULL;
+
+    if (axis_type == LXW_CHART_AXIS_TYPE_X)
+        return self->x_axis;
+    else if (axis_type == LXW_CHART_AXIS_TYPE_Y)
+        return self->y_axis;
+    else
+        return NULL;
+}
+
+/*
  * Set an axis caption.
  */
 void
@@ -5656,7 +5691,7 @@ chart_axis_set_name(lxw_chart_axis *axis, const char *name)
 }
 
 /*
- * Set an axis caption, with a range instead or a formula..
+ * Set an axis caption, with a range instead or a formula.
  */
 void
 chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,

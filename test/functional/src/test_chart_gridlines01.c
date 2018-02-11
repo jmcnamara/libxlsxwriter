@@ -36,8 +36,11 @@ int main() {
     chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5");
     chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
 
-    chart_axis_major_gridlines_set_visible(chart->x_axis, LXW_TRUE);
-    chart_axis_major_gridlines_set_visible(chart->y_axis, LXW_FALSE);
+    lxw_chart_axis *x_axis = chart_axis_get(chart, LXW_CHART_AXIS_TYPE_X);
+    lxw_chart_axis *y_axis = chart_axis_get(chart, LXW_CHART_AXIS_TYPE_Y);
+
+    chart_axis_major_gridlines_set_visible(x_axis, LXW_TRUE);
+    chart_axis_major_gridlines_set_visible(y_axis, LXW_FALSE);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

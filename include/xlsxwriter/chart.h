@@ -464,6 +464,17 @@ typedef enum lxw_chart_label_separator {
     LXW_CHART_LABEL_SEPARATOR_SPACE
 } lxw_chart_label_separator;
 
+/**
+ * @brief Chart axis types.
+ */
+typedef enum lxw_chart_axis_type {
+    /** Chart X axis. */
+    LXW_CHART_AXIS_TYPE_X,
+
+    /** Chart Y axis. */
+    LXW_CHART_AXIS_TYPE_Y
+} lxw_chart_axis_type;
+
 enum lxw_chart_subtype {
 
     LXW_CHART_SUBTYPE_NONE = 0,
@@ -814,6 +825,17 @@ typedef enum lxw_chart_error_bar_direction {
     /** Error bar extends in negative direction. */
     LXW_CHART_ERROR_BAR_DIR_MINUS
 } lxw_chart_error_bar_direction;
+
+/**
+ * @brief Direction for a data series error bar.
+ */
+typedef enum lxw_chart_error_bar_axis {
+    /** X axis error bar. */
+    LXW_CHART_ERROR_BAR_AXIS_X,
+
+    /** Y axis error bar. */
+    LXW_CHART_ERROR_BAR_AXIS_Y
+} lxw_chart_error_bar_axis;
 
 /**
  * @brief End cap styles for a data series error bar.
@@ -2016,6 +2038,46 @@ void chart_series_set_trendline_name(lxw_chart_series *series,
  */
 void chart_series_set_trendline_line(lxw_chart_series *series,
                                      lxw_chart_line *line);
+/**
+ * @brief           Get a pointer to X or Y error bars from a chart series.
+ *
+ * @param series    A series object created via `chart_add_series()`.
+ * @param axis_type The axis type (X or Y): #lxw_chart_error_bar_axis.
+ *
+ * The `%chart_series_get_error_bars()` function returns a pointer to the
+ * error bars of a series based on the type of #lxw_chart_error_bar_axis:
+ *
+ * @code
+ *     lxw_series_error_bars *x_error_bars;
+ *     lxw_series_error_bars *y_error_bars;
+ *
+ *     x_error_bars = chart_series_get_error_bars(series, LXW_CHART_ERROR_BAR_AXIS_X);
+ *     y_error_bars = chart_series_get_error_bars(series, LXW_CHART_ERROR_BAR_AXIS_Y);
+ *
+ *     // Use the error bar pointers.
+ *     chart_series_set_error_bars(x_error_bars,
+ *                                 LXW_CHART_ERROR_BAR_TYPE_STD_DEV, 1);
+ *
+ *     chart_series_set_error_bars(y_error_bars,
+ *                                 LXW_CHART_ERROR_BAR_TYPE_STD_ERROR, 0);
+ * @endcode
+ *
+ * Note, the series error bars can also be accessed directly:
+ *
+ * @code
+ *     // Equivalent to the above example, without function calls.
+ *     chart_series_set_error_bars(series->x_error_bars,
+ *                                 LXW_CHART_ERROR_BAR_TYPE_STD_DEV, 1);
+ *
+ *     chart_series_set_error_bars(series->y_error_bars,
+ *                                 LXW_CHART_ERROR_BAR_TYPE_STD_ERROR, 0);
+ * @endcode
+ *
+ * @return Pointer to the series error bars, or NULL if not found.
+ */
+
+lxw_series_error_bars *chart_series_get_error_bars(lxw_chart_series *series, lxw_chart_error_bar_axis
+                                                   axis_type);
 
 /**
  * Set the X or Y error bars for a chart series.
@@ -2079,7 +2141,7 @@ void chart_series_set_error_bars(lxw_series_error_bars *error_bars,
  *        series.
  *
  * @param error_bars A pointer to the series X or Y error bars.
- * @param direction  The bar direction: #lxw_chart_error_bar_direction .
+ * @param direction  The bar direction: #lxw_chart_error_bar_direction.
  *
  * The `%chart_series_set_error_bars_direction()` function sets the
  * direction of the error bars:
@@ -2160,6 +2222,37 @@ void chart_series_set_error_bars_endcap(lxw_series_error_bars *error_bars,
  */
 void chart_series_set_error_bars_line(lxw_series_error_bars *error_bars,
                                       lxw_chart_line *line);
+
+/**
+ * @brief           Get an axis pointer from a chart.
+ *
+ * @param chart     Pointer to a lxw_chart instance to be configured.
+ * @param axis_type The axis type (X or Y): #lxw_chart_axis_type.
+ *
+ * The `%chart_axis_get()` function returns a pointer to a chart axis based
+ * on the  #lxw_chart_axis_type:
+ *
+ * @code
+ *     lxw_chart_axis *x_axis = chart_axis_get(chart, LXW_CHART_AXIS_TYPE_X);
+ *     lxw_chart_axis *y_axis = chart_axis_get(chart, LXW_CHART_AXIS_TYPE_Y);
+ *
+ *     // Use the axis pointer in other functions.
+ *     chart_axis_major_gridlines_set_visible(x_axis, LXW_TRUE);
+ *     chart_axis_major_gridlines_set_visible(y_axis, LXW_TRUE);
+ * @endcode
+ *
+ * Note, the axis pointer can also be accessed directly:
+ *
+ * @code
+ *     // Equivalent to the above example, without function calls.
+ *     chart_axis_major_gridlines_set_visible(chart->x_axis, LXW_TRUE);
+ *     chart_axis_major_gridlines_set_visible(chart->y_axis, LXW_TRUE);
+ * @endcode
+ *
+ * @return Pointer to the chart axis, or NULL if not found.
+ */
+lxw_chart_axis *chart_axis_get(lxw_chart *chart,
+                               lxw_chart_axis_type axis_type);
 
 /**
  * @brief Set the name caption of the an axis.

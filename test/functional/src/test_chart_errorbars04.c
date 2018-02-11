@@ -42,11 +42,17 @@ int main() {
          "=Sheet1!$C$1:$C$5"
     );
 
-    chart_series_set_error_bars(series1->y_error_bars,
-                                LXW_CHART_ERROR_BAR_TYPE_STD_ERROR, 0);
+    lxw_series_error_bars *x_error_bars;
+    lxw_series_error_bars *y_error_bars;
 
-    chart_series_set_error_bars(series1->x_error_bars,
+    x_error_bars = chart_series_get_error_bars(series1, LXW_CHART_ERROR_BAR_AXIS_X);
+    y_error_bars = chart_series_get_error_bars(series1, LXW_CHART_ERROR_BAR_AXIS_Y);
+
+    chart_series_set_error_bars(x_error_bars,
                                 LXW_CHART_ERROR_BAR_TYPE_STD_DEV, 1);
+
+    chart_series_set_error_bars(y_error_bars,
+                                LXW_CHART_ERROR_BAR_TYPE_STD_ERROR, 0);
 
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);

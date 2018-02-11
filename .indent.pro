@@ -53,7 +53,9 @@
 -T lxw_chart_axis_label_position
 -T lxw_chart_axis_tick_mark
 -T lxw_chart_axis_tick_position
+-T lxw_chart_axis_type
 -T lxw_chart_blank
+-T lxw_chart_error_bar_axis
 -T lxw_chart_error_bar_cap
 -T lxw_chart_error_bar_direction
 -T lxw_chart_error_bar_type
