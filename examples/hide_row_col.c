@@ -3,7 +3,9 @@
  * library.
  *
  * In order to hide rows without setting each one, (of approximately 1 million
- * rows), Excel uses an optimization to hide all rows that don't have data.
+ * rows), Excel uses an optimization to hide all rows that don't have data. In
+ * Libxlsxwriter we replicate that using the worksheet_set_default_row()
+ * function.
  *
  * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
  *
@@ -25,7 +27,7 @@ int main() {
     /* Hide all rows without data. */
     worksheet_set_default_row(worksheet, 15, LXW_TRUE);
 
-    /* Set the height of empty rows that we do want to display even if it is */
+    /* Set the height of empty rows that we want to display even if it is */
     /* the default height. */
     for (row = 1; row <= 6; row++)
         worksheet_set_row(worksheet, row, 15, NULL);

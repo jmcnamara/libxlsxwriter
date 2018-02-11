@@ -32,6 +32,8 @@ my @examples = (
     [ 'images.c',               'Example of adding images to a worksheet.' ],
     [ 'headers_footers.c',      'Example of adding worksheet headers/footers' ],
     [ 'defined_name.c',         'Example of how to create defined names' ],
+    [ 'outline.c',              'Example of grouping and outlines' ],
+    [ 'outline_collapsed.c',    'Example of grouping and collapsed outlines' ],
     [ 'tab_colors.c',           'Example of how to set worksheet tab colors' ],
     [ 'hide_sheet.c',           'Example of hiding a worksheet' ],
     [ 'doc_properties.c',       'Example of setting workbook doc properties' ],

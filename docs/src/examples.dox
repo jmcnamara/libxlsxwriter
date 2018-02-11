@@ -334,7 +334,7 @@ Example of adding worksheet headers and footers to worksheets.
 <table  width="600">
 <tr>
   <td>@ref headers_footers.c "&lt;&lt; headers_footers.c"</td>
-  <td align="right">@ref tab_colors.c "tab_colors.c &gt;&gt;"</td>
+  <td align="right">@ref outline.c "outline.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -348,11 +348,44 @@ single cell or a range of cells in a workbook or worksheet.
 
 
 
-@example tab_colors.c
+@example outline.c
 
 <table  width="600">
 <tr>
   <td>@ref defined_name.c "&lt;&lt; defined_name.c"</td>
+  <td align="right">@ref outline_collapsed.c "outline_collapsed.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of how to generate Excel outlines and grouping.
+
+@image html outline1.png
+
+
+
+
+@example outline_collapsed.c
+
+<table  width="600">
+<tr>
+  <td>@ref outline.c "&lt;&lt; outline.c"</td>
+  <td align="right">@ref tab_colors.c "tab_colors.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of how to generate Excel outlines and grouping. These examples focus
+mainly on collapsed outlines.
+
+@image html outline2.png
+
+
+
+
+@example tab_colors.c
+
+<table  width="600">
+<tr>
+  <td>@ref outline_collapsed.c "&lt;&lt; outline_collapsed.c"</td>
   <td align="right">@ref hide_sheet.c "hide_sheet.c &gt;&gt;"</td>
 </tr>
 </table>

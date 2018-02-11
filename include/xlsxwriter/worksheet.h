@@ -267,12 +267,14 @@ STAILQ_HEAD(lxw_chart_data, lxw_image_options);
  * Options struct for the worksheet_set_column() and worksheet_set_row()
  * functions.
  *
- * It has the following members but currently only the `hidden` property is
- * supported:
+ * It has the following members:
  *
  * * `hidden`
  * * `level`
  * * `collapsed`
+ *
+ * The members of this struct are explained in @ref ww_outlines_grouping.
+ *
  */
 typedef struct lxw_row_col_options {
     /** Hide the row/column */
@@ -1369,7 +1371,7 @@ lxw_error worksheet_set_row(lxw_worksheet *worksheet,
  *  `worksheet_set_row()` with an additional `options` parameter.
  *
  * The `options` parameter is a #lxw_row_col_options struct. It has the
- * following members but currently only the `hidden` property is supported:
+ * following members:
  *
  * - `hidden`
  * - `level`
@@ -1379,11 +1381,40 @@ lxw_error worksheet_set_row(lxw_worksheet *worksheet,
  * example, to hide intermediary steps in a complicated calculation:
  *
  * @code
- *     lxw_row_col_options options = {.hidden = 1, .level = 0, .collapsed = 0};
+ *     lxw_row_col_options options1 = {.hidden = 1, .level = 0, .collapsed = 0};
  *
- *     // Hide the fourth row.
- *     worksheet_set_row_opt(worksheet, 3, 20, NULL, &options);
+ *     // Hide the fourth and fifth (zero indexed) rows.
+ *     worksheet_set_row_opt(worksheet, 3,  LXW_DEF_ROW_HEIGHT, NULL, &options1);
+ *     worksheet_set_row_opt(worksheet, 4,  LXW_DEF_ROW_HEIGHT, NULL, &options1);
+ *
  * @endcode
+ *
+ * @image html hide_row_col2.png
+ *
+ * The `"hidden"`, `"level"`,  and `"collapsed"`, options can also be used to
+ * create Outlines and Grouping. See @ref working_with_outlines.
+ *
+ * @code
+ *     // The option structs with the outline level set.
+ *     lxw_row_col_options options1 = {.hidden = 0, .level = 2, .collapsed = 0};
+ *     lxw_row_col_options options2 = {.hidden = 0, .level = 1, .collapsed = 0};
+ *
+ *
+ *     // Set the row options with the outline level.
+ *     worksheet_set_row_opt(worksheet, 1,  LXW_DEF_ROW_HEIGHT, NULL, &options1);
+ *     worksheet_set_row_opt(worksheet, 2,  LXW_DEF_ROW_HEIGHT, NULL, &options1);
+ *     worksheet_set_row_opt(worksheet, 3,  LXW_DEF_ROW_HEIGHT, NULL, &options1);
+ *     worksheet_set_row_opt(worksheet, 4,  LXW_DEF_ROW_HEIGHT, NULL, &options1);
+ *     worksheet_set_row_opt(worksheet, 5,  LXW_DEF_ROW_HEIGHT, NULL, &options2);
+ *
+ *     worksheet_set_row_opt(worksheet, 6,  LXW_DEF_ROW_HEIGHT, NULL, &options1);
+ *     worksheet_set_row_opt(worksheet, 7,  LXW_DEF_ROW_HEIGHT, NULL, &options1);
+ *     worksheet_set_row_opt(worksheet, 8,  LXW_DEF_ROW_HEIGHT, NULL, &options1);
+ *     worksheet_set_row_opt(worksheet, 9,  LXW_DEF_ROW_HEIGHT, NULL, &options1);
+ *     worksheet_set_row_opt(worksheet, 10, LXW_DEF_ROW_HEIGHT, NULL, &options2);
+ * @endcode
+ *
+ * @image html outline1.png
  *
  */
 lxw_error worksheet_set_row_opt(lxw_worksheet *worksheet,
@@ -1492,36 +1523,48 @@ lxw_error worksheet_set_column(lxw_worksheet *worksheet,
                                lxw_col_t last_col,
                                double width, lxw_format *format);
 
- /**
-  * @brief Set the properties for one or more columns of cells with options.
-  *
-  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
-  * @param first_col The zero indexed first column.
-  * @param last_col  The zero indexed last column.
-  * @param width     The width of the column(s).
-  * @param format    A pointer to a Format instance or NULL.
-  * @param options   Optional row parameters: hidden, level, collapsed.
-  *
-  * The `%worksheet_set_column_opt()` function  is the same as
-  * `worksheet_set_column()` with an additional `options` parameter.
-  *
-  * The `options` parameter is a #lxw_row_col_options struct. It has the
-  * following members but currently only the `hidden` property is supported:
-  *
-  * - `hidden`
-  * - `level`
-  * - `collapsed`
-  *
-  * The `"hidden"` option is used to hide a column. This can be used, for
-  * example, to hide intermediary steps in a complicated calculation:
-  *
-  * @code
-  *     lxw_row_col_options options = {.hidden = 1, .level = 0, .collapsed = 0};
-  *
-  *     worksheet_set_column_opt(worksheet, COLS("A:A"), 8.43, NULL, &options);
-  * @endcode
-  *
-  */
+/**
+ * @brief Set the properties for one or more columns of cells with options.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param first_col The zero indexed first column.
+ * @param last_col  The zero indexed last column.
+ * @param width     The width of the column(s).
+ * @param format    A pointer to a Format instance or NULL.
+ * @param options   Optional row parameters: hidden, level, collapsed.
+ *
+ * The `%worksheet_set_column_opt()` function  is the same as
+ * `worksheet_set_column()` with an additional `options` parameter.
+ *
+ * The `options` parameter is a #lxw_row_col_options struct. It has the
+ * following members:
+ *
+ * - `hidden`
+ * - `level`
+ * - `collapsed`
+ *
+ * The `"hidden"` option is used to hide a column. This can be used, for
+ * example, to hide intermediary steps in a complicated calculation:
+ *
+ * @code
+ *     lxw_row_col_options options1 = {.hidden = 1, .level = 0, .collapsed = 0};
+ *
+ *     worksheet_set_column_opt(worksheet, COLS("D:E"),  LXW_DEF_COL_WIDTH, NULL, &options1);
+ * @endcode
+ *
+ * @image html hide_row_col3.png
+ *
+ * The `"hidden"`, `"level"`,  and `"collapsed"`, options can also be used to
+ * create Outlines and Grouping. See @ref working_with_outlines.
+ *
+ * @code
+ *     lxw_row_col_options options1 = {.hidden = 0, .level = 1, .collapsed = 0};
+ *
+ *     worksheet_set_column_opt(worksheet, COLS("B:G"),  5, NULL, &options1);
+ * @endcode
+ *
+ * @image html outline8.png
+ */
 lxw_error worksheet_set_column_opt(lxw_worksheet *worksheet,
                                    lxw_col_t first_col,
                                    lxw_col_t last_col,
@@ -2937,6 +2980,50 @@ void worksheet_set_tab_color(lxw_worksheet *worksheet, lxw_color_t color);
 void worksheet_protect(lxw_worksheet *worksheet, const char *password,
                        lxw_protection *options);
 
+/**
+ * @brief Set the Outline and Grouping display properties.
+ *
+ * @param worksheet      Pointer to a lxw_worksheet instance to be updated.
+ * @param visible        Outlines are visible. Optional, defaults to True.
+ * @param symbols_below  Show row outline symbols below the outline bar.
+ * @param symbols_right  Show column outline symbols to the right of outline.
+ * @param auto_style     Use Automatic outline style.
+ *
+ * The `%worksheet_outline_settings()` method is used to control the
+ * appearance of outlines in Excel. Outlines are described the section on 
+ * @ref working_with_outlines.
+ * 
+ * The `visible` parameter is used to control whether or not outlines are
+ * visible. Setting this parameter to False will cause all outlines on the
+ * worksheet to be hidden. They can be un-hidden in Excel by means of the
+ * "Show Outline Symbols" command button. The default Excel setting is True
+ * for visible outlines.
+ *
+ * The `symbols_below` parameter is used to control whether the row outline
+ * symbol will appear above or below the outline level bar. The default Excel
+ * setting is True for symbols to appear below the outline level bar.
+ *
+ * The `symbols_right` parameter is used to control whether the column outline
+ * symbol will appear to the left or the right of the outline level bar. The
+ * default Excel setting is True for symbols to appear to the right of the
+ * outline level bar.
+ *
+ * The `auto_style` parameter is used to control whether the automatic outline
+ * generator in Excel uses automatic styles when creating an outline. This has
+ * no effect on a file generated by XlsxWriter but it does have an effect on
+ * how the worksheet behaves after it is created. The default Excel setting is
+ * False for "Automatic Styles" to be turned off.
+ *
+ * The default settings for all of these parameters in libxlsxwriter
+ * correspond to Excel's default parameters and are shown below:
+ * 
+ * @code
+ *     worksheet_outline_settings(worksheet1, LXW_TRUE, LXW_TRUE, LXW_TRUE, LXW_FALSE);
+ * @endcode
+ *
+ * The worksheet parameters controlled by `worksheet_outline_settings()` are
+ * rarely used.
+ */
 void worksheet_outline_settings(lxw_worksheet *worksheet, uint8_t visible,
                                 uint8_t symbols_below, uint8_t symbols_right,
                                 uint8_t auto_style);
