@@ -1,6 +1,20 @@
 /**
 @page changes Changes
 
+## 0.7.6 January 11 2018
+
+- Added support for worksheet Grouping and Outlines.
+  See @ref working_with_outlines.
+  Feature request [#30][gh_30].
+
+  [gh_30]: https://github.com/jmcnamara/libxlsxwriter/issues/30
+
+- Fix include of libxlsxwriter as a Cocoapod on macOS.
+  Issue [#94][gh_94].
+
+  [gh_94]: https://github.com/jmcnamara/libxlsxwriter/issues/94
+
+
 ## 0.7.5 September 25 2017
 
 - Added support for data validations and dropdown lists. See @ref
@@ -8,6 +22,7 @@
   Feature request [#31][gh_31].
 
   [gh_31]: https://github.com/jmcnamara/libxlsxwriter/issues/31
+
 
 ## 0.7.4 August 20 2017
 
@@ -22,7 +37,6 @@
   Issue [#116][gh_116].
 
   [gh_116]: https://github.com/jmcnamara/libxlsxwriter/issues/116
-
 
 
 ## 0.7.2 July 26 2017

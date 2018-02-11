@@ -26,7 +26,7 @@ s{^include/xlsxwriter/}{} for @includes;
 
 
 # Generate the unbrella file.
-print qq{#import <UIKit/UIKit.h>\n\n};
+print qq{#import <Foundation/Foundation.h>\n\n};
 print qq{#import "../xlsxwriter.h"\n};
 
 print qq{#import "$_"\n} for @includes;
