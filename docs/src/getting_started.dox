@@ -419,6 +419,12 @@ to dynamically link against that you can use the following compilation option:
 
     make USE_SYSTEM_MINIZIP=1
 
+@section gsg_endian Compiling on Big Endian Architecture
+
+Libxlsxwriter can be compiled on a big endian system as follows:
+
+    make USE_BIG_ENDIAN=1
+
 @section gsg_next Next steps
 
 If you got libxlsxwriter built and working successfully then the next sections

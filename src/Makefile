@@ -38,6 +38,11 @@ TMPFILEPLUS_OBJ = $(TMPFILEPLUS_DIR)/tmpfileplus.o
 TMPFILEPLUS_SO  = $(TMPFILEPLUS_DIR)/tmpfileplus.so
 endif
 
+# Set flag for big endian architecture.
+ifdef USE_BIG_ENDIAN
+CFLAGS += -DLXW_BIG_ENDIAN
+endif
+
 # Flags passed to compiler.
 CFLAGS   += -g -O3 -Wall -Wextra -pedantic -ansi
 

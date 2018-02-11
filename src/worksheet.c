@@ -2418,6 +2418,9 @@ _process_bmp(lxw_image_options *image_options)
     if (width == 0)
         goto file_error;
 
+    height = LXW_UINT32_HOST(height);
+    width = LXW_UINT32_HOST(width);
+
     /* Set the image metadata. */
     image_options->image_type = LXW_IMAGE_BMP;
     image_options->width = width;

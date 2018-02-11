@@ -268,9 +268,14 @@ enum lxw_custom_property_types {
                                (((n) & 0xFF0000)   >>  8) | \
                                (((n) & 0xFF000000) >> 24))
 #define LXW_UINT16_NETWORK(n) ((((n) & 0x00FF) << 8) | (((n) & 0xFF00) >> 8))
+#define LXW_UINT32_HOST(n)    (n)
 #else
 #define LXW_UINT32_NETWORK(n) (n)
 #define LXW_UINT16_NETWORK(n) (n)
+#define LXW_UINT32_HOST(n)    ((((n) & 0xFF)       << 24) | \
+                               (((n) & 0xFF00)     <<  8) | \
+                               (((n) & 0xFF0000)   >>  8) | \
+                               (((n) & 0xFF000000) >> 24))
 #endif
 
 /* *INDENT-OFF* */
