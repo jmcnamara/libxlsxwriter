@@ -144,8 +144,10 @@ if(${CMAKE_HOST_SYSTEM} MATCHES gentoo)
 endif()
 
 # Ensure CRT Secure warnings are disabled
+# Ensure run-time support for Unicode
 if(MSVC)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)
+    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS _UNICODE)
 endif()
 
 # Ensure "TESTING" macro is defined if building tests
