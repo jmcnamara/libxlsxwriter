@@ -291,7 +291,7 @@ if(MSVC)
     )
     if (NOT BUILD_SHARED_LIBS)
         install(FILES $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}.pdb
-            DESTINATION "lib/{MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
+            DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
         )
     endif()
 
