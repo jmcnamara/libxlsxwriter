@@ -404,7 +404,6 @@ _prepare_num_formats(lxw_workbook *self)
     lxw_hash_element *used_format_element;
     uint16_t index = 0xA4;
     uint16_t num_format_count = 0;
-    char *num_format;
     uint16_t *num_format_index;
 
     LXW_FOREACH_ORDERED(used_format_element, self->used_xf_formats) {
@@ -415,12 +414,14 @@ _prepare_num_formats(lxw_workbook *self)
             continue;
 
         /* Check if there is a user defined number format string. */
-        num_format = format->num_format;
+        if (*format->num_format) {
+            char num_format[LXW_FORMAT_FIELD_LEN] = { 0 };
+            lxw_snprintf(num_format, LXW_FORMAT_FIELD_LEN, "%s",
+                         format->num_format);
 
-        if (*num_format) {
             /* Look up the num_format in the hash table. */
             hash_element = lxw_hash_key_exists(num_formats, num_format,
-                                               strlen(num_format));
+                                               LXW_FORMAT_FIELD_LEN);
 
             if (hash_element) {
                 /* Num_Format has already been used. */
@@ -432,7 +433,8 @@ _prepare_num_formats(lxw_workbook *self)
                 *num_format_index = index;
                 format->num_format_index = index;
                 lxw_insert_hash_element(num_formats, num_format,
-                                        num_format_index, strlen(num_format));
+                                        num_format_index,
+                                        LXW_FORMAT_FIELD_LEN);
                 index++;
                 num_format_count++;
             }
