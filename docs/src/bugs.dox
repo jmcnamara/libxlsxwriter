@@ -9,7 +9,7 @@ how to submit bug reports.
 
 @section bugs_unreadable Content is Unreadable. Open and Repair
 
-Very, very occasionally you may encounter a bug which generates an Excel
+Very occasionally you may encounter a bug which generates an Excel
 warning when opening an `libxlsxwriter` file like:
 
 > Excel could not open file.xlsx because some content is unreadable. Do
@@ -19,8 +19,7 @@ This ominous sounding message is Excel's standard warning for any validation
 error in the XML used for the components of the XLSX file.
 
 If you encounter an issue like this you should open an issue on GitHub with a
-program to replicate the issue (see below) or send one of the failing output
-files to the @ref author.
+program to replicate the issue (see below).
 
 @section bugs_formula_name Formulas displayed as 'NAME?' until edited
 
@@ -35,8 +34,11 @@ When written using `write_formula()` these functions need to be fully
 qualified with the `_xlfn.` prefix as they are shown in the MS XLSX
 documentation link above. For example:
 
+@code
     worksheet_write_formula(worksheet, 0, 0,"=_xlfn.STDEV.S(B1:B10)", NULL);
+@endcode
 
+See also @ref working_with_formulas.
 
 @section bugs_formula_zero Formula results displaying as zero in non-Excel applications
 
@@ -54,6 +56,7 @@ applications, will only display the 0 results.
 If required, it is also possible to specify the calculated result of the
 formula using the `worksheet_write_formula_num()` function.
 
+See also @ref working_with_formulas.
 
 @section bugs_images Images not displayed correctly in Excel 2001 for Mac and non-Excel applications
 

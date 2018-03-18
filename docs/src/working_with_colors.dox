@@ -41,6 +41,6 @@ The color names and corresponding RRGGBB value are shown below:
 as 0x1000000 to avoid confusion with an undefined or Zero color value. It is
 converted to the correct Html code internally.
 
-Next: @ref working_with_dates
+Next: @ref working_with_formulas
 
 */

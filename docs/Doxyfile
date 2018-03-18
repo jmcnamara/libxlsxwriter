@@ -768,6 +768,7 @@ INPUT                  = src/mainpage.dox                     \
                          ../include/xlsxwriter/common.h       \
                          src/working_with_formats.dox         \
                          src/working_with_colors.dox          \
+                         src/working_with_formulas.dox        \
                          src/working_with_dates.dox           \
                          src/working_with_charts.dox          \
                          src/working_with_data_validation.dox \

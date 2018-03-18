@@ -966,6 +966,7 @@ lxw_error worksheet_write_string(lxw_worksheet *worksheet,
  *     worksheet_write_formula(worksheet, 1, 0, "=SUM(1; 2; 3)", NULL);
  * @endcode
  *
+ * See also @ref working_with_formulas.
  */
 lxw_error worksheet_write_formula(lxw_worksheet *worksheet,
                                   lxw_row_t row,
@@ -1296,6 +1297,7 @@ lxw_error worksheet_write_blank(lxw_worksheet *worksheet,
  * worksheet_write_formula() function is the recommended way of writing
  * formulas.
  *
+ * See also @ref working_with_formulas.
  */
 lxw_error worksheet_write_formula_num(lxw_worksheet *worksheet,
                                       lxw_row_t row,
@@ -2990,9 +2992,9 @@ void worksheet_protect(lxw_worksheet *worksheet, const char *password,
  * @param auto_style     Use Automatic outline style.
  *
  * The `%worksheet_outline_settings()` method is used to control the
- * appearance of outlines in Excel. Outlines are described the section on 
+ * appearance of outlines in Excel. Outlines are described the section on
  * @ref working_with_outlines.
- * 
+ *
  * The `visible` parameter is used to control whether or not outlines are
  * visible. Setting this parameter to False will cause all outlines on the
  * worksheet to be hidden. They can be un-hidden in Excel by means of the
@@ -3016,7 +3018,7 @@ void worksheet_protect(lxw_worksheet *worksheet, const char *password,
  *
  * The default settings for all of these parameters in libxlsxwriter
  * correspond to Excel's default parameters and are shown below:
- * 
+ *
  * @code
  *     worksheet_outline_settings(worksheet1, LXW_TRUE, LXW_TRUE, LXW_TRUE, LXW_FALSE);
  * @endcode
