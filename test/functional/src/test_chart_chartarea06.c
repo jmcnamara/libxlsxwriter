@@ -11,9 +11,9 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_chart_chartarea05.xlsx");
+    lxw_workbook  *workbook  = new_workbook("test_chart_chartarea06.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
-    lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_PIE);
+    lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_DOUGHNUT);
 
     uint8_t data[3][2] = {
         {2,  60},
