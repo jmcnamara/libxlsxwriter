@@ -2287,8 +2287,7 @@ _process_jpeg(lxw_image_options *image_options)
     if (fseek_err)
         goto file_error;
 
-    /* Search through the image data to read the height and width in the */
-    /* 0xFFC0/C2 element. Also read the DPI in the 0xFFE0 element. */
+    /* Search through the image data and read the JPEG markers. */
     while (!feof(stream)) {
 
         /* Read the JPEG marker and length fields for the sub-section. */
@@ -2305,7 +2304,10 @@ _process_jpeg(lxw_image_options *image_options)
         /* The offset for next fseek() is the field length + type length. */
         offset = length - 2;
 
-        if (marker == 0xFFC0 || marker == 0xFFC2) {
+        /* Read the height and width in the 0xFFCn elements (except C4, C8 */
+        /* and CC which aren't SOF markers). */
+        if ((marker & 0xFFF0) == 0xFFC0 && marker != 0xFFC4
+            && marker != 0xFFC8 && marker != 0xFFCC) {
             /* Skip 1 byte to height and width. */
             fseek_err = fseek(stream, 1, SEEK_CUR);
             if (fseek_err)
@@ -2323,6 +2325,7 @@ _process_jpeg(lxw_image_options *image_options)
             offset -= 9;
         }
 
+        /* Read the DPI in the 0xFFE0 element. */
         if (marker == 0xFFE0) {
             uint16_t x_density = 0;
             uint16_t y_density = 0;
