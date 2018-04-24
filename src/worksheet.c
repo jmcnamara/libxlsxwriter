@@ -2495,6 +2495,18 @@ STATIC void
 _write_number_cell(lxw_worksheet *self, char *range,
                    int32_t style_index, lxw_cell *cell)
 {
+#ifdef USE_DOUBLE_FUNCTION
+    char data[LXW_ATTR_32];
+
+    lxw_sprintf_dbl(data, cell->u.number);
+
+    if (style_index)
+        fprintf(self->file,
+                "<c r=\"%s\" s=\"%d\"><v>%s</v></c>",
+                range, style_index, data);
+    else
+        fprintf(self->file, "<c r=\"%s\"><v>%s</v></c>", range, data);
+#else
     if (style_index)
         fprintf(self->file,
                 "<c r=\"%s\" s=\"%d\"><v>%.16g</v></c>",
@@ -2502,6 +2514,8 @@ _write_number_cell(lxw_worksheet *self, char *range,
     else
         fprintf(self->file,
                 "<c r=\"%s\"><v>%.16g</v></c>", range, cell->u.number);
+
+#endif
 }
 
 /*
@@ -2512,6 +2526,7 @@ STATIC void
 _write_string_cell(lxw_worksheet *self, char *range,
                    int32_t style_index, lxw_cell *cell)
 {
+
     if (style_index)
         fprintf(self->file,
                 "<c r=\"%s\" s=\"%d\" t=\"s\"><v>%d</v></c>",
@@ -2569,8 +2584,7 @@ _write_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 {
     char data[LXW_ATTR_32];
 
-    lxw_snprintf(data, LXW_ATTR_32, "%.16g", cell->formula_result);
-
+    lxw_sprintf_dbl(data, cell->formula_result);
     lxw_xml_data_element(self->file, "f", cell->u.string, NULL);
     lxw_xml_data_element(self->file, "v", data, NULL);
 }
@@ -2589,7 +2603,7 @@ _write_array_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
     LXW_PUSH_ATTRIBUTES_STR("t", "array");
     LXW_PUSH_ATTRIBUTES_STR("ref", cell->user_data1);
 
-    lxw_snprintf(data, LXW_ATTR_32, "%.16g", cell->formula_result);
+    lxw_sprintf_dbl(data, cell->formula_result);
 
     lxw_xml_data_element(self->file, "f", cell->u.string, &attributes);
     lxw_xml_data_element(self->file, "v", data, NULL);
@@ -3465,7 +3479,7 @@ _worksheet_write_formula1_num(lxw_worksheet *self, double number)
 {
     char data[LXW_ATTR_32];
 
-    lxw_snprintf(data, LXW_ATTR_32, "%.16g", number);
+    lxw_sprintf_dbl(data, number);
 
     lxw_xml_data_element(self->file, "formula1", data, NULL);
 }
@@ -3487,7 +3501,7 @@ _worksheet_write_formula2_num(lxw_worksheet *self, double number)
 {
     char data[LXW_ATTR_32];
 
-    lxw_snprintf(data, LXW_ATTR_32, "%.16g", number);
+    lxw_sprintf_dbl(data, number);
 
     lxw_xml_data_element(self->file, "formula2", data, NULL);
 }

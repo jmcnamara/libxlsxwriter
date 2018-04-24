@@ -43,6 +43,11 @@ ifdef USE_BIG_ENDIAN
 CFLAGS += -DLXW_BIG_ENDIAN
 endif
 
+# Use a user-defined double number formatting function.
+ifdef USE_DOUBLE_FUNCTION
+CFLAGS += -DUSE_DOUBLE_FUNCTION
+endif
+
 # Flags passed to compiler.
 CFLAGS   += -g -O3 -Wall -Wextra -pedantic -ansi
 

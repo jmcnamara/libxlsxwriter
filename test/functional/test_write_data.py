@@ -36,3 +36,6 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
                              '[Content_Types].xml',
                              'xl/_rels/workbook.xml.rels']
         self.run_exe_test('test_data07')
+
+    def test_data08(self):
+        self.run_exe_test('test_data08', 'format06.xlsx')

@@ -527,3 +527,29 @@ lxw_tmpfile(char *tmpdir)
     return tmpfile();
 #endif
 }
+
+/*
+ * Sample function to handle sprintf of doubles for locale portable code. This
+ * is usually handled by a lxw_sprintf_dbl() macro but it can be replaced with
+ * a function of the same name.
+ *
+ * The code below is a simplified example that changes numbers like 123,45 to
+ * 123.45. End-users can replace this with something more rigorous if
+ * required.
+ */
+#ifdef USE_DOUBLE_FUNCTION
+int
+lxw_sprintf_dbl(char *data, double number)
+{
+    char *tmp;
+
+    lxw_snprintf(data, LXW_ATTR_32, "%.16g", number);
+
+    /* Replace comma with decimal point. */
+    tmp = strchr(data, ',');
+    if (tmp)
+        *tmp = '.';
+
+    return 0;
+}
+#endif

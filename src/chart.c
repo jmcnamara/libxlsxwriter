@@ -1154,7 +1154,7 @@ _chart_write_v_num(lxw_chart *self, double number)
 {
     char data[LXW_ATTR_32];
 
-    lxw_snprintf(data, LXW_ATTR_32, "%.16g", number);
+    lxw_sprintf_dbl(data, number);
 
     lxw_xml_data_element(self->file, "c:v", data, NULL);
 }

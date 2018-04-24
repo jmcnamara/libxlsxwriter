@@ -10,6 +10,7 @@ env:
   - NO_VALGRIND=1 USE_STANDARD_TMPFILE=1 CFLAGS='-Werror'
   - NO_VALGRIND=1                        CFLAGS='-Werror -m32'
   - NO_VALGRIND=1 USE_SYSTEM_MINIZIP=1   CFLAGS='-Werror'
+  - NO_VALGRIND=1 USE_DOUBLE_FUNCTION=1  CFLAGS='-Werror'
 
 install:
   - sudo pip install pytest

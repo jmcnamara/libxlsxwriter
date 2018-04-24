@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "common.h"
+#include "utility.h"
 
 #define LXW_MAX_ATTRIBUTE_LENGTH 256
 #define LXW_ATTR_32              32

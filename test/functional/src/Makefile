@@ -29,6 +29,11 @@ LIBS   += -lminizip
 CFLAGS += -DUSE_SYSTEM_MINIZIP
 endif
 
+# Use a user-defined double number formatting function.
+ifdef USE_DOUBLE_FUNCTION
+CFLAGS += -DUSE_DOUBLE_FUNCTION
+endif
+
 all : $(LIBXLSXWRITER) $(EXES)
 
 $(LIBXLSXWRITER):

@@ -18,6 +18,7 @@
 
 #include <stdint.h>
 #include "common.h"
+#include "xmlwriter.h"
 
 /**
  * @brief Convert an Excel `A1` cell string into a `(row, col)` pair.
@@ -153,9 +154,13 @@ void lxw_str_tolower(char *str);
 
 FILE *lxw_tmpfile(char *tmpdir);
 
-/* Declarations required for unit testing. */
-#ifdef TESTING
-
+/* Use a user defined function to format doubles in sprintf or else a simple
+ * macro (the default). */
+#ifdef USE_DOUBLE_FUNCTION
+int lxw_sprintf_dbl(char *data, double number);
+#else
+#define lxw_sprintf_dbl(data, number) \
+        lxw_snprintf(data, LXW_ATTR_32, "%.16g", number)
 #endif
 
 /* *INDENT-OFF* */

@@ -81,7 +81,7 @@ _chart_write_vt_r_8(lxw_custom *self, double value)
 {
     char data[LXW_ATTR_32];
 
-    lxw_snprintf(data, LXW_ATTR_32, "%.16g", value);
+    lxw_sprintf_dbl(data, value);
 
     lxw_xml_data_element(self->file, "vt:r8", data, NULL);
 }
