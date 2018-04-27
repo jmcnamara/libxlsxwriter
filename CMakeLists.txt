@@ -277,6 +277,8 @@ endif()
 # INSTALL
 # -------
 
+INCLUDE(GNUInstallDirs)
+
 if(MSVC)
     if(CMAKE_CL_64)
         set(MSVC_FOLDER_PREFIX x64)
@@ -297,13 +299,13 @@ if(MSVC)
 
 else(MSVC)
     install(TARGETS ${PROJECT_NAME}
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
     )
 endif(MSVC)
 install(FILES include/xlsxwriter.h DESTINATION include)
 install(DIRECTORY include/xlsxwriter
-    DESTINATION include
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING PATTERN "*.h"
 )
