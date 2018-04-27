@@ -11,12 +11,19 @@
 #       flags to pass to the compiler.
 #
 #   Example:
-#       For example, in the build directory, to build libxlsxwriter
-#       and the unittests in debug mode, type:
-#           cd cmake
-#           cmake .. -DBUILD_TESTS=ON
+#       For example, in the project directory, to build libxlsxwriter
+#       and the unittests in release mode, type:
+#           mkdir build && cd build
+#           cmake .. -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
+#           cmake --build . --config Release
+#           ctest -C Release -V
+#           cmake --build . --config Release --target install
+#
+#       If using a Makefile generator, you may use the simpler
+#           mkdir build && cd build
+#           cmake .. -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release
 #           make
-#           make check_xlsxwriter_unit
+#           make test
 #           make install
 #
 #   Flags:
@@ -39,6 +46,15 @@
 #           the standard tmpfile, pass `-DUSE_STANDARD_TMPFILE=ON`
 #           during configuration. This may produce bugs while cross-
 #           compiling or using MinGW/MSYS.
+#
+#   Toolchains:
+#       On multiarch Linux systems, which can build and run multiple
+#       binary targets on the same system, we include an `i686-toolchain`
+#       file to enable building i686 (x86 32-bit) targets on x86_64 systems.
+#       To use the i686 toolchain, pass the `-DCMAKE_TOOLCHAIN_FILE` option
+#       during CMake configuration. For example, from the build directory,
+#       you would use:
+#           cmake .. -DCMAKE_TOOLCHAIN_FILE=../cmake/i686-toolchain.cmake
 #
 #   CMake Options:
 #       CMake sets debug and release builds with the `CMAKE_BUILD_TYPE`
@@ -277,7 +293,7 @@ endif()
 # INSTALL
 # -------
 
-INCLUDE(GNUInstallDirs)
+include(GNUInstallDirs)
 
 if(MSVC)
     if(CMAKE_CL_64)
