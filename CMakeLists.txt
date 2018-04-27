@@ -65,7 +65,7 @@ set(CMAKE_LEGACY_CYGWIN_WIN32 1)
 if(MSVC)
     cmake_minimum_required(VERSION 3.4)
 else()
-    cmake_minimum_required(VERSION 2.8.7)
+    cmake_minimum_required(VERSION 3.1)
 endif()
 
 SET(PROJECT_NAME "xlsxwriter" CACHE STRING "Optional project and binary name")
