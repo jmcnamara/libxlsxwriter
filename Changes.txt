@@ -1,6 +1,19 @@
 /**
 @page changes Changes
 
+
+## 0.7.7 May 16 2018
+
+- Fix to ensure the use of wide filenames on Windows with Microsoft Visual
+  C++.
+  Issue [#153][gh_153].
+
+  [gh_153]: https://github.com/jmcnamara/libxlsxwriter/issues/153
+
+- Added docs on building an app with Cmake and Microsoft Visual C++ on
+  Windows. See @ref gsg_cmake_app.
+
+
 ## 0.7.6 January 11 2018
 
 - Added support for worksheet Grouping and Outlines.

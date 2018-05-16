@@ -272,7 +272,7 @@ configure with:
 For more information on using generators see:
 [cmake-generators](https://cmake.org/cmake/help/v3.0/manual/cmake-generators.7.html).
 
-@subsection gsg_cmake_app Build an app with Cmake and Microsoft Visual Studio
+@subsection gsg_cmake_app Building an app with Cmake and Microsoft Visual Studio
 
 Open a Windows CMD or Command Window and set up your MSVC environment, if
 required.
