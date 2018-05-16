@@ -121,20 +121,20 @@ Using you favourite editor create a file like the following called
 `myexcel.c`:
 
 @code
-#include "xlsxwriter.h"
+    #include "xlsxwriter.h"
 
-int main() {
+    int main() {
 
-    lxw_workbook  *workbook  = workbook_new("myexcel.xlsx");
-    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
-    int row = 0;
-    int col = 0;
+        lxw_workbook  *workbook  = workbook_new("myexcel.xlsx");
+        lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+        int row = 0;
+        int col = 0;
 
-    worksheet_write_string(worksheet, row, col, "Hello me!", NULL);
+        worksheet_write_string(worksheet, row, col, "Hello me!", NULL);
 
-    return workbook_close(workbook);
-}
-@endcode
+        return workbook_close(workbook);
+    }
+    @endcode
 
 If you executed the `"make install"` command in the previous section then you
 should be able to compile the program as follows:
@@ -272,10 +272,128 @@ configure with:
 For more information on using generators see:
 [cmake-generators](https://cmake.org/cmake/help/v3.0/manual/cmake-generators.7.html).
 
+@subsection gsg_cmake_app Build an app with Cmake and Microsoft Visual Studio
+
+Open a Windows CMD or Command Window and set up your MSVC environment, if
+required.
+
+Then create a work directory and and an install directory that the include and
+library files will be installed to. Set the follow variables to point to the
+directories:
+
+    set    WORK_DIR=C:/Users/Username/tmp
+    set INSTALL_DIR=C:/Users/Username/tmp/install_dir
+
+
+Build the Zlib library:
+
+    cd %WORK_DIR%
+
+    git clone https://github.com/madler/zlib.git
+    cd zlib
+    mkdir build
+    cd    build
+
+    cmake .. -G "Visual Studio 14 Win64" -DCMAKE_INSTALL_PREFIX:PATH="%INSTALL_DIR%/zlib"
+
+    cmake --build . --config Release --target install
+
+Build the libxlsxwriter library:
+
+    cd %WORK_DIR%
+
+    git clone https://github.com/jmcnamara/libxlsxwriter.git
+    cd libxlsxwriter
+    mkdir build
+    cd    build
+
+    cmake .. -G "Visual Studio 14 Win64" -DCMAKE_INSTALL_PREFIX:PATH="%INSTALL_DIR%/libxlsxwriter" -DZLIB_ROOT:STRING="%INSTALL_DIR%/zlib"
+
+    cmake --build . --config Release --target install
+
+
+Create a new Win32 Console (or other C/C++) application in Visual Studio:
+
+    File
+      -> New
+        -> Project
+
+    Visual C++
+      -> Win32
+        -> Win32 Console Application
+
+
+Change the ARCH in the main Dialog to "x64" (or to match the parameter to cmake).
+
+Replace the empty main with a libxlsxwriter example, make sure to include
+"stdafx.h" and "xlsxwriter.h":
+
+@code
+#include "stdafx.h"
+#include "xlsxwriter.h"
+
+int main() {
+
+    lxw_workbook  *workbook = workbook_new("hello_world.xlsx");
+    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+
+    worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
+    worksheet_write_number(worksheet, 1, 0, 123, NULL);
+
+    workbook_close(workbook);
+
+    return 0;
+}
+@endcode
+
+Edit the application properties:
+
+    Project
+      -> ConsoleApplication Properties
+
+Set the libxlsxwriter include path to match the path used above:
+
+    Configuration Properties
+      -> C/C++
+        -> General
+          -> Additional Include Directories
+
+    Set it to the following (or similar path used above):
+
+    C:\Users\Username\tmp\install_dir\libxlsxwriter\include
+
+Set the linker directories to match the path created above:
+
+    Configuration Properties
+      -> Linker
+        -> General
+          -> Additional Library Directories
+
+    Add the following (or similar paths used above):
+
+    C:\Users\Username\tmp\install_dir\libxlsxwriter\lib\x64\Release
+    C:\Users\Username\tmp\install_dir\zlib\lib
+
+Set the linker additional libraries to match the zlib and xlsxwriter libs
+created above:
+
+    Configuration Properties
+      -> Linker
+         -> Input
+            -> Additional Dependencies
+
+    Add the following:
+
+    xlsxwriter.lib
+    zlib.lib
+
+Build the solution and run the output executable. It should create a
+hello_world.xlsx file in the same directory you ran it from.
 
 @section gsg_msvc Installation on Windows using Microsoft Visual Studio
 
-There is a sample Microsoft Visual Studio project on GitHub called
+As an alternative to the Cmake option shown above there is a complete sample
+Microsoft Visual Studio project on GitHub called
 [MSVCLibXlsxWriter](https://github.com/jmcnamara/MSVCLibXlsxWriter).
 
 The allows you to build a DLL of libxlsxwriter and also a sample application
