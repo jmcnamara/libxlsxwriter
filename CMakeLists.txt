@@ -47,6 +47,10 @@
 #           during configuration. This may produce bugs while cross-
 #           compiling or using MinGW/MSYS.
 #
+#       USE_STATIC_MSVC_RUNTIME
+#           Use the static msvc runtime library when compiling with msvc (default off)
+#           To enable, pass `-DUSE_STATIC_MSVC_RUNTIME` during configuration.
+#
 #   Toolchains:
 #       On multiarch Linux systems, which can build and run multiple
 #       binary targets on the same system, we include an `i686-toolchain`
@@ -99,6 +103,9 @@ option(BUILD_EXAMPLES "Build libxlsxwriter examples" OFF)
 option(USE_SYSTEM_MINIZIP "Use system minizip installation" OFF)
 option(USE_STANDARD_TMPFILE "Use the C standard library's tmpfile()" OFF)
 option(IOAPI_NO_64 "Disable 64-bit filesystem support" OFF)
+if(MSVC)
+    option(USE_STATIC_MSVC_RUNTIME "Use the static runtime library" OFF)
+endif()
 if(DEFINED ENV{${ZLIB_ROOT}})
     set(ZLIB_ROOT $ENV{ZLIB_ROOT})
 endif()
@@ -125,11 +132,25 @@ if(NOT BUILD_SHARED_LIBS)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static -static-libgcc -Wno-char-subscripts -Wno-long-long")
         list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_FILE32API)
     elseif(MSVC)
-        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /MTd /O0 /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
-        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /MT /Ox /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
-        set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /MT /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
-        set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /MT /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
+        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /O0 /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
+        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /Ox /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
+        set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
+        set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
     endif()
+endif()
+
+message(status "BEFORE: ${CMAKE_C_FLAGS_DEBUG}")
+
+if(MSVC AND USE_STATIC_MSVC_RUNTIME)
+    foreach(flag_var CMAKE_C_FLAGS
+                     CMAKE_C_FLAGS_DEBUG
+                     CMAKE_C_FLAGS_RELEASE
+                     CMAKE_C_FLAGS_MINSIZEREL
+                     CMAKE_C_FLAGS_RELWITHDEBINFO)
+        if(${flag_var} MATCHES "/MD")
+            string(REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+        endif()
+    endforeach()
 endif()
 
 # INCLUDES
