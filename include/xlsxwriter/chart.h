@@ -530,6 +530,20 @@ typedef enum lxw_chart_axis_label_position {
 } lxw_chart_axis_label_position;
 
 /**
+ * @brief Axis label alignments.
+ */
+typedef enum lxw_chart_axis_label_alignment {
+    /** Series data label alignment: center. */
+    LXW_CHART_AXIS_LABEL_ALIGNMENT_CENTER,
+
+    /** Series data label alignment: left. */
+    LXW_CHART_AXIS_LABEL_ALIGNMENT_LEFT,
+
+    /** Series data label alignment: right. */
+    LXW_CHART_AXIS_LABEL_ALIGNMENT_RIGHT
+} lxw_chart_axis_label_alignment;
+
+/**
  * @brief Display units for chart value axis.
  */
 typedef enum lxw_chart_axis_display_unit {
@@ -986,6 +1000,7 @@ typedef struct lxw_chart_axis {
     uint8_t is_value;
     uint8_t axis_position;
     uint8_t position_axis;
+    uint8_t label_alignment;
     uint8_t label_position;
     uint8_t hidden;
     uint8_t reverse;
@@ -2595,6 +2610,27 @@ void chart_axis_set_position(lxw_chart_axis *axis, uint8_t position);
  *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_label_position(lxw_chart_axis *axis, uint8_t position);
+
+/**
+ * @brief Position the alignment of axis labels.
+ *
+ * @param axis     A pointer to a chart #lxw_chart_axis object.
+ * @param alignment A #lxw_chart_label_alignment value.
+ *
+ * Position the axis labels for the chart. The labels are the numbers, or
+ * strings or dates, on the axis that indicate the categories or values of
+ * the axis. * The allowable values:
+ *
+ * - #LXW_CHART_AXIS_LABEL_ALIGNMENT_CENTER - Align label center (default).
+ * - #LXW_CHART_AXIS_LABEL_ALIGNMENT_LEFT - Align label left.
+ * - #LXW_CHART_AXIS_LABEL_ALIGNMENT_RIGHT - Align label right.
+ *
+ * @image html chart_label_alignment1.png
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
+ */
+void chart_axis_set_label_alignment(lxw_chart_axis *axis, uint8_t alignment);
 
 /**
  * @brief Set the minimum value for a chart axis.

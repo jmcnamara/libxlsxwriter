@@ -3201,13 +3201,19 @@ _chart_write_auto(lxw_chart *self)
  * Write the <c:lblAlgn> element.
  */
 STATIC void
-_chart_write_label_align(lxw_chart *self)
+_chart_write_label_align(lxw_chart *self, lxw_chart_axis *axis)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", "ctr");
+
+    if (axis->label_alignment == LXW_CHART_AXIS_LABEL_ALIGNMENT_LEFT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "l");
+    else if (axis->label_alignment == LXW_CHART_AXIS_LABEL_ALIGNMENT_RIGHT)
+        LXW_PUSH_ATTRIBUTES_STR("val", "r");
+    else
+        LXW_PUSH_ATTRIBUTES_STR("val", "ctr");
 
     lxw_xml_empty_tag(self->file, "c:lblAlgn", &attributes);
 
@@ -4098,7 +4104,7 @@ _chart_write_cat_axis(lxw_chart *self)
     _chart_write_auto(self);
 
     /* Write the c:lblAlgn element. */
-    _chart_write_label_align(self);
+    _chart_write_label_align(self, self->x_axis);
 
     /* Write the c:lblOffset element. */
     _chart_write_label_offset(self);
@@ -6045,6 +6051,15 @@ chart_axis_minor_gridlines_set_line(lxw_chart_axis *axis,
     /* If the gridline has a format it should also be visible. */
     if (axis->minor_gridlines.line)
         axis->minor_gridlines.visible = LXW_TRUE;
+}
+
+/*
+ * Set the labels alignement.
+ */
+void
+chart_axis_set_label_alignment(lxw_chart_axis *axis, uint8_t alignment)
+{
+    axis->label_alignment = alignment;
 }
 
 /*
