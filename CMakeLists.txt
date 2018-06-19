@@ -216,16 +216,6 @@ target_include_directories(${PROJECT_NAME}
     PUBLIC include include/xlsxwriter
 )
 
-if(MSVC)
-    if (NOT BUILD_SHARED_LIBS)
-        add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E rename
-            ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}.pdb
-        )
-    endif()
-endif()
-
 # TESTS
 # -----
 
@@ -329,7 +319,7 @@ if(MSVC)
         RUNTIME DESTINATION "bin/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
     )
     if (NOT BUILD_SHARED_LIBS)
-        install(FILES $<TARGET_FILE_DIR:${PROJECT_NAME}>/${PROJECT_NAME}.pdb
+        install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb
             DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
         )
     endif()
