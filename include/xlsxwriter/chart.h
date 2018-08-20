@@ -172,11 +172,17 @@ typedef enum lxw_chart_legend_position {
     /** Chart legend positioned at bottom. */
     LXW_CHART_LEGEND_BOTTOM,
 
+    /** Chart legend positioned at top right. */
+    LXW_CHART_LEGEND_TOP_RIGHT,
+
     /** Chart legend overlaid at right side. */
     LXW_CHART_LEGEND_OVERLAY_RIGHT,
 
     /** Chart legend overlaid at left side. */
-    LXW_CHART_LEGEND_OVERLAY_LEFT
+    LXW_CHART_LEGEND_OVERLAY_LEFT,
+
+    /** Chart legend overlaid at top right. */
+    LXW_CHART_LEGEND_OVERLAY_TOP_RIGHT
 } lxw_chart_legend_position;
 
 /**
@@ -3040,8 +3046,10 @@ void chart_title_off(lxw_chart *chart);
  *     LXW_CHART_LEGEND_LEFT
  *     LXW_CHART_LEGEND_TOP
  *     LXW_CHART_LEGEND_BOTTOM
+ *     LXW_CHART_LEGEND_TOP_RIGHT
  *     LXW_CHART_LEGEND_OVERLAY_RIGHT
  *     LXW_CHART_LEGEND_OVERLAY_LEFT
+ *     LXW_CHART_LEGEND_OVERLAY_TOP_RIGHT
  *
  * For example:
  *

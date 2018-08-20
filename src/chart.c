@@ -3585,12 +3585,19 @@ _chart_write_legend(lxw_chart *self)
         case LXW_CHART_LEGEND_BOTTOM:
             _chart_write_legend_pos(self, "b");
             break;
+        case LXW_CHART_LEGEND_TOP_RIGHT:
+            _chart_write_legend_pos(self, "tr");
+            break;
         case LXW_CHART_LEGEND_OVERLAY_RIGHT:
             _chart_write_legend_pos(self, "r");
             has_overlay = LXW_TRUE;
             break;
         case LXW_CHART_LEGEND_OVERLAY_LEFT:
             _chart_write_legend_pos(self, "l");
+            has_overlay = LXW_TRUE;
+            break;
+        case LXW_CHART_LEGEND_OVERLAY_TOP_RIGHT:
+            _chart_write_legend_pos(self, "tr");
             has_overlay = LXW_TRUE;
             break;
         default:
