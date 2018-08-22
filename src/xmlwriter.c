@@ -153,19 +153,19 @@ _escape_attributes(struct xml_attribute *attribute)
     while (*p_attr) {
         switch (*p_attr) {
             case '&':
-                strncat(p_encoded, LXW_AMP, sizeof(LXW_AMP) - 1);
+                memcpy(p_encoded, LXW_AMP, sizeof(LXW_AMP) - 1);
                 p_encoded += sizeof(LXW_AMP) - 1;
                 break;
             case '<':
-                strncat(p_encoded, LXW_LT, sizeof(LXW_LT) - 1);
+                memcpy(p_encoded, LXW_LT, sizeof(LXW_LT) - 1);
                 p_encoded += sizeof(LXW_LT) - 1;
                 break;
             case '>':
-                strncat(p_encoded, LXW_GT, sizeof(LXW_GT) - 1);
+                memcpy(p_encoded, LXW_GT, sizeof(LXW_GT) - 1);
                 p_encoded += sizeof(LXW_GT) - 1;
                 break;
             case '"':
-                strncat(p_encoded, LXW_QUOT, sizeof(LXW_QUOT) - 1);
+                memcpy(p_encoded, LXW_QUOT, sizeof(LXW_QUOT) - 1);
                 p_encoded += sizeof(LXW_QUOT) - 1;
                 break;
             default:
@@ -195,15 +195,15 @@ lxw_escape_data(const char *data)
     while (*data) {
         switch (*data) {
             case '&':
-                strncat(p_encoded, LXW_AMP, sizeof(LXW_AMP) - 1);
+                memcpy(p_encoded, LXW_AMP, sizeof(LXW_AMP) - 1);
                 p_encoded += sizeof(LXW_AMP) - 1;
                 break;
             case '<':
-                strncat(p_encoded, LXW_LT, sizeof(LXW_LT) - 1);
+                memcpy(p_encoded, LXW_LT, sizeof(LXW_LT) - 1);
                 p_encoded += sizeof(LXW_LT) - 1;
                 break;
             case '>':
-                strncat(p_encoded, LXW_GT, sizeof(LXW_GT) - 1);
+                memcpy(p_encoded, LXW_GT, sizeof(LXW_GT) - 1);
                 p_encoded += sizeof(LXW_GT) - 1;
                 break;
             default:

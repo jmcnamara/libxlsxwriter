@@ -169,7 +169,7 @@ static char *getenv_save(const char *varname, char *buf, size_t bufsize)
 	buf[0] = '\0';
 	if (ptr)
 	{
-		strncpy(buf, ptr, bufsize);
+		strncpy(buf, ptr, bufsize-1);
 		buf[bufsize-1] = '\0';
 		return buf;
 	}
