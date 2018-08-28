@@ -112,3 +112,10 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_image36(self):
         self.run_exe_test('test_image36')
+
+    # Test in-memory image handling.
+    def test_image81(self):
+        self.run_exe_test('test_image81', 'image01.xlsx')
+
+    def test_image82(self):
+        self.run_exe_test('test_image82')

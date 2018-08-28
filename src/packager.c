@@ -15,6 +15,9 @@
 STATIC lxw_error _add_file_to_zip(lxw_packager *self, FILE * file,
                                   const char *filename);
 
+STATIC lxw_error _add_buffer_to_zip(lxw_packager *self, unsigned char *buffer,
+                                    size_t buffer_size, const char *filename);
+
 /*
  * Forward declarations.
  */
@@ -216,17 +219,24 @@ _write_image_files(lxw_packager *self)
             lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                          "xl/media/image%d.%s", index++, image->extension);
 
-            /* Check that the image file exists and can be opened. */
-            image_stream = fopen(image->filename, "rb");
-            if (!image_stream) {
-                LXW_WARN_FORMAT1("Error adding image to xlsx file: file "
-                                 "doesn't exist or can't be opened: %s.",
-                                 image->filename);
-                return LXW_ERROR_CREATING_TMPFILE;
-            }
+            if (!image->is_image_buffer) {
+                /* Check that the image file exists and can be opened. */
+                image_stream = fopen(image->filename, "rb");
+                if (!image_stream) {
+                    LXW_WARN_FORMAT1("Error adding image to xlsx file: file "
+                                     "doesn't exist or can't be opened: %s.",
+                                     image->filename);
+                    return LXW_ERROR_CREATING_TMPFILE;
+                }
 
-            err = _add_file_to_zip(self, image_stream, filename);
-            fclose(image_stream);
+                err = _add_file_to_zip(self, image_stream, filename);
+                fclose(image_stream);
+            }
+            else {
+                err = _add_buffer_to_zip(self,
+                                         image->image_buffer,
+                                         image->image_buffer_size, filename);
+            }
 
             RETURN_ON_ERROR(err);
         }
@@ -879,6 +889,47 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
         }
 
         size_read = fread(self->buffer, 1, self->buffer_size, file);
+    }
+
+    if (error < 0) {
+        RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
+    }
+    else {
+        error = zipCloseFileInZip(self->zipfile);
+        if (error != ZIP_OK) {
+            LXW_ERROR("Error in closing member in the zipfile");
+            RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
+        }
+    }
+
+    return LXW_NO_ERROR;
+}
+
+STATIC lxw_error
+_add_buffer_to_zip(lxw_packager *self, unsigned char *buffer,
+                   size_t buffer_size, const char *filename)
+{
+    int16_t error = ZIP_OK;
+
+    error = zipOpenNewFileInZip4_64(self->zipfile,
+                                    filename,
+                                    &self->zipfile_info,
+                                    NULL, 0, NULL, 0, NULL,
+                                    Z_DEFLATED, Z_DEFAULT_COMPRESSION, 0,
+                                    -MAX_WBITS, DEF_MEM_LEVEL,
+                                    Z_DEFAULT_STRATEGY, NULL, 0, 0, 0, 0);
+
+    if (error != ZIP_OK) {
+        LXW_ERROR("Error adding member to zipfile");
+        RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
+    }
+
+    error = zipWriteInFileInZip(self->zipfile,
+                                buffer, (unsigned int) buffer_size);
+
+    if (error < 0) {
+        LXW_ERROR("Error in writing member in the zipfile");
+        RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
     }
 
     if (error < 0) {

@@ -546,6 +546,7 @@ typedef struct lxw_image_options {
     lxw_row_t row;
     lxw_col_t col;
     char *filename;
+    char *description;
     char *url;
     char *tip;
     uint8_t anchor;
@@ -553,9 +554,11 @@ typedef struct lxw_image_options {
     /* Internal metadata. */
     FILE *stream;
     uint8_t image_type;
+    uint8_t is_image_buffer;
+    unsigned char *image_buffer;
+    size_t image_buffer_size;
     double width;
     double height;
-    char *short_name;
     char *extension;
     double x_dpi;
     double y_dpi;
@@ -1643,6 +1646,38 @@ lxw_error worksheet_insert_image_opt(lxw_worksheet *worksheet,
                                      lxw_row_t row, lxw_col_t col,
                                      const char *filename,
                                      lxw_image_options *options);
+
+/**
+ *
+ * @param worksheet
+ * @param row_num
+ * @param col_num
+ * @param image_buffer
+ * @param image_size
+ * @param user_options
+ * @return
+ */
+lxw_error worksheet_insert_image_buffer_opt(lxw_worksheet *worksheet,
+                                            lxw_row_t row_num,
+                                            lxw_col_t col_num,
+                                            unsigned char *image_buffer,
+                                            size_t image_size,
+                                            lxw_image_options *user_options);
+
+/**
+ *
+ * @param worksheet
+ * @param row_num
+ * @param col_num
+ * @param image_buffer
+ * @param image_size
+ * @return
+ */
+lxw_error worksheet_insert_image_buffer(lxw_worksheet *worksheet,
+                                        lxw_row_t row_num, lxw_col_t col_num,
+                                        unsigned char *image_buffer,
+                                        size_t image_size);
+
 /**
  * @brief Insert a chart object into a worksheet.
  *
