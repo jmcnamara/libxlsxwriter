@@ -7,7 +7,7 @@
  * particular this is required for Pie/Doughnut charts where each segment is
  * represented by a point.
 
- * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
  *
  */
 

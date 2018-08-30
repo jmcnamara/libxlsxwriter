@@ -2,7 +2,7 @@
  * Example of using libxlsxwriter for writing large files in constant memory
  * mode.
  *
- * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
  *
  */
 

@@ -3,7 +3,7 @@
  * using the libxlsxwriter library. Note, these styles are not the same as the
  * styles available in Excel 2013.
  *
- * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
  *
  */
 

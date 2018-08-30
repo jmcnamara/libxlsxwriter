@@ -1,7 +1,7 @@
 /*
  * Example of writing dates and times in Excel using different date formats.
  *
- * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
  *
  */
 

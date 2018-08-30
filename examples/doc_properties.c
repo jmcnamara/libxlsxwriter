@@ -2,7 +2,7 @@
  * Example of setting document properties such as Author, Title, etc., for an
  * Excel spreadsheet using libxlsxwriter.
  *
- * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
  *
  */
 

@@ -7,7 +7,7 @@
  * each segment is represented as a point so it is necessary to assign
  * formatting to each point in the series.
  *
- * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
  *
  */
 

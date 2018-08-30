@@ -1,7 +1,7 @@
 /*
  * An example of a clustered category chart using the libxlsxwriter library.
  *
- * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
  *
  */
 

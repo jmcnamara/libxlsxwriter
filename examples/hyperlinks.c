@@ -1,7 +1,7 @@
 /*
  * Example of writing urls/hyperlinks with the libxlsxwriter library.
  *
- * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
  *
  */
 

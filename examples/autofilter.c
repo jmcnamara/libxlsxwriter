@@ -2,7 +2,7 @@
  * Example of adding an autofilter to a worksheet in Excel using
  * libxlsxwriter.
  *
- * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
  *
  */
 

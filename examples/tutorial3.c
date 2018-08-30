@@ -5,7 +5,7 @@
  * This program is shown, with explanations, in Tutorial 3 of the
  * libxlsxwriter documentation.
  *
- * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
  *
  */
 

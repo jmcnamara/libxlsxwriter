@@ -7,7 +7,7 @@
  * Libxlsxwriter we replicate that using the worksheet_set_default_row()
  * function.
  *
- * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
  *
  */
 

@@ -3,7 +3,7 @@
  *
  * Note: The source file must be UTF-8 encoded.
  *
- * Copyright 2014-2017, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
  *
  */
 
