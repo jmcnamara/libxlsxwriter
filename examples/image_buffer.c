@@ -1,15 +1,15 @@
-/*****************************************************************************
- * Test cases for libxlsxwriter.
+/*
+ * An example of inserting an image from a memory buffer into a worksheet
+ * using the libxlsxwriter library.
  *
- * Test to compare output against Excel files.
- *
- * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2018 John McNamara, jmcnamara@cpan.org
  *
  */
 
 #include "xlsxwriter.h"
 
 
+/* Simple array with some PNG data. */
 unsigned char image_buffer[] = {
     0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d,
     0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x20,
@@ -32,14 +32,23 @@ unsigned char image_buffer[] = {
 
 unsigned int image_size = 200;
 
+
 int main() {
 
-    lxw_workbook  *workbook  = workbook_new("test_image81.xlsx");
+    /* Create a new workbook and add a worksheet. */
+    lxw_workbook  *workbook  = workbook_new("image_buffer.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
-    lxw_image_options options = {.description = "red.png"};
+    lxw_image_options options = {.x_offset = 34, .y_offset = 4,
+                                 .x_scale  = 2,  .y_scale  = 1};
 
-    worksheet_insert_image_buffer_opt(worksheet, CELL("E9"), image_buffer, image_size, &options);
+    /* Insert the image from the buffer. */
+    worksheet_insert_image_buffer(worksheet, CELL("B3"), image_buffer, image_size);
 
-    return workbook_close(workbook);
+    /* Insert the image from the same buffer, with some options. */
+    worksheet_insert_image_buffer_opt(worksheet, CELL("B7"), image_buffer, image_size, &options);
+
+    workbook_close(workbook);
+
+    return 0;
 }

@@ -10,7 +10,7 @@
 #include "xlsxwriter.h"
 
 
-unsigned char red_png[] = {
+unsigned char image_buffer[] = {
     0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d,
     0x49, 0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x20,
     0x08, 0x02, 0x00, 0x00, 0x00, 0xfc, 0x18, 0xed, 0xa3, 0x00, 0x00, 0x00,
@@ -30,14 +30,14 @@ unsigned char red_png[] = {
     0x49, 0x45, 0x4e, 0x44, 0xae, 0x42, 0x60, 0x82
 };
 
-unsigned int red_png_size = 200;
+unsigned int image_size = 200;
 
 int main() {
 
     lxw_workbook  *workbook  = workbook_new("test_image82.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
-    worksheet_insert_image_buffer(worksheet, CELL("E9"), red_png, red_png_size);
+    worksheet_insert_image_buffer(worksheet, CELL("E9"), image_buffer, image_size);
 
     return workbook_close(workbook);
 }

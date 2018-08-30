@@ -1648,35 +1648,74 @@ lxw_error worksheet_insert_image_opt(lxw_worksheet *worksheet,
                                      lxw_image_options *options);
 
 /**
+ * @brief Insert an image in a worksheet cell, from a memory buffer.
  *
- * @param worksheet
- * @param row_num
- * @param col_num
- * @param image_buffer
- * @param image_size
- * @param user_options
- * @return
- */
-lxw_error worksheet_insert_image_buffer_opt(lxw_worksheet *worksheet,
-                                            lxw_row_t row_num,
-                                            lxw_col_t col_num,
-                                            unsigned char *image_buffer,
-                                            size_t image_size,
-                                            lxw_image_options *user_options);
-
-/**
+ * @param worksheet    Pointer to a lxw_worksheet instance to be updated.
+ * @param row          The zero indexed row number.
+ * @param col          The zero indexed column number.
+ * @param image_buffer Pointer to an array of bytes that holds the image data.
+ * @param image_size   The size of the array of bytes.
  *
- * @param worksheet
- * @param row_num
- * @param col_num
- * @param image_buffer
- * @param image_size
- * @return
+ * @return A #lxw_error code.
+ *
+ * This function can be used to insert a image into a worksheet from a memory
+ * buffer:
+ *
+ * @code
+ *     worksheet_insert_image_buffer(worksheet, CELL("B3"), image_buffer, image_size);
+ * @endcode
+ *
+ * @image html image_buffer.png
+ *
+ * The buffer should be a pointer to an array of unsigned char data with a
+ * specified size.
+ *
+ * See `worksheet_insert_image()` for details about the supported image
+ * formats, and other image features.
  */
 lxw_error worksheet_insert_image_buffer(lxw_worksheet *worksheet,
-                                        lxw_row_t row_num, lxw_col_t col_num,
+                                        lxw_row_t row,
+                                        lxw_col_t col,
                                         unsigned char *image_buffer,
                                         size_t image_size);
+
+/**
+ * @brief Insert an image in a worksheet cell, from a memory buffer.
+ *
+ * @param worksheet    Pointer to a lxw_worksheet instance to be updated.
+ * @param row          The zero indexed row number.
+ * @param col          The zero indexed column number.
+ * @param image_buffer Pointer to an array of bytes that holds the image data.
+ * @param image_size   The size of the array of bytes.
+ * @param options      Optional image parameters.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_insert_image_buffer_opt()` function is like
+ * `worksheet_insert_image_buffer()` function except that it takes an optional
+ * #lxw_image_options struct to scale and position the image:
+ *
+ * @code
+ *     lxw_image_options options = {.x_offset = 32, .y_offset = 4,
+ *                                  .x_scale  = 2,  .y_scale  = 1};
+ *
+ *     worksheet_insert_image_buffer_opt(worksheet, CELL("B3"), image_buffer, image_size, &options);
+ * @endcode
+ *
+ * @image html image_buffer_opt.png
+ *
+ * The buffer should be a pointer to an array of unsigned char data with a
+ * specified size.
+ *
+ * See `worksheet_insert_image_buffer_opt()` for details about the supported
+ * image formats, and other image options.
+ */
+lxw_error worksheet_insert_image_buffer_opt(lxw_worksheet *worksheet,
+                                            lxw_row_t row,
+                                            lxw_col_t col,
+                                            unsigned char *image_buffer,
+                                            size_t image_size,
+                                            lxw_image_options *options);
 
 /**
  * @brief Insert a chart object into a worksheet.

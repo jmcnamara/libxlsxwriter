@@ -140,6 +140,13 @@ Example of adding images to a worksheet.
 @image html images.png
 
 ##############################################################
+@example image_buffer.c
+
+Example of adding an image to a worksheet from a memory buffer.
+
+@image html image_buffer2.png
+
+##############################################################
 @example headers_footers.c
 
 Example of adding worksheet headers and footers to worksheets.

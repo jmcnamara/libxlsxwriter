@@ -30,6 +30,7 @@ my @examples = (
     [ 'autofilter.c',           'An example of a worksheet autofilter' ],
     [ 'data_validate.c',        'Examples of worksheet data validation and drop down lists' ],
     [ 'images.c',               'Example of adding images to a worksheet.' ],
+    [ 'image_buffer.c',         'Example of adding an image from a memory buffer.' ],
     [ 'headers_footers.c',      'Example of adding worksheet headers/footers' ],
     [ 'defined_name.c',         'Example of how to create defined names' ],
     [ 'outline.c',              'Example of grouping and outlines' ],

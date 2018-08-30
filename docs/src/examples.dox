@@ -302,7 +302,7 @@ Example of adding data validations to a worksheet.
 <table  width="600">
 <tr>
   <td>@ref data_validate.c "&lt;&lt; data_validate.c"</td>
-  <td align="right">@ref headers_footers.c "headers_footers.c &gt;&gt;"</td>
+  <td align="right">@ref image_buffer.c "image_buffer.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -313,11 +313,27 @@ Example of adding images to a worksheet.
 
 
 
-@example headers_footers.c
+@example image_buffer.c
 
 <table  width="600">
 <tr>
   <td>@ref images.c "&lt;&lt; images.c"</td>
+  <td align="right">@ref headers_footers.c "headers_footers.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of adding an image to a worksheet from a memory buffer.
+
+@image html image_buffer2.png
+
+
+
+
+@example headers_footers.c
+
+<table  width="600">
+<tr>
+  <td>@ref image_buffer.c "&lt;&lt; image_buffer.c"</td>
   <td align="right">@ref defined_name.c "defined_name.c &gt;&gt;"</td>
 </tr>
 </table>
