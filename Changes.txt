@@ -2,6 +2,15 @@
 @page changes Changes
 
 
+## 0.7.8 August 30 2018
+
+- Added `worksheet_insert_image_buffer()` function to insert images from
+  memory buffers. See @ref image_buffer.c.
+  Feature request [#125][gh_125].
+
+  [gh_125]: https://github.com/jmcnamara/libxlsxwriter/issues/125
+
+
 ## 0.7.7 May 16 2018
 
 - Fix to ensure the use of wide filenames on Windows with Microsoft Visual

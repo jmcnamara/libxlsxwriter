@@ -5366,8 +5366,9 @@ worksheet_insert_image(lxw_worksheet *self,
 
 lxw_error
 worksheet_insert_image_buffer_opt(lxw_worksheet *self,
-                                  lxw_row_t row_num, lxw_col_t col_num,
-                                  unsigned char *image_buffer,
+                                  lxw_row_t row_num,
+                                  lxw_col_t col_num,
+                                  const unsigned char *image_buffer,
                                   size_t image_size,
                                   lxw_image_options *user_options)
 {
@@ -5440,8 +5441,10 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
 
 lxw_error
 worksheet_insert_image_buffer(lxw_worksheet *self,
-                              lxw_row_t row_num, lxw_col_t col_num,
-                              unsigned char *image_buffer, size_t image_size)
+                              lxw_row_t row_num,
+                              lxw_col_t col_num,
+                              const unsigned char *image_buffer,
+                              size_t image_size)
 {
     return worksheet_insert_image_buffer_opt(self, row_num, col_num,
                                              image_buffer, image_size, NULL);

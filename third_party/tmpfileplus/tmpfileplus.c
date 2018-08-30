@@ -189,7 +189,7 @@ static FILE *mktempfile_internal(const char *tmpdir, const char *pfx, char **tmp
  */
 {
 	FILE *fp;
-	int fd;
+	int fd = 0;
 	char randpart[] = "1234567890";
 	size_t lentempname;
 	int i;

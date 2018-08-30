@@ -1676,7 +1676,7 @@ lxw_error worksheet_insert_image_opt(lxw_worksheet *worksheet,
 lxw_error worksheet_insert_image_buffer(lxw_worksheet *worksheet,
                                         lxw_row_t row,
                                         lxw_col_t col,
-                                        unsigned char *image_buffer,
+                                        const unsigned char *image_buffer,
                                         size_t image_size);
 
 /**
@@ -1713,7 +1713,7 @@ lxw_error worksheet_insert_image_buffer(lxw_worksheet *worksheet,
 lxw_error worksheet_insert_image_buffer_opt(lxw_worksheet *worksheet,
                                             lxw_row_t row,
                                             lxw_col_t col,
-                                            unsigned char *image_buffer,
+                                            const unsigned char *image_buffer,
                                             size_t image_size,
                                             lxw_image_options *options);
 
