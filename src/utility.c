@@ -12,7 +12,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include "xlsxwriter/utility.h"
+#include "xlsxwriter.h"
 #include "xlsxwriter/third_party/tmpfileplus.h"
 
 char *error_strings[LXW_MAX_ERRNO + 1] = {
@@ -553,3 +553,12 @@ lxw_sprintf_dbl(char *data, double number)
     return 0;
 }
 #endif
+
+/*
+ * Retrieve runtime library version
+ */
+const char *
+lxw_version(void)
+{
+    return LXW_VERSION;
+}

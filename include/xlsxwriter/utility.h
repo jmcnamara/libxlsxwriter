@@ -163,6 +163,13 @@ int lxw_sprintf_dbl(char *data, double number);
         lxw_snprintf(data, LXW_ATTR_32, "%.16g", number)
 #endif
 
+/**
+ * @brief Retrieve runtime library version
+ *
+ * @return A pointer to a statically allocated string. Do not free.
+ */
+const char *lxw_version(void);
+
 /* *INDENT-OFF* */
 #ifdef __cplusplus
 }
