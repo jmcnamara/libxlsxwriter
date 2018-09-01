@@ -24,7 +24,7 @@ the `xlsxwriter.h` header file or by adding the following to your program:
 
 int main() {
 
-    printf("Libxlsxwriter version = %s\n", LXW_VERSION);
+    printf("Libxlsxwriter version = %s\n", lxw_version());
 
     return 0;
 }
