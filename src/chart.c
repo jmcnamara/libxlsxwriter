@@ -3208,9 +3208,9 @@ _chart_write_label_align(lxw_chart *self, lxw_chart_axis *axis)
 
     LXW_INIT_ATTRIBUTES();
 
-    if (axis->label_alignment == LXW_CHART_AXIS_LABEL_ALIGNMENT_LEFT)
+    if (axis->label_align == LXW_CHART_AXIS_LABEL_ALIGN_LEFT)
         LXW_PUSH_ATTRIBUTES_STR("val", "l");
-    else if (axis->label_alignment == LXW_CHART_AXIS_LABEL_ALIGNMENT_RIGHT)
+    else if (axis->label_align == LXW_CHART_AXIS_LABEL_ALIGN_RIGHT)
         LXW_PUSH_ATTRIBUTES_STR("val", "r");
     else
         LXW_PUSH_ATTRIBUTES_STR("val", "ctr");
@@ -6054,12 +6054,12 @@ chart_axis_minor_gridlines_set_line(lxw_chart_axis *axis,
 }
 
 /*
- * Set the labels alignement.
+ * Set the chart axis label alignment.
  */
 void
-chart_axis_set_label_alignment(lxw_chart_axis *axis, uint8_t alignment)
+chart_axis_set_label_align(lxw_chart_axis *axis, uint8_t align)
 {
-    axis->label_alignment = alignment;
+    axis->label_align = align;
 }
 
 /*
