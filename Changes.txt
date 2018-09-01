@@ -2,6 +2,20 @@
 @page changes Changes
 
 
+## 0.7.9 September 1 2018
+
+- Added `chart_axis_set_label_align()` function to set the alignment of chart
+  category axis labels.
+  Feature request [#186][gh_186].
+
+  [gh_186]: https://github.com/jmcnamara/libxlsxwriter/issues/186
+
+- Added `lxw_version()` function to get the library version.
+  Feature request [#194][gh_194].
+
+  [gh_194]: https://github.com/jmcnamara/libxlsxwriter/pull/194
+
+
 ## 0.7.8 August 30 2018
 
 - Added `worksheet_insert_image_buffer()` function to insert images from
