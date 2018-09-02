@@ -2617,8 +2617,9 @@ void chart_axis_set_label_position(lxw_chart_axis *axis, uint8_t position);
  * @param axis  A pointer to a chart #lxw_chart_axis object.
  * @param align A #lxw_chart_axis_label_alignment value.
  *
- * Position the category axis labels for the chart. The labels are the numbers, or
- * strings or dates, on the axis that indicate the categories of the axis.
+ * Position the category axis labels for the chart. The labels are the
+ * numbers, or strings or dates, on the axis that indicate the categories
+ * of the axis.
  *
  * The allowable values:
  *
