@@ -37,6 +37,7 @@ SRCS += $(wildcard styles/test*.c)
 SRCS += $(wildcard drawing/test*.c)
 SRCS += $(wildcard chart/test*.c)
 SRCS += $(wildcard custom/test*.c)
+SRCS += $(wildcard chartsheet/test*.c)
 # End of SRCS
 
 OBJS  = $(patsubst %.c,%.o,$(SRCS))
@@ -70,6 +71,7 @@ all :
 	$(Q)$(MAKE) -C drawing
 	$(Q)$(MAKE) -C chart
 	$(Q)$(MAKE) -C custom
+	$(Q)$(MAKE) -C chartsheet
 # END make all
 
 clean :
@@ -87,6 +89,7 @@ clean :
 	$(Q)$(MAKE) clean -C drawing
 	$(Q)$(MAKE) clean -C chart
 	$(Q)$(MAKE) clean -C custom
+	$(Q)$(MAKE) clean -C chartsheet
 # END make clean
 
 

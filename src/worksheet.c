@@ -3437,7 +3437,7 @@ _worksheet_write_sheet_protection(lxw_worksheet *self)
  * Write the <drawing> element.
  */
 STATIC void
-_write_drawing(lxw_worksheet *self, uint16_t id)
+_worksheet_write_drawing(lxw_worksheet *self, uint16_t id)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -3459,14 +3459,14 @@ _write_drawing(lxw_worksheet *self, uint16_t id)
  * Write the <drawing> elements.
  */
 STATIC void
-_write_drawings(lxw_worksheet *self)
+_worksheet_write_drawings(lxw_worksheet *self)
 {
     if (!self->drawing)
         return;
 
     self->rel_count++;
 
-    _write_drawing(self, self->rel_count);
+    _worksheet_write_drawing(self, self->rel_count);
 }
 
 /*
@@ -3688,6 +3688,21 @@ _worksheet_write_data_validations(lxw_worksheet *self)
 }
 
 /*
+ * External functions to call intern XML methods shared with chartsheet.
+ */
+void
+lxw_worksheet_write_sheet_views(lxw_worksheet *self)
+{
+    _worksheet_write_sheet_views(self);
+}
+
+void
+lxw_worksheet_write_page_margins(lxw_worksheet *self)
+{
+    _worksheet_write_page_margins(self);
+}
+
+/*
  * Assemble and write the XML file.
  */
 void
@@ -3754,7 +3769,7 @@ lxw_worksheet_assemble_xml_file(lxw_worksheet *self)
     _worksheet_write_col_breaks(self);
 
     /* Write the drawing element. */
-    _write_drawings(self);
+    _worksheet_write_drawings(self);
 
     /* Close the worksheet tag. */
     lxw_xml_end_tag(self->file, "worksheet");

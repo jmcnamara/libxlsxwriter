@@ -42,11 +42,12 @@ following sections for more information:
 - @ref tutorial02
 - @ref tutorial03
 
-- @ref workbook.h  "The Workbook object"
-- @ref worksheet.h "The Worksheet object"
-- @ref format.h    "The Format object"
-- @ref chart.h     "The Chart object"
-- @ref utility.h   "Utility functions and macros"
+- @ref workbook.h   "The Workbook object"
+- @ref worksheet.h  "The Worksheet object"
+- @ref format.h     "The Format object"
+- @ref chart.h      "The Chart object"
+- @ref chartsheet.h "The Chartsheet object"
+- @ref utility.h    "Utility functions and macros"
 
 - @ref working_with_formats
 - @ref working_with_colors
