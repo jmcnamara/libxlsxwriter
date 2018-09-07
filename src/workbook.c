@@ -81,7 +81,7 @@ _free_custom_doc_property(lxw_custom_property *custom_property)
 void
 lxw_workbook_free(lxw_workbook *workbook)
 {
-    lxw_worksheet *worksheet;
+    lxw_sheet *sheet;
     struct lxw_worksheet_name *worksheet_name;
     struct lxw_worksheet_name *next_name;
     lxw_chart *chart;
@@ -97,16 +97,24 @@ lxw_workbook_free(lxw_workbook *workbook)
 
     free(workbook->filename);
 
-    /* Free the worksheets in the workbook. */
-    if (workbook->worksheets) {
-        while (!STAILQ_EMPTY(workbook->worksheets)) {
-            worksheet = STAILQ_FIRST(workbook->worksheets);
-            STAILQ_REMOVE_HEAD(workbook->worksheets, list_pointers);
-            lxw_worksheet_free(worksheet);
-        }
-        free(workbook->worksheets);
+    /* Free the sheets in the workbook. */
+    if (workbook->sheets) {
+        while (!STAILQ_EMPTY(workbook->sheets)) {
+            sheet = STAILQ_FIRST(workbook->sheets);
 
+            if (sheet->is_chartsheet)
+                lxw_chartsheet_free(sheet->u.chartsheet);
+            else
+                lxw_worksheet_free(sheet->u.worksheet);
+
+            STAILQ_REMOVE_HEAD(workbook->sheets, list_pointers);
+            free(sheet);
+        }
+        free(workbook->sheets);
     }
+
+    /* Free the worksheets list. The worksheet objects are freed above. */
+    free(workbook->worksheets);
 
     /* Free the charts in the workbook. */
     if (workbook->charts) {
@@ -496,6 +504,7 @@ _store_defined_name(lxw_workbook *self, const char *name,
                     const char *app_name, const char *formula, int16_t index,
                     uint8_t hidden)
 {
+    lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     lxw_defined_name *defined_name;
     lxw_defined_name *list_defined_name;
@@ -546,7 +555,12 @@ _store_defined_name(lxw_workbook *self, const char *name,
             worksheet_name[strlen(worksheet_name) - 1] = '\0';
 
         /* Search for worksheet name to get the equivalent worksheet index. */
-        STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
+        STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
+            if (sheet->is_chartsheet)
+                continue;
+            else
+                worksheet = sheet->u.worksheet;
+
             if (strcmp(worksheet_name, worksheet->name) == 0) {
                 defined_name->index = worksheet->index;
                 lxw_strcpy(defined_name->normalised_sheetname,
@@ -837,13 +851,18 @@ _add_chart_cache_data(lxw_workbook *self)
 STATIC void
 _prepare_drawings(lxw_workbook *self)
 {
+    lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     lxw_image_options *image_options;
     uint16_t chart_ref_id = 0;
     uint16_t image_ref_id = 0;
     uint16_t drawing_id = 0;
 
-    STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
+    STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
 
         if (STAILQ_EMPTY(worksheet->image_data)
             && STAILQ_EMPTY(worksheet->chart_data))
@@ -889,14 +908,18 @@ STATIC void
 _prepare_defined_names(lxw_workbook *self)
 {
     lxw_worksheet *worksheet;
+    lxw_sheet *sheet;
     char app_name[LXW_DEFINED_NAME_LENGTH];
     char range[LXW_DEFINED_NAME_LENGTH];
     char area[LXW_MAX_CELL_RANGE_LENGTH];
     char first_col[8];
     char last_col[8];
 
-    STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
-
+    STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
         /*
          * Check for autofilter settings and store them.
          */
@@ -1170,11 +1193,17 @@ _write_sheet(lxw_workbook *self, const char *name, uint32_t sheet_id,
 STATIC void
 _write_sheets(lxw_workbook *self)
 {
+    lxw_sheet *sheet;
     lxw_worksheet *worksheet;
 
     lxw_xml_start_tag(self->file, "sheets", NULL);
 
-    STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
+    STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
+
         _write_sheet(self, worksheet->name, worksheet->index + 1,
                      worksheet->hidden);
     }
@@ -1330,6 +1359,11 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     GOTO_LABEL_ON_MEM_ERROR(workbook, mem_error);
     workbook->filename = lxw_strdup(filename);
 
+    /* Add the sheets list. */
+    workbook->sheets = calloc(1, sizeof(struct lxw_sheets));
+    GOTO_LABEL_ON_MEM_ERROR(workbook->sheets, mem_error);
+    STAILQ_INIT(workbook->sheets);
+
     /* Add the worksheets list. */
     workbook->worksheets = calloc(1, sizeof(struct lxw_worksheets));
     GOTO_LABEL_ON_MEM_ERROR(workbook->worksheets, mem_error);
@@ -1404,7 +1438,8 @@ mem_error:
 lxw_worksheet *
 workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
 {
-    lxw_worksheet *worksheet;
+    lxw_sheet *sheet = NULL;
+    lxw_worksheet *worksheet = NULL;
     lxw_worksheet_name *worksheet_name = NULL;
     lxw_error error;
     lxw_worksheet_init_data init_data = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -1451,8 +1486,18 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     worksheet = lxw_worksheet_new(&init_data);
     GOTO_LABEL_ON_MEM_ERROR(worksheet, mem_error);
 
-    self->num_sheets++;
+    /* Add it to the worksheet list. */
+    self->num_worksheets++;
     STAILQ_INSERT_TAIL(self->worksheets, worksheet, list_pointers);
+
+    /* Create a new sheet object. */
+    sheet = calloc(1, sizeof(lxw_sheet));
+    GOTO_LABEL_ON_MEM_ERROR(sheet, mem_error);
+    sheet->u.worksheet = worksheet;
+
+    /* Add it to the worksheet list. */
+    self->num_sheets++;
+    STAILQ_INSERT_TAIL(self->sheets, sheet, list_pointers);
 
     /* Store the worksheet so we can look it up by name. */
     worksheet_name->name = init_data.name;
@@ -1465,6 +1510,7 @@ mem_error:
     free(init_data.name);
     free(init_data.quoted_name);
     free(worksheet_name);
+    free(worksheet);
     return NULL;
 }
 
@@ -1509,6 +1555,7 @@ workbook_add_format(lxw_workbook *self)
 lxw_error
 workbook_close(lxw_workbook *self)
 {
+    lxw_sheet *sheet = NULL;
     lxw_worksheet *worksheet = NULL;
     lxw_packager *packager = NULL;
     lxw_error error = LXW_NO_ERROR;
@@ -1519,13 +1566,21 @@ workbook_close(lxw_workbook *self)
 
     /* Ensure that at least one worksheet has been selected. */
     if (self->active_sheet == 0) {
-        worksheet = STAILQ_FIRST(self->worksheets);
-        worksheet->selected = 1;
-        worksheet->hidden = 0;
+        sheet = STAILQ_FIRST(self->sheets);
+        if (!sheet->is_chartsheet) {
+            worksheet = sheet->u.worksheet;
+            worksheet->selected = 1;
+            worksheet->hidden = 0;
+        }
     }
 
     /* Set the active sheet. */
-    STAILQ_FOREACH(worksheet, self->worksheets, list_pointers) {
+    STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
+
         if (worksheet->index == self->active_sheet)
             worksheet->active = 1;
     }

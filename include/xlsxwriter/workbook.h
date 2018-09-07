@@ -46,6 +46,7 @@
 #include <errno.h>
 
 #include "worksheet.h"
+#include "chartsheet.h"
 #include "chart.h"
 #include "shared_strings.h"
 #include "hash_table.h"
@@ -57,9 +58,22 @@
 RB_HEAD(lxw_worksheet_names, lxw_worksheet_name);
 
 /* Define the queue.h structs for the workbook lists. */
+STAILQ_HEAD(lxw_sheets, lxw_sheet);
 STAILQ_HEAD(lxw_worksheets, lxw_worksheet);
 STAILQ_HEAD(lxw_charts, lxw_chart);
 TAILQ_HEAD(lxw_defined_names, lxw_defined_name);
+
+/* TODO */
+typedef struct lxw_sheet {
+    uint8_t is_chartsheet;
+
+    union {
+        lxw_worksheet *worksheet;
+        lxw_chartsheet *chartsheet;
+    } u;
+
+    STAILQ_ENTRY (lxw_sheet) list_pointers;
+} lxw_sheet;
 
 /* Struct to represent a worksheet name/pointer pair. */
 typedef struct lxw_worksheet_name {
@@ -201,6 +215,7 @@ typedef struct lxw_workbook_options {
 typedef struct lxw_workbook {
 
     FILE *file;
+    struct lxw_sheets *sheets;
     struct lxw_worksheets *worksheets;
     struct lxw_worksheet_names *worksheet_names;
     struct lxw_charts *charts;
@@ -215,6 +230,7 @@ typedef struct lxw_workbook {
     lxw_workbook_options options;
 
     uint16_t num_sheets;
+    uint16_t num_worksheets;
     uint16_t first_sheet;
     uint16_t active_sheet;
     uint16_t num_xf_formats;

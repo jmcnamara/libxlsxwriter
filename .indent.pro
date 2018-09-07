@@ -119,6 +119,7 @@
 -T lxw_series_data_point
 -T lxw_series_error_bars
 -T lxw_series_range
+-T lxw_sheet
 -T lxw_sst
 -T lxw_styles
 -T lxw_theme

@@ -167,12 +167,18 @@ STATIC lxw_error
 _write_worksheet_files(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
     lxw_error err;
 
-    STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
+
         lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
                      "xl/worksheets/sheet%d.xml", index++);
 
@@ -201,6 +207,7 @@ STATIC lxw_error
 _write_image_files(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     lxw_image_options *image;
     lxw_error err;
@@ -209,7 +216,11 @@ _write_image_files(lxw_packager *self)
     char filename[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
 
-    STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
 
         if (STAILQ_EMPTY(worksheet->image_data))
             continue;
@@ -286,13 +297,19 @@ STATIC lxw_error
 _write_drawing_files(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     lxw_drawing *drawing;
     char filename[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
     lxw_error err;
 
-    STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
+
         drawing = worksheet->drawing;
 
         if (drawing) {
@@ -350,6 +367,7 @@ STATIC lxw_error
 _write_app_file(lxw_packager *self)
 {
     lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     lxw_defined_name *defined_name;
     lxw_app *app;
@@ -375,7 +393,12 @@ _write_app_file(lxw_packager *self)
 
     lxw_app_add_heading_pair(app, "Worksheets", number);
 
-    STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
+
         lxw_app_add_part_name(app, worksheet->name);
     }
 
@@ -578,7 +601,7 @@ _write_content_types_file(lxw_packager *self)
 {
     lxw_content_types *content_types = lxw_content_types_new();
     lxw_workbook *workbook = self->workbook;
-    lxw_worksheet *worksheet;
+    lxw_sheet *sheet;
     char filename[LXW_MAX_ATTRIBUTE_LENGTH] = { 0 };
     uint16_t index = 1;
     lxw_error err = LXW_NO_ERROR;
@@ -603,7 +626,10 @@ _write_content_types_file(lxw_packager *self)
     if (workbook->has_bmp)
         lxw_ct_add_default(content_types, "bmp", "image/bmp");
 
-    STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+
         lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                      "/xl/worksheets/sheet%d.xml", index++);
         lxw_ct_add_worksheet_name(content_types, filename);
@@ -647,7 +673,7 @@ _write_workbook_rels_file(lxw_packager *self)
 {
     lxw_relationships *rels = lxw_relationships_new();
     lxw_workbook *workbook = self->workbook;
-    lxw_worksheet *worksheet;
+    lxw_sheet *sheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
     lxw_error err = LXW_NO_ERROR;
@@ -663,7 +689,10 @@ _write_workbook_rels_file(lxw_packager *self)
         goto mem_error;
     }
 
-    STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+
         lxw_snprintf(sheetname, LXW_FILENAME_LENGTH, "worksheets/sheet%d.xml",
                      index++);
         lxw_add_document_relationship(rels, "/worksheet", sheetname);
@@ -698,12 +727,17 @@ _write_worksheet_rels_file(lxw_packager *self)
     lxw_relationships *rels;
     lxw_rel_tuple *rel;
     lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 0;
     lxw_error err;
 
-    STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
 
         index++;
 
@@ -755,12 +789,17 @@ _write_drawing_rels_file(lxw_packager *self)
     lxw_relationships *rels;
     lxw_rel_tuple *rel;
     lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     uint16_t index = 1;
     lxw_error err;
 
-    STAILQ_FOREACH(worksheet, workbook->worksheets, list_pointers) {
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
 
         if (STAILQ_EMPTY(worksheet->drawing_links))
             continue;
