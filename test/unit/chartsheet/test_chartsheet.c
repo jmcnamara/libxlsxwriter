@@ -9,6 +9,7 @@
 #include "../helper.h"
 
 #include "xlsxwriter/chartsheet.h"
+#include "xlsxwriter/drawing.h"
 
 // Test assembling a complete Chartsheet file.
 CTEST(chartsheet, chartsheet) {
@@ -29,7 +30,7 @@ CTEST(chartsheet, chartsheet) {
 
     lxw_chartsheet *chartsheet = lxw_chartsheet_new(NULL);
     chartsheet->file = testfile;
-    chartsheet->drawing = lxw_drawing_new(NULL);
+    chartsheet->worksheet->drawing = lxw_drawing_new(NULL);
 
     lxw_chartsheet_assemble_xml_file(chartsheet);
 

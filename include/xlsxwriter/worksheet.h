@@ -3146,7 +3146,8 @@ void lxw_worksheet_prepare_image(lxw_worksheet *worksheet,
 
 void lxw_worksheet_prepare_chart(lxw_worksheet *worksheet,
                                  uint16_t chart_ref_id, uint16_t drawing_id,
-                                 lxw_image_options *image_data);
+                                 lxw_image_options *image_data,
+                                 uint8_t is_chartsheet);
 
 lxw_row *lxw_worksheet_find_row(lxw_worksheet *worksheet, lxw_row_t row_num);
 lxw_cell *lxw_worksheet_find_cell(lxw_row *row, lxw_col_t col_num);
@@ -3156,6 +3157,7 @@ lxw_cell *lxw_worksheet_find_cell(lxw_row *row, lxw_col_t col_num);
  */
 void lxw_worksheet_write_sheet_views(lxw_worksheet *worksheet);
 void lxw_worksheet_write_page_margins(lxw_worksheet *worksheet);
+void lxw_worksheet_write_drawings(lxw_worksheet *worksheet);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

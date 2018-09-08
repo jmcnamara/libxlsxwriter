@@ -17,7 +17,7 @@ CTEST(chartsheet, xml_declaration) {
     char exp[] = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n";
     FILE* testfile = tmpfile();
 
-    lxw_chartsheet *chartsheet = lxw_chartsheet_new();
+    lxw_chartsheet *chartsheet = lxw_chartsheet_new(NULL);
     chartsheet->file = testfile;
 
     _chartsheet_xml_declaration(chartsheet);

@@ -490,12 +490,39 @@ _drawing_write_client_data(lxw_drawing *self)
 }
 
 /*
+ * Write the <a:graphicFrameLocks> element.
+ */
+STATIC void
+_drawing_write_a_graphic_frame_locks(lxw_drawing *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("noGrp", 1);
+
+    lxw_xml_empty_tag(self->file, "a:graphicFrameLocks", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <xdr:cNvGraphicFramePr> element.
  */
 STATIC void
 _drawing_write_c_nv_graphic_frame_pr(lxw_drawing *self)
 {
-    lxw_xml_empty_tag(self->file, "xdr:cNvGraphicFramePr", NULL);
+    if (self->embedded) {
+        lxw_xml_empty_tag(self->file, "xdr:cNvGraphicFramePr", NULL);
+    }
+    else {
+        lxw_xml_start_tag(self->file, "xdr:cNvGraphicFramePr", NULL);
+
+        /* Write the a:graphicFrameLocks element. */
+        _drawing_write_a_graphic_frame_locks(self);
+
+        lxw_xml_end_tag(self->file, "xdr:cNvGraphicFramePr");
+    }
 }
 
 /*
@@ -705,6 +732,71 @@ _drawing_write_two_cell_anchor(lxw_drawing *self, uint16_t index,
     LXW_FREE_ATTRIBUTES();
 }
 
+/*
+ * Write the <xdr:ext> element.
+ */
+STATIC void
+_drawing_write_ext(lxw_drawing *self, uint32_t cx, uint32_t cy)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("cx", cx);
+    LXW_PUSH_ATTRIBUTES_INT("cy", cy);
+
+    lxw_xml_empty_tag(self->file, "xdr:ext", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <xdr:pos> element.
+ */
+STATIC void
+_drawing_write_pos(lxw_drawing *self, int32_t x, int32_t y)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("x", x);
+    LXW_PUSH_ATTRIBUTES_INT("y", y);
+
+    lxw_xml_empty_tag(self->file, "xdr:pos", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <xdr:absoluteAnchor> element.
+ */
+STATIC void
+_drawing_write_absolute_anchor(lxw_drawing *self)
+{
+    lxw_xml_start_tag(self->file, "xdr:absoluteAnchor", NULL);
+
+    /* Horizontal == 0. Vertial == 1. */
+    if (self->orientation == 0) {
+        /* Write the xdr:pos element. */
+        _drawing_write_pos(self, 0, 0);
+
+        /* Write the xdr:ext element. */
+        _drawing_write_ext(self, 9308969, 6078325);
+    }
+    else {
+        /* Write the xdr:pos element. */
+        _drawing_write_pos(self, 0, -47625);
+    }
+
+    _drawing_write_graphic_frame(self, 1);
+
+    /* Write the xdr:clientData element. */
+    _drawing_write_client_data(self);
+
+    lxw_xml_end_tag(self->file, "xdr:absoluteAnchor");
+}
+
 /*****************************************************************************
  *
  * XML file assembly functions.
@@ -733,7 +825,10 @@ lxw_drawing_assemble_xml_file(lxw_drawing *self)
             _drawing_write_two_cell_anchor(self, index, drawing_object);
             index++;
         }
-
+    }
+    else {
+        /* Write the xdr:absoluteAnchor element. Mainly for chartsheets. */
+        _drawing_write_absolute_anchor(self);
     }
 
     lxw_xml_end_tag(self->file, "xdr:wsDr");

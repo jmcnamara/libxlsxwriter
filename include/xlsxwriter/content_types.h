@@ -46,6 +46,8 @@ void lxw_ct_add_override(lxw_content_types *content_types, const char *key,
                          const char *value);
 void lxw_ct_add_worksheet_name(lxw_content_types *content_types,
                                const char *name);
+void lxw_ct_add_chartsheet_name(lxw_content_types *content_types,
+                                const char *name);
 void lxw_ct_add_chart_name(lxw_content_types *content_types,
                            const char *name);
 void lxw_ct_add_drawing_name(lxw_content_types *content_types,

@@ -4949,7 +4949,8 @@ lxw_chart_assemble_xml_file(lxw_chart *self)
                        self->chartarea_pattern);
 
     /* Write the c:printSettings element. */
-    _chart_write_print_settings(self);
+    if (!self->is_chartsheet)
+        _chart_write_print_settings(self);
 
     lxw_xml_end_tag(self->file, "c:chartSpace");
 }

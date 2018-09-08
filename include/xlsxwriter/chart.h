@@ -1069,6 +1069,7 @@ typedef struct lxw_chart {
     uint8_t in_use;
     uint8_t chart_group;
     uint8_t cat_has_num_fmt;
+    uint8_t is_chartsheet;
 
     uint8_t has_horiz_cat_axis;
     uint8_t has_horiz_val_axis;

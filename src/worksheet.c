@@ -2080,8 +2080,10 @@ mem_error:
  */
 void
 lxw_worksheet_prepare_chart(lxw_worksheet *self,
-                            uint16_t chart_ref_id, uint16_t drawing_id,
-                            lxw_image_options *image_data)
+                            uint16_t chart_ref_id,
+                            uint16_t drawing_id,
+                            lxw_image_options *image_data,
+                            uint8_t is_chartsheet)
 {
     lxw_drawing_object *drawing_object;
     lxw_rel_tuple *relationship;
@@ -2091,8 +2093,12 @@ lxw_worksheet_prepare_chart(lxw_worksheet *self,
 
     if (!self->drawing) {
         self->drawing = lxw_drawing_new();
-        self->drawing->embedded = LXW_TRUE;
         RETURN_VOID_ON_MEM_ERROR(self->drawing);
+
+        if (is_chartsheet)
+            self->drawing->embedded = LXW_FALSE;
+        else
+            self->drawing->embedded = LXW_TRUE;
 
         relationship = calloc(1, sizeof(lxw_rel_tuple));
         GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
@@ -3700,6 +3706,12 @@ void
 lxw_worksheet_write_page_margins(lxw_worksheet *self)
 {
     _worksheet_write_page_margins(self);
+}
+
+void
+lxw_worksheet_write_drawings(lxw_worksheet *self)
+{
+    _worksheet_write_drawings(self);
 }
 
 /*

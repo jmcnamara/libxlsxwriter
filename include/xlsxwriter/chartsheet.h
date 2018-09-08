@@ -60,9 +60,19 @@ typedef struct lxw_chartsheet {
 
     FILE *file;
     lxw_worksheet *worksheet;
-    lxw_drawing *drawing;
 
+    char *name;
+    char *quoted_name;
+    char *tmpdir;
+    uint32_t index;
+    uint8_t active;
+    uint8_t selected;
+    uint8_t hidden;
+    uint16_t *active_sheet;
+    uint16_t *first_sheet;
     uint16_t rel_count;
+
+    STAILQ_ENTRY (lxw_chartsheet) list_pointers;
 
 } lxw_chartsheet;
 
@@ -72,6 +82,17 @@ typedef struct lxw_chartsheet {
 extern "C" {
 #endif
 /* *INDENT-ON* */
+
+lxw_error chartsheet_set_chart_opt(lxw_chartsheet *chartsheet,
+                                   lxw_chart *chart,
+                                   lxw_image_options *user_options);
+
+lxw_error chartsheet_set_chart(lxw_chartsheet *chartsheet, lxw_chart *chart);
+
+void chartsheet_select(lxw_chartsheet *chartsheet);
+void chartsheet_activate(lxw_chartsheet *chartsheet);
+void chartsheet_set_first_sheet(lxw_chartsheet *chartsheet);
+void chartsheet_hide(lxw_chartsheet *chartsheet);
 
 lxw_chartsheet *lxw_chartsheet_new();
 void lxw_chartsheet_free(lxw_chartsheet *chartsheet);

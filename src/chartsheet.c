@@ -25,7 +25,7 @@
  * Create a new chartsheet object.
  */
 lxw_chartsheet *
-lxw_chartsheet_new()
+lxw_chartsheet_new(lxw_worksheet_init_data *init_data)
 {
     lxw_chartsheet *chartsheet = calloc(1, sizeof(lxw_chartsheet));
     GOTO_LABEL_ON_MEM_ERROR(chartsheet, mem_error);
@@ -34,6 +34,16 @@ lxw_chartsheet_new()
      * shared with worksheet.c. */
     chartsheet->worksheet = lxw_worksheet_new(NULL);
     GOTO_LABEL_ON_MEM_ERROR(chartsheet->worksheet, mem_error);
+
+    if (init_data) {
+        chartsheet->name = init_data->name;
+        chartsheet->quoted_name = init_data->quoted_name;
+        chartsheet->tmpdir = init_data->tmpdir;
+        chartsheet->index = init_data->index;
+        chartsheet->hidden = init_data->hidden;
+        chartsheet->active_sheet = init_data->active_sheet;
+        chartsheet->first_sheet = init_data->first_sheet;
+    }
 
     return chartsheet;
 
@@ -52,10 +62,8 @@ lxw_chartsheet_free(lxw_chartsheet *chartsheet)
         return;
 
     lxw_worksheet_free(chartsheet->worksheet);
-
-    if (chartsheet->drawing)
-        lxw_drawing_free(chartsheet->drawing);
-
+    free(chartsheet->name);
+    free(chartsheet->quoted_name);
     free(chartsheet);
 }
 
@@ -123,39 +131,12 @@ _chartsheet_write_page_margins(lxw_chartsheet *self)
 }
 
 /*
- * Write the <drawing> element.
- */
-STATIC void
-_chartsheet_write_drawing(lxw_chartsheet *self, uint16_t id)
-{
-    struct xml_attribute_list attributes;
-    struct xml_attribute *attribute;
-    char r_id[LXW_MAX_ATTRIBUTE_LENGTH];
-
-    lxw_snprintf(r_id, LXW_ATTR_32, "rId%d", id);
-
-    LXW_INIT_ATTRIBUTES();
-
-    LXW_PUSH_ATTRIBUTES_STR("r:id", r_id);
-
-    lxw_xml_empty_tag(self->file, "drawing", &attributes);
-
-    LXW_FREE_ATTRIBUTES();
-
-}
-
-/*
  * Write the <drawing> elements.
  */
 STATIC void
 _chartsheet_write_drawings(lxw_chartsheet *self)
 {
-    if (!self->drawing)
-        return;
-
-    self->rel_count++;
-
-    _chartsheet_write_drawing(self, self->rel_count);
+    lxw_worksheet_write_drawings(self->worksheet);
 }
 
 /*****************************************************************************
@@ -199,3 +180,146 @@ lxw_chartsheet_assemble_xml_file(lxw_chartsheet *self)
  * Public functions.
  *
  ****************************************************************************/
+/*
+ * Set a chartsheet chart, with options.
+ */
+lxw_error
+chartsheet_set_chart_opt(lxw_chartsheet *self,
+                         lxw_chart *chart, lxw_image_options *user_options)
+{
+    lxw_image_options *options;
+    lxw_chart_series *series;
+
+    if (!chart) {
+        LXW_WARN("chartsheet_set_chart()/_opt(): chart must be non-NULL.");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    /* Check that the chart isn't being used more than once. */
+    if (chart->in_use) {
+        LXW_WARN("chartsheet_set_chart()/_opt(): the same chart object "
+                 "cannot be set for a chartsheet more than once.");
+
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+
+    /* Check that the chart has a data series. */
+    if (STAILQ_EMPTY(chart->series_list)) {
+        LXW_WARN("chartsheet_set_chart()/_opt(): chart must have a series.");
+
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+
+    /* Check that the chart has a 'values' series. */
+    STAILQ_FOREACH(series, chart->series_list, list_pointers) {
+        if (!series->values->formula && !series->values->sheetname) {
+            LXW_WARN("chartsheet_set_chart()/_opt(): chart must have a "
+                     "'values' series.");
+
+            return LXW_ERROR_PARAMETER_VALIDATION;
+        }
+    }
+
+    /* Create a new object to hold the chart image options. */
+    options = calloc(1, sizeof(lxw_image_options));
+    RETURN_ON_MEM_ERROR(options, LXW_ERROR_MEMORY_MALLOC_FAILED);
+
+    if (user_options) {
+        options->x_offset = user_options->x_offset;
+        options->y_offset = user_options->y_offset;
+        options->x_scale = user_options->x_scale;
+        options->y_scale = user_options->y_scale;
+    }
+
+    /* TODO. Read defaults from chart. */
+    options->width = 480;
+    options->height = 288;
+
+    if (!options->x_scale)
+        options->x_scale = 1;
+
+    if (!options->y_scale)
+        options->y_scale = 1;
+
+    /* Store chart references so they can be ordered in the workbook. */
+    options->chart = chart;
+
+    /* Store the chart data in the embedded worksheet. */
+    STAILQ_INSERT_TAIL(self->worksheet->chart_data, options, list_pointers);
+
+    chart->in_use = LXW_TRUE;
+    chart->is_chartsheet = LXW_TRUE;
+
+    return LXW_NO_ERROR;
+}
+
+/*
+ * Set a chartsheet charts.
+ */
+lxw_error
+chartsheet_set_chart(lxw_chartsheet *self, lxw_chart *chart)
+{
+    return chartsheet_set_chart_opt(self, chart, NULL);
+}
+
+/*
+ * Set this chartsheet as a selected worksheet, i.e. the worksheet has its tab
+ * highlighted.
+ */
+void
+chartsheet_select(lxw_chartsheet *self)
+{
+    self->selected = LXW_TRUE;
+
+    /* Selected worksheet can't be hidden. */
+    self->hidden = LXW_FALSE;
+}
+
+/*
+ * Set this chartsheet as the active worksheet, i.e. the worksheet that is
+ * displayed when the workbook is opened. Also set it as selected.
+ */
+void
+chartsheet_activate(lxw_chartsheet *self)
+{
+    self->worksheet->selected = LXW_TRUE;
+    self->worksheet->active = LXW_TRUE;
+
+    /* Active worksheet can't be hidden. */
+    self->worksheet->hidden = LXW_FALSE;
+
+    *self->active_sheet = self->index;
+}
+
+/*
+ * Set this chartsheet as the first visible sheet. This is necessary
+ * when there are a large number of worksheets and the activated
+ * worksheet is not visible on the screen.
+ */
+void
+chartsheet_set_first_sheet(lxw_chartsheet *self)
+{
+    /* Active worksheet can't be hidden. */
+    self->hidden = LXW_FALSE;
+
+    *self->first_sheet = self->index;
+}
+
+/*
+ * Hide this chartsheet.
+ */
+void
+chartsheet_hide(lxw_chartsheet *self)
+{
+    self->hidden = LXW_TRUE;
+
+    /* A hidden worksheet shouldn't be active or selected. */
+    self->selected = LXW_FALSE;
+
+    /* If this is active_sheet or first_sheet reset the workbook value. */
+    if (*self->first_sheet == self->index)
+        *self->first_sheet = 0;
+
+    if (*self->active_sheet == self->index)
+        *self->active_sheet = 0;
+}

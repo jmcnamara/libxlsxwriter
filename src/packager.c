@@ -201,6 +201,43 @@ _write_worksheet_files(lxw_packager *self)
 }
 
 /*
+ * Write the chartsheet files.
+ */
+STATIC lxw_error
+_write_chartsheet_files(lxw_packager *self)
+{
+    lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
+    lxw_chartsheet *chartsheet;
+    char sheetname[LXW_FILENAME_LENGTH] = { 0 };
+    uint16_t index = 1;
+    lxw_error err;
+
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            chartsheet = sheet->u.chartsheet;
+        else
+            continue;
+
+        lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
+                     "xl/chartsheets/sheet%d.xml", index++);
+
+        chartsheet->file = lxw_tmpfile(self->tmpdir);
+        if (!chartsheet->file)
+            return LXW_ERROR_CREATING_TMPFILE;
+
+        lxw_chartsheet_assemble_xml_file(chartsheet);
+
+        err = _add_file_to_zip(self, chartsheet->file, sheetname);
+        RETURN_ON_ERROR(err);
+
+        fclose(chartsheet->file);
+    }
+
+    return LXW_NO_ERROR;
+}
+
+/*
  * Write the /xl/media/image?.xml files.
  */
 STATIC lxw_error
@@ -306,7 +343,7 @@ _write_drawing_files(lxw_packager *self)
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
         if (sheet->is_chartsheet)
-            continue;
+            worksheet = sheet->u.chartsheet->worksheet;
         else
             worksheet = sheet->u.worksheet;
 
@@ -369,6 +406,7 @@ _write_app_file(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     lxw_sheet *sheet;
     lxw_worksheet *worksheet;
+    lxw_chartsheet *chartsheet;
     lxw_defined_name *defined_name;
     lxw_app *app;
     uint16_t named_range_count = 0;
@@ -389,17 +427,27 @@ _write_app_file(lxw_packager *self)
         goto mem_error;
     }
 
-    lxw_snprintf(number, LXW_ATTR_32, "%d", self->workbook->num_sheets);
+    if (self->workbook->num_worksheets) {
+        lxw_snprintf(number, LXW_ATTR_32, "%d",
+                     self->workbook->num_worksheets);
+        lxw_app_add_heading_pair(app, "Worksheets", number);
+    }
 
-    lxw_app_add_heading_pair(app, "Worksheets", number);
+    if (self->workbook->num_chartsheets) {
+        lxw_snprintf(number, LXW_ATTR_32, "%d",
+                     self->workbook->num_chartsheets);
+        lxw_app_add_heading_pair(app, "Charts", number);
+    }
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
-        if (sheet->is_chartsheet)
-            continue;
-        else
+        if (sheet->is_chartsheet) {
+            chartsheet = sheet->u.chartsheet;
+            lxw_app_add_part_name(app, chartsheet->name);
+        }
+        else {
             worksheet = sheet->u.worksheet;
-
-        lxw_app_add_part_name(app, worksheet->name);
+            lxw_app_add_part_name(app, worksheet->name);
+        }
     }
 
     /* Add the Named Ranges parts. */
@@ -604,6 +652,8 @@ _write_content_types_file(lxw_packager *self)
     lxw_sheet *sheet;
     char filename[LXW_MAX_ATTRIBUTE_LENGTH] = { 0 };
     uint16_t index = 1;
+    uint16_t worksheet_index = 1;
+    uint16_t chartsheet_index = 1;
     lxw_error err = LXW_NO_ERROR;
 
     if (!content_types) {
@@ -627,12 +677,16 @@ _write_content_types_file(lxw_packager *self)
         lxw_ct_add_default(content_types, "bmp", "image/bmp");
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
-        if (sheet->is_chartsheet)
-            continue;
-
-        lxw_snprintf(filename, LXW_FILENAME_LENGTH,
-                     "/xl/worksheets/sheet%d.xml", index++);
-        lxw_ct_add_worksheet_name(content_types, filename);
+        if (sheet->is_chartsheet) {
+            lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+                         "/xl/chartsheets/sheet%d.xml", chartsheet_index++);
+            lxw_ct_add_chartsheet_name(content_types, filename);
+        }
+        else {
+            lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+                         "/xl/worksheets/sheet%d.xml", worksheet_index++);
+            lxw_ct_add_worksheet_name(content_types, filename);
+        }
     }
 
     for (index = 1; index <= self->chart_count; index++) {
@@ -675,7 +729,8 @@ _write_workbook_rels_file(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     lxw_sheet *sheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
-    uint16_t index = 1;
+    uint16_t worksheet_index = 1;
+    uint16_t chartsheet_index = 1;
     lxw_error err = LXW_NO_ERROR;
 
     if (!rels) {
@@ -690,12 +745,18 @@ _write_workbook_rels_file(lxw_packager *self)
     }
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
-        if (sheet->is_chartsheet)
-            continue;
-
-        lxw_snprintf(sheetname, LXW_FILENAME_LENGTH, "worksheets/sheet%d.xml",
-                     index++);
-        lxw_add_document_relationship(rels, "/worksheet", sheetname);
+        if (sheet->is_chartsheet) {
+            lxw_snprintf(sheetname,
+                         LXW_FILENAME_LENGTH,
+                         "chartsheets/sheet%d.xml", chartsheet_index++);
+            lxw_add_document_relationship(rels, "/chartsheet", sheetname);
+        }
+        else {
+            lxw_snprintf(sheetname,
+                         LXW_FILENAME_LENGTH,
+                         "worksheets/sheet%d.xml", worksheet_index++);
+            lxw_add_document_relationship(rels, "/worksheet", sheetname);
+        }
     }
 
     lxw_add_document_relationship(rels, "/theme", "theme/theme1.xml");
@@ -780,6 +841,68 @@ _write_worksheet_rels_file(lxw_packager *self)
 }
 
 /*
+ * Write the chartsheet .rels files for chartsheets that contain links to
+ * external data such as drawings.
+ */
+STATIC lxw_error
+_write_chartsheet_rels_file(lxw_packager *self)
+{
+    lxw_relationships *rels;
+    lxw_rel_tuple *rel;
+    lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
+    lxw_worksheet *worksheet;
+    char sheetname[LXW_FILENAME_LENGTH] = { 0 };
+    uint16_t index = 0;
+    lxw_error err;
+
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            worksheet = sheet->u.chartsheet->worksheet;
+        else
+            continue;
+
+        index++;
+
+        /* TODO. This should never be empty. Put check higher up. */
+        if (STAILQ_EMPTY(worksheet->external_drawing_links))
+            continue;
+
+        rels = lxw_relationships_new();
+
+        rels->file = lxw_tmpfile(self->tmpdir);
+        if (!rels->file) {
+            lxw_free_relationships(rels);
+            return LXW_ERROR_CREATING_TMPFILE;
+        }
+
+        STAILQ_FOREACH(rel, worksheet->external_hyperlinks, list_pointers) {
+            lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+                                           rel->target_mode);
+        }
+
+        STAILQ_FOREACH(rel, worksheet->external_drawing_links, list_pointers) {
+            lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+                                           rel->target_mode);
+        }
+
+        lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
+                     "xl/chartsheets/_rels/sheet%d.xml.rels", index);
+
+        lxw_relationships_assemble_xml_file(rels);
+
+        err = _add_file_to_zip(self, rels->file, sheetname);
+
+        fclose(rels->file);
+        lxw_free_relationships(rels);
+
+        RETURN_ON_ERROR(err);
+    }
+
+    return LXW_NO_ERROR;
+}
+
+/*
  * Write the drawing .rels files for worksheets that contain charts or
  * drawings.
  */
@@ -797,7 +920,7 @@ _write_drawing_rels_file(lxw_packager *self)
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
         if (sheet->is_chartsheet)
-            continue;
+            worksheet = sheet->u.chartsheet->worksheet;
         else
             worksheet = sheet->u.worksheet;
 
@@ -997,6 +1120,9 @@ lxw_create_package(lxw_packager *self)
     error = _write_worksheet_files(self);
     RETURN_ON_ERROR(error);
 
+    error = _write_chartsheet_files(self);
+    RETURN_ON_ERROR(error);
+
     error = _write_workbook_file(self);
     RETURN_ON_ERROR(error);
 
@@ -1031,6 +1157,9 @@ lxw_create_package(lxw_packager *self)
     RETURN_ON_ERROR(error);
 
     error = _write_worksheet_rels_file(self);
+    RETURN_ON_ERROR(error);
+
+    error = _write_chartsheet_rels_file(self);
     RETURN_ON_ERROR(error);
 
     error = _write_drawing_rels_file(self);

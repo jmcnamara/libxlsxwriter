@@ -18,7 +18,7 @@ CTEST(workbook, validate_worksheet_name01) {
 
     lxw_workbook *workbook = workbook_new(NULL);
     lxw_error exp = LXW_NO_ERROR;
-    lxw_error got = workbook_validate_worksheet_name(workbook, sheetname);
+    lxw_error got = workbook_validate_sheet_name(workbook, sheetname);
 
     ASSERT_EQUAL(got, exp);
 
@@ -32,7 +32,7 @@ CTEST(workbook, validate_worksheet_name02) {
 
     lxw_workbook *workbook = workbook_new(NULL);
     lxw_error exp = LXW_ERROR_SHEETNAME_LENGTH_EXCEEDED;
-    lxw_error got = workbook_validate_worksheet_name(workbook, sheetname);
+    lxw_error got = workbook_validate_sheet_name(workbook, sheetname);
 
     ASSERT_EQUAL(got, exp);
 
@@ -46,7 +46,7 @@ CTEST(workbook, validate_worksheet_name03) {
 
     lxw_workbook *workbook = workbook_new(NULL);
     lxw_error exp = LXW_ERROR_INVALID_SHEETNAME_CHARACTER;
-    lxw_error got = workbook_validate_worksheet_name(workbook, sheetname);
+    lxw_error got = workbook_validate_sheet_name(workbook, sheetname);
 
     ASSERT_EQUAL(got, exp);
 
@@ -62,7 +62,7 @@ CTEST(workbook, validate_worksheet_name04) {
     workbook_add_worksheet(workbook, sheetname);
 
     lxw_error exp = LXW_ERROR_SHEETNAME_ALREADY_USED;
-    lxw_error got = workbook_validate_worksheet_name(workbook, sheetname);
+    lxw_error got = workbook_validate_sheet_name(workbook, sheetname);
 
     ASSERT_EQUAL(got, exp);
 

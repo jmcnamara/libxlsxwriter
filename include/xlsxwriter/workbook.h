@@ -56,10 +56,12 @@
 
 /* Define the tree.h RB structs for the red-black head types. */
 RB_HEAD(lxw_worksheet_names, lxw_worksheet_name);
+RB_HEAD(lxw_chartsheet_names, lxw_chartsheet_name);
 
 /* Define the queue.h structs for the workbook lists. */
 STAILQ_HEAD(lxw_sheets, lxw_sheet);
 STAILQ_HEAD(lxw_worksheets, lxw_worksheet);
+STAILQ_HEAD(lxw_chartsheets, lxw_chartsheet);
 STAILQ_HEAD(lxw_charts, lxw_chart);
 TAILQ_HEAD(lxw_defined_names, lxw_defined_name);
 
@@ -83,18 +85,37 @@ typedef struct lxw_worksheet_name {
     RB_ENTRY (lxw_worksheet_name) tree_pointers;
 } lxw_worksheet_name;
 
+/* Struct to represent a chartsheet name/pointer pair. */
+typedef struct lxw_chartsheet_name {
+    const char *name;
+    lxw_chartsheet *chartsheet;
+
+    RB_ENTRY (lxw_chartsheet_name) tree_pointers;
+} lxw_chartsheet_name;
+
 /* Wrapper around RB_GENERATE_STATIC from tree.h to avoid unused function
  * warnings and to avoid portability issues with the _unused attribute. */
-#define LXW_RB_GENERATE_NAMES(name, type, field, cmp)     \
-    RB_GENERATE_INSERT_COLOR(name, type, field, static)   \
-    RB_GENERATE_REMOVE_COLOR(name, type, field, static)   \
-    RB_GENERATE_INSERT(name, type, field, cmp, static)    \
-    RB_GENERATE_REMOVE(name, type, field, static)         \
-    RB_GENERATE_FIND(name, type, field, cmp, static)      \
-    RB_GENERATE_NEXT(name, type, field, static)           \
-    RB_GENERATE_MINMAX(name, type, field, static)         \
-    /* Add unused struct to allow adding a semicolon */   \
-    struct lxw_rb_generate_names{int unused;}
+#define LXW_RB_GENERATE_WORKSHEET_NAMES(name, type, field, cmp)  \
+    RB_GENERATE_INSERT_COLOR(name, type, field, static)          \
+    RB_GENERATE_REMOVE_COLOR(name, type, field, static)          \
+    RB_GENERATE_INSERT(name, type, field, cmp, static)           \
+    RB_GENERATE_REMOVE(name, type, field, static)                \
+    RB_GENERATE_FIND(name, type, field, cmp, static)             \
+    RB_GENERATE_NEXT(name, type, field, static)                  \
+    RB_GENERATE_MINMAX(name, type, field, static)                \
+    /* Add unused struct to allow adding a semicolon */          \
+    struct lxw_rb_generate_worksheet_names{int unused;}
+
+#define LXW_RB_GENERATE_CHARTSHEET_NAMES(name, type, field, cmp) \
+    RB_GENERATE_INSERT_COLOR(name, type, field, static)          \
+    RB_GENERATE_REMOVE_COLOR(name, type, field, static)          \
+    RB_GENERATE_INSERT(name, type, field, cmp, static)           \
+    RB_GENERATE_REMOVE(name, type, field, static)                \
+    RB_GENERATE_FIND(name, type, field, cmp, static)             \
+    RB_GENERATE_NEXT(name, type, field, static)                  \
+    RB_GENERATE_MINMAX(name, type, field, static)                \
+    /* Add unused struct to allow adding a semicolon */          \
+    struct lxw_rb_generate_charsheet_names{int unused;}
 
 /**
  * @brief Macro to loop over all the worksheets in a workbook.
@@ -217,7 +238,9 @@ typedef struct lxw_workbook {
     FILE *file;
     struct lxw_sheets *sheets;
     struct lxw_worksheets *worksheets;
+    struct lxw_chartsheets *chartsheets;
     struct lxw_worksheet_names *worksheet_names;
+    struct lxw_chartsheet_names *chartsheet_names;
     struct lxw_charts *charts;
     struct lxw_charts *ordered_charts;
     struct lxw_formats *formats;
@@ -231,6 +254,7 @@ typedef struct lxw_workbook {
 
     uint16_t num_sheets;
     uint16_t num_worksheets;
+    uint16_t num_chartsheets;
     uint16_t first_sheet;
     uint16_t active_sheet;
     uint16_t num_xf_formats;
@@ -363,6 +387,9 @@ lxw_workbook *new_workbook_opt(const char *filename,
  */
 lxw_worksheet *workbook_add_worksheet(lxw_workbook *workbook,
                                       const char *sheetname);
+
+lxw_chartsheet *workbook_add_chartsheet(lxw_workbook *chartsheet,
+                                        const char *sheetname);
 
 /**
  * @brief Create a new @ref format.h "Format" object to formats cells in
@@ -703,31 +730,49 @@ lxw_worksheet *workbook_get_worksheet_by_name(lxw_workbook *workbook,
                                               const char *name);
 
 /**
- * @brief Validate a worksheet name.
+ * @brief Get a chartsheet object from its name.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param name     chartsheet name.
+ *
+ * @return A lxw_chartsheet object.
+ *
+ * This function returns a lxw_chartsheet object reference based on its name:
+ *
+ * @code
+ *     chartsheet = workbook_get_chartsheet_by_name(workbook, "Chart1");
+ * @endcode
+ *
+ */
+lxw_chartsheet *workbook_get_chartsheet_by_name(lxw_workbook *workbook,
+                                                const char *name);
+
+/**
+ * @brief Validate a worksheet or chartsheet name.
  *
  * @param workbook  Pointer to a lxw_workbook instance.
- * @param sheetname Worksheet name to validate.
+ * @param sheetname Sheet name to validate.
  *
  * @return A #lxw_error.
  *
- * This function is used to validate a worksheet name according to the rules
- * used by Excel:
+ * This function is used to validate a worksheet or chartsheet name according
+ * to the rules used by Excel:
  *
  * - The name is less than or equal to 31 UTF-8 characters.
  * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
  * - The name isn't already in use.
  *
  * @code
- *     lxw_error err = workbook_validate_worksheet_name(workbook, "Foglio");
+ *     lxw_error err = workbook_validate_sheet_name(workbook, "Foglio");
  * @endcode
  *
- * This function is called by `workbook_add_worksheet()` but it can be
- * explicitly called by the user beforehand to ensure that the worksheet
- * name is valid.
+ * This function is called by `workbook_add_worksheet()` and
+ * `workbook_add_chartsheet()` but it can be explicitly called by the user
+ * beforehand to ensure that the sheet name is valid.
  *
  */
-lxw_error workbook_validate_worksheet_name(lxw_workbook *workbook,
-                                           const char *sheetname);
+lxw_error workbook_validate_sheet_name(lxw_workbook *workbook,
+                                       const char *sheetname);
 
 void lxw_workbook_free(lxw_workbook *workbook);
 void lxw_workbook_assemble_xml_file(lxw_workbook *workbook);

@@ -297,6 +297,16 @@ lxw_ct_add_worksheet_name(lxw_content_types *self, const char *name)
 }
 
 /*
+ * Add the name of a chartsheet to the ContentTypes overrides.
+ */
+void
+lxw_ct_add_chartsheet_name(lxw_content_types *self, const char *name)
+{
+    lxw_ct_add_override(self, name,
+                        LXW_APP_DOCUMENT "spreadsheetml.chartsheet+xml");
+}
+
+/*
  * Add the name of a chart to the ContentTypes overrides.
  */
 void

@@ -77,6 +77,7 @@ typedef struct lxw_drawing {
     FILE *file;
 
     uint8_t embedded;
+    uint8_t orientation;
 
     struct lxw_drawing_objects *drawing_objects;
 
