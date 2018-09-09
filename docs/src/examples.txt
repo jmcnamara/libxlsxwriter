@@ -437,3 +437,11 @@ An example showing all 48 default chart styles available in Excel 2007 using
 the chart `chart_set_style()` method.
 
 @image html chart_styles.png
+
+
+##############################################################
+@example chartsheet.c
+
+An example of creating a simple bar chart in a chartsheet.
+
+@image html chartsheet.png

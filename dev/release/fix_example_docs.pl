@@ -57,6 +57,7 @@ my @examples = (
     [ 'chart_fonts.c',          'Examples of using charts fonts' ],
     [ 'chart_pattern.c',        'Examples of using charts patterns' ],
     [ 'chart_styles.c',         'Examples of built-in charts styles' ],
+    [ 'chartsheet.c',           'Example of a chartsheet chart' ],
 );
 
 # Convert the array refs to a hash for lookups.

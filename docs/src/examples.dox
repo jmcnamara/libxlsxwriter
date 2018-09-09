@@ -843,7 +843,7 @@ An example of creating a simple chart with different patterns.
 <table  width="600">
 <tr>
   <td>@ref chart_pattern.c "&lt;&lt; chart_pattern.c"</td>
-  <td align="right">@ref examples "Examples page &gt;&gt;"</td>
+  <td align="right">@ref chartsheet.c "chartsheet.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -851,6 +851,23 @@ An example showing all 48 default chart styles available in Excel 2007 using
 the chart `chart_set_style()` method.
 
 @image html chart_styles.png
+
+
+
+
+
+@example chartsheet.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_styles.c "&lt;&lt; chart_styles.c"</td>
+  <td align="right">@ref examples "Examples page &gt;&gt;"</td>
+</tr>
+</table>
+
+An example of creating a simple bar chart in a chartsheet.
+
+@image html chartsheet.png
 
 
 
