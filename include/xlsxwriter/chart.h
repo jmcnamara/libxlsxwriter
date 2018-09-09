@@ -1306,7 +1306,7 @@ void chart_series_set_values(lxw_chart_series *series, const char *sheetname,
  * @code
  *     lxw_chart_series *series = chart_add_series(chart, NULL, "=Sheet1!$B$2:$B$7");
  *
- *     chart_series_set_name(series, "=Sheet1!$B1$1");
+ *     chart_series_set_name(series, "=Sheet1!$B$1");
  * @endcode
  *
  * See also the `chart_series_set_name_range()` function to see how to set the
@@ -2297,7 +2297,7 @@ lxw_chart_axis *chart_axis_get(lxw_chart *chart,
  * a cell in the workbook that contains the name:
  *
  * @code
- *     chart_axis_set_name(chart->x_axis, "=Sheet1!$B1$1");
+ *     chart_axis_set_name(chart->x_axis, "=Sheet1!$B$1");
  * @endcode
  *
  * See also the `chart_axis_set_name_range()` function to see how to set the
@@ -3005,7 +3005,7 @@ void chart_axis_minor_gridlines_set_line(lxw_chart_axis *axis,
  * a cell in the workbook that contains the name:
  *
  * @code
- *     chart_title_set_name(chart, "=Sheet1!$B1$1");
+ *     chart_title_set_name(chart, "=Sheet1!$B$1");
  * @endcode
  *
  * See also the `chart_title_set_name_range()` function to see how to set the

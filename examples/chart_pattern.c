@@ -40,8 +40,8 @@ int main() {
     lxw_chart_series *series1 = chart_add_series(chart, NULL, "Sheet1!$A$2:$A$5");
     lxw_chart_series *series2 = chart_add_series(chart, NULL, "Sheet1!$B$2:$B$5");
 
-    chart_series_set_name(series1, "=Sheet1!$A1$1");
-    chart_series_set_name(series2, "=Sheet1!$B1$1");
+    chart_series_set_name(series1, "=Sheet1!$A$1");
+    chart_series_set_name(series2, "=Sheet1!$B$1");
 
     chart_title_set_name(chart,        "Cladding types");
     chart_axis_set_name(chart->x_axis, "Region");
