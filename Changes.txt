@@ -2,6 +2,13 @@
 @page changes Changes
 
 
+## 0.8.0 September 12 2018
+
+- Added chartsheet support. A chartsheet is a type of worksheet that only
+  contains a chart. See the @ref chartsheet.h "Chartsheet" object and @ref
+  chartsheet.c.
+
+
 ## 0.7.9 September 1 2018
 
 - Added `chart_axis_set_label_align()` function to set the alignment of chart

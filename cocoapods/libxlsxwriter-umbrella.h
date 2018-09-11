@@ -3,6 +3,7 @@
 #import "../xlsxwriter.h"
 #import "app.h"
 #import "chart.h"
+#import "chartsheet.h"
 #import "common.h"
 #import "content_types.h"
 #import "core.h"
