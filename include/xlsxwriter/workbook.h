@@ -357,7 +357,7 @@ lxw_workbook *new_workbook_opt(const char *filename,
  *
  * @return A lxw_worksheet object.
  *
- * The `%workbook_add_worksheet()` function adds a new worksheet to a workbook:
+ * The `%workbook_add_worksheet()` function adds a new worksheet to a workbook.
  *
  * At least one worksheet should be added to a new workbook: The @ref
  * worksheet.h "Worksheet" object is used to write data and configure a
@@ -382,13 +382,50 @@ lxw_workbook *new_workbook_opt(const char *filename,
  *     / \ [ ] : * ?
  *
  * In addition, you cannot use the same, case insensitive, `sheetname` for more
- * than one worksheet.
+ * than one worksheet, or chartsheet.
  *
  */
 lxw_worksheet *workbook_add_worksheet(lxw_workbook *workbook,
                                       const char *sheetname);
 
-lxw_chartsheet *workbook_add_chartsheet(lxw_workbook *chartsheet,
+/**
+ * @brief Add a new chartsheet to a workbook.
+ *
+ * @param workbook  Pointer to a lxw_workbook instance.
+ * @param sheetname Optional chartsheet name, defaults to Chart1, etc.
+ *
+ * @return A lxw_chartsheet object.
+ *
+ * The `%workbook_add_chartsheet()` function adds a new chartsheet to a
+ * workbook. The @ref chartsheet.h "Chartsheet" object is like a worksheet
+ * except it displays a chart instead of cell data.
+ *
+ * @image html chartsheet.png
+ *
+ * The `sheetname` parameter is optional. If it is `NULL` the default
+ * Excel convention will be followed, i.e. Chart1, Chart2, etc.:
+ *
+ * @code
+ *     chartsheet = workbook_add_chartsheet(workbook, NULL  );     // Chart1
+ *     chartsheet = workbook_add_chartsheet(workbook, "My Chart"); // My Chart
+ *     chartsheet = workbook_add_chartsheet(workbook, NULL  );     // Chart3
+ *
+ * @endcode
+ *
+ * The chartsheet name must be a valid Excel worksheet name, i.e. it must be
+ * less than 32 character and it cannot contain any of the characters:
+ *
+ *     / \ [ ] : * ?
+ *
+ * In addition, you cannot use the same, case insensitive, `sheetname` for more
+ * than one chartsheet, or worksheet.
+ *
+ * At least one worksheet should be added to a new workbook when creating a
+ * chartsheet in order to provide data for the chart. The @ref worksheet.h
+ * "Worksheet" object is used to write data and configure a worksheet in the
+ * workbook.
+ */
+lxw_chartsheet *workbook_add_chartsheet(lxw_workbook *workbook,
                                         const char *sheetname);
 
 /**

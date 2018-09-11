@@ -776,7 +776,7 @@ _drawing_write_absolute_anchor(lxw_drawing *self)
 {
     lxw_xml_start_tag(self->file, "xdr:absoluteAnchor", NULL);
 
-    /* Horizontal == 0. Vertial == 1. */
+    /* Horizontal == 0. Vertical == 1. */
     if (self->orientation == 0) {
         /* Write the xdr:pos element. */
         _drawing_write_pos(self, 0, 0);

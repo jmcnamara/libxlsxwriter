@@ -1727,8 +1727,8 @@ lxw_error worksheet_insert_image_buffer_opt(lxw_worksheet *worksheet,
  *
  * @return A #lxw_error code.
  *
- * The `%worksheet_insert_chart()` can be used to insert a chart into a
- * worksheet. The chart object must be created first using the
+ * The `%worksheet_insert_chart()` function can be used to insert a chart into
+ * a worksheet. The chart object must be created first using the
  * `workbook_add_chart()` function and configured using the @ref chart.h
  * functions.
  *
@@ -1739,12 +1739,11 @@ lxw_error worksheet_insert_image_buffer_opt(lxw_worksheet *worksheet,
  *     // Add a data series to the chart.
  *     chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$6");
  *
- *     // Insert the chart into the worksheet
+ *     // Insert the chart into the worksheet.
  *     worksheet_insert_chart(worksheet, 0, 2, chart);
  * @endcode
  *
  * @image html chart_working.png
- *
  *
  * **Note:**
  *
