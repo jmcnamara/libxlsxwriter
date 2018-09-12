@@ -15,3 +15,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chartsheet01(self):
         self.run_exe_test('test_chartsheet01')
+
+    def test_chartsheet02(self):
+        self.run_exe_test('test_chartsheet02')
+
+    def test_chartsheet03(self):
+        self.run_exe_test('test_chartsheet03')

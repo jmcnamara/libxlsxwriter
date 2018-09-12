@@ -440,13 +440,16 @@ _write_app_file(lxw_packager *self)
     }
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (!sheet->is_chartsheet) {
+            worksheet = sheet->u.worksheet;
+            lxw_app_add_part_name(app, worksheet->name);
+        }
+    }
+
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
         if (sheet->is_chartsheet) {
             chartsheet = sheet->u.chartsheet;
             lxw_app_add_part_name(app, chartsheet->name);
-        }
-        else {
-            worksheet = sheet->u.worksheet;
-            lxw_app_add_part_name(app, worksheet->name);
         }
     }
 

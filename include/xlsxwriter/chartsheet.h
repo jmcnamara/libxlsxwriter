@@ -169,7 +169,7 @@ lxw_error chartsheet_set_chart_opt(lxw_chartsheet *chartsheet,
  */
 void chartsheet_activate(lxw_chartsheet *chartsheet);
 
-/*
+/**
  * @brief Set a chartsheet tab as selected.
  *
  * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
@@ -194,7 +194,7 @@ void chartsheet_activate(lxw_chartsheet *chartsheet);
  */
 void chartsheet_select(lxw_chartsheet *chartsheet);
 
-/*
+/**
  * @brief Hide the current chartsheet.
  *
  * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
@@ -226,7 +226,7 @@ void chartsheet_select(lxw_chartsheet *chartsheet);
  */
 void chartsheet_hide(lxw_chartsheet *chartsheet);
 
-/*
+/**
  * @brief Set current chartsheet as the first visible sheet tab.
  *
  * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
