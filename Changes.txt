@@ -2,6 +2,15 @@
 @page changes Changes
 
 
+## 0.8.1 September 13 2018
+
+- Fix for chartsheet and worksheet ordering issue.
+
+- Added new chartsheet functionality: `chartsheet_protect()`,
+  `chartsheet_hide()`, `chartsheet_select()`, and
+  `chartsheet_set_first_sheet()`.
+
+
 ## 0.8.0 September 12 2018
 
 - Added chartsheet support. A chartsheet is a type of worksheet that only
