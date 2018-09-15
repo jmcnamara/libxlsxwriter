@@ -2,7 +2,7 @@
 @page changes Changes
 
 
-## 0.8.1 September 13 2018
+## 0.8.1 September 15 2018
 
 - Fix for chartsheet and worksheet ordering issue.
 
