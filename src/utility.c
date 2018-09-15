@@ -562,3 +562,35 @@ lxw_version(void)
 {
     return LXW_VERSION;
 }
+
+/*
+ * Hash a worksheet password. Based on the algorithm provided by Daniel Rentz
+ * of OpenOffice.
+ */
+uint16_t
+lxw_hash_password(const char *password)
+{
+    size_t count;
+    uint8_t i;
+    uint16_t hash = 0x0000;
+
+    count = strlen(password);
+
+    for (i = 0; i < count; i++) {
+        uint32_t low_15;
+        uint32_t high_15;
+        uint32_t letter = password[i] << (i + 1);
+
+        low_15 = letter & 0x7fff;
+        high_15 = letter & (0x7fff << 15);
+        high_15 = high_15 >> 15;
+        letter = low_15 | high_15;
+
+        hash ^= letter;
+    }
+
+    hash ^= count;
+    hash ^= 0xCE4B;
+
+    return hash;
+}

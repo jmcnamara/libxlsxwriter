@@ -139,6 +139,15 @@ _chartsheet_write_drawings(lxw_chartsheet *self)
     lxw_worksheet_write_drawings(self->worksheet);
 }
 
+/*
+ * Write the <sheetProtection> element.
+ */
+STATIC void
+_chartsheet_write_sheet_protection(lxw_chartsheet *self)
+{
+    lxw_worksheet_write_sheet_protection(self->worksheet, &self->protection);
+}
+
 /*****************************************************************************
  *
  * XML file assembly functions.
@@ -165,6 +174,9 @@ lxw_chartsheet_assemble_xml_file(lxw_chartsheet *self)
 
     /* Write the sheetViews element. */
     _chartsheet_write_sheet_views(self);
+
+    /* Write the sheetProtection element. */
+    _chartsheet_write_sheet_protection(self);
 
     /* Write the pageMargins element. */
     _chartsheet_write_page_margins(self);
@@ -250,6 +262,10 @@ chartsheet_set_chart_opt(lxw_chartsheet *self,
     chart->in_use = LXW_TRUE;
     chart->is_chartsheet = LXW_TRUE;
 
+    chart->is_protected = self->is_protected;
+
+    self->chart = chart;
+
     return LXW_NO_ERROR;
 }
 
@@ -322,4 +338,43 @@ chartsheet_hide(lxw_chartsheet *self)
 
     if (*self->active_sheet == self->index)
         *self->active_sheet = 0;
+}
+
+/*
+ * Set the chartsheet protection flags to prevent modification of chartsheet
+ * objects.
+ */
+void
+chartsheet_protect(lxw_chartsheet *self, const char *password,
+                   lxw_protection *options)
+{
+    struct lxw_protection *protect = &self->protection;
+
+    /* Copy any user parameters to the internal structure. */
+    if (options) {
+        protect->objects = options->no_objects;
+        protect->no_content = options->no_content;
+    }
+    else {
+        protect->objects = LXW_FALSE;
+        protect->no_content = LXW_FALSE;
+    }
+
+    if (password) {
+        uint16_t hash = lxw_hash_password(password);
+        lxw_snprintf(protect->hash, 5, "%X", hash);
+    }
+    else {
+        if (protect->objects && protect->no_content)
+            return;
+    }
+
+    protect->no_sheet = LXW_TRUE;
+    protect->scenarios = LXW_TRUE;
+    protect->is_configured = LXW_TRUE;
+
+    if (self->chart)
+        self->chart->is_protected = LXW_TRUE;
+    else
+        self->is_protected = LXW_TRUE;
 }

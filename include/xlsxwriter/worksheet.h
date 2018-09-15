@@ -626,11 +626,16 @@ typedef struct lxw_protection {
     /** Protect scenarios. */
     uint8_t scenarios;
 
-    /** Protect drawing objects. */
+    /** Protect drawing objects. Worksheets only. */
     uint8_t objects;
 
+    /** Turn off chartsheet content protection. */
+    uint8_t no_content;
+
+    /** Turn off chartsheet objects. */
+    uint8_t no_objects;
+
     uint8_t no_sheet;
-    uint8_t content;
     uint8_t is_configured;
     char hash[5];
 } lxw_protection;
@@ -3046,11 +3051,10 @@ void worksheet_set_tab_color(lxw_worksheet *worksheet, lxw_color_t color);
  *
  * See also the format_set_unlocked() and format_set_hidden() format functions.
  *
- * **Note:** Worksheet level passwords in Excel offer **very** weak
+ * **Note:** Sheet level passwords in Excel offer **very** weak
  * protection. They don't encrypt your data and are very easy to
  * deactivate. Full workbook encryption is not supported by `libxlsxwriter`
- * since it requires a completely different file format and would take several
- * man months to implement.
+ * since it requires a completely different file format.
  */
 void worksheet_protect(lxw_worksheet *worksheet, const char *password,
                        lxw_protection *options);
@@ -3157,6 +3161,8 @@ lxw_cell *lxw_worksheet_find_cell(lxw_row *row, lxw_col_t col_num);
 void lxw_worksheet_write_sheet_views(lxw_worksheet *worksheet);
 void lxw_worksheet_write_page_margins(lxw_worksheet *worksheet);
 void lxw_worksheet_write_drawings(lxw_worksheet *worksheet);
+void lxw_worksheet_write_sheet_protection(lxw_worksheet *worksheet,
+                                          lxw_protection *protect);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING
@@ -3187,7 +3193,8 @@ STATIC void _worksheet_write_header_footer(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_print_options(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_pr(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_tab_color(lxw_worksheet *worksheet);
-STATIC void _worksheet_write_sheet_protection(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_sheet_protection(lxw_worksheet *worksheet,
+                                              lxw_protection *protect);
 STATIC void _worksheet_write_data_validations(lxw_worksheet *self);
 #endif /* TESTING */
 

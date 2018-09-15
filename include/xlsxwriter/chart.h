@@ -1125,6 +1125,7 @@ typedef struct lxw_chart {
     lxw_chart_fill *down_bar_fill;
 
     uint8_t default_label_position;
+    uint8_t is_protected;
 
     STAILQ_ENTRY (lxw_chart) ordered_list_pointers;
     STAILQ_ENTRY (lxw_chart) list_pointers;

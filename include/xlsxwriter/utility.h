@@ -177,6 +177,7 @@ int lxw_sprintf_dbl(char *data, double number);
         lxw_snprintf(data, LXW_ATTR_32, "%.16g", number)
 #endif
 
+uint16_t lxw_hash_password(const char *password);
 
 /* *INDENT-OFF* */
 #ifdef __cplusplus

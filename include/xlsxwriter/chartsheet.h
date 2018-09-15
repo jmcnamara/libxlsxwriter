@@ -62,6 +62,7 @@
 #include "common.h"
 #include "worksheet.h"
 #include "drawing.h"
+#include "utility.h"
 
 /**
  * @brief Struct to represent an Excel chartsheet.
@@ -74,6 +75,10 @@ typedef struct lxw_chartsheet {
 
     FILE *file;
     lxw_worksheet *worksheet;
+    lxw_chart *chart;
+
+    struct lxw_protection protection;
+    uint8_t is_protected;
 
     char *name;
     char *quoted_name;
@@ -250,15 +255,71 @@ void chartsheet_hide(lxw_chartsheet *chartsheet);
  */
 void chartsheet_set_first_sheet(lxw_chartsheet *chartsheet);
 
+/**
+ * @brief Protect elements of a chartsheet from modification.
+ *
+ * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
+ * @param password   A chartsheet password.
+ * @param options    Chartsheet elements to protect.
+ *
+ * The `%chartsheet_protect()` function protects chartsheet elements from
+ * modification:
+ *
+ * @code
+ *     chartsheet_protect(chartsheet, "Some Password", options);
+ * @endcode
+ *
+ * The `password` and lxw_protection pointer are both optional:
+ *
+ * @code
+ *     chartsheet_protect(chartsheet2, NULL,       my_options);
+ *     chartsheet_protect(chartsheet3, "password", NULL);
+ *     chartsheet_protect(chartsheet4, "password", my_options);
+ * @endcode
+ *
+ * Passing a `NULL` password is the same as turning on protection without a
+ * password. Passing a `NULL` password and `NULL` options had no effect on
+ * chartsheets.
+ *
+ * You can specify which chartsheet elements you wish to protect by passing a
+ * lxw_protection pointer in the `options` argument. In Excel chartsheets only
+ * have two protection options:
+ *
+ *     no_content
+ *     no_objects
+ *
+ * All parameters are off by default. Individual elements can be protected as
+ * follows:
+ *
+ * @code
+ *     lxw_protection options = {
+ *         .no_content  = 1,
+ *         .no_objects  = 1,
+ *     };
+ *
+ *     chartsheet_protect(chartsheet, NULL, &options);
+ *
+ * @endcode
+ *
+ * See also worksheet_protect().
+ *
+ * **Note:** Sheet level passwords in Excel offer **very** weak
+ * protection. They don't encrypt your data and are very easy to
+ * deactivate. Full workbook encryption is not supported by `libxlsxwriter`
+ * since it requires a completely different file format.
+ */
+void chartsheet_protect(lxw_chartsheet *chartsheet, const char *password,
+                        lxw_protection *options);
+
 lxw_chartsheet *lxw_chartsheet_new();
 void lxw_chartsheet_free(lxw_chartsheet *chartsheet);
-void lxw_chartsheet_assemble_xml_file(lxw_chartsheet *self);
+void lxw_chartsheet_assemble_xml_file(lxw_chartsheet *chartsheet);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING
 
-STATIC void _chartsheet_xml_declaration(lxw_chartsheet *self);
-
+STATIC void _chartsheet_xml_declaration(lxw_chartsheet *chartsheet);
+STATIC void _chartsheet_write_sheet_protection(lxw_chartsheet *chartsheet);
 #endif /* TESTING */
 
 /* *INDENT-OFF* */

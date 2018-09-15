@@ -20,8 +20,8 @@ CTEST(worksheet, write_write_sheet_protection01) {
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;
 
-    worksheet->protection.is_configured = 1;
-    _worksheet_write_sheet_protection(worksheet);
+    worksheet_protect(worksheet, NULL, NULL);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -39,7 +39,7 @@ CTEST(worksheet, write_write_sheet_protection02) {
     worksheet->file = testfile;
 
     worksheet_protect(worksheet, "password", NULL);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -58,7 +58,7 @@ CTEST(worksheet, write_write_sheet_protection03) {
     lxw_protection options = {.no_select_locked_cells = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -78,7 +78,7 @@ CTEST(worksheet, write_write_sheet_protection04) {
     lxw_protection options = {.format_cells = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -98,7 +98,7 @@ CTEST(worksheet, write_write_sheet_protection05) {
     lxw_protection options = {.format_columns = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -118,7 +118,7 @@ CTEST(worksheet, write_write_sheet_protection06) {
     lxw_protection options = {.format_rows = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -138,7 +138,7 @@ CTEST(worksheet, write_write_sheet_protection07) {
     lxw_protection options = {.insert_columns = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -158,7 +158,7 @@ CTEST(worksheet, write_write_sheet_protection08) {
     lxw_protection options = {.insert_rows = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -178,7 +178,7 @@ CTEST(worksheet, write_write_sheet_protection09) {
     lxw_protection options = {.insert_hyperlinks = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -198,7 +198,7 @@ CTEST(worksheet, write_write_sheet_protection10) {
     lxw_protection options = {.delete_columns = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -218,7 +218,7 @@ CTEST(worksheet, write_write_sheet_protection11) {
     lxw_protection options = {.delete_rows = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -238,7 +238,7 @@ CTEST(worksheet, write_write_sheet_protection12) {
     lxw_protection options = {.sort = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -258,7 +258,7 @@ CTEST(worksheet, write_write_sheet_protection13) {
     lxw_protection options = {.autofilter = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -278,7 +278,7 @@ CTEST(worksheet, write_write_sheet_protection14) {
     lxw_protection options = {.pivot_tables = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -298,7 +298,7 @@ CTEST(worksheet, write_write_sheet_protection15) {
     lxw_protection options = {.objects = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -318,7 +318,7 @@ CTEST(worksheet, write_write_sheet_protection16) {
     lxw_protection options = {.scenarios = 1};
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -342,7 +342,7 @@ CTEST(worksheet, write_write_sheet_protection17) {
     };
 
     worksheet_protect(worksheet, NULL, &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -378,7 +378,7 @@ CTEST(worksheet, write_write_sheet_protection18) {
     };
 
     worksheet_protect(worksheet, "drowssap", &options);
-    _worksheet_write_sheet_protection(worksheet);
+    _worksheet_write_sheet_protection(worksheet, &worksheet->protection);
 
     RUN_XLSX_STREQ(exp, got);
 

@@ -574,6 +574,15 @@ _chart_xml_declaration(lxw_chart *self)
 }
 
 /*
+ * Write the <c:protection> element.
+ */
+STATIC void
+_chart_write_protection(lxw_chart *self)
+{
+    lxw_xml_empty_tag(self->file, "c:protection", NULL);
+}
+
+/*
  * Write the <c:chartSpace> element.
  */
 STATIC void
@@ -4940,6 +4949,10 @@ lxw_chart_assemble_xml_file(lxw_chart *self)
 
     /* Write the c:style element. */
     _chart_write_style(self);
+
+    /* Write the c:protection element. */
+    if (self->is_protected)
+        _chart_write_protection(self);
 
     /* Write the c:chart element. */
     _chart_write_chart(self);

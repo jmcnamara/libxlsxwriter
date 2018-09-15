@@ -843,38 +843,6 @@ _cell_cmp(lxw_cell *cell1, lxw_cell *cell2)
 }
 
 /*
- * Hash a worksheet password. Based on the algorithm provided by Daniel Rentz
- * of OpenOffice.
- */
-STATIC uint16_t
-_hash_password(const char *password)
-{
-    size_t count;
-    uint8_t i;
-    uint16_t hash = 0x0000;
-
-    count = strlen(password);
-
-    for (i = 0; i < count; i++) {
-        uint32_t low_15;
-        uint32_t high_15;
-        uint32_t letter = password[i] << (i + 1);
-
-        low_15 = letter & 0x7fff;
-        high_15 = letter & (0x7fff << 15);
-        high_15 = high_15 >> 15;
-        letter = low_15 | high_15;
-
-        hash ^= letter;
-    }
-
-    hash ^= count;
-    hash ^= 0xCE4B;
-
-    return hash;
-}
-
-/*
  * Simple replacement for libgen.h basename() for compatibility with MSVC. It
  * handles forward and back slashes. It doesn't copy exactly the return
  * format of basename().
@@ -3368,12 +3336,11 @@ mem_error:
  * Write the <sheetProtection> element.
  */
 STATIC void
-_worksheet_write_sheet_protection(lxw_worksheet *self)
+_worksheet_write_sheet_protection(lxw_worksheet *self,
+                                  lxw_protection *protect)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-
-    struct lxw_protection *protect = &self->protection;
 
     if (!protect->is_configured)
         return;
@@ -3386,7 +3353,7 @@ _worksheet_write_sheet_protection(lxw_worksheet *self)
     if (!protect->no_sheet)
         LXW_PUSH_ATTRIBUTES_INT("sheet", 1);
 
-    if (protect->content)
+    if (!protect->no_content)
         LXW_PUSH_ATTRIBUTES_INT("content", 1);
 
     if (!protect->objects)
@@ -3714,6 +3681,13 @@ lxw_worksheet_write_drawings(lxw_worksheet *self)
     _worksheet_write_drawings(self);
 }
 
+void
+lxw_worksheet_write_sheet_protection(lxw_worksheet *self,
+                                     lxw_protection *protect)
+{
+    _worksheet_write_sheet_protection(self, protect);
+}
+
 /*
  * Assemble and write the XML file.
  */
@@ -3748,7 +3722,7 @@ lxw_worksheet_assemble_xml_file(lxw_worksheet *self)
         _worksheet_write_optimized_sheet_data(self);
 
     /* Write the sheetProtection element. */
-    _worksheet_write_sheet_protection(self);
+    _worksheet_write_sheet_protection(self, &self->protection);
 
     /* Write the autoFilter element. */
     _worksheet_write_auto_filter(self);
@@ -5259,10 +5233,11 @@ worksheet_protect(lxw_worksheet *self, const char *password,
     }
 
     if (password) {
-        uint16_t hash = _hash_password(password);
+        uint16_t hash = lxw_hash_password(password);
         lxw_snprintf(protect->hash, 5, "%X", hash);
     }
 
+    protect->no_content = LXW_TRUE;
     protect->is_configured = LXW_TRUE;
 }
 
