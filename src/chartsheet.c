@@ -45,6 +45,7 @@ lxw_chartsheet_new(lxw_worksheet_init_data *init_data)
         chartsheet->first_sheet = init_data->first_sheet;
     }
 
+    chartsheet->worksheet->is_chartsheet = LXW_TRUE;
     chartsheet->worksheet->zoom_scale_normal = LXW_FALSE;
 
     return chartsheet;
@@ -111,7 +112,7 @@ _chartsheet_write_chartsheet(lxw_chartsheet *self)
 STATIC void
 _chartsheet_write_sheet_pr(lxw_chartsheet *self)
 {
-    lxw_xml_empty_tag(self->file, "sheetPr", NULL);
+    lxw_worksheet_write_sheet_pr(self->worksheet);
 }
 
 /*
@@ -340,6 +341,15 @@ chartsheet_hide(lxw_chartsheet *self)
 
     if (*self->active_sheet == self->index)
         *self->active_sheet = 0;
+}
+
+/*
+ * Set the color of the chartsheet tab.
+ */
+void
+chartsheet_set_tab_color(lxw_chartsheet *self, lxw_color_t color)
+{
+    self->worksheet->tab_color = color;
 }
 
 /*

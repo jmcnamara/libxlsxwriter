@@ -676,6 +676,7 @@ typedef struct lxw_worksheet {
     uint8_t hidden;
     uint16_t *active_sheet;
     uint16_t *first_sheet;
+    uint8_t is_chartsheet;
 
     lxw_col_options **col_options;
     uint16_t col_options_max;
@@ -2967,8 +2968,8 @@ void worksheet_hide_zero(lxw_worksheet *worksheet);
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param color     The tab color.
  *
- * The `%worksheet_set_tab_color()` function is used to change the color of the worksheet
- * tab:
+ * The `%worksheet_set_tab_color()` function is used to change the color of
+ * the worksheet tab:
  *
  * @code
  *      worksheet_set_tab_color(worksheet1, LXW_COLOR_RED);
@@ -3163,6 +3164,7 @@ void lxw_worksheet_write_page_margins(lxw_worksheet *worksheet);
 void lxw_worksheet_write_drawings(lxw_worksheet *worksheet);
 void lxw_worksheet_write_sheet_protection(lxw_worksheet *worksheet,
                                           lxw_protection *protect);
+void lxw_worksheet_write_sheet_pr(lxw_worksheet *worksheet);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

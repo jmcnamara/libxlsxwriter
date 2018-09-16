@@ -3065,7 +3065,8 @@ _worksheet_write_sheet_pr(lxw_worksheet *self)
     if (!self->fit_page
         && !self->filter_on
         && self->tab_color == LXW_COLOR_UNSET
-        && !self->outline_changed && !self->vba_codename) {
+        && !self->outline_changed
+        && !self->vba_codename && !self->is_chartsheet) {
         return;
     }
 
@@ -3686,6 +3687,12 @@ lxw_worksheet_write_sheet_protection(lxw_worksheet *self,
                                      lxw_protection *protect)
 {
     _worksheet_write_sheet_protection(self, protect);
+}
+
+void
+lxw_worksheet_write_sheet_pr(lxw_worksheet *self)
+{
+    _worksheet_write_sheet_pr(self);
 }
 
 /*

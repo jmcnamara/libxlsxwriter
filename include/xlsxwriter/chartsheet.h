@@ -256,6 +256,27 @@ void chartsheet_hide(lxw_chartsheet *chartsheet);
 void chartsheet_set_first_sheet(lxw_chartsheet *chartsheet);
 
 /**
+ * @brief Set the color of the chartsheet tab.
+ *
+ * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
+ * @param color     The tab color.
+ *
+ * The `%chartsheet_set_tab_color()` function is used to change the color of
+ * the chartsheet tab:
+ *
+ * @code
+ *      chartsheet_set_tab_color(chartsheet1, LXW_COLOR_RED);
+ *      chartsheet_set_tab_color(chartsheet2, LXW_COLOR_GREEN);
+ *      chartsheet_set_tab_color(chartsheet3, 0xFF9900); // Orange.
+ * @endcode
+ *
+ * The color should be an RGB integer value, see @ref working_with_colors.
+ *
+ * See also `worksheet_set_tab_color()`.
+ */
+void chartsheet_set_tab_color(lxw_chartsheet *chartsheet, lxw_color_t color);
+
+/**
  * @brief Protect elements of a chartsheet from modification.
  *
  * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
