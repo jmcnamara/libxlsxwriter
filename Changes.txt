@@ -2,12 +2,18 @@
 @page changes Changes
 
 
+## 0.8.2 September 16 2018
+
+- Added new chartsheet functionality: `chartsheet_set_tab_color()`, and
+  `chartsheet_set_zoom()`.
+
+
 ## 0.8.1 September 15 2018
 
 - Fix for chartsheet and worksheet ordering issue.
 
 - Added new chartsheet functionality: `chartsheet_protect()`,
-  `chartsheet_hide()`, `chartsheet_select()`, and
+  `chartsheet_hide()`, `chartsheet_select()` and
   `chartsheet_set_first_sheet()`.
 
 
