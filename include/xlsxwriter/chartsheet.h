@@ -311,6 +311,25 @@ void chartsheet_set_first_sheet(lxw_chartsheet *chartsheet);
 void chartsheet_protect(lxw_chartsheet *chartsheet, const char *password,
                         lxw_protection *options);
 
+/**
+ * @brief Set the chartsheet zoom factor.
+ *
+ * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
+ * @param scale      Chartsheet zoom factor.
+ *
+ * Set the chartsheet zoom factor in the range `10 <= zoom <= 400`:
+ *
+ * @code
+ *     chartsheet_set_zoom(chartsheet, 75);
+ * @endcode
+ *
+ * The default zoom factor is 100. It isn't possible to set the zoom to
+ * "Selection" because it is calculated by Excel at run-time.
+ *
+ * See also `worksheet_set_zoom()`.
+ */
+void chartsheet_set_zoom(lxw_chartsheet *chartsheet, uint16_t scale);
+
 lxw_chartsheet *lxw_chartsheet_new();
 void lxw_chartsheet_free(lxw_chartsheet *chartsheet);
 void lxw_chartsheet_assemble_xml_file(lxw_chartsheet *chartsheet);

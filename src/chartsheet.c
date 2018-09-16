@@ -45,6 +45,8 @@ lxw_chartsheet_new(lxw_worksheet_init_data *init_data)
         chartsheet->first_sheet = init_data->first_sheet;
     }
 
+    chartsheet->worksheet->zoom_scale_normal = LXW_FALSE;
+
     return chartsheet;
 
 mem_error:
@@ -377,4 +379,20 @@ chartsheet_protect(lxw_chartsheet *self, const char *password,
         self->chart->is_protected = LXW_TRUE;
     else
         self->is_protected = LXW_TRUE;
+}
+
+/*
+ * Set the chartsheet zoom factor.
+ */
+void
+chartsheet_set_zoom(lxw_chartsheet *self, uint16_t scale)
+{
+    /* Confine the scale to Excel"s range */
+    if (scale < 10 || scale > 400) {
+        LXW_WARN("chartsheet_set_zoom(): "
+                 "Zoom factor scale outside range: 10 <= zoom <= 400.");
+        return;
+    }
+
+    self->worksheet->zoom = scale;
 }
