@@ -259,7 +259,7 @@ void chartsheet_set_first_sheet(lxw_chartsheet *chartsheet);
  * @brief Set the color of the chartsheet tab.
  *
  * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
- * @param color     The tab color.
+ * @param color      The tab color.
  *
  * The `%chartsheet_set_tab_color()` function is used to change the color of
  * the chartsheet tab:
@@ -350,6 +350,179 @@ void chartsheet_protect(lxw_chartsheet *chartsheet, const char *password,
  * See also `worksheet_set_zoom()`.
  */
 void chartsheet_set_zoom(lxw_chartsheet *chartsheet, uint16_t scale);
+
+/**
+ * @brief Set the page orientation as landscape.
+ *
+ * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
+ *
+ * This function is used to set the orientation of a chartsheet's printed page
+ * to landscape. The default chartsheet orientation is landscape, so this
+ * function isn't generally required:
+ *
+ * @code
+ *     chartsheet_set_landscape(chartsheet);
+ * @endcode
+ */
+void chartsheet_set_landscape(lxw_chartsheet *chartsheet);
+
+/**
+ * @brief Set the page orientation as portrait.
+ *
+ * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
+ *
+ * This function is used to set the orientation of a chartsheet's printed page
+ * to portrait:
+ *
+ * @code
+ *     chartsheet_set_portrait(chartsheet);
+ * @endcode
+ */
+void chartsheet_set_portrait(lxw_chartsheet *chartsheet);
+
+/**
+ * @brief Set the paper type for printing.
+ *
+ * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
+ * @param paper_type The Excel paper format type.
+ *
+ * This function is used to set the paper format for the printed output of a
+ * chartsheet:
+ *
+ * @code
+ *     chartsheet_set_paper(chartsheet1, 1);  // US Letter
+ *     chartsheet_set_paper(chartsheet2, 9);  // A4
+ * @endcode
+ *
+ * If you do not specify a paper type the chartsheet will print using the
+ * printer's default paper style.
+ *
+ * See `worksheet_set_paper()` for a full list of available paper sizes.
+ */
+void chartsheet_set_paper(lxw_chartsheet *chartsheet, uint8_t paper_type);
+
+/**
+ * @brief Set the chartsheet margins for the printed page.
+ *
+ * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
+ * @param left       Left margin in inches.   Excel default is 0.7.
+ * @param right      Right margin in inches.  Excel default is 0.7.
+ * @param top        Top margin in inches.    Excel default is 0.75.
+ * @param bottom     Bottom margin in inches. Excel default is 0.75.
+ *
+ * The `%chartsheet_set_margins()` function is used to set the margins of the
+ * chartsheet when it is printed. The units are in inches. Specifying `-1` for
+ * any parameter will give the default Excel value as shown above.
+ *
+ * @code
+ *    chartsheet_set_margins(chartsheet, 1.3, 1.2, -1, -1);
+ * @endcode
+ *
+ */
+void chartsheet_set_margins(lxw_chartsheet *chartsheet, double left,
+                            double right, double top, double bottom);
+
+/**
+ * @brief Set the printed page header caption.
+ *
+ * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
+ * @param string     The header string.
+ *
+ * @return A #lxw_error code.
+ *
+ * Headers and footers are generated using a string which is a combination of
+ * plain text and control characters
+ *
+ * @code
+ *     chartsheet_set_header(chartsheet, "&LHello");
+ *
+ *     //     ---------------------------------------------------------------
+ *     //    |                                                               |
+ *     //    | Hello                                                         |
+ *     //    |                                                               |
+ *
+ *
+ *     chartsheet_set_header(chartsheet, "&CHello");
+ *
+ *     //     ---------------------------------------------------------------
+ *     //    |                                                               |
+ *     //    |                          Hello                                |
+ *     //    |                                                               |
+ *
+ *
+ *     chartsheet_set_header(chartsheet, "&RHello");
+ *
+ *     //     ---------------------------------------------------------------
+ *     //    |                                                               |
+ *     //    |                                                         Hello |
+ *     //    |                                                               |
+ *
+ *
+ * @endcode
+ *
+ * See `worksheet_set_header()` for a full explanation of the syntax of
+ * Excel's header formatting and control characters.
+ *
+ */
+lxw_error chartsheet_set_header(lxw_chartsheet *chartsheet,
+                                const char *string);
+
+/**
+ * @brief Set the printed page footer caption.
+ *
+ * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
+ * @param string     The footer string.
+ *
+ * @return A #lxw_error code.
+ *
+ * The syntax of this function is the same as chartsheet_set_header().
+ *
+ */
+lxw_error chartsheet_set_footer(lxw_chartsheet *chartsheet,
+                                const char *string);
+
+/**
+ * @brief Set the printed page header caption with additional options.
+ *
+ * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
+ * @param string     The header string.
+ * @param options    Header options.
+ *
+ * @return A #lxw_error code.
+ *
+ * The syntax of this function is the same as chartsheet_set_header() with an
+ * additional parameter to specify options for the header.
+ *
+ * Currently, the only available option is the header margin:
+ *
+ * @code
+ *
+ *    lxw_header_footer_options header_options = { 0.2 };
+ *
+ *    chartsheet_set_header_opt(chartsheet, "Some text", &header_options);
+ *
+ * @endcode
+ *
+ */
+lxw_error chartsheet_set_header_opt(lxw_chartsheet *chartsheet,
+                                    const char *string,
+                                    lxw_header_footer_options *options);
+
+/**
+ * @brief Set the printed page footer caption with additional options.
+ *
+ * @param chartsheet Pointer to a lxw_chartsheet instance to be updated.
+ * @param string     The footer string.
+ * @param options    Footer options.
+ *
+ * @return A #lxw_error code.
+ *
+ * The syntax of this function is the same as chartsheet_set_header_opt().
+ *
+ */
+lxw_error chartsheet_set_footer_opt(lxw_chartsheet *chartsheet,
+                                    const char *string,
+                                    lxw_header_footer_options *options);
 
 lxw_chartsheet *lxw_chartsheet_new();
 void lxw_chartsheet_free(lxw_chartsheet *chartsheet);

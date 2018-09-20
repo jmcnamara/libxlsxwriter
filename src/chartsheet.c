@@ -47,6 +47,7 @@ lxw_chartsheet_new(lxw_worksheet_init_data *init_data)
 
     chartsheet->worksheet->is_chartsheet = LXW_TRUE;
     chartsheet->worksheet->zoom_scale_normal = LXW_FALSE;
+    chartsheet->worksheet->orientation = LXW_LANDSCAPE;
 
     return chartsheet;
 
@@ -151,6 +152,24 @@ _chartsheet_write_sheet_protection(lxw_chartsheet *self)
     lxw_worksheet_write_sheet_protection(self->worksheet, &self->protection);
 }
 
+/*
+ * Write the <pageSetup> element.
+ */
+STATIC void
+_chartsheet_write_page_setup(lxw_chartsheet *self)
+{
+    lxw_worksheet_write_page_setup(self->worksheet);
+}
+
+/*
+ * Write the <headerFooter> element.
+ */
+STATIC void
+_chartsheet_write_header_footer(lxw_chartsheet *self)
+{
+    lxw_worksheet_write_header_footer(self->worksheet);
+}
+
 /*****************************************************************************
  *
  * XML file assembly functions.
@@ -183,6 +202,12 @@ lxw_chartsheet_assemble_xml_file(lxw_chartsheet *self)
 
     /* Write the pageMargins element. */
     _chartsheet_write_page_margins(self);
+
+    /* Write the chartsheet page setup. */
+    _chartsheet_write_page_setup(self);
+
+    /* Write the headerFooter element. */
+    _chartsheet_write_header_footer(self);
 
     /* Write the drawing element. */
     _chartsheet_write_drawings(self);
@@ -405,4 +430,79 @@ chartsheet_set_zoom(lxw_chartsheet *self, uint16_t scale)
     }
 
     self->worksheet->zoom = scale;
+}
+
+/*
+ * Set the page orientation as portrait.
+ */
+void
+chartsheet_set_portrait(lxw_chartsheet *self)
+{
+    worksheet_set_portrait(self->worksheet);
+}
+
+/*
+ * Set the page orientation as landscape.
+ */
+void
+chartsheet_set_landscape(lxw_chartsheet *self)
+{
+    worksheet_set_landscape(self->worksheet);
+}
+
+/*
+ * Set the paper type. Example. 1 = US Letter, 9 = A4
+ */
+void
+chartsheet_set_paper(lxw_chartsheet *self, uint8_t paper_size)
+{
+    worksheet_set_paper(self->worksheet, paper_size);
+}
+
+/*
+ * Set all the page margins in inches.
+ */
+void
+chartsheet_set_margins(lxw_chartsheet *self, double left, double right,
+                       double top, double bottom)
+{
+    worksheet_set_margins(self->worksheet, left, right, top, bottom);
+}
+
+/*
+ * Set the page header caption and options.
+ */
+lxw_error
+chartsheet_set_header_opt(lxw_chartsheet *self, const char *string,
+                          lxw_header_footer_options *options)
+{
+    return worksheet_set_header_opt(self->worksheet, string, options);
+}
+
+/*
+ * Set the page footer caption and options.
+ */
+lxw_error
+chartsheet_set_footer_opt(lxw_chartsheet *self, const char *string,
+                          lxw_header_footer_options *options)
+{
+    return worksheet_set_footer_opt(self->worksheet, string, options);
+}
+
+/*
+ * Set the page header caption.
+ */
+lxw_error
+chartsheet_set_header(lxw_chartsheet *self, const char *string)
+{
+    return chartsheet_set_header_opt(self, string, NULL);
+}
+
+/*
+ * Set the page footer caption.
+ */
+lxw_error
+chartsheet_set_footer(lxw_chartsheet *self, const char *string)
+{
+    return chartsheet_set_footer_opt(self, string, NULL);
 }

@@ -177,6 +177,9 @@ enum lxw_custom_property_types {
 #define LXW_FILENAME_LENGTH       128
 #define LXW_IGNORE                1
 
+#define LXW_PORTRAIT              1
+#define LXW_LANDSCAPE             0
+
 #define LXW_SCHEMA_MS        "http://schemas.microsoft.com/office/2006/relationships"
 #define LXW_SCHEMA_ROOT      "http://schemas.openxmlformats.org"
 #define LXW_SCHEMA_DRAWING   LXW_SCHEMA_ROOT "/drawingml/2006"

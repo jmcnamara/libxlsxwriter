@@ -17,8 +17,6 @@
 
 #define LXW_STR_MAX                      32767
 #define LXW_BUFFER_SIZE                  4096
-#define LXW_PORTRAIT                     1
-#define LXW_LANDSCAPE                    0
 #define LXW_PRINT_ACROSS                 1
 #define LXW_VALIDATION_MAX_TITLE_LENGTH  32
 #define LXW_VALIDATION_MAX_STRING_LENGTH 255
@@ -2063,10 +2061,13 @@ lxw_worksheet_prepare_chart(lxw_worksheet *self,
         self->drawing = lxw_drawing_new();
         RETURN_VOID_ON_MEM_ERROR(self->drawing);
 
-        if (is_chartsheet)
+        if (is_chartsheet) {
             self->drawing->embedded = LXW_FALSE;
-        else
+            self->drawing->orientation = self->orientation;
+        }
+        else {
             self->drawing->embedded = LXW_TRUE;
+        }
 
         relationship = calloc(1, sizeof(lxw_rel_tuple));
         GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
@@ -3693,6 +3694,18 @@ void
 lxw_worksheet_write_sheet_pr(lxw_worksheet *self)
 {
     _worksheet_write_sheet_pr(self);
+}
+
+void
+lxw_worksheet_write_page_setup(lxw_worksheet *self)
+{
+    _worksheet_write_page_setup(self);
+}
+
+void
+lxw_worksheet_write_header_footer(lxw_worksheet *self)
+{
+    _worksheet_write_header_footer(self);
 }
 
 /*

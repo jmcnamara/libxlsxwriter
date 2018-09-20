@@ -776,8 +776,7 @@ _drawing_write_absolute_anchor(lxw_drawing *self)
 {
     lxw_xml_start_tag(self->file, "xdr:absoluteAnchor", NULL);
 
-    /* Horizontal == 0. Vertical == 1. */
-    if (self->orientation == 0) {
+    if (self->orientation == LXW_LANDSCAPE) {
         /* Write the xdr:pos element. */
         _drawing_write_pos(self, 0, 0);
 
@@ -787,6 +786,9 @@ _drawing_write_absolute_anchor(lxw_drawing *self)
     else {
         /* Write the xdr:pos element. */
         _drawing_write_pos(self, 0, -47625);
+
+        /* Write the xdr:ext element. */
+        _drawing_write_ext(self, 6162675, 6124575);
     }
 
     _drawing_write_graphic_frame(self, 1);

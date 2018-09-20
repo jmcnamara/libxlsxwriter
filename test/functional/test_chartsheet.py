@@ -30,3 +30,13 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chartsheet06(self):
         self.run_exe_test('test_chartsheet06')
+
+    def test_chartsheet07(self):
+        self.run_exe_test('test_chartsheet07')
+
+    def test_chartsheet08(self):
+        self.ignore_files = ['xl/drawings/drawing1.xml']
+        self.run_exe_test('test_chartsheet08')
+
+    def test_chartsheet09(self):
+        self.run_exe_test('test_chartsheet09')

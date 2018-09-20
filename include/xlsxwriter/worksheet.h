@@ -55,16 +55,16 @@
 #include "format.h"
 #include "utility.h"
 
-#define LXW_ROW_MAX 1048576
-#define LXW_COL_MAX 16384
-#define LXW_COL_META_MAX 128
+#define LXW_ROW_MAX           1048576
+#define LXW_COL_MAX           16384
+#define LXW_COL_META_MAX      128
 #define LXW_HEADER_FOOTER_MAX 255
-#define LXW_MAX_NUMBER_URLS 65530
-#define LXW_PANE_NAME_LENGTH 12 /* bottomRight + 1 */
+#define LXW_MAX_NUMBER_URLS   65530
+#define LXW_PANE_NAME_LENGTH  12        /* bottomRight + 1 */
 
 /* The Excel 2007 specification says that the maximum number of page
  * breaks is 1026. However, in practice it is actually 1023. */
-#define LXW_BREAKS_MAX 1023
+#define LXW_BREAKS_MAX        1023
 
 /** Default column width in Excel */
 #define LXW_DEF_COL_WIDTH (double)8.43
@@ -2361,26 +2361,26 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  * @code
  *     worksheet_set_header(worksheet, "&LHello");
  *
- *      ---------------------------------------------------------------
- *     |                                                               |
- *     | Hello                                                         |
- *     |                                                               |
+ *     //     ---------------------------------------------------------------
+ *     //    |                                                               |
+ *     //    | Hello                                                         |
+ *     //    |                                                               |
  *
  *
  *     worksheet_set_header(worksheet, "&CHello");
  *
- *      ---------------------------------------------------------------
- *     |                                                               |
- *     |                          Hello                                |
- *     |                                                               |
+ *     //     ---------------------------------------------------------------
+ *     //    |                                                               |
+ *     //    |                          Hello                                |
+ *     //    |                                                               |
  *
  *
  *     worksheet_set_header(worksheet, "&RHello");
  *
- *      ---------------------------------------------------------------
- *     |                                                               |
- *     |                                                         Hello |
- *     |                                                               |
+ *     //     ---------------------------------------------------------------
+ *     //    |                                                               |
+ *     //    |                                                         Hello |
+ *     //    |                                                               |
  *
  *
  * @endcode
@@ -2392,10 +2392,10 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  * @code
  *     worksheet_set_header(worksheet, "Hello");
  *
- *      ---------------------------------------------------------------
- *     |                                                               |
- *     |                          Hello                                |
- *     |                                                               |
+ *     //     ---------------------------------------------------------------
+ *     //    |                                                               |
+ *     //    |                          Hello                                |
+ *     //    |                                                               |
  *
  * @endcode
  *
@@ -2404,10 +2404,10 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  * @code
  *     worksheet_set_header(worksheet, "&LCiao&CBello&RCielo");
  *
- *      ---------------------------------------------------------------
- *     |                                                               |
- *     | Ciao                     Bello                          Cielo |
- *     |                                                               |
+ *     //     ---------------------------------------------------------------
+ *     //    |                                                               |
+ *     //    | Ciao                     Bello                          Cielo |
+ *     //    |                                                               |
  *
  * @endcode
  *
@@ -2418,17 +2418,17 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  * @code
  *     worksheet_set_header(worksheet, "&CPage &P of &N");
  *
- *      ---------------------------------------------------------------
- *     |                                                               |
- *     |                        Page 1 of 6                            |
- *     |                                                               |
+ *     //     ---------------------------------------------------------------
+ *     //    |                                                               |
+ *     //    |                        Page 1 of 6                            |
+ *     //    |                                                               |
  *
  *     worksheet_set_header(worksheet, "&CUpdated at &T");
  *
- *      ---------------------------------------------------------------
- *     |                                                               |
- *     |                    Updated at 12:30 PM                        |
- *     |                                                               |
+ *     //     ---------------------------------------------------------------
+ *     //    |                                                               |
+ *     //    |                    Updated at 12:30 PM                        |
+ *     //    |                                                               |
  *
  * @endcode
  *
@@ -3165,6 +3165,8 @@ void lxw_worksheet_write_drawings(lxw_worksheet *worksheet);
 void lxw_worksheet_write_sheet_protection(lxw_worksheet *worksheet,
                                           lxw_protection *protect);
 void lxw_worksheet_write_sheet_pr(lxw_worksheet *worksheet);
+void lxw_worksheet_write_page_setup(lxw_worksheet *worksheet);
+void lxw_worksheet_write_header_footer(lxw_worksheet *worksheet);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING
