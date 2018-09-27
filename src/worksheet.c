@@ -3842,7 +3842,7 @@ worksheet_write_string(lxw_worksheet *self,
 
     if (!self->optimize) {
         /* Get the SST element and string id. */
-        sst_element = lxw_get_sst_index(self->sst, string);
+        sst_element = lxw_get_sst_index(self->sst, string, LXW_FALSE);
 
         if (!sst_element)
             return LXW_ERROR_SHARED_STRING_INDEX_NOT_FOUND;
@@ -4315,6 +4315,123 @@ worksheet_write_url(lxw_worksheet *self,
 {
     return worksheet_write_url_opt(self, row_num, col_num, url, format, NULL,
                                    NULL);
+}
+
+/*
+ * Write a rich string to an Excel file.
+ *
+ * Rather than duplicate several of the styles.c font xml methods of styles.c
+ * and write the data to a memory buffer this function creates a temporary
+ * styles object and uses it to write the data to a file. It then reads that
+ * data back into memory and closes the file.
+ */
+lxw_error
+worksheet_write_rich_string(lxw_worksheet *self,
+                            lxw_row_t row_num,
+                            lxw_col_t col_num,
+                            lxw_rich_string_tuple *rich_strings[],
+                            lxw_format *format)
+{
+    lxw_cell *cell;
+    int32_t string_id;
+    struct sst_element *sst_element;
+    lxw_error err;
+    uint8_t i;
+    long file_size;
+    char *rich_string = NULL;
+    lxw_styles *styles = NULL;
+    lxw_format *default_format = NULL;
+    lxw_rich_string_tuple *rich_string_tuple = NULL;
+    FILE *tmpfile;
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
+    if (err)
+        return err;
+
+    /* Create a tmp file for the styles object. */
+    tmpfile = lxw_tmpfile(self->tmpdir);
+    if (!tmpfile)
+        return LXW_ERROR_CREATING_TMPFILE;
+
+    /* Create a temp styles object for writing the font data. */
+    styles = lxw_styles_new();
+    GOTO_LABEL_ON_MEM_ERROR(styles, mem_error);
+    styles->file = tmpfile;
+
+    /* Create a default format for non-formatted text. */
+    default_format = lxw_format_new();
+    GOTO_LABEL_ON_MEM_ERROR(default_format, mem_error);
+
+    /* Iterate through the rich string fragments and write each one out. */
+    i = 0;
+    while ((rich_string_tuple = rich_strings[i++]) != NULL) {
+        lxw_xml_start_tag(tmpfile, "r", NULL);
+
+        if (rich_string_tuple->format) {
+            /* Write the user defined font format. */
+            lxw_styles_write_rich_font(styles, rich_string_tuple->format);
+        }
+        else {
+            /* Write a default font format. Except for the first fragment. */
+            if (i > 1)
+                lxw_styles_write_rich_font(styles, default_format);
+        }
+
+        lxw_styles_write_string_fragment(styles, rich_string_tuple->string);
+        lxw_xml_end_tag(tmpfile, "r");
+    }
+
+    /* Free the temp objects. */
+    lxw_styles_free(styles);
+    lxw_format_free(default_format);
+
+    /* Flush the file and read the size to calculate the required memory. */
+    fflush(tmpfile);
+    file_size = ftell(tmpfile);
+
+    /* Allocate a buffer for the rich string xml data. */
+    rich_string = calloc(file_size + 1, 1);
+    GOTO_LABEL_ON_MEM_ERROR(rich_string, mem_error);
+
+    /* Rewind the file and read the data into the memory buffer. */
+    rewind(tmpfile);
+    if (fread(rich_string, file_size, 1, tmpfile) < 1) {
+         /* TODO */
+         fclose(tmpfile);
+        return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
+    }
+
+    /* Close the temp file. */
+    fclose(tmpfile);
+
+    if (lxw_utf8_strlen(rich_string) > LXW_STR_MAX) {
+        free(rich_string);
+        return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
+    }
+
+    if (!self->optimize) {
+        /* Get the SST element and string id. */
+        sst_element = lxw_get_sst_index(self->sst, rich_string, LXW_TRUE);
+        free(rich_string);
+
+        if (!sst_element)
+            return LXW_ERROR_SHARED_STRING_INDEX_NOT_FOUND;
+
+        string_id = sst_element->index;
+        cell = _new_string_cell(row_num, col_num, string_id,
+                                sst_element->string, format);
+
+        _insert_cell(self, row_num, col_num, cell);
+    }
+
+    return LXW_NO_ERROR;
+
+mem_error:
+    lxw_styles_free(styles);
+    lxw_format_free(default_format);
+    fclose(tmpfile);
+
+    return LXW_ERROR_MEMORY_MALLOC_FAILED;
 }
 
 /*

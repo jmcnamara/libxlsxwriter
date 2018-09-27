@@ -165,6 +165,8 @@ void lxw_xml_data_element(FILE * xmlfile,
                           const char *data,
                           struct xml_attribute_list *attributes);
 
+void lxw_xml_rich_si_element(FILE * xmlfile, const char *string);
+
 char *lxw_escape_control_characters(const char *string);
 
 char *lxw_escape_data(const char *data);

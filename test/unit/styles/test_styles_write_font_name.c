@@ -21,7 +21,7 @@ CTEST(styles, write_name) {
     lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;
 
-    _write_font_name(styles, "Calibri");
+    _write_font_name(styles, "Calibri", LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 

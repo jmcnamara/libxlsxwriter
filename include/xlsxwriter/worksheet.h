@@ -53,6 +53,7 @@
 #include "drawing.h"
 #include "common.h"
 #include "format.h"
+#include "styles.h"
 #include "utility.h"
 
 #define LXW_ROW_MAX           1048576
@@ -639,6 +640,11 @@ typedef struct lxw_protection {
     uint8_t is_configured;
     char hash[5];
 } lxw_protection;
+
+typedef struct lxw_rich_string_tuple {
+    lxw_format *format;
+    char *string;
+} lxw_rich_string_tuple;
 
 /**
  * @brief Struct to represent an Excel worksheet.
@@ -1313,6 +1319,12 @@ lxw_error worksheet_write_formula_num(lxw_worksheet *worksheet,
                                       lxw_col_t col,
                                       const char *formula,
                                       lxw_format *format, double result);
+
+lxw_error worksheet_write_rich_string(lxw_worksheet *worksheet,
+                                      lxw_row_t row_num,
+                                      lxw_col_t col_num,
+                                      lxw_rich_string_tuple *rich_strings[],
+                                      lxw_format *format);
 
 /**
  * @brief Set the properties for a row of cells.

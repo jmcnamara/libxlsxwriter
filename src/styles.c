@@ -14,6 +14,8 @@
 /*
  * Forward declarations.
  */
+STATIC void _write_font(lxw_styles *self, lxw_format *format,
+                        uint8_t is_rich_string);
 
 /*****************************************************************************
  *
@@ -64,6 +66,34 @@ lxw_styles_free(lxw_styles *styles)
     }
 
     free(styles);
+}
+
+/*
+ * Write the <t> element for rich strings.
+ */
+void
+lxw_styles_write_string_fragment(lxw_styles *self, char *string)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+
+    /* Add attribute to preserve leading or trailing whitespace. */
+    if (isspace((unsigned char) string[0])
+        || isspace((unsigned char) string[strlen(string) - 1]))
+        LXW_PUSH_ATTRIBUTES_STR("xml:space", "preserve");
+
+    lxw_xml_data_element(self->file, "t", string, &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+void
+lxw_styles_write_rich_font(lxw_styles *self, lxw_format *format)
+{
+
+    _write_font(self, format, LXW_TRUE);
 }
 
 /*****************************************************************************
@@ -207,7 +237,8 @@ _write_font_color_rgb(lxw_styles *self, int32_t rgb)
  * Write the <name> element.
  */
 STATIC void
-_write_font_name(lxw_styles *self, const char *font_name)
+_write_font_name(lxw_styles *self, const char *font_name,
+                 uint8_t is_rich_string)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -219,7 +250,10 @@ _write_font_name(lxw_styles *self, const char *font_name)
     else
         LXW_PUSH_ATTRIBUTES_STR("val", LXW_DEFAULT_FONT_NAME);
 
-    lxw_xml_empty_tag(self->file, "name", &attributes);
+    if (is_rich_string)
+        lxw_xml_empty_tag(self->file, "rFont", &attributes);
+    else
+        lxw_xml_empty_tag(self->file, "name", &attributes);
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -309,9 +343,12 @@ _write_vert_align(lxw_styles *self, const char *align)
  * Write the <font> element.
  */
 STATIC void
-_write_font(lxw_styles *self, lxw_format *format)
+_write_font(lxw_styles *self, lxw_format *format, uint8_t is_rich_string)
 {
-    lxw_xml_start_tag(self->file, "font", NULL);
+    if (is_rich_string)
+        lxw_xml_start_tag(self->file, "rPr", NULL);
+    else
+        lxw_xml_start_tag(self->file, "font", NULL);
 
     if (format->bold)
         lxw_xml_empty_tag(self->file, "b", NULL);
@@ -347,7 +384,7 @@ _write_font(lxw_styles *self, lxw_format *format)
     else
         _write_font_color_theme(self, LXW_DEFAULT_FONT_THEME);
 
-    _write_font_name(self, format->font_name);
+    _write_font_name(self, format->font_name, is_rich_string);
     _write_font_family(self, format->font_family);
 
     /* Only write the scheme element for the default font type if it
@@ -358,7 +395,10 @@ _write_font(lxw_styles *self, lxw_format *format)
         _write_font_scheme(self, format->font_scheme);
     }
 
-    lxw_xml_end_tag(self->file, "font");
+    if (is_rich_string)
+        lxw_xml_end_tag(self->file, "rPr");
+    else
+        lxw_xml_end_tag(self->file, "font");
 }
 
 /*
@@ -378,7 +418,7 @@ _write_fonts(lxw_styles *self)
 
     STAILQ_FOREACH(format, self->xf_formats, list_pointers) {
         if (format->has_font)
-            _write_font(self, format);
+            _write_font(self, format, LXW_FALSE);
     }
 
     lxw_xml_end_tag(self->file, "fonts");

@@ -23,7 +23,7 @@ CTEST(styles, write_font01) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -46,7 +46,7 @@ CTEST(styles, write_font02) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -69,7 +69,7 @@ CTEST(styles, write_font03) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -92,7 +92,7 @@ CTEST(styles, write_font04) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -115,7 +115,7 @@ CTEST(styles, write_font05) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -138,7 +138,7 @@ CTEST(styles, write_font06) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -161,7 +161,7 @@ CTEST(styles, write_font07) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -184,7 +184,7 @@ CTEST(styles, write_font08) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -207,7 +207,7 @@ CTEST(styles, write_font09) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -230,7 +230,7 @@ CTEST(styles, write_font10) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -253,7 +253,7 @@ CTEST(styles, write_font11) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -276,7 +276,7 @@ CTEST(styles, write_font12) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -307,7 +307,7 @@ CTEST(styles, write_font13) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -330,7 +330,7 @@ CTEST(styles, write_font14) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -353,7 +353,7 @@ CTEST(styles, write_font15) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -376,7 +376,7 @@ CTEST(styles, write_font16) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
@@ -403,13 +403,10 @@ CTEST(styles, write_font17) {
 
     styles->file = testfile;
 
-    _write_font(styles, format);
+    _write_font(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 
     lxw_styles_free(styles);
     lxw_format_free(format);
 }
-
-
-

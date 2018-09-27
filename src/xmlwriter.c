@@ -141,6 +141,15 @@ lxw_xml_data_element(FILE * xmlfile,
 }
 
 /*
+ * Write an XML <si> element for rich strings, without encoding.
+ */
+void
+lxw_xml_rich_si_element(FILE * xmlfile, const char *string)
+{
+    fprintf(xmlfile, "<si>%s</si>", string);
+}
+
+/*
  * Escape XML characters in attributes.
  */
 STATIC char *

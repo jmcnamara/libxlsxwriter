@@ -113,6 +113,7 @@
 -T lxw_relationships
 -T lxw_repeat_cols
 -T lxw_repeat_rows
+-T lxw_rich_string_tuple
 -T lxw_row
 -T lxw_row_col_options
 -T lxw_row_t

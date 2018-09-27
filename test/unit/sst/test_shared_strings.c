@@ -33,13 +33,13 @@ CTEST(sst, sst01) {
     lxw_sst *sst = lxw_sst_new();
     sst->file = testfile;
 
-    lxw_get_sst_index(sst, "neptune");
-    lxw_get_sst_index(sst, "neptune");
-    lxw_get_sst_index(sst, "neptune");
-    lxw_get_sst_index(sst, "mars");
-    lxw_get_sst_index(sst, "mars");
-    lxw_get_sst_index(sst, "venus");
-    lxw_get_sst_index(sst, "venus");
+    lxw_get_sst_index(sst, "neptune", LXW_FALSE);
+    lxw_get_sst_index(sst, "neptune", LXW_FALSE);
+    lxw_get_sst_index(sst, "neptune", LXW_FALSE);
+    lxw_get_sst_index(sst, "mars", LXW_FALSE);
+    lxw_get_sst_index(sst, "mars", LXW_FALSE);
+    lxw_get_sst_index(sst, "venus", LXW_FALSE);
+    lxw_get_sst_index(sst, "venus", LXW_FALSE);
 
     lxw_sst_assemble_xml_file(sst);
 
@@ -72,9 +72,9 @@ CTEST(sst, sst02) {
     sst->file = testfile;
 
     // Test strings with whitespace that must be preserved.
-    lxw_get_sst_index(sst, "abcdefg");
-    lxw_get_sst_index(sst, "   abcdefg");
-    lxw_get_sst_index(sst, "abcdefg   ");
+    lxw_get_sst_index(sst, "abcdefg", LXW_FALSE);
+    lxw_get_sst_index(sst, "   abcdefg", LXW_FALSE);
+    lxw_get_sst_index(sst, "abcdefg   ", LXW_FALSE);
 
     lxw_sst_assemble_xml_file(sst);
 
@@ -82,4 +82,3 @@ CTEST(sst, sst02) {
 
     lxw_sst_free(sst);
 }
-
