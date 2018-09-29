@@ -538,6 +538,26 @@ _new_inline_string_cell(lxw_row_t row_num,
 }
 
 /*
+ * Create a new worksheet inline_string cell object for rich strings.
+ */
+STATIC lxw_cell *
+_new_inline_rich_string_cell(lxw_row_t row_num,
+                             lxw_col_t col_num, char *string,
+                             lxw_format *format)
+{
+    lxw_cell *cell = calloc(1, sizeof(lxw_cell));
+    RETURN_ON_MEM_ERROR(cell, cell);
+
+    cell->row_num = row_num;
+    cell->col_num = col_num;
+    cell->type = INLINE_RICH_STRING_CELL;
+    cell->format = format;
+    cell->u.string = string;
+
+    return cell;
+}
+
+/*
  * Create a new worksheet formula cell object.
  */
 STATIC lxw_cell *
@@ -2550,6 +2570,41 @@ _write_inline_string_cell(lxw_worksheet *self, char *range,
 }
 
 /*
+ * Write out an inline rich string. Doesn't use the xml functions as an
+ * optimization in the inner cell writing loop.
+ */
+STATIC void
+_write_inline_rich_string_cell(lxw_worksheet *self, char *range,
+                               int32_t style_index, lxw_cell *cell)
+{
+    char *string = cell->u.string;
+
+    /* Add attribute to preserve leading or trailing whitespace. */
+    if (isspace((unsigned char) string[0])
+        || isspace((unsigned char) string[strlen(string) - 1])) {
+
+        if (style_index)
+            fprintf(self->file,
+                    "<c r=\"%s\" s=\"%d\" t=\"inlineStr\"><is>%s</is></c>",
+                    range, style_index, string);
+        else
+            fprintf(self->file,
+                    "<c r=\"%s\" t=\"inlineStr\"><is>%s</is></c>",
+                    range, string);
+    }
+    else {
+        if (style_index)
+            fprintf(self->file,
+                    "<c r=\"%s\" s=\"%d\" t=\"inlineStr\">"
+                    "<is>%s</is></c>", range, style_index, string);
+        else
+            fprintf(self->file,
+                    "<c r=\"%s\" t=\"inlineStr\">"
+                    "<is>%s</is></c>", range, string);
+    }
+}
+
+/*
  * Write out a formula worksheet cell with a numeric result.
  */
 STATIC void
@@ -2682,6 +2737,11 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
 
     if (cell->type == INLINE_STRING_CELL) {
         _write_inline_string_cell(self, range, style_index, cell);
+        return;
+    }
+
+    if (cell->type == INLINE_RICH_STRING_CELL) {
+        _write_inline_rich_string_cell(self, range, style_index, cell);
         return;
     }
 
@@ -4339,6 +4399,7 @@ worksheet_write_rich_string(lxw_worksheet *self,
     uint8_t i;
     long file_size;
     char *rich_string = NULL;
+    char *string_copy = NULL;
     lxw_styles *styles = NULL;
     lxw_format *default_format = NULL;
     lxw_rich_string_tuple *rich_string_tuple = NULL;
@@ -4396,8 +4457,8 @@ worksheet_write_rich_string(lxw_worksheet *self,
     /* Rewind the file and read the data into the memory buffer. */
     rewind(tmpfile);
     if (fread(rich_string, file_size, 1, tmpfile) < 1) {
-         /* TODO */
-         fclose(tmpfile);
+        /* TODO */
+        fclose(tmpfile);
         return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
     }
 
@@ -4420,9 +4481,23 @@ worksheet_write_rich_string(lxw_worksheet *self,
         string_id = sst_element->index;
         cell = _new_string_cell(row_num, col_num, string_id,
                                 sst_element->string, format);
-
-        _insert_cell(self, row_num, col_num, cell);
     }
+    else {
+        /* Look for and escape control chars in the string. */
+        if (strpbrk(rich_string, "\x01\x02\x03\x04\x05\x06\x07\x08\x0B\x0C"
+                    "\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16"
+                    "\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F")) {
+            string_copy = lxw_escape_control_characters(rich_string);
+            free(rich_string);
+        }
+        else {
+            string_copy = rich_string;
+        }
+        cell = _new_inline_rich_string_cell(row_num, col_num, string_copy,
+                                            format);
+    }
+
+    _insert_cell(self, row_num, col_num, cell);
 
     return LXW_NO_ERROR;
 
