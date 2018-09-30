@@ -190,7 +190,7 @@ Example of writing dates and times in Excel using different date formats.
 <table  width="600">
 <tr>
   <td>@ref dates_and_times03.c "&lt;&lt; dates_and_times03.c"</td>
-  <td align="right">@ref array_formula.c "array_formula.c &gt;&gt;"</td>
+  <td align="right">@ref rich_strings.c "rich_strings.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -201,11 +201,28 @@ Example of writing urls/hyperlinks to a worksheet.
 
 
 
-@example array_formula.c
+@example rich_strings.c
 
 <table  width="600">
 <tr>
   <td>@ref hyperlinks.c "&lt;&lt; hyperlinks.c"</td>
+  <td align="right">@ref array_formula.c "array_formula.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of writing "rich" multi-format strings to a worksheet.
+
+@image html rich_strings.png
+
+
+
+
+
+@example array_formula.c
+
+<table  width="600">
+<tr>
+  <td>@ref rich_strings.c "&lt;&lt; rich_strings.c"</td>
   <td align="right">@ref utf8.c "utf8.c &gt;&gt;"</td>
 </tr>
 </table>
@@ -254,7 +271,7 @@ mode.
 <table  width="600">
 <tr>
   <td>@ref constant_memory.c "&lt;&lt; constant_memory.c"</td>
-  <td align="right">@ref autofilter.c "autofilter.c &gt;&gt;"</td>
+  <td align="right">@ref merge_rich_string.c "merge_rich_string.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -265,11 +282,27 @@ Example of merging cells in a worksheet.
 
 
 
-@example autofilter.c
+@example merge_rich_string.c
 
 <table  width="600">
 <tr>
   <td>@ref merge_range.c "&lt;&lt; merge_range.c"</td>
+  <td align="right">@ref autofilter.c "autofilter.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of merging cells with a rich string in a worksheet.
+
+@image html merge_rich.png
+
+
+
+
+@example autofilter.c
+
+<table  width="600">
+<tr>
+  <td>@ref merge_rich_string.c "&lt;&lt; merge_rich_string.c"</td>
   <td align="right">@ref data_validate.c "data_validate.c &gt;&gt;"</td>
 </tr>
 </table>

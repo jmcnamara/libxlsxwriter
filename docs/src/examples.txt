@@ -91,6 +91,14 @@ Example of writing urls/hyperlinks to a worksheet.
 @image html hyperlinks.png
 
 ##############################################################
+@example rich_strings.c
+
+Example of writing "rich" multi-format strings to a worksheet.
+
+@image html rich_strings.png
+
+
+##############################################################
 @example array_formula.c
 
 Example of writing array formulas to a worksheet.
@@ -117,6 +125,13 @@ mode.
 Example of merging cells in a worksheet.
 
 @image html merge_range.png
+
+##############################################################
+@example merge_rich_string.c
+
+Example of merging cells with a rich string in a worksheet.
+
+@image html merge_rich.png
 
 ##############################################################
 @example autofilter.c

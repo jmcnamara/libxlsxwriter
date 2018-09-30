@@ -642,8 +642,22 @@ typedef struct lxw_protection {
     char hash[5];
 } lxw_protection;
 
+/**
+ * @brief Struct to represent a rich string format/string pair.
+ *
+ * Arrays of this struct are used to define "rich" multi-format strings that
+ * are passed to `worksheet_write_rich_string()`. Each struct represents a
+ * fragment of the rich multi-format string with a lxw_format to define the
+ * format for the string part. If the string fragment is unformatted then
+ * `NULL` can be used for the format.
+ */
 typedef struct lxw_rich_string_tuple {
+
+    /** The format for a string fragment in a rich string. NULL if the string
+     *  isn't formatted. */
     lxw_format *format;
+
+    /** The string fragment. */
     char *string;
 } lxw_rich_string_tuple;
 
@@ -1321,10 +1335,79 @@ lxw_error worksheet_write_formula_num(lxw_worksheet *worksheet,
                                       const char *formula,
                                       lxw_format *format, double result);
 
+/**
+ * @brief Write a "Rich" multi-format string to a worksheet cell.
+ *
+ * @param worksheet   pointer to a lxw_worksheet instance to be updated.
+ * @param row         The zero indexed row number.
+ * @param col         The zero indexed column number.
+ * @param rich_string An array of format/string lxw_rich_string_tuple fragments.
+ * @param format      A pointer to a Format instance or NULL.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_write_rich_string()` function is used to write strings with
+ * multiple formats. For example to write the string 'This is **bold**
+ * and this is *italic*' you would use the following:
+ *
+ * @code
+ *     lxw_format *bold = workbook_add_format(workbook);
+ *     format_set_bold(bold);
+ *
+ *     lxw_format *italic = workbook_add_format(workbook);
+ *     format_set_italic(italic);
+ *
+ *     lxw_rich_string_tuple fragment11 = {.format = NULL,   .string = "This is "     };
+ *     lxw_rich_string_tuple fragment12 = {.format = bold,   .string = "bold"         };
+ *     lxw_rich_string_tuple fragment13 = {.format = NULL,   .string = " and this is "};
+ *     lxw_rich_string_tuple fragment14 = {.format = italic, .string = "italic"       };
+ *
+ *     lxw_rich_string_tuple *rich_string1[] = {&fragment11, &fragment12,
+ *                                              &fragment13, &fragment14, NULL};
+ *
+ *     worksheet_write_rich_string(worksheet, CELL("A1"), rich_string1, NULL);
+ *
+ * @endcode
+ *
+ * @image html rich_strings_small.png
+ *
+ * The basic rule is to break the string into fragments and put a lxw_format
+ * object before the fragment that you want to format. So if we look at the
+ * above example again:
+ *
+ * This is **bold** and this is *italic*
+ *
+ * The would be broken down into 4 fragments:
+ *
+ *      default: |This is |
+ *      bold:    |bold|
+ *      default: | and this is |
+ *      italic:  |italic|
+ *
+ * This in then converted to the lxw_rich_string_tuple fragments shown in the
+ * example above. For the default format we use `NULL`.
+ *
+ * The fragments are passed to `%worksheet_write_rich_string()` as a `NULL`
+ * terminated array:
+ *
+ * @code
+ *     lxw_rich_string_tuple *rich_string1[] = {&fragment11, &fragment12,
+ *                                              &fragment13, &fragment14, NULL};
+ *
+ *     worksheet_write_rich_string(worksheet, CELL("A1"), rich_string1, NULL);
+ *
+ * @endcode
+ *
+ * **Note**:
+ * Excel doesn't allow the use of two consecutive formats in a rich string or
+ * an empty string fragment. For either of these conditions a warning is
+ * raised and the input to `%worksheet_write_rich_string()` is ignored.
+ *
+ */
 lxw_error worksheet_write_rich_string(lxw_worksheet *worksheet,
-                                      lxw_row_t row_num,
-                                      lxw_col_t col_num,
-                                      lxw_rich_string_tuple *rich_strings[],
+                                      lxw_row_t row,
+                                      lxw_col_t col,
+                                      lxw_rich_string_tuple *rich_string[],
                                       lxw_format *format);
 
 /**
