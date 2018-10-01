@@ -2,6 +2,15 @@
 @page changes Changes
 
 
+## 0.8.3 October 1 2018
+
+- Added `worksheet_write_rich_string()` function to allow writing of
+  multi-format rich strings. See @ref rich_strings.c
+  Feature request [#37][gh_37].
+
+  [gh_37]: https://github.com/jmcnamara/libxlsxwriter/issues/37
+
+
 ## 0.8.2 September 16 2018
 
 - Added new chartsheet functionality: `chartsheet_set_tab_color()`, and
