@@ -37,6 +37,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_rich_string08(self):
         self.run_exe_test('test_rich_string08')
 
+    def test_rich_string09(self):
+        self.run_exe_test('test_rich_string09')
+
     def test_rich_string10(self):
         self.run_exe_test('test_rich_string10')
 

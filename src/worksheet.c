@@ -4409,6 +4409,24 @@ worksheet_write_rich_string(lxw_worksheet *self,
     if (err)
         return err;
 
+    /* Iterate through rich string fragments to check for input errors. */
+    i = 0;
+    err = LXW_NO_ERROR;
+    while ((rich_string_tuple = rich_strings[i++]) != NULL) {
+
+        /* Check for NULL or empty strings. */
+        if (!rich_string_tuple->string || !*rich_string_tuple->string) {
+            err = LXW_ERROR_PARAMETER_VALIDATION;
+        }
+    }
+
+    /* If there are less than 2 fragments it isn't a rich string. */
+    if (i <= 2)
+        err = LXW_ERROR_PARAMETER_VALIDATION;
+
+    if (err)
+        return err;
+
     /* Create a tmp file for the styles object. */
     tmpfile = lxw_tmpfile(self->tmpdir);
     if (!tmpfile)
@@ -4457,9 +4475,8 @@ worksheet_write_rich_string(lxw_worksheet *self,
     /* Rewind the file and read the data into the memory buffer. */
     rewind(tmpfile);
     if (fread(rich_string, file_size, 1, tmpfile) < 1) {
-        /* TODO */
         fclose(tmpfile);
-        return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
+        return LXW_ERROR_READING_TMPFILE;
     }
 
     /* Close the temp file. */

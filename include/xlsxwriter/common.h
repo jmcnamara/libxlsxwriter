@@ -65,6 +65,9 @@ typedef enum lxw_error {
     /** Error encountered when creating a tmpfile during file assembly. */
     LXW_ERROR_CREATING_TMPFILE,
 
+    /** Error reading a tmpfile. */
+    LXW_ERROR_READING_TMPFILE,
+
     /** Zlib error with a file operation while creating xlsx file. */
     LXW_ERROR_ZIP_FILE_OPERATION,
 

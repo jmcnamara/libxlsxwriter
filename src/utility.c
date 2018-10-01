@@ -20,6 +20,7 @@ char *error_strings[LXW_MAX_ERRNO + 1] = {
     "Memory error, failed to malloc() required memory.",
     "Error creating output xlsx file. Usually a permissions error.",
     "Error encountered when creating a tmpfile during file assembly.",
+    "Error reading a tmpfile.",
     "Zlib error with a file operation while creating xlsx file.",
     "Zlib error when adding sub file to xlsx file.",
     "Zlib error when closing xlsx file.",
