@@ -691,7 +691,7 @@ void format_set_num_format(lxw_format *format, const char *num_format);
  *
  * @code
  *     format = workbook_add_format(workbook);
- *     format_set_num_format(format, 0x0F);     // d-mmm-yy
+ *     format_set_num_format_index(format, 0x0F); // d-mmm-yy
  * @endcode
  *
  * @note
