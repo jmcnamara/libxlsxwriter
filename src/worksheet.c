@@ -4476,6 +4476,7 @@ worksheet_write_rich_string(lxw_worksheet *self,
     rewind(tmpfile);
     if (fread(rich_string, file_size, 1, tmpfile) < 1) {
         fclose(tmpfile);
+        free(rich_string);
         return LXW_ERROR_READING_TMPFILE;
     }
 
