@@ -471,7 +471,7 @@ _prepare_num_formats(lxw_workbook *self)
                 num_format_index = calloc(1, sizeof(uint16_t));
                 *num_format_index = index;
                 format->num_format_index = index;
-                lxw_insert_hash_element(num_formats, num_format,
+                lxw_insert_hash_element(num_formats, format->num_format,
                                         num_format_index,
                                         LXW_FORMAT_FIELD_LEN);
                 index++;

@@ -20,6 +20,7 @@ TAGS
 *.bak
 !test/functional/xlsx_files/*.xlsx
 *.pyc
+.pytest_cache/
 .cproject
 .project
 .pydevproject
