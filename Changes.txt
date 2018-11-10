@@ -1,6 +1,13 @@
 /**
 @page changes Changes
 
+## 0.8.4 November 10 2018
+
+- Fix for issue when hashing number formats.
+  Issue [#203][gh_203].
+
+  [gh_203]: https://github.com/jmcnamara/libxlsxwriter/issues/203
+
 
 ## 0.8.3 October 1 2018
 
