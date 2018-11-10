@@ -216,7 +216,7 @@ typedef struct lxw_doc_properties {
  *   to assembling the final XLSX file. The temporary files are created in the
  *   system's temp directory. If the default temporary directory isn't
  *   accessible to your application, or doesn't contain enough space, you can
- *   specify an alternative location using the `tempdir` option.
+ *   specify an alternative location using the `tmpdir` option.
  */
 typedef struct lxw_workbook_options {
     /** Optimize the workbook to use constant memory for worksheets */
@@ -334,7 +334,7 @@ lxw_workbook *workbook_new(const char *filename);
  *   to assembling the final XLSX file. The temporary files are created in the
  *   system's temp directory. If the default temporary directory isn't
  *   accessible to your application, or doesn't contain enough space, you can
- *   specify an alternative location using the `tempdir` option.*
+ *   specify an alternative location using the `tmpdir` option.*
  *
  * See @ref working_with_memory for more details.
  *
