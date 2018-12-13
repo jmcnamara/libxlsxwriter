@@ -12,8 +12,9 @@ Q=
 endif
 
 # Directory variables.
-OBJS_DIR    = .
-INC_DIR     = ../include
+OBJS_DIR     = .
+INC_DIR      = ../include
+INSTALL_DIR ?= /usr/local
 
 LIBS = -lz
 
@@ -82,7 +83,7 @@ UNAME := $(shell uname)
 # Change make options on OS X.
 ifeq ($(UNAME), Darwin)
 LIBXLSXWRITER_SO = libxlsxwriter.dylib
-SOFLAGS = -dynamiclib $(FPIC) -install_name $(PREFIX)/lib/$(LIBXLSXWRITER_SO)
+SOFLAGS = -dynamiclib $(FPIC) -install_name $(INSTALL_DIR)/lib/$(LIBXLSXWRITER_SO)
 endif
 
 # Check for MinGW/MinGW64/Cygwin environments.
