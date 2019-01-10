@@ -90,7 +90,7 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_drawing *lxw_drawing_new();
+lxw_drawing *lxw_drawing_new(void);
 void lxw_drawing_free(lxw_drawing *drawing);
 void lxw_drawing_assemble_xml_file(lxw_drawing *self);
 void lxw_free_drawing_object(struct lxw_drawing_object *drawing_object);

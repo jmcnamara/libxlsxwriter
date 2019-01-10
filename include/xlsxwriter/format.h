@@ -480,7 +480,7 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_format *lxw_format_new();
+lxw_format *lxw_format_new(void);
 void lxw_format_free(lxw_format *format);
 int32_t lxw_format_get_xf_index(lxw_format *format);
 lxw_font *lxw_format_get_font_key(lxw_format *format);
