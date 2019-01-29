@@ -32,7 +32,7 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_custom *lxw_custom_new();
+lxw_custom *lxw_custom_new(void);
 void lxw_custom_free(lxw_custom *custom);
 void lxw_custom_assemble_xml_file(lxw_custom *self);
 
