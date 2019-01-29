@@ -25,7 +25,7 @@
  * Create a new app object.
  */
 lxw_app *
-lxw_app_new()
+lxw_app_new(void)
 {
     lxw_app *app = calloc(1, sizeof(lxw_app));
     GOTO_LABEL_ON_MEM_ERROR(app, mem_error);

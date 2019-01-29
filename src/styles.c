@@ -27,7 +27,7 @@ STATIC void _write_font(lxw_styles *self, lxw_format *format,
  * Create a new styles object.
  */
 lxw_styles *
-lxw_styles_new()
+lxw_styles_new(void)
 {
     lxw_styles *styles = calloc(1, sizeof(lxw_styles));
     GOTO_LABEL_ON_MEM_ERROR(styles, mem_error);

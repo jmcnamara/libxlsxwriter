@@ -25,7 +25,7 @@
  * Create a new content_types object.
  */
 lxw_content_types *
-lxw_content_types_new()
+lxw_content_types_new(void)
 {
     lxw_content_types *content_types = calloc(1, sizeof(lxw_content_types));
     GOTO_LABEL_ON_MEM_ERROR(content_types, mem_error);

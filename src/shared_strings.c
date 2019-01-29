@@ -34,7 +34,7 @@ LXW_RB_GENERATE_ELEMENT(sst_rb_tree, sst_element, sst_tree_pointers,
  * Create a new SST SharedString object.
  */
 lxw_sst *
-lxw_sst_new()
+lxw_sst_new(void)
 {
     /* Create the new shared string table. */
     lxw_sst *sst = calloc(1, sizeof(lxw_sst));
