@@ -21,7 +21,7 @@
  * Create a new format object.
  */
 lxw_format *
-lxw_format_new()
+lxw_format_new(void)
 {
     lxw_format *format = calloc(1, sizeof(lxw_format));
     GOTO_LABEL_ON_MEM_ERROR(format, mem_error);

@@ -27,7 +27,7 @@
  * Create a new drawing collection.
  */
 lxw_drawing *
-lxw_drawing_new()
+lxw_drawing_new(void)
 {
     lxw_drawing *drawing = calloc(1, sizeof(lxw_drawing));
     GOTO_LABEL_ON_MEM_ERROR(drawing, mem_error);

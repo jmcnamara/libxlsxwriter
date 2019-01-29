@@ -25,7 +25,7 @@
  * Create a new custom object.
  */
 lxw_custom *
-lxw_custom_new()
+lxw_custom_new(void)
 {
     lxw_custom *custom = calloc(1, sizeof(lxw_custom));
     GOTO_LABEL_ON_MEM_ERROR(custom, mem_error);

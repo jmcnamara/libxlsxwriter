@@ -28,7 +28,7 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_theme *lxw_theme_new();
+lxw_theme *lxw_theme_new(void);
 void lxw_theme_free(lxw_theme *theme);
 void lxw_theme_xml_declaration(lxw_theme *self);
 void lxw_theme_assemble_xml_file(lxw_theme *self);
