@@ -26,7 +26,7 @@
  * Create a new relationships object.
  */
 lxw_relationships *
-lxw_relationships_new()
+lxw_relationships_new(void)
 {
     lxw_relationships *rels = calloc(1, sizeof(lxw_relationships));
     GOTO_LABEL_ON_MEM_ERROR(rels, mem_error);
