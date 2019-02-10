@@ -1,7 +1,7 @@
 /*
  * libxlsxwriter
  *
- * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
+ * Copyright 2014-2019, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  *
  * hash_table - Hash table functions for libxlsxwriter.
  *
