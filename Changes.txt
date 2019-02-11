@@ -9,6 +9,11 @@
 
   [gh_208]: https://github.com/jmcnamara/libxlsxwriter/issues/208
 
+- Make py.test name configurable.
+  Pull request [#206][gh_206].
+
+  [gh_206]: https://github.com/jmcnamara/libxlsxwriter/pull/206
+
 
 ## 0.8.4 November 10 2018
 
