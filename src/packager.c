@@ -1056,15 +1056,10 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
         size_read = fread(self->buffer, 1, self->buffer_size, file);
     }
 
-    if (error < 0) {
+    error = zipCloseFileInZip(self->zipfile);
+    if (error != ZIP_OK) {
+        LXW_ERROR("Error in closing member in the zipfile");
         RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
-    }
-    else {
-        error = zipCloseFileInZip(self->zipfile);
-        if (error != ZIP_OK) {
-            LXW_ERROR("Error in closing member in the zipfile");
-            RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
-        }
     }
 
     return LXW_NO_ERROR;
@@ -1097,15 +1092,10 @@ _add_buffer_to_zip(lxw_packager *self, unsigned char *buffer,
         RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
     }
 
-    if (error < 0) {
+    error = zipCloseFileInZip(self->zipfile);
+    if (error != ZIP_OK) {
+        LXW_ERROR("Error in closing member in the zipfile");
         RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
-    }
-    else {
-        error = zipCloseFileInZip(self->zipfile);
-        if (error != ZIP_OK) {
-            LXW_ERROR("Error in closing member in the zipfile");
-            RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
-        }
     }
 
     return LXW_NO_ERROR;

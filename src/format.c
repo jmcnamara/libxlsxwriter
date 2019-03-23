@@ -454,7 +454,7 @@ format_set_rotation(lxw_format *self, int16_t angle)
     if (angle == 270) {
         self->rotation = 255;
     }
-    else if (angle >= -90 || angle <= 90) {
+    else if (angle >= -90 && angle <= 90) {
         if (angle < 0)
             angle = -angle + 90;
 
