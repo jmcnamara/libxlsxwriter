@@ -55,9 +55,6 @@ typedef struct lxw_packager {
     char *buffer;
     char *tmpdir;
 
-    uint16_t chart_count;
-    uint16_t drawing_count;
-
 } lxw_packager;
 
 
