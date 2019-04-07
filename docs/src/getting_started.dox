@@ -31,7 +31,7 @@ is [Zlib](http://www.zlib.net) version 1.2.8.
 
 The easiest way to install `zlib` is from the source code:
 
-    curl -O -L  http://zlib.net/zlib-1.2.8.tar.gz
+    curl -O -L  http://zlib.net/fossils/zlib-1.2.8.tar.gz
     tar zxf zlib-1.2.8.tar.gz
     cd zlib-1.2.8
 
