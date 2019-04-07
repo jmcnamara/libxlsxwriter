@@ -1740,6 +1740,9 @@ _worksheet_size_col(lxw_worksheet *self, lxw_col_t col_num)
     }
 
     if (col_opt) {
+        if (col_opt->hidden)
+            return 0;
+
         width = col_opt->width;
 
         /* Convert to pixels. */
@@ -1775,6 +1778,9 @@ _worksheet_size_row(lxw_worksheet *self, lxw_row_t row_num)
     row = lxw_worksheet_find_row(self, row_num);
 
     if (row) {
+        if (row->hidden)
+            return 0;
+
         height = row->height;
 
         if (height == 0)
@@ -1901,23 +1907,30 @@ _worksheet_position_object_pixels(lxw_worksheet *self,
     y_abs += y1;
 
     /* Adjust start col for offsets that are greater than the col width. */
-    while (x1 >= _worksheet_size_col(self, col_start)) {
-        x1 -= _worksheet_size_col(self, col_start);
-        col_start++;
+    if (_worksheet_size_col(self, col_start) > 0) {
+        while (x1 >= _worksheet_size_col(self, col_start)) {
+            x1 -= _worksheet_size_col(self, col_start);
+            col_start++;
+        }
     }
 
     /* Adjust start row for offsets that are greater than the row height. */
-    while (y1 >= _worksheet_size_row(self, row_start)) {
-        y1 -= _worksheet_size_row(self, row_start);
-        row_start++;
+    if (_worksheet_size_row(self, row_start) > 0) {
+        while (y1 >= _worksheet_size_row(self, row_start)) {
+            y1 -= _worksheet_size_row(self, row_start);
+            row_start++;
+        }
     }
 
     /* Initialize end cell to the same as the start cell. */
     col_end = col_start;
     row_end = row_start;
 
-    width = width + x1;
-    height = height + y1;
+    /* Only offset the image in the cell if the row/col isn't hidden. */
+    if (_worksheet_size_col(self, col_start) > 0)
+        width = width + x1;
+    if (_worksheet_size_row(self, row_start) > 0)
+        height = height + y1;
 
     /* Subtract the underlying cell widths to find the end cell. */
     while (width >= _worksheet_size_col(self, col_end)) {
