@@ -1,6 +1,15 @@
 /**
 @page changes Changes
 
+## 0.8.6 April 7 2019
+
+- Fixed issue where images that started in hidden rows/columns weren't placed
+  correctly in the worksheet.
+
+- Fixed the mime-type reported by system `file(1)`. The mime-type reported
+  by "file --mime-type"/magic was incorrect for XlsxWriter files since it
+  expected the `[Content_types]` to be the first file in the zip container.
+
 
 ## 0.8.5 February 10 2019
 
