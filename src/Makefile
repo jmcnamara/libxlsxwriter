@@ -130,7 +130,7 @@ ARCH = -m32
 endif
 
 $(LIBXLSXWRITER_SO) : $(SOBJS)
-	$(Q)$(CC) $(SOFLAGS) $(ARCH) -o $@ $(MINIZIP_SO) $(TMPFILEPLUS_SO) $^ $(LIBS)
+	$(Q)$(CC) $(LDFLAGS) $(SOFLAGS) $(ARCH) -o $@ $(MINIZIP_SO) $(TMPFILEPLUS_SO) $^ $(LIBS)
 
 # The test library.
 $(LIBXLSXWRITER_TO) : $(TOBJS)
@@ -144,7 +144,7 @@ test_compile : $(OBJS)
 	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $<
 
 %.so : %.c $(HDRS)
-	$(Q)$(CC) $(FPIC) -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(Q)$(CC) $(FPIC) -I$(INC_DIR) $(LDFLAGS) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
 
 %.to : %.c $(HDRS)
 	$(Q)$(CC) -g -O3 -DTESTING -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
