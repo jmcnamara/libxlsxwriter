@@ -376,14 +376,16 @@ lxw_workbook *new_workbook_opt(const char *filename,
  *
  * @image html workbook02.png
  *
- * The worksheet name must be a valid Excel worksheet name, i.e. it must be
- * less than 32 character and it cannot contain any of the characters:
+ * The worksheet name must be a valid Excel worksheet name, i.e:
  *
- *     / \ [ ] : * ?
+ * - The name is less than or equal to 31 UTF-8 characters.
+ * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
+ * - The name doesn't start or end with an apostrophe.
+ * - The name isn't already in use.
  *
- * In addition, you cannot use the same, case insensitive, `sheetname` for more
- * than one worksheet, or chartsheet.
- *
+ * If any of these errors are encountered the function will return NULL.
+ * You can check for valid name using the `workbook_validate_sheet_name()`
+ * function.
  */
 lxw_worksheet *workbook_add_worksheet(lxw_workbook *workbook,
                                       const char *sheetname);
@@ -412,13 +414,16 @@ lxw_worksheet *workbook_add_worksheet(lxw_workbook *workbook,
  *
  * @endcode
  *
- * The chartsheet name must be a valid Excel worksheet name, i.e. it must be
- * less than 32 character and it cannot contain any of the characters:
+ * The chartsheet name must be a valid Excel worksheet name, i.e.:
  *
- *     / \ [ ] : * ?
+ * - The name is less than or equal to 31 UTF-8 characters.
+ * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
+ * - The name doesn't start or end with an apostrophe.
+ * - The name isn't already in use.
  *
- * In addition, you cannot use the same, case insensitive, `sheetname` for more
- * than one chartsheet, or worksheet.
+ * If any of these errors are encountered the function will return NULL.
+ * You can check for valid name using the `workbook_validate_sheet_name()`
+ * function.
  *
  * At least one worksheet should be added to a new workbook when creating a
  * chartsheet in order to provide data for the chart. The @ref worksheet.h
@@ -797,6 +802,7 @@ lxw_chartsheet *workbook_get_chartsheet_by_name(lxw_workbook *workbook,
  *
  * - The name is less than or equal to 31 UTF-8 characters.
  * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
+ * - The name doesn't start or end with an apostrophe.
  * - The name isn't already in use.
  *
  * @code

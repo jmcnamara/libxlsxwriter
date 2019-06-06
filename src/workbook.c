@@ -2114,6 +2114,10 @@ workbook_validate_sheet_name(lxw_workbook *self, const char *sheetname)
     if (strpbrk(sheetname, "[]:*?/\\"))
         return LXW_ERROR_INVALID_SHEETNAME_CHARACTER;
 
+    /* Check that the worksheet doesn't start or end with an apostrophe. */
+    if (sheetname[0] == '\'' || sheetname[strlen(sheetname) - 1] == '\'')
+        return LXW_ERROR_INVALID_SHEETNAME_CHARACTER;
+
     /* Check if the worksheet name is already in use. */
     if (workbook_get_worksheet_by_name(self, sheetname))
         return LXW_ERROR_SHEETNAME_ALREADY_USED;
