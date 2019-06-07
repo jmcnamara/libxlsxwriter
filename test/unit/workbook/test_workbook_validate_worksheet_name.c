@@ -75,7 +75,7 @@ CTEST(workbook, validate_worksheet_name05) {
     const char* sheetname = "'Sheet1";
 
     lxw_workbook *workbook = workbook_new(NULL);
-    lxw_error exp = LXW_ERROR_INVALID_SHEETNAME_CHARACTER;
+    lxw_error exp = LXW_ERROR_SHEETNAME_START_END_APOSTROPHE;
     lxw_error got = workbook_validate_sheet_name(workbook, sheetname);
 
     ASSERT_EQUAL(got, exp);
@@ -89,7 +89,7 @@ CTEST(workbook, validate_worksheet_name06) {
     const char* sheetname = "Sheet1'";
 
     lxw_workbook *workbook = workbook_new(NULL);
-    lxw_error exp = LXW_ERROR_INVALID_SHEETNAME_CHARACTER;
+    lxw_error exp = LXW_ERROR_SHEETNAME_START_END_APOSTROPHE;
     lxw_error got = workbook_validate_sheet_name(workbook, sheetname);
 
     ASSERT_EQUAL(got, exp);

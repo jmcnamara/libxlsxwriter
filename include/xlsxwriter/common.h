@@ -86,9 +86,11 @@ typedef enum lxw_error {
     /** Worksheet name exceeds Excel's limit of 31 characters. */
     LXW_ERROR_SHEETNAME_LENGTH_EXCEEDED,
 
-    /** Worksheet name contains invalid Excel character: '[]:*?/\\' or it
-     * starts or ends with an apostrophe. */
+    /** Worksheet name cannot contain invalid characters: '[ ] : * ? / \\' */
     LXW_ERROR_INVALID_SHEETNAME_CHARACTER,
+
+    /** Worksheet name cannot start or end with an apostrophe. */
+    LXW_ERROR_SHEETNAME_START_END_APOSTROPHE,
 
     /** Worksheet name is already in use. */
     LXW_ERROR_SHEETNAME_ALREADY_USED,
