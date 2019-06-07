@@ -40,13 +40,13 @@ LXW_RB_GENERATE_CHARTSHEET_NAMES(lxw_chartsheet_names, lxw_chartsheet_name,
 STATIC int
 _worksheet_name_cmp(lxw_worksheet_name *name1, lxw_worksheet_name *name2)
 {
-    return strcmp(name1->name, name2->name);
+    return lxw_strcasecmp(name1->name, name2->name);
 }
 
 STATIC int
 _chartsheet_name_cmp(lxw_chartsheet_name *name1, lxw_chartsheet_name *name2)
 {
-    return strcmp(name1->name, name2->name);
+    return lxw_strcasecmp(name1->name, name2->name);
 }
 
 /*

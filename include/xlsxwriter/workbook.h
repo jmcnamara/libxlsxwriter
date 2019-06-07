@@ -381,8 +381,8 @@ lxw_workbook *new_workbook_opt(const char *filename,
  * - The name is less than or equal to 31 UTF-8 characters.
  * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
  * - The name doesn't start or end with an apostrophe.
- * - The name isn't "History" since that is reserved by Excel.
- * - The name isn't already in use.
+ * - The name isn't "History", which is reserved by Excel. (Case insensitive).
+ * - The name isn't already in use. (Case insensitive).
  *
  * If any of these errors are encountered the function will return NULL.
  * You can check for valid name using the `workbook_validate_sheet_name()`
@@ -420,8 +420,8 @@ lxw_worksheet *workbook_add_worksheet(lxw_workbook *workbook,
  * - The name is less than or equal to 31 UTF-8 characters.
  * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
  * - The name doesn't start or end with an apostrophe.
- * - The name isn't "History" since that is reserved by Excel.
- * - The name isn't already in use.
+ * - The name isn't "History", which is reserved by Excel. (Case insensitive).
+ * - The name isn't already in use. (Case insensitive).
  *
  * If any of these errors are encountered the function will return NULL.
  * You can check for valid name using the `workbook_validate_sheet_name()`
@@ -805,8 +805,8 @@ lxw_chartsheet *workbook_get_chartsheet_by_name(lxw_workbook *workbook,
  * - The name is less than or equal to 31 UTF-8 characters.
  * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
  * - The name doesn't start or end with an apostrophe.
- * - The name isn't "History" since that is reserved by Excel.
- * - The name isn't already in use.
+ * - The name isn't "History", which is reserved by Excel. (Case insensitive).
+ * - The name isn't already in use. (Case insensitive, see the note below).
  *
  * @code
  *     lxw_error err = workbook_validate_sheet_name(workbook, "Foglio");
@@ -815,6 +815,12 @@ lxw_chartsheet *workbook_get_chartsheet_by_name(lxw_workbook *workbook,
  * This function is called by `workbook_add_worksheet()` and
  * `workbook_add_chartsheet()` but it can be explicitly called by the user
  * beforehand to ensure that the sheet name is valid.
+ *
+ * @note This function does an ASCII lowercase string comparison to determine
+ * if the sheet name is already in use. It doesn't take UTF-8 characters into
+ * account. Thus it would flag "Café" and "café" as a duplicate (just like
+ * Excel) but it wouldn't catch "CAFÉ". If you need a full UTF-8 case
+ * insensitive check you should use a third party library to implement it.
  *
  */
 lxw_error workbook_validate_sheet_name(lxw_workbook *workbook,

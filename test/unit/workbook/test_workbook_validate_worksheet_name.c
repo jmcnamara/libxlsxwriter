@@ -138,3 +138,51 @@ CTEST(workbook, validate_worksheet_name09) {
 
     lxw_workbook_free(workbook);
 }
+
+/* Test a sheet name that already exists, case insensitive. */
+CTEST(workbook, validate_worksheet_name10) {
+
+    const char* sheetname = "Sheet1";
+
+    lxw_workbook *workbook = workbook_new(NULL);
+    workbook_add_worksheet(workbook, sheetname);
+
+    lxw_error exp = LXW_ERROR_SHEETNAME_ALREADY_USED;
+    lxw_error got = workbook_validate_sheet_name(workbook, "sheet1");
+
+    ASSERT_EQUAL(exp, got);
+
+    lxw_workbook_free(workbook);
+}
+
+/* Test a sheet name that already exists, case insensitive. */
+CTEST(workbook, validate_worksheet_name11) {
+
+    const char* sheetname = "Café";
+
+    lxw_workbook *workbook = workbook_new(NULL);
+    workbook_add_worksheet(workbook, sheetname);
+
+    lxw_error exp = LXW_ERROR_SHEETNAME_ALREADY_USED;
+    lxw_error got = workbook_validate_sheet_name(workbook, "café");
+
+    ASSERT_EQUAL(exp, got);
+
+    lxw_workbook_free(workbook);
+}
+
+/* Test a sheet name that already exists, case insensitive. */
+CTEST(workbook, validate_worksheet_name12) {
+
+    const char* sheetname = "abcde";
+
+    lxw_workbook *workbook = workbook_new(NULL);
+    workbook_add_worksheet(workbook, sheetname);
+
+    lxw_error exp = LXW_ERROR_SHEETNAME_ALREADY_USED;
+    lxw_error got = workbook_validate_sheet_name(workbook, "ABCDE");
+
+    ASSERT_EQUAL(exp, got);
+
+    lxw_workbook_free(workbook);
+}
