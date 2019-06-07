@@ -381,6 +381,7 @@ lxw_workbook *new_workbook_opt(const char *filename,
  * - The name is less than or equal to 31 UTF-8 characters.
  * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
  * - The name doesn't start or end with an apostrophe.
+ * - The name isn't "History" since that is reserved by Excel.
  * - The name isn't already in use.
  *
  * If any of these errors are encountered the function will return NULL.
@@ -419,6 +420,7 @@ lxw_worksheet *workbook_add_worksheet(lxw_workbook *workbook,
  * - The name is less than or equal to 31 UTF-8 characters.
  * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
  * - The name doesn't start or end with an apostrophe.
+ * - The name isn't "History" since that is reserved by Excel.
  * - The name isn't already in use.
  *
  * If any of these errors are encountered the function will return NULL.
@@ -803,6 +805,7 @@ lxw_chartsheet *workbook_get_chartsheet_by_name(lxw_workbook *workbook,
  * - The name is less than or equal to 31 UTF-8 characters.
  * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
  * - The name doesn't start or end with an apostrophe.
+ * - The name isn't "History" since that is reserved by Excel.
  * - The name isn't already in use.
  *
  * @code

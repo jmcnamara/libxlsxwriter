@@ -17,6 +17,7 @@
 #define __LXW_UTILITY_H__
 
 #include <stdint.h>
+#include <strings.h>
 #include "common.h"
 #include "xmlwriter.h"
 
@@ -165,6 +166,13 @@ char *lxw_strdup_formula(const char *formula);
 size_t lxw_utf8_strlen(const char *str);
 
 void lxw_str_tolower(char *str);
+
+/* Define a portable version of strcasecmp(). */
+#ifdef _MSC_VER
+#define lxw_strcasecmp _stricmp
+#else
+#define lxw_strcasecmp strcasecmp
+#endif
 
 FILE *lxw_tmpfile(char *tmpdir);
 
