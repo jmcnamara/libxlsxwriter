@@ -54,6 +54,7 @@ typedef struct lxw_packager {
     char *filename;
     char *buffer;
     char *tmpdir;
+    uint8_t use_zip64;
 
 } lxw_packager;
 
@@ -64,7 +65,8 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_packager *lxw_packager_new(const char *filename, char *tmpdir);
+lxw_packager *lxw_packager_new(const char *filename, char *tmpdir,
+                               uint8_t use_zip64);
 void lxw_packager_free(lxw_packager *packager);
 lxw_error lxw_create_package(lxw_packager *self);
 

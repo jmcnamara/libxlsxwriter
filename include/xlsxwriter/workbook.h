@@ -269,6 +269,7 @@ typedef struct lxw_workbook {
     uint8_t has_png;
     uint8_t has_jpeg;
     uint8_t has_bmp;
+    uint8_t use_zip64;
 
     lxw_hash_table *used_xf_formats;
 
@@ -825,6 +826,20 @@ lxw_chartsheet *workbook_get_chartsheet_by_name(lxw_workbook *workbook,
  */
 lxw_error workbook_validate_sheet_name(lxw_workbook *workbook,
                                        const char *sheetname);
+
+/**
+ * @brief Allow ZIP64 extensions when creating the xlsx file zip container.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ *
+ * Use ZIP64 extensions when writing the xlsx file zip container to allow
+ * files greater than 4 GB.
+ *
+ * @code
+ *     workbook_use_zip64(workbook);
+ * @endcode
+ */
+void workbook_use_zip64(lxw_workbook *workbook);
 
 void lxw_workbook_free(lxw_workbook *workbook);
 void lxw_workbook_assemble_xml_file(lxw_workbook *workbook);

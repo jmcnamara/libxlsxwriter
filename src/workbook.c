@@ -1727,7 +1727,9 @@ workbook_close(lxw_workbook *self)
     _add_chart_cache_data(self);
 
     /* Create a packager object to assemble sub-elements into a zip file. */
-    packager = lxw_packager_new(self->filename, self->options.tmpdir);
+    packager = lxw_packager_new(self->filename,
+                                self->options.tmpdir,
+                                self->use_zip64);
 
     /* If the packager fails it is generally due to a zip permission error. */
     if (packager == NULL) {
@@ -2131,4 +2133,13 @@ workbook_validate_sheet_name(lxw_workbook *self, const char *sheetname)
         return LXW_ERROR_SHEETNAME_ALREADY_USED;
 
     return LXW_NO_ERROR;
+}
+
+/*
+ * Allow ZIP64 extensions when creating the xlsx file zip container.
+ */
+void
+workbook_use_zip64(lxw_workbook *workbook)
+{
+    workbook->use_zip64 = LXW_TRUE;
 }

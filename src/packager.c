@@ -76,7 +76,7 @@ _open_zipfile_win32(const char *filename)
  * Create a new packager object.
  */
 lxw_packager *
-lxw_packager_new(const char *filename, char *tmpdir)
+lxw_packager_new(const char *filename, char *tmpdir, uint8_t use_zip64)
 {
     lxw_packager *packager = calloc(1, sizeof(lxw_packager));
     GOTO_LABEL_ON_MEM_ERROR(packager, mem_error);
@@ -89,6 +89,7 @@ lxw_packager_new(const char *filename, char *tmpdir)
     GOTO_LABEL_ON_MEM_ERROR(packager->filename, mem_error);
 
     packager->buffer_size = LXW_ZIP_BUFFER_SIZE;
+    packager->use_zip64 = use_zip64;
 
     /* Initialize the zip_fileinfo struct to Jan 1 1980 like Excel. */
     packager->zipfile_info.tmz_date.tm_sec = 0;
@@ -1066,7 +1067,8 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
                                     NULL, 0, NULL, 0, NULL,
                                     Z_DEFLATED, Z_DEFAULT_COMPRESSION, 0,
                                     -MAX_WBITS, DEF_MEM_LEVEL,
-                                    Z_DEFAULT_STRATEGY, NULL, 0, 0, 0, 0);
+                                    Z_DEFAULT_STRATEGY, NULL, 0, 0, 0,
+                                    self->use_zip64);
 
     if (error != ZIP_OK) {
         LXW_ERROR("Error adding member to zipfile");
@@ -1119,7 +1121,8 @@ _add_buffer_to_zip(lxw_packager *self, unsigned char *buffer,
                                     NULL, 0, NULL, 0, NULL,
                                     Z_DEFLATED, Z_DEFAULT_COMPRESSION, 0,
                                     -MAX_WBITS, DEF_MEM_LEVEL,
-                                    Z_DEFAULT_STRATEGY, NULL, 0, 0, 0, 0);
+                                    Z_DEFAULT_STRATEGY, NULL, 0, 0, 0,
+                                    self->use_zip64);
 
     if (error != ZIP_OK) {
         LXW_ERROR("Error adding member to zipfile");
