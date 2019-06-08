@@ -68,13 +68,22 @@ typedef enum lxw_error {
     /** Error reading a tmpfile. */
     LXW_ERROR_READING_TMPFILE,
 
-    /** Zlib error with a file operation while creating xlsx file. */
+    /** Zip generic error ZIP_ERRNO while creating the xlsx file. */
     LXW_ERROR_ZIP_FILE_OPERATION,
 
-    /** Zlib error when adding sub file to xlsx file. */
+    /** Zip error ZIP_PARAMERROR while creating the xlsx file. */
+    LXW_ERROR_ZIP_PARAMETER_ERROR,
+
+    /** Zip error ZIP_BADZIPFILE (use_zip64 option may be required). */
+    LXW_ERROR_ZIP_BAD_ZIP_FILE,
+
+    /** Zip error ZIP_INTERNALERROR while creating the xlsx file. */
+    LXW_ERROR_ZIP_INTERNAL_ERROR,
+
+    /** File error or unknown zip error when adding sub file to xlsx file. */
     LXW_ERROR_ZIP_FILE_ADD,
 
-    /** Zlib error when closing xlsx file. */
+    /** Unknown zip error when closing xlsx file. */
     LXW_ERROR_ZIP_CLOSE,
 
     /** NULL function parameter ignored. */
