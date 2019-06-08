@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook_options options = {LXW_FALSE, "."};
+    lxw_workbook_options options = {LXW_FALSE, ".", LXW_FALSE};
 
     lxw_workbook  *workbook  = workbook_new_opt("test_tmpdir01.xlsx", &options);
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);

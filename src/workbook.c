@@ -1470,6 +1470,7 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     if (options) {
         workbook->options.constant_memory = options->constant_memory;
         workbook->options.tmpdir = lxw_strdup(options->tmpdir);
+        workbook->options.use_zip64 = options->use_zip64;
     }
 
     return workbook;
@@ -1728,7 +1729,8 @@ workbook_close(lxw_workbook *self)
 
     /* Create a packager object to assemble sub-elements into a zip file. */
     packager = lxw_packager_new(self->filename,
-                                self->options.tmpdir, self->use_zip64);
+                                self->options.tmpdir,
+                                self->options.use_zip64);
 
     /* If the packager fails it is generally due to a zip permission error. */
     if (packager == NULL) {
@@ -2153,13 +2155,4 @@ workbook_validate_sheet_name(lxw_workbook *self, const char *sheetname)
         return LXW_ERROR_SHEETNAME_ALREADY_USED;
 
     return LXW_NO_ERROR;
-}
-
-/*
- * Allow ZIP64 extensions when creating the xlsx file zip container.
- */
-void
-workbook_use_zip64(lxw_workbook *workbook)
-{
-    workbook->use_zip64 = LXW_TRUE;
 }

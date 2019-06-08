@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook_options options = {1, NULL};
+    lxw_workbook_options options = {LXW_TRUE, NULL, LXW_FALSE};
 
     /* Use deprecated constructor for testing. */
     lxw_workbook  *workbook  = new_workbook_opt("test_optimize26.xlsx", &options);
