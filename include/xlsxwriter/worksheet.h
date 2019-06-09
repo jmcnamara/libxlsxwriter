@@ -1592,7 +1592,7 @@ lxw_error worksheet_set_row_opt(lxw_worksheet *worksheet,
  *     format_set_bold(bold);
  *
  *     // Set the first column to bold.
- *     worksheet_set_column(worksheet, 0, 0, LXW_DEF_COL_HEIGHT, bold);
+ *     worksheet_set_column(worksheet, 0, 0, LXW_DEF_COL_WIDTH, bold);
  * @endcode
  *
  * The `format` parameter will be applied to any cells in the column that
