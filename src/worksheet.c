@@ -5629,6 +5629,9 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
     /* Write the image buffer to a temporary file so we can read the
      * dimensions like an ordinary file. */
     image_stream = lxw_tmpfile(self->tmpdir);
+    if (!image_stream)
+        return LXW_ERROR_CREATING_TMPFILE;
+
     fwrite(image_buffer, 1, image_size, image_stream);
     rewind(image_stream);
 
