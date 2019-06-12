@@ -3241,11 +3241,11 @@ void lxw_worksheet_assemble_xml_file(lxw_worksheet *worksheet);
 void lxw_worksheet_write_single_row(lxw_worksheet *worksheet);
 
 void lxw_worksheet_prepare_image(lxw_worksheet *worksheet,
-                                 uint16_t image_ref_id, uint16_t drawing_id,
+                                 uint32_t image_ref_id, uint32_t drawing_id,
                                  lxw_image_options *image_data);
 
 void lxw_worksheet_prepare_chart(lxw_worksheet *worksheet,
-                                 uint16_t chart_ref_id, uint16_t drawing_id,
+                                 uint32_t chart_ref_id, uint32_t drawing_id,
                                  lxw_image_options *image_data,
                                  uint8_t is_chartsheet);
 

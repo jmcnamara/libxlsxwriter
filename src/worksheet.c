@@ -1992,7 +1992,7 @@ _worksheet_position_object_emus(lxw_worksheet *self,
  */
 void
 lxw_worksheet_prepare_image(lxw_worksheet *self,
-                            uint16_t image_ref_id, uint16_t drawing_id,
+                            uint32_t image_ref_id, uint32_t drawing_id,
                             lxw_image_options *image_data)
 {
     lxw_drawing_object *drawing_object;
@@ -2079,8 +2079,8 @@ mem_error:
  */
 void
 lxw_worksheet_prepare_chart(lxw_worksheet *self,
-                            uint16_t chart_ref_id,
-                            uint16_t drawing_id,
+                            uint32_t chart_ref_id,
+                            uint32_t drawing_id,
                             lxw_image_options *image_data,
                             uint8_t is_chartsheet)
 {

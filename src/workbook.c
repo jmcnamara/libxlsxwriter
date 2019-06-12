@@ -885,9 +885,9 @@ _prepare_drawings(lxw_workbook *self)
     lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     lxw_image_options *image_options;
-    uint16_t chart_ref_id = 0;
-    uint16_t image_ref_id = 0;
-    uint16_t drawing_id = 0;
+    uint32_t chart_ref_id = 0;
+    uint32_t image_ref_id = 0;
+    uint32_t drawing_id = 0;
     uint8_t is_chartsheet;
 
     STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
