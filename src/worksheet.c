@@ -1507,7 +1507,8 @@ _worksheet_write_optimized_sheet_data(lxw_worksheet *self)
         while (read_size) {
             read_size =
                 fread(buffer, 1, LXW_BUFFER_SIZE, self->optimize_tmpfile);
-            fwrite(buffer, 1, read_size, self->file);
+            /* Ignore return value, no way to report error here */
+            (void)fwrite(buffer, 1, read_size, self->file);
         }
 
         fclose(self->optimize_tmpfile);
@@ -5632,7 +5633,12 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
     if (!image_stream)
         return LXW_ERROR_CREATING_TMPFILE;
 
-    fwrite(image_buffer, 1, image_size, image_stream);
+    if (fwrite(image_buffer, 1, image_size, image_stream) != image_size) {
+        rewind(image_stream);
+        fclose(image_stream);
+        return LXW_ERROR_CREATING_TMPFILE;
+    }
+
     rewind(image_stream);
 
     /* Create a new object to hold the image options. */
