@@ -208,6 +208,8 @@ lxw_workbook_free(lxw_workbook *workbook)
     lxw_sst_free(workbook->sst);
     free(workbook->options.tmpdir);
     free(workbook->ordered_charts);
+    free(workbook->vba_project);
+    free(workbook->vba_codename);
     free(workbook);
 }
 
@@ -1135,6 +1137,10 @@ _write_file_version(lxw_workbook *self)
     LXW_PUSH_ATTRIBUTES_STR("lowestEdited", "4");
     LXW_PUSH_ATTRIBUTES_STR("rupBuild", "4505");
 
+    if (self->vba_project)
+        LXW_PUSH_ATTRIBUTES_STR("codeName",
+                                "{37E998C4-C9E5-D4B9-71C8-EB1FF731991C}");
+
     lxw_xml_empty_tag(self->file, "fileVersion", &attributes);
 
     LXW_FREE_ATTRIBUTES();
@@ -1150,6 +1156,10 @@ _write_workbook_pr(lxw_workbook *self)
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
+
+    if (self->vba_codename)
+        LXW_PUSH_ATTRIBUTES_STR("codeName", self->vba_codename);
+
     LXW_PUSH_ATTRIBUTES_STR("defaultThemeVersion", "124226");
 
     lxw_xml_empty_tag(self->file, "workbookPr", &attributes);
@@ -1718,6 +1728,22 @@ workbook_close(lxw_workbook *self)
             worksheet->active = 1;
     }
 
+    /* Set workbook and worksheet VBA codenames if a macro has been added. */
+    if (self->vba_project) {
+        if (!self->vba_codename)
+            workbook_set_vba_name(self, "ThisWorkbook");
+
+        STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
+            if (sheet->is_chartsheet)
+                continue;
+            else
+                worksheet = sheet->u.worksheet;
+
+            if (!worksheet->vba_codename)
+                worksheet_set_vba_name(worksheet, worksheet->name);
+        }
+    }
+
     /* Set the defined names for the worksheets such as Print Titles. */
     _prepare_defined_names(self);
 
@@ -2153,6 +2179,51 @@ workbook_validate_sheet_name(lxw_workbook *self, const char *sheetname)
     /* Check if the chartsheet name is already in use. */
     if (workbook_get_chartsheet_by_name(self, sheetname))
         return LXW_ERROR_SHEETNAME_ALREADY_USED;
+
+    return LXW_NO_ERROR;
+}
+
+/*
+ * Add a vbaProject binary to the Excel workbook.
+ */
+lxw_error
+workbook_add_vba_project(lxw_workbook *self, const char *filename)
+{
+    FILE *filehandle;
+
+    if (!filename) {
+        LXW_WARN("workbook_add_vba_project(): "
+                 "filename must be specified.");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    /* Check that the vbaProject file exists and can be opened. */
+    filehandle = fopen(filename, "rb");
+    if (!filehandle) {
+        LXW_WARN_FORMAT1("workbook_add_vba_project(): "
+                         "file doesn't exist or can't be opened: %s.",
+                         filename);
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+    fclose(filehandle);
+
+    self->vba_project = lxw_strdup(filename);
+
+    return LXW_NO_ERROR;
+}
+
+/*
+ * Set the VBA name for the workbook.
+ */
+lxw_error
+workbook_set_vba_name(lxw_workbook *self, const char *name)
+{
+    if (!name) {
+        LXW_WARN("workbook_set_vba_name(): " "name must be specified.");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    self->vba_codename = lxw_strdup(name);
 
     return LXW_NO_ERROR;
 }

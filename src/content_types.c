@@ -50,8 +50,6 @@ lxw_content_types_new(void)
                         LXW_APP_DOCUMENT "spreadsheetml.styles+xml");
     lxw_ct_add_override(content_types, "/xl/theme/theme1.xml",
                         LXW_APP_DOCUMENT "theme+xml");
-    lxw_ct_add_override(content_types, "/xl/workbook.xml",
-                        LXW_APP_DOCUMENT "spreadsheetml.sheet.main+xml");
 
     return content_types;
 

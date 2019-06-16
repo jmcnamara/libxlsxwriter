@@ -448,6 +448,7 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     free(worksheet->vbreaks);
     free(worksheet->name);
     free(worksheet->quoted_name);
+    free(worksheet->vba_codename);
 
     free(worksheet);
     worksheet = NULL;
@@ -3147,7 +3148,7 @@ _worksheet_write_sheet_pr(lxw_worksheet *self)
     LXW_INIT_ATTRIBUTES();
 
     if (self->vba_codename)
-        LXW_PUSH_ATTRIBUTES_INT("codeName", self->vba_codename);
+        LXW_PUSH_ATTRIBUTES_STR("codeName", self->vba_codename);
 
     if (self->filter_on)
         LXW_PUSH_ATTRIBUTES_STR("filterMode", "1");
@@ -6068,4 +6069,20 @@ worksheet_data_validation_cell(lxw_worksheet *self, lxw_row_t row,
 {
     return worksheet_data_validation_range(self, row, col,
                                            row, col, validation);
+}
+
+/*
+ * Set the VBA name for the worksheet.
+ */
+lxw_error
+worksheet_set_vba_name(lxw_worksheet *self, const char *name)
+{
+    if (!name) {
+        LXW_WARN("worksheet_set_vba_name(): " "name must be specified.");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    self->vba_codename = lxw_strdup(name);
+
+    return LXW_NO_ERROR;
 }

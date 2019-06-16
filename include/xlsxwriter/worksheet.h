@@ -741,10 +741,10 @@ typedef struct lxw_worksheet {
     uint8_t right_to_left;
     uint8_t screen_gridlines;
     uint8_t show_zeros;
-    uint8_t vba_codename;
     uint8_t vcenter;
     uint8_t zoom_scale_normal;
     uint8_t num_validations;
+    char *vba_codename;
 
     lxw_color_t tab_color;
 
@@ -3234,6 +3234,29 @@ void worksheet_outline_settings(lxw_worksheet *worksheet, uint8_t visible,
  */
 void worksheet_set_default_row(lxw_worksheet *worksheet, double height,
                                uint8_t hide_unused_rows);
+
+/**
+ * @brief Set the VBA name for the worksheet.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance.
+ * @param name      Name of the worksheet used by VBA.
+ *
+ * The `worksheet_set_vba_name()` function can be used to set the VBA name for
+ * the worksheet. This is sometimes required when a vbaProject macro included
+ * via `workbook_add_vba_project()` refers to the worksheet.
+ *
+ * @code
+ *     workbook_set_vba_name (workbook,  "MyWorkbook");
+ *     worksheet_set_vba_name(worksheet, "MySheet1");
+ * @endcode
+ *
+ * In general Excel uses the worksheet name such as "Sheet1" as the VBA name.
+ * However, this can be changed in the VBA environment or if the the macro was
+ * extracted from a foreign language version of Excel.
+ *
+ * @return A #lxw_error.
+ */
+lxw_error worksheet_set_vba_name(lxw_worksheet *worksheet, const char *name);
 
 lxw_worksheet *lxw_worksheet_new(lxw_worksheet_init_data *init_data);
 void lxw_worksheet_free(lxw_worksheet *worksheet);

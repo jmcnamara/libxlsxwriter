@@ -295,6 +295,35 @@ _write_image_files(lxw_packager *self)
 }
 
 /*
+ * Write the xl/vbaProject.bin file.
+ */
+STATIC lxw_error
+_add_vba_project(lxw_packager *self)
+{
+    lxw_workbook *workbook = self->workbook;
+    lxw_error err;
+    FILE *image_stream;
+
+    if (!workbook->vba_project)
+        return LXW_NO_ERROR;
+
+    /* Check that the image file exists and can be opened. */
+    image_stream = fopen(workbook->vba_project, "rb");
+    if (!image_stream) {
+        LXW_WARN_FORMAT1("Error adding vbaProject.bin to xlsx file: "
+                         "file doesn't exist or can't be opened: %s.",
+                         workbook->vba_project);
+        return LXW_ERROR_CREATING_TMPFILE;
+    }
+
+    err = _add_file_to_zip(self, image_stream, "xl/vbaProject.bin");
+    fclose(image_stream);
+    RETURN_ON_ERROR(err);
+
+    return LXW_NO_ERROR;
+}
+
+/*
  * Write the chart files.
  */
 STATIC lxw_error
@@ -722,6 +751,17 @@ _write_content_types_file(lxw_packager *self)
     if (workbook->has_bmp)
         lxw_ct_add_default(content_types, "bmp", "image/bmp");
 
+    if (workbook->vba_project)
+        lxw_ct_add_default(content_types, "bin",
+                           "application/vnd.ms-office.vbaProject");
+
+    if (workbook->vba_project)
+        lxw_ct_add_override(content_types, "/xl/workbook.xml",
+                            LXW_APP_MSEXCEL "sheet.macroEnabled.main+xml");
+    else
+        lxw_ct_add_override(content_types, "/xl/workbook.xml",
+                            LXW_APP_DOCUMENT "spreadsheetml.sheet.main+xml");
+
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
         if (sheet->is_chartsheet) {
             lxw_snprintf(filename, LXW_FILENAME_LENGTH,
@@ -811,6 +851,10 @@ _write_workbook_rels_file(lxw_packager *self)
     if (workbook->sst->string_count)
         lxw_add_document_relationship(rels, "/sharedStrings",
                                       "sharedStrings.xml");
+
+    if (workbook->vba_project)
+        lxw_add_ms_package_relationship(rels, "/vbaProject",
+                                        "vbaProject.bin");
 
     lxw_relationships_assemble_xml_file(rels);
 
@@ -1201,6 +1245,9 @@ lxw_create_package(lxw_packager *self)
     RETURN_ON_ERROR(error);
 
     error = _write_image_files(self);
+    RETURN_ON_ERROR(error);
+
+    error = _add_vba_project(self);
     RETURN_ON_ERROR(error);
 
     error = _write_core_file(self);

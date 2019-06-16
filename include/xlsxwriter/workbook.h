@@ -285,6 +285,9 @@ typedef struct lxw_workbook {
 
     lxw_hash_table *used_xf_formats;
 
+    char *vba_project;
+    char *vba_codename;
+
 } lxw_workbook;
 
 
@@ -845,6 +848,47 @@ lxw_chartsheet *workbook_get_chartsheet_by_name(lxw_workbook *workbook,
  */
 lxw_error workbook_validate_sheet_name(lxw_workbook *workbook,
                                        const char *sheetname);
+
+/**
+ * @brief Add a vbaProject binary to the Excel workbook.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param filename The path/filename of the vbaProject.bin file.
+ *
+ * The `%workbook_add_vba_project()` function can be used to add macros or
+ * functions to a workbook using a binary VBA project file that has been
+ * extracted from an existing Excel xlsm file:
+ *
+ * @code
+ *     workbook_add_vba_project(workbook, "vbaProject.bin");
+ * @endcode
+ *
+ * Only one `vbaProject.bin file` can be added per workbook.
+ *
+ * @return A #lxw_error.
+ */
+lxw_error workbook_add_vba_project(lxw_workbook *workbook,
+                                   const char *filename);
+
+/**
+ * @brief Set the VBA name for the workbook.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param name     Name of the workbook used by VBA.
+ *
+ * The `workbook_set_vba_name()` function can be used to set the VBA name for
+ * the workbook. This is sometimes required when a vbaProject macro included
+ * via `workbook_add_vba_project()` refers to the workbook.
+ *
+ * @code
+ *     workbook_set_vba_name(workbook, "MyWorkbook");
+ * @endcode
+ *
+ * The most common Excel VBA name for a workbook is `ThisWorkbook`.
+ *
+ * @return A #lxw_error.
+ */
+lxw_error workbook_set_vba_name(lxw_workbook *workbook, const char *name);
 
 void lxw_workbook_free(lxw_workbook *workbook);
 void lxw_workbook_assemble_xml_file(lxw_workbook *workbook);

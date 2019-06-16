@@ -37,6 +37,8 @@ CTEST(content_types, content_types01) {
     lxw_content_types *content_types = lxw_content_types_new();
     content_types->file = testfile;
 
+    lxw_ct_add_override(content_types, "/xl/workbook.xml",
+                        LXW_APP_DOCUMENT "spreadsheetml.sheet.main+xml");
     lxw_ct_add_worksheet_name(content_types, "/xl/worksheets/sheet1.xml");
     lxw_ct_add_default(content_types, "jpeg", "image/jpeg");
     lxw_ct_add_shared_strings(content_types);
