@@ -1,0 +1,151 @@
+/**
+@page working_with_macros Working with VBA Macros
+
+@tableofcontents
+
+This section explains how to add a VBA file containing functions or macros to
+an libxlsxwriter workbook.
+
+@dontinclude macro.c
+@skipline include
+@until    return
+@skipline }
+
+
+@image html macros.png
+
+@section ww_macros_xlsm_format The Excel XLSM file format
+
+An Excel `xlsm` file is exactly the same as an `xlsx` file except that is
+contains an additional `vbaProject.bin` file which contains functions and/or
+macros. Excel uses a different extension to differentiate between the two file
+formats since files containing macros are usually subject to additional
+security checks.
+
+
+@section ww_macros_include How VBA macros are included in libxlsxwriter files
+
+The `vbaProject.bin` file is a binary OLE COM container. This was the format
+used in older `xls` versions of Excel prior to Excel 2007. Unlike all of the
+other components of an xlsx/xlsm file the data isn't stored in XML
+format. Instead the functions and macros as stored as a pre-parsed binary
+format. As such it wouldn't be feasible to define macros and create a
+`vbaProject.bin` file from scratch (at least not in the remaining lifespan and
+interest levels of the author).
+
+Instead a workaround is used to extract `vbaProject.bin` files from existing
+xlsm files and then add these to libxlsxwriter generated files.
+
+
+@section ww_macros_extract The vba_extract.py utility
+
+The `vba_extract.py` Python utility is used to extract the `vbaProject.bin`
+binary from an Excel 2007+ xlsm file. The utility is included in the
+libxlsxwriter examples directory:
+
+    $ python examples/vba_extract.py macro_file.xlsm
+    Extracted: vbaProject.bin
+
+You can also install `vba_extract.py` into your system path by installing the
+Python xlsxwriter module:
+
+    $ pip install xlsxwriter
+    ...
+    $ vba_extract.py
+    Utility to extract a vbaProject.bin binary from an
+    Excel 2007+ xlsm macro file ...
+
+
+@section ww_macros_adding Adding the VBA macros to a libxlsxwriter file
+
+Once the `vbaProject.bin` file has been extracted it can be added to the
+libxlsxwriter workbook using the `workbook_add_vba_project()` function:
+
+@code
+    workbook_add_vba_project(workbook, "./vbaProject.bin");
+@endcode
+
+@note The name doesn't have to be `vbaProject.bin`. Any suitable path/name for
+an existing VBA bin file will do.
+
+If the VBA file contains functions you can then refer to them in calculations
+using `worksheet_write_formula()`:
+
+@code
+    worksheet_write_formula(0, 0, "=MyMortgageCalc(200000, 25)")
+@endcode
+
+Excel files that contain functions and macros should use an `xlsm` extension
+or else Excel will complain and possibly not open the file:
+
+@code
+    lxw_workbook *workbook = new_workbook("macro.xlsm");
+@endcode
+
+
+@section ww_macros_codenames Setting the VBA codenames
+
+VBA macros generally refer to workbook and worksheet objects. If the VBA
+codenames aren't specified explicitly then libxlsxwriter will use the Excel
+defaults of `ThisWorkbook` and `Sheet1`, `Sheet2` etc.
+
+If the macro uses other codenames you can set them using the
+`workbook_set_vba_name()` and `worksheet_set_vba_name()` functions as follows:
+
+@code
+    // Set the VBA codenames for the workbook and any worksheets.
+    workbook_set_vba_name (workbook,  "MyWorkbook");
+    worksheet_set_vba_name(worksheet, "MySheet1");
+    worksheet_set_vba_name(worksheet, "MySheet2");
+@endcode
+
+@note This step is particularly important for macros created with non-English
+versions of Excel.
+
+You can find the names that are used in the VBA editor or by unzipping the
+`xlsm` file and grepping the files. The following shows how to do that using
+[libxml's xmllint](http://xmlsoft.org/xmllint.html) to format the XML for
+clarity:
+
+    $ unzip myfile.xlsm -d myfile
+    $ xmllint --format `find myfile -name "*.xml" | xargs` | grep "Pr.*codeName"
+
+      <workbookPr codeName="MyWorkbook" defaultThemeVersion="124226"/>
+      <sheetPr codeName="MySheet1"/>
+
+
+@section ww_macros_debugging What to do if it doesn't work
+
+The libxlsxwriter test suite contains several tests to ensure that this feature
+works and there is a working example as shown above. However, there is no
+guarantee that it will work in all cases. Some effort may be required and some
+knowledge of VBA will certainly help. If things don't work out here are some
+things to try:
+
+1. Start with a simple macro file, ensure that it works and then add complexity.
+
+2. Check the code names that macros use to refer to the workbook and
+   worksheets (see the previous section above). In general VBA uses a code
+   name of `ThisWorkbook` to refer to the current workbook and the sheet name
+   (such as `Sheet1`) to refer to the worksheets. These are the defaults used
+   by libxlsxwriter. If the macro uses other names, or the macro was extracted
+   from an non-English language version of Excel, then you can specify the
+   appropriate names using the `workbook_set_vba_name()` and
+   `worksheet_set_vba_name()` functions:
+   @code
+       // Set the VBA codenames for the workbook and any worksheets.
+       workbook_set_vba_name (workbook,  "MyWorkbook");
+       worksheet_set_vba_name(worksheet, "MySheet1");
+       worksheet_set_vba_name(worksheet, "MySheet2");
+   @endcode
+
+3. Try to extract the macros from an Excel 2007 file. The method should work
+   with macros from later versions (it was also tested with Excel 2010
+   macros). However there may be features in the macro files of more recent
+   version of Excel that aren't backward compatible.
+
+
+Next: @ref examples
+
+
+*/

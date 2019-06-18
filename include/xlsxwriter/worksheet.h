@@ -3243,7 +3243,8 @@ void worksheet_set_default_row(lxw_worksheet *worksheet, double height,
  *
  * The `worksheet_set_vba_name()` function can be used to set the VBA name for
  * the worksheet. This is sometimes required when a vbaProject macro included
- * via `workbook_add_vba_project()` refers to the worksheet.
+ * via `workbook_add_vba_project()` refers to the worksheet by a name other
+ * than the worksheet name:
  *
  * @code
  *     workbook_set_vba_name (workbook,  "MyWorkbook");
@@ -3253,6 +3254,8 @@ void worksheet_set_default_row(lxw_worksheet *worksheet, double height,
  * In general Excel uses the worksheet name such as "Sheet1" as the VBA name.
  * However, this can be changed in the VBA environment or if the the macro was
  * extracted from a foreign language version of Excel.
+ *
+ * See also @ref working_with_macros
  *
  * @return A #lxw_error.
  */

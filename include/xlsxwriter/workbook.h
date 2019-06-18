@@ -863,7 +863,19 @@ lxw_error workbook_validate_sheet_name(lxw_workbook *workbook,
  *     workbook_add_vba_project(workbook, "vbaProject.bin");
  * @endcode
  *
- * Only one `vbaProject.bin file` can be added per workbook.
+ * Only one `vbaProject.bin file` can be added per workbook. The name doesn't
+ * have to be `vbaProject.bin`. Any suitable path/name for an existing VBA bin
+ * file will do.
+ *
+ * Once you add a VBA project had been add to an libxlsxwriter workbook you
+ * should ensure that the file extension is `.xlsm` to prevent Excel from
+ * giving a warning when it opens the file:
+ *
+ * @code
+ *     lxw_workbook *workbook = new_workbook("macro.xlsm");
+ * @endcode
+ *
+ * See also @ref working_with_macros
  *
  * @return A #lxw_error.
  */
@@ -878,13 +890,17 @@ lxw_error workbook_add_vba_project(lxw_workbook *workbook,
  *
  * The `workbook_set_vba_name()` function can be used to set the VBA name for
  * the workbook. This is sometimes required when a vbaProject macro included
- * via `workbook_add_vba_project()` refers to the workbook.
+ * via `workbook_add_vba_project()` refers to the workbook by a name other
+ * than `ThisWorkbook`.
  *
  * @code
  *     workbook_set_vba_name(workbook, "MyWorkbook");
  * @endcode
  *
- * The most common Excel VBA name for a workbook is `ThisWorkbook`.
+ * If an Excel VBA name for the workbook isn't specified then libxlsxwriter
+ * will use `ThisWorkbook`.
+ *
+ * See also @ref working_with_macros
  *
  * @return A #lxw_error.
  */

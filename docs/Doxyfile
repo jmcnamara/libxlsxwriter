@@ -775,6 +775,7 @@ INPUT                  = src/mainpage.dox                     \
                          src/working_with_data_validation.dox \
                          src/working_with_outlines.dox        \
                          src/working_with_memory.dox          \
+                         src/working_with_macros.dox          \
                          src/examples.dox                     \
                          src/running_the_tests.dox            \
                          src/faq.dox                          \
