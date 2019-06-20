@@ -27,13 +27,13 @@ how to proceed.
 @subsection gsg_dependencies Install the dependencies
 
 The only dependency (apart from @ref running_the_tests "testing dependencies")
-is [Zlib](http://www.zlib.net) version 1.2.8.
+is [Zlib](http://www.zlib.net) version >= 1.2.8.
 
 The easiest way to install `zlib` is from the source code:
 
-    curl -O -L  http://zlib.net/fossils/zlib-1.2.8.tar.gz
-    tar zxf zlib-1.2.8.tar.gz
-    cd zlib-1.2.8
+    curl -O -L  http://www.zlib.net/zlib-1.2.11.tar.gz
+    tar zxf zlib-1.2.11.tar.gz
+    cd zlib-1.2.11
 
     ./configure
     make
@@ -45,7 +45,7 @@ libraries. For example:
 
     sudo apt-get install -y zlib1g-dev
 
-However, you need to ensure that the version installed is 1.2.8 or you will
+However, you need to ensure that the version installed is >= 1.2.8 or you will
 get zlib related compilation issues.
 
 
@@ -144,7 +144,7 @@ should be able to compile the program as follows:
 In some environments, or if you changed the `INSTALL_DIR` location, you may
 have to provide explicit `include` and `lib` paths:
 
-cc myexcel.c -o myexcel -I/usr/local/include -L/usr/local/lib -lxlsxwriter
+    cc myexcel.c -o myexcel -I/usr/local/include -L/usr/local/lib -lxlsxwriter
 
 This will create an executable that you can run to generate an Excel
 spreadsheet:
@@ -207,7 +207,8 @@ On macOS you can also use [brew/homebrew](https://brew.sh):
 
     brew install libxlsxwriter
 
-    # Once installed you can compile and run a libxlsxwriter program as follows.
+Once installed you can compile and run a libxlsxwriter program as follows:
+
     cc myexcel.c -o myexcel -I/usr/local/include -L/usr/local/lib -lxlsxwriter
     ./myexcel
 
@@ -225,11 +226,6 @@ For example:
     make
     make install
 
-@note The CMake build system is currently experimental and should be
-considered as a secondary build system. The make build system described in the
-previous sections should be used in preference when integrating libxlsxwriter
-with applications or packaging.
-
 @subsection gsg_cmake_flags CMake Flags
 
 Certain build features can be controlled by passing flags to Cmake. For
@@ -238,7 +234,9 @@ example:
     cd cmake
     cmake .. -DBUILD_TESTS=ON
     make
-    make check_xlsxwriter_unit
+
+    # Run the unit tests.
+    ./xlsxwriter_unit
 
 Some of the Libxlsxwriter specific flags are:
 
@@ -270,9 +268,12 @@ configure with:
     cmake .. -G "Visual Studio 14 2015 Win64"
 
 For more information on using generators see:
-[cmake-generators](https://cmake.org/cmake/help/v3.0/manual/cmake-generators.7.html).
+[cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html).
 
-@subsection gsg_cmake_app Building an app with Cmake and Microsoft Visual Studio
+@subsection gsg_cmake_app Cmake for Microsoft Visual Studio
+
+You can also use Cmake to build a Microsoft Visual Studio (although see also
+the next section on using vcpkg which is less manual).
 
 Open a Windows CMD or Command Window and set up your MSVC environment, if
 required.
@@ -325,8 +326,8 @@ Create a new Win32 Console (or other C/C++) application in Visual Studio:
 
 Change the ARCH in the main Dialog to "x64" (or to match the parameter to cmake).
 
-Replace the empty main with a libxlsxwriter example, make sure to include
-"stdafx.h" and "xlsxwriter.h":
+Replace the empty main with a libxlsxwriter example from the distro. Make sure
+to include "stdafx.h" and "xlsxwriter.h":
 
 @code
 #include "stdafx.h"
@@ -390,78 +391,92 @@ created above:
 Build the solution and run the output executable. It should create a
 hello_world.xlsx file in the same directory you ran it from.
 
-@section gsg_msvc Installation on Windows using Microsoft Visual Studio
 
-As an alternative to the Cmake option shown above there is a complete sample
-Microsoft Visual Studio project on GitHub called
-[MSVCLibXlsxWriter](https://github.com/jmcnamara/MSVCLibXlsxWriter).
+@section gsg_vcpkg Using libxlsxwriter in Microsoft Visual Studio via vcpkg
 
-The allows you to build a DLL of libxlsxwriter and also a sample application
-that uses it to create an Excel output file.
+A convenient way to get the latest release version of libxlsxwriter and
+integrate it into your Visual Studio build environment is to use the
+[vcpkg](https://docs.microsoft.com/en-us/cpp/build/vcpkg?view=vs-2019 )
+tool. This uses the CMake build system shown in the previous section but with
+less user interaction. From the vcpkg docs:
 
-@subsection gsg_dll Building a Windows DLL of libxlsxwriter
+> "vcpkg" is a command-line package manager that greatly simplifies the
+> acquisition and installation of third-party libraries on Windows, Linux and
+> MacOS. If your project uses third-party libraries, we recommend that you use
+> vcpkg to install them. vcpkg supports both open-source and proprietary
+> libraries. All libraries in the vcpkg Windows catalog have been tested for
+> compatibility with Visual Studio 2015, Visual Studio 2017, and Visual
+> Studio 2019.
 
-The MSVCLibXlsxWriter repository contains 3 directories:
+Install vcpkg and libxlsxwriter as follows in Windows CMD or Powershell:
 
-- **LibXlsxWriterProj**: A MSVC project to build a `LibXlsxWriter.dll` from
-    the libxlsxwriter source code. The directory also contains a pre-built
-    `Zlib.dll` file.
+    > git clone https://github.com/microsoft/vcpkg.git
+    > bootstrap-vcpkg.bat
+    > vcpkg install libxlsxwriter
 
-- **ExampleExe**: A libxlsxwriter sample application built as a console
-    application that requires the `LibXlsxWriter.dll` and `Zlib.dll` files.
+You should then see libxlsxwriter installed as follows (note that the required
+zlib dependency has also been installed):
 
-- **libxlsxwriter**: The libxlsxwriter source code in a git submodule, see
-    below.
+    > vcpkg list
+    libxlsxwriter:x86-windows  0.8.6-1   Libxlsxwriter is a C library that ...
+    zlib:x86-windows           1.2.11-5  A compression library
 
-The `libxlsxwriter` directory is a Git submodule. This means that it isn't
-included when you do a standard Git clone of MSVCLibXlsxWriter. In order to
-get the submodule as well as the project code you must clone the project
-recursively as follows:
+You can also install libxlsxwriter for other build targets like `x64`
 
-    git clone --recursive https://github.com/jmcnamara/MSVCLibXlsxWriter.git
+    > vcpkg install libxlsxwriter:x64-windows
 
-Or update it explicitly as follows:
+    > vcpkg list
+    libxlsxwriter:x64-windows  0.8.6-1   Libxlsxwriter is a C library that ...
+    libxlsxwriter:x86-windows  0.8.6-1   Libxlsxwriter is a C library that ...
+    zlib:x64-windows           1.2.11-5  A compression library
+    zlib:x86-windows           1.2.11-5  A compression library
 
-    git clone https://github.com/jmcnamara/MSVCLibXlsxWriter.git
-    cd MSVCLibXlsxWriter/
-    git submodule init
-    git submodule update
+To use libxlsxwriter from within Visual Studio you can "integrate" it into
+your environment:
 
-To build the DLL of the library open the `LibXlsxWriterProj/LibXlsxWriter.sln`
-project in MS Visual Studio and build the solution using the "Build -> Build
-Solution" menu item.
+    > vcpkg integrate install
+    Applied user-wide integration for this vcpkg root.
 
-In the default configuration this will build an x64 debug LibXlsxWriter `.lib`
-and `.dll` in:
+All MSBuild C projects can now include libxlsxwriter directly. Linking will
+also be handled automatically. For example, create a new Win32 Console (or
+other C/C++) application in Visual Studio:
 
-    MSVCLibXlsxWriter\LibXlsxWriterProj\x64\Debug
+    File
+      -> New
+        -> Project
+
+    Visual C++
+      -> Win32
+        -> Win32 Console Application
+
+Replace the empty main with a libxlsxwriter example from the distro. Make sure
+to include "stdafx.h" and "xlsxwriter.h":
+
+@code
+#include "stdafx.h"
+#include "xlsxwriter.h"
+
+int main() {
+
+    lxw_workbook  *workbook = workbook_new("hello_world.xlsx");
+    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+
+    worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
+    worksheet_write_number(worksheet, 1, 0, 123, NULL);
+
+    workbook_close(workbook);
+
+    return 0;
+}
+@endcode
+
+Change the target to "Release" and the architecture to "x86" (or whatever you
+installed above). You can now "Build Solution". The resulting executable will
+be put in the output directory with the required "xlsxwriter.dll" and
+"zlib1.dll" files.
 
 
-@subsection gsg_console Building a console application using the LibXlsxWriter.lib
-
-Ensure that `LibXlsxWriter.lib` was built correctly in the previous steps.
-
-To build the example executable open the `ExampleExe/ExampleExe.sln` project
-in MS Visual Studio and build the solution using the "Build -> Build Solution"
-menu item.
-
-In the default configuration this will build the following x64 exe file:
-
-    MSVCLibXlsxWriter\ExampleExe\x64\Debug\ExampleExe.exe
-
-To run the application copy the `LibXlsxWriter.dll` and `Zlib.dll` files from
-the `MSVCLibXlsxWriter\LibXlsxWriterProj` sub-directories to the same
-directory as the executable. You can then run the application by double
-clicking on it in File Explorer or by opening a CMD console and running it
-from the directory.
-
-Once the program has run it will create a `chart_column.xlsx` file based on
-the default sample application in ExampleExe.cpp. You can run other
-libxlsxwriter example programs by copying the code from one of the
-`libxlsxwriter\example\*.c` programs.
-
-
-@subsection gsg_tmpdir Specifying a TEMP directory for libxlsxwriter
+@section gsg_tmpdir Specifying a TEMP directory for libxlsxwriter
 
 The libxlsxwriter library creates temporary files in the system `TEMP`
 directory during assembly of an xlsx file. On Windows this directory may not

@@ -40,7 +40,7 @@ and data to be written separately.
 
 @section faq_msvc Q. Is Visual C++ on Windows supported?
 
-Yes. See @ref gsg_msvc.
+Yes. See @ref gsg_vcpkg.
 
 
 @section faq_features Q. Is feature X supported or will it be supported?
