@@ -17,7 +17,9 @@
 #define __LXW_UTILITY_H__
 
 #include <stdint.h>
+#ifndef _MSC_VER
 #include <strings.h>
+#endif
 #include "common.h"
 #include "xmlwriter.h"
 
