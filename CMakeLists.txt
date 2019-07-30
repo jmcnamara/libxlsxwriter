@@ -139,8 +139,6 @@ if(NOT BUILD_SHARED_LIBS)
     endif()
 endif()
 
-message(status "BEFORE: ${CMAKE_C_FLAGS_DEBUG}")
-
 if(MSVC AND USE_STATIC_MSVC_RUNTIME)
     foreach(flag_var CMAKE_C_FLAGS
                      CMAKE_C_FLAGS_DEBUG
