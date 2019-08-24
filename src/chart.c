@@ -1127,11 +1127,17 @@ _chart_write_a_body_pr(lxw_chart *self, int32_t rotation,
     if (rotation == 0 && is_horizontal)
         rotation = -5400000;
 
-    if (rotation)
-        LXW_PUSH_ATTRIBUTES_INT("rot", rotation);
-
-    if (is_horizontal)
-        LXW_PUSH_ATTRIBUTES_STR("vert", "horz");
+    if (rotation) {
+        if (rotation == 16200000) {
+            /* 270 deg/stacked angle. */
+            LXW_PUSH_ATTRIBUTES_STR("rot", "0");
+            LXW_PUSH_ATTRIBUTES_STR("vert", "wordArtVert");
+        }
+        else {
+            LXW_PUSH_ATTRIBUTES_INT("rot", rotation);
+            LXW_PUSH_ATTRIBUTES_STR("vert", "horz");
+        }
+    }
 
     lxw_xml_empty_tag(self->file, "a:bodyPr", &attributes);
 

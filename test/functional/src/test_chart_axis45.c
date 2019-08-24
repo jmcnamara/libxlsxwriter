@@ -11,13 +11,13 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_chart_axis29.xlsx");
+    lxw_workbook  *workbook  = new_workbook("test_chart_axis45.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
-    lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_LINE);
+    lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_BAR);
 
     /* For testing, copy the randomly generated axis ids in the target file. */
-    chart->axis_id_1 = 145169024;
-    chart->axis_id_2 = 145176448;
+    chart->axis_id_1 = 108178048;
+    chart->axis_id_2 = 108321408;
 
     uint8_t data[5][3] = {
         {1, 2,  3},
@@ -36,8 +36,15 @@ int main() {
     chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5");
     chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
 
-    lxw_chart_font font1 = {.rotation = -90, .baseline = -1};
+    chart_axis_set_name(chart->x_axis, "XXX");
+    chart_axis_set_name(chart->y_axis, "YYY");
+
+    lxw_chart_font font1 = {.rotation = 270, .baseline = -1};
+
     chart_axis_set_num_font(chart->x_axis, &font1);
+    chart_axis_set_num_font(chart->y_axis, &font1);
+    chart_axis_set_name_font(chart->x_axis, &font1);
+    chart_axis_set_name_font(chart->y_axis, &font1);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

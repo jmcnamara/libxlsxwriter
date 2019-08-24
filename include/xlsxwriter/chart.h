@@ -717,7 +717,9 @@ typedef struct lxw_chart_font {
     /** The chart font underline property. Set to 0 or 1. */
     uint8_t underline;
 
-    /** The chart font rotation property. Range: -90 to 90. */
+    /** The chart font rotation property. Range: -90 to 90, or 270.
+     *  The angle 270 gives a stacked (top to bottom) alignment.
+     * */
     int32_t rotation;
 
     /** The chart font color. See @ref working_with_colors. */

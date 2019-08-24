@@ -16,8 +16,8 @@ int main() {
     lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_COLUMN);
 
     /* For testing, copy the randomly generated axis ids in the target file. */
-    chart->axis_id_1 = 108652800;
-    chart->axis_id_2 = 108656128;
+    chart->axis_id_1 = 108315392;
+    chart->axis_id_2 = 108329600;
 
     uint8_t data[5][3] = {
         {1, 2,  3},
