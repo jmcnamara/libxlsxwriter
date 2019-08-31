@@ -1133,6 +1133,11 @@ _chart_write_a_body_pr(lxw_chart *self, int32_t rotation,
             LXW_PUSH_ATTRIBUTES_STR("rot", "0");
             LXW_PUSH_ATTRIBUTES_STR("vert", "wordArtVert");
         }
+        else if (rotation == 16260000) {
+            /* 271 deg/East Asian vertical. */
+            LXW_PUSH_ATTRIBUTES_STR("rot", "0");
+            LXW_PUSH_ATTRIBUTES_STR("vert", "eaVert");
+        }
         else {
             LXW_PUSH_ATTRIBUTES_INT("rot", rotation);
             LXW_PUSH_ATTRIBUTES_STR("vert", "horz");
