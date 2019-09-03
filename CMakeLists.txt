@@ -73,6 +73,16 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 project(${PROJECT_NAME} C)
 enable_testing()
 
+# POLICY
+# ------
+
+# The use of the word ZLIB_ROOT should still work prior to "3.12.0",
+# just it's been generalized for all packages now. Just set the policy
+# to new, so we use it, and it will be used prior to 3.12 anyway.
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.12")
+    cmake_policy(SET CMP0074 NEW)
+endif()
+
 # OPTIONS
 # -------
 
