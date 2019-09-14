@@ -142,7 +142,7 @@ if(NOT BUILD_SHARED_LIBS)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static -static-libgcc -Wno-char-subscripts -Wno-long-long")
         list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_FILE32API)
     elseif(MSVC)
-        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /O0 /Fd\"${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb\"")
+        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /Fd\"${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb\"")
         set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /Ox /Zi /Fd\"${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb\"")
         set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /Zi /Fd\"${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb\"")
         set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /Fd\"${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb\"")
@@ -219,6 +219,11 @@ target_sources(${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LIBRARIES} ${MINIZIP_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LXW_PRIVATE_COMPILE_DEFINITIONS})
+# /utf-8 needs VS2015 Update 2 or above.
+# In CMake 3.7 and above, we can use (MSVC_VERSION GREATER_EQUAL 1900) here. 
+if(MSVC AND NOT (MSVC_VERSION LESS 1900))
+    target_compile_options(${PROJECT_NAME} PRIVATE /utf-8)
+endif()
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${LXW_PRIVATE_INCLUDE_DIRS}
     PUBLIC include include/xlsxwriter
