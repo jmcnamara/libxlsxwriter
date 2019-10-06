@@ -600,3 +600,45 @@ lxw_hash_password(const char *password)
 
     return hash;
 }
+
+/* Make a simple portable version of fopen() for Windows. */
+#ifdef __MINGW32__
+#undef _WIN32
+#endif
+
+#ifdef _WIN32
+
+#include <windows.h>
+
+FILE *
+lxw_fopen(const char *filename, const char *mode)
+{
+    int n;
+    wchar_t wide_filename[_MAX_PATH + 1] = L"";
+    wchar_t wide_mode[_MAX_PATH + 1] = L"";
+
+    n = MultiByteToWideChar(CP_UTF8, 0, filename, (int) strlen(filename),
+                            wide_filename, _MAX_PATH);
+
+    if (n == 0) {
+        LXW_ERROR("MultiByteToWideChar error: filename");
+        return NULL;
+    }
+
+    n = MultiByteToWideChar(CP_UTF8, 0, mode, (int) strlen(mode),
+                            wide_mode, _MAX_PATH);
+
+    if (n == 0) {
+        LXW_ERROR("MultiByteToWideChar error: mode");
+        return NULL;
+    }
+
+    return _wfopen(wide_filename, wide_mode);
+}
+#else
+FILE *
+lxw_fopen(const char *filename, const char *mode)
+{
+    return fopen(filename, mode);
+}
+#endif

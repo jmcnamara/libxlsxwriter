@@ -5544,7 +5544,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     }
 
     /* Check that the image file exists and can be opened. */
-    image_stream = fopen(filename, "rb");
+    image_stream = lxw_fopen(filename, "rb");
     if (!image_stream) {
         LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
                          "file doesn't exist or can't be opened: %s.",

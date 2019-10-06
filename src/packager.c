@@ -270,7 +270,7 @@ _write_image_files(lxw_packager *self)
 
             if (!image->is_image_buffer) {
                 /* Check that the image file exists and can be opened. */
-                image_stream = fopen(image->filename, "rb");
+                image_stream = lxw_fopen(image->filename, "rb");
                 if (!image_stream) {
                     LXW_WARN_FORMAT1("Error adding image to xlsx file: file "
                                      "doesn't exist or can't be opened: %s.",
@@ -308,7 +308,7 @@ _add_vba_project(lxw_packager *self)
         return LXW_NO_ERROR;
 
     /* Check that the image file exists and can be opened. */
-    image_stream = fopen(workbook->vba_project, "rb");
+    image_stream = lxw_fopen(workbook->vba_project, "rb");
     if (!image_stream) {
         LXW_WARN_FORMAT1("Error adding vbaProject.bin to xlsx file: "
                          "file doesn't exist or can't be opened: %s.",

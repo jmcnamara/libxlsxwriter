@@ -2198,7 +2198,7 @@ workbook_add_vba_project(lxw_workbook *self, const char *filename)
     }
 
     /* Check that the vbaProject file exists and can be opened. */
-    filehandle = fopen(filename, "rb");
+    filehandle = lxw_fopen(filename, "rb");
     if (!filehandle) {
         LXW_WARN_FORMAT1("workbook_add_vba_project(): "
                          "file doesn't exist or can't be opened: %s.",

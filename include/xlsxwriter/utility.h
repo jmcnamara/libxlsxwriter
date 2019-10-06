@@ -177,6 +177,7 @@ void lxw_str_tolower(char *str);
 #endif
 
 FILE *lxw_tmpfile(char *tmpdir);
+FILE *lxw_fopen(const char *filename, const char *mode);
 
 /* Use a user defined function to format doubles in sprintf or else a simple
  * macro (the default). */
