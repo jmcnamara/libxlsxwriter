@@ -5573,6 +5573,9 @@ worksheet_insert_image_opt(lxw_worksheet *self,
         options->y_offset = user_options->y_offset;
         options->x_scale = user_options->x_scale;
         options->y_scale = user_options->y_scale;
+
+        if (user_options->description)
+            description = user_options->description;
     }
 
     /* Copy other options or set defaults. */

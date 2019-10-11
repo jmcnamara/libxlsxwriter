@@ -10,6 +10,7 @@
 #define __LXW_DRAWING_H__
 
 #include <stdint.h>
+#include <string.h>
 
 #include "common.h"
 

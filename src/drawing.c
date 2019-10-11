@@ -239,8 +239,10 @@ _drawing_write_c_nv_pr(lxw_drawing *self, char *object_name, uint32_t index,
     LXW_PUSH_ATTRIBUTES_INT("id", index + 1);
     LXW_PUSH_ATTRIBUTES_STR("name", name);
 
-    if (drawing_object && drawing_object->description)
+    if (drawing_object && drawing_object->description
+        && strlen(drawing_object->description)) {
         LXW_PUSH_ATTRIBUTES_STR("descr", drawing_object->description);
+    }
 
     lxw_xml_empty_tag(self->file, "xdr:cNvPr", &attributes);
 
