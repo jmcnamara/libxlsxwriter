@@ -111,11 +111,11 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     GOTO_LABEL_ON_MEM_ERROR(worksheet->merged_ranges, mem_error);
     STAILQ_INIT(worksheet->merged_ranges);
 
-    worksheet->image_data = calloc(1, sizeof(struct lxw_image_data));
-    GOTO_LABEL_ON_MEM_ERROR(worksheet->image_data, mem_error);
-    STAILQ_INIT(worksheet->image_data);
+    worksheet->image_props = calloc(1, sizeof(struct lxw_image_props));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->image_props, mem_error);
+    STAILQ_INIT(worksheet->image_props);
 
-    worksheet->chart_data = calloc(1, sizeof(struct lxw_chart_data));
+    worksheet->chart_data = calloc(1, sizeof(struct lxw_chart_props));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->chart_data, mem_error);
     STAILQ_INIT(worksheet->chart_data);
 
@@ -263,18 +263,18 @@ _free_row(lxw_row *row)
  * Free a worksheet image_options.
  */
 STATIC void
-_free_image_options(lxw_image_options *image)
+_free_object_properties(lxw_object_properties *object_property)
 {
-    if (!image)
+    if (!object_property)
         return;
 
-    free(image->filename);
-    free(image->description);
-    free(image->extension);
-    free(image->url);
-    free(image->tip);
-    free(image->image_buffer);
-    free(image);
+    free(object_property->filename);
+    free(object_property->description);
+    free(object_property->extension);
+    free(object_property->url);
+    free(object_property->tip);
+    free(object_property->image_buffer);
+    free(object_property);
 }
 
 /*
@@ -307,7 +307,7 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     lxw_row *next_row;
     lxw_col_t col;
     lxw_merged_range *merged_range;
-    lxw_image_options *image_options;
+    lxw_object_properties *object_props;
     lxw_selection *selection;
     lxw_data_validation *data_validation;
     lxw_rel_tuple *relationship;
@@ -360,21 +360,21 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
         free(worksheet->merged_ranges);
     }
 
-    if (worksheet->image_data) {
-        while (!STAILQ_EMPTY(worksheet->image_data)) {
-            image_options = STAILQ_FIRST(worksheet->image_data);
-            STAILQ_REMOVE_HEAD(worksheet->image_data, list_pointers);
-            _free_image_options(image_options);
+    if (worksheet->image_props) {
+        while (!STAILQ_EMPTY(worksheet->image_props)) {
+            object_props = STAILQ_FIRST(worksheet->image_props);
+            STAILQ_REMOVE_HEAD(worksheet->image_props, list_pointers);
+            _free_object_properties(object_props);
         }
 
-        free(worksheet->image_data);
+        free(worksheet->image_props);
     }
 
     if (worksheet->chart_data) {
         while (!STAILQ_EMPTY(worksheet->chart_data)) {
-            image_options = STAILQ_FIRST(worksheet->chart_data);
+            object_props = STAILQ_FIRST(worksheet->chart_data);
             STAILQ_REMOVE_HEAD(worksheet->chart_data, list_pointers);
-            _free_image_options(image_options);
+            _free_object_properties(object_props);
         }
 
         free(worksheet->chart_data);
@@ -1834,7 +1834,7 @@ _worksheet_size_row(lxw_worksheet *self, lxw_row_t row_num)
  */
 STATIC void
 _worksheet_position_object_pixels(lxw_worksheet *self,
-                                  lxw_image_options *image,
+                                  lxw_object_properties *object_props,
                                   lxw_drawing_object *drawing_object)
 {
     lxw_col_t col_start;        /* Column containing upper left corner.  */
@@ -1857,12 +1857,12 @@ _worksheet_position_object_pixels(lxw_worksheet *self,
 
     uint32_t i;
 
-    col_start = image->col;
-    row_start = image->row;
-    x1 = image->x_offset;
-    y1 = image->y_offset;
-    width = image->width;
-    height = image->height;
+    col_start = object_props->col;
+    row_start = object_props->row;
+    x1 = object_props->x_offset;
+    y1 = object_props->y_offset;
+    width = object_props->width;
+    height = object_props->height;
 
     /* Adjust start column for negative offsets. */
     while (x1 < 0 && col_start > 0) {
@@ -1972,7 +1972,7 @@ _worksheet_position_object_pixels(lxw_worksheet *self,
  */
 STATIC void
 _worksheet_position_object_emus(lxw_worksheet *self,
-                                lxw_image_options *image,
+                                lxw_object_properties *image,
                                 lxw_drawing_object *drawing_object)
 {
 
@@ -1995,7 +1995,7 @@ _worksheet_position_object_emus(lxw_worksheet *self,
 void
 lxw_worksheet_prepare_image(lxw_worksheet *self,
                             uint32_t image_ref_id, uint32_t drawing_id,
-                            lxw_image_options *image_data)
+                            lxw_object_properties *object_props)
 {
     lxw_drawing_object *drawing_object;
     lxw_rel_tuple *relationship;
@@ -2029,21 +2029,21 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
 
     drawing_object->anchor_type = LXW_ANCHOR_TYPE_IMAGE;
     drawing_object->edit_as = LXW_ANCHOR_EDIT_AS_ONE_CELL;
-    drawing_object->description = lxw_strdup(image_data->description);
+    drawing_object->description = lxw_strdup(object_props->description);
 
     /* Scale to user scale. */
-    width = image_data->width * image_data->x_scale;
-    height = image_data->height * image_data->y_scale;
+    width = object_props->width * object_props->x_scale;
+    height = object_props->height * object_props->y_scale;
 
     /* Scale by non 96dpi resolutions. */
-    width *= 96.0 / image_data->x_dpi;
-    height *= 96.0 / image_data->y_dpi;
+    width *= 96.0 / object_props->x_dpi;
+    height *= 96.0 / object_props->y_dpi;
 
     /* Convert to the nearest pixel. */
-    image_data->width = width;
-    image_data->height = height;
+    object_props->width = width;
+    object_props->height = height;
 
-    _worksheet_position_object_emus(self, image_data, drawing_object);
+    _worksheet_position_object_emus(self, object_props, drawing_object);
 
     /* Convert from pixels to emus. */
     drawing_object->width = (uint32_t) (0.5 + width * 9525);
@@ -2058,7 +2058,7 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
     GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
 
     lxw_snprintf(filename, 32, "../media/image%d.%s", image_ref_id,
-                 image_data->extension);
+                 object_props->extension);
 
     relationship->target = lxw_strdup(filename);
     GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
@@ -2083,7 +2083,7 @@ void
 lxw_worksheet_prepare_chart(lxw_worksheet *self,
                             uint32_t chart_ref_id,
                             uint32_t drawing_id,
-                            lxw_image_options *image_data,
+                            lxw_object_properties *object_props,
                             uint8_t is_chartsheet)
 {
     lxw_drawing_object *drawing_object;
@@ -2128,14 +2128,14 @@ lxw_worksheet_prepare_chart(lxw_worksheet *self,
     drawing_object->description = lxw_strdup("TODO_DESC");
 
     /* Scale to user scale. */
-    width = image_data->width * image_data->x_scale;
-    height = image_data->height * image_data->y_scale;
+    width = object_props->width * object_props->x_scale;
+    height = object_props->height * object_props->y_scale;
 
     /* Convert to the nearest pixel. */
-    image_data->width = width;
-    image_data->height = height;
+    object_props->width = width;
+    object_props->height = height;
 
-    _worksheet_position_object_emus(self, image_data, drawing_object);
+    _worksheet_position_object_emus(self, object_props, drawing_object);
 
     /* Convert from pixels to emus. */
     drawing_object->width = (uint32_t) (0.5 + width * 9525);
@@ -2171,7 +2171,7 @@ mem_error:
  * Extract width and height information from a PNG file.
  */
 STATIC lxw_error
-_process_png(lxw_image_options *image_options)
+_process_png(lxw_object_properties *object_props)
 {
     uint32_t length;
     uint32_t offset;
@@ -2182,7 +2182,7 @@ _process_png(lxw_image_options *image_options)
     double y_dpi = 96;
     int fseek_err;
 
-    FILE *stream = image_options->stream;
+    FILE *stream = object_props->stream;
 
     /* Skip another 4 bytes to the end of the PNG header. */
     fseek_err = fseek(stream, 4, SEEK_CUR);
@@ -2259,18 +2259,18 @@ _process_png(lxw_image_options *image_options)
         goto file_error;
 
     /* Set the image metadata. */
-    image_options->image_type = LXW_IMAGE_PNG;
-    image_options->width = width;
-    image_options->height = height;
-    image_options->x_dpi = x_dpi ? x_dpi : 96;
-    image_options->y_dpi = y_dpi ? x_dpi : 96;
-    image_options->extension = lxw_strdup("png");
+    object_props->image_type = LXW_IMAGE_PNG;
+    object_props->width = width;
+    object_props->height = height;
+    object_props->x_dpi = x_dpi ? x_dpi : 96;
+    object_props->y_dpi = y_dpi ? x_dpi : 96;
+    object_props->extension = lxw_strdup("png");
 
     return LXW_NO_ERROR;
 
 file_error:
     LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
-                     "no size data found in: %s.", image_options->filename);
+                     "no size data found in: %s.", object_props->filename);
 
     return LXW_ERROR_IMAGE_DIMENSIONS;
 }
@@ -2279,7 +2279,7 @@ file_error:
  * Extract width and height information from a JPEG file.
  */
 STATIC lxw_error
-_process_jpeg(lxw_image_options *image_options)
+_process_jpeg(lxw_object_properties *image_props)
 {
     uint16_t length;
     uint16_t marker;
@@ -2290,7 +2290,7 @@ _process_jpeg(lxw_image_options *image_options)
     double y_dpi = 96;
     int fseek_err;
 
-    FILE *stream = image_options->stream;
+    FILE *stream = image_props->stream;
 
     /* Read back 2 bytes to the end of the initial 0xFFD8 marker. */
     fseek_err = fseek(stream, -2, SEEK_CUR);
@@ -2385,18 +2385,18 @@ _process_jpeg(lxw_image_options *image_options)
         goto file_error;
 
     /* Set the image metadata. */
-    image_options->image_type = LXW_IMAGE_JPEG;
-    image_options->width = width;
-    image_options->height = height;
-    image_options->x_dpi = x_dpi ? x_dpi : 96;
-    image_options->y_dpi = y_dpi ? x_dpi : 96;
-    image_options->extension = lxw_strdup("jpeg");
+    image_props->image_type = LXW_IMAGE_JPEG;
+    image_props->width = width;
+    image_props->height = height;
+    image_props->x_dpi = x_dpi ? x_dpi : 96;
+    image_props->y_dpi = y_dpi ? x_dpi : 96;
+    image_props->extension = lxw_strdup("jpeg");
 
     return LXW_NO_ERROR;
 
 file_error:
     LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
-                     "no size data found in: %s.", image_options->filename);
+                     "no size data found in: %s.", image_props->filename);
 
     return LXW_ERROR_IMAGE_DIMENSIONS;
 }
@@ -2405,7 +2405,7 @@ file_error:
  * Extract width and height information from a BMP file.
  */
 STATIC lxw_error
-_process_bmp(lxw_image_options *image_options)
+_process_bmp(lxw_object_properties *image_props)
 {
     uint32_t width = 0;
     uint32_t height = 0;
@@ -2413,7 +2413,7 @@ _process_bmp(lxw_image_options *image_options)
     double y_dpi = 96;
     int fseek_err;
 
-    FILE *stream = image_options->stream;
+    FILE *stream = image_props->stream;
 
     /* Skip another 14 bytes to the start of the BMP height/width. */
     fseek_err = fseek(stream, 14, SEEK_CUR);
@@ -2434,18 +2434,18 @@ _process_bmp(lxw_image_options *image_options)
     width = LXW_UINT32_HOST(width);
 
     /* Set the image metadata. */
-    image_options->image_type = LXW_IMAGE_BMP;
-    image_options->width = width;
-    image_options->height = height;
-    image_options->x_dpi = x_dpi;
-    image_options->y_dpi = y_dpi;
-    image_options->extension = lxw_strdup("bmp");
+    image_props->image_type = LXW_IMAGE_BMP;
+    image_props->width = width;
+    image_props->height = height;
+    image_props->x_dpi = x_dpi;
+    image_props->y_dpi = y_dpi;
+    image_props->extension = lxw_strdup("bmp");
 
     return LXW_NO_ERROR;
 
 file_error:
     LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
-                     "no size data found in: %s.", image_options->filename);
+                     "no size data found in: %s.", image_props->filename);
 
     return LXW_ERROR_IMAGE_DIMENSIONS;
 }
@@ -2455,34 +2455,34 @@ file_error:
  * and extension.
  */
 STATIC lxw_error
-_get_image_properties(lxw_image_options *image_options)
+_get_image_properties(lxw_object_properties *image_props)
 {
     unsigned char signature[4];
 
     /* Read 4 bytes to look for the file header/signature. */
-    if (fread(signature, 1, 4, image_options->stream) < 4) {
+    if (fread(signature, 1, 4, image_props->stream) < 4) {
         LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
                          "couldn't read image type for: %s.",
-                         image_options->filename);
+                         image_props->filename);
         return LXW_ERROR_IMAGE_DIMENSIONS;
     }
 
     if (memcmp(&signature[1], "PNG", 3) == 0) {
-        if (_process_png(image_options) != LXW_NO_ERROR)
+        if (_process_png(image_props) != LXW_NO_ERROR)
             return LXW_ERROR_IMAGE_DIMENSIONS;
     }
     else if (signature[0] == 0xFF && signature[1] == 0xD8) {
-        if (_process_jpeg(image_options) != LXW_NO_ERROR)
+        if (_process_jpeg(image_props) != LXW_NO_ERROR)
             return LXW_ERROR_IMAGE_DIMENSIONS;
     }
     else if (memcmp(signature, "BM", 2) == 0) {
-        if (_process_bmp(image_options) != LXW_NO_ERROR)
+        if (_process_bmp(image_props) != LXW_NO_ERROR)
             return LXW_ERROR_IMAGE_DIMENSIONS;
     }
     else {
         LXW_WARN_FORMAT1("worksheet_insert_image()/_opt(): "
                          "unsupported image format for: %s.",
-                         image_options->filename);
+                         image_props->filename);
         return LXW_ERROR_IMAGE_DIMENSIONS;
     }
 
@@ -5535,7 +5535,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
 {
     FILE *image_stream;
     char *description;
-    lxw_image_options *options;
+    lxw_object_properties *object_props;
 
     if (!filename) {
         LXW_WARN("worksheet_insert_image()/_opt(): "
@@ -5561,43 +5561,43 @@ worksheet_insert_image_opt(lxw_worksheet *self,
         return LXW_ERROR_PARAMETER_VALIDATION;
     }
 
-    /* Create a new object to hold the image options. */
-    options = calloc(1, sizeof(lxw_image_options));
-    if (!options) {
+    /* Create a new object to hold the image properties. */
+    object_props = calloc(1, sizeof(lxw_object_properties));
+    if (!object_props) {
         fclose(image_stream);
         return LXW_ERROR_MEMORY_MALLOC_FAILED;
     }
 
     if (user_options) {
-        options->x_offset = user_options->x_offset;
-        options->y_offset = user_options->y_offset;
-        options->x_scale = user_options->x_scale;
-        options->y_scale = user_options->y_scale;
+        object_props->x_offset = user_options->x_offset;
+        object_props->y_offset = user_options->y_offset;
+        object_props->x_scale = user_options->x_scale;
+        object_props->y_scale = user_options->y_scale;
 
         if (user_options->description)
             description = user_options->description;
     }
 
     /* Copy other options or set defaults. */
-    options->filename = lxw_strdup(filename);
-    options->description = lxw_strdup(description);
-    options->stream = image_stream;
-    options->row = row_num;
-    options->col = col_num;
+    object_props->filename = lxw_strdup(filename);
+    object_props->description = lxw_strdup(description);
+    object_props->stream = image_stream;
+    object_props->row = row_num;
+    object_props->col = col_num;
 
-    if (!options->x_scale)
-        options->x_scale = 1;
+    if (!object_props->x_scale)
+        object_props->x_scale = 1;
 
-    if (!options->y_scale)
-        options->y_scale = 1;
+    if (!object_props->y_scale)
+        object_props->y_scale = 1;
 
-    if (_get_image_properties(options) == LXW_NO_ERROR) {
-        STAILQ_INSERT_TAIL(self->image_data, options, list_pointers);
+    if (_get_image_properties(object_props) == LXW_NO_ERROR) {
+        STAILQ_INSERT_TAIL(self->image_props, object_props, list_pointers);
         fclose(image_stream);
         return LXW_NO_ERROR;
     }
     else {
-        _free_image_options(options);
+        _free_object_properties(object_props);
         fclose(image_stream);
         return LXW_ERROR_IMAGE_DIMENSIONS;
     }
@@ -5623,7 +5623,7 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
                                   lxw_image_options *user_options)
 {
     FILE *image_stream;
-    lxw_image_options *options;
+    lxw_object_properties *object_props;
 
     if (!image_size) {
         LXW_WARN("worksheet_insert_image_buffer()/_opt(): "
@@ -5644,53 +5644,53 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
 
     rewind(image_stream);
 
-    /* Create a new object to hold the image options. */
-    options = calloc(1, sizeof(lxw_image_options));
-    if (!options) {
+    /* Create a new object to hold the image properties. */
+    object_props = calloc(1, sizeof(lxw_object_properties));
+    if (!object_props) {
         fclose(image_stream);
         return LXW_ERROR_MEMORY_MALLOC_FAILED;
     }
 
-    /* Store the image data in the options structure. */
-    options->image_buffer = calloc(1, image_size);
-    if (!options->image_buffer) {
-        _free_image_options(options);
+    /* Store the image data in the properties structure. */
+    object_props->image_buffer = calloc(1, image_size);
+    if (!object_props->image_buffer) {
+        _free_object_properties(object_props);
         fclose(image_stream);
         return LXW_ERROR_MEMORY_MALLOC_FAILED;
     }
     else {
-        memcpy(options->image_buffer, image_buffer, image_size);
-        options->image_buffer_size = image_size;
-        options->is_image_buffer = LXW_TRUE;
+        memcpy(object_props->image_buffer, image_buffer, image_size);
+        object_props->image_buffer_size = image_size;
+        object_props->is_image_buffer = LXW_TRUE;
     }
 
     if (user_options) {
-        options->x_offset = user_options->x_offset;
-        options->y_offset = user_options->y_offset;
-        options->x_scale = user_options->x_scale;
-        options->y_scale = user_options->y_scale;
-        options->description = lxw_strdup(user_options->description);
+        object_props->x_offset = user_options->x_offset;
+        object_props->y_offset = user_options->y_offset;
+        object_props->x_scale = user_options->x_scale;
+        object_props->y_scale = user_options->y_scale;
+        object_props->description = lxw_strdup(user_options->description);
     }
 
     /* Copy other options or set defaults. */
-    options->filename = lxw_strdup("image_buffer");
-    options->stream = image_stream;
-    options->row = row_num;
-    options->col = col_num;
+    object_props->filename = lxw_strdup("image_buffer");
+    object_props->stream = image_stream;
+    object_props->row = row_num;
+    object_props->col = col_num;
 
-    if (!options->x_scale)
-        options->x_scale = 1;
+    if (!object_props->x_scale)
+        object_props->x_scale = 1;
 
-    if (!options->y_scale)
-        options->y_scale = 1;
+    if (!object_props->y_scale)
+        object_props->y_scale = 1;
 
-    if (_get_image_properties(options) == LXW_NO_ERROR) {
-        STAILQ_INSERT_TAIL(self->image_data, options, list_pointers);
+    if (_get_image_properties(object_props) == LXW_NO_ERROR) {
+        STAILQ_INSERT_TAIL(self->image_props, object_props, list_pointers);
         fclose(image_stream);
         return LXW_NO_ERROR;
     }
     else {
-        _free_image_options(options);
+        _free_object_properties(object_props);
         fclose(image_stream);
         return LXW_ERROR_IMAGE_DIMENSIONS;
     }
@@ -5713,9 +5713,9 @@ worksheet_insert_image_buffer(lxw_worksheet *self,
 lxw_error
 worksheet_insert_chart_opt(lxw_worksheet *self,
                            lxw_row_t row_num, lxw_col_t col_num,
-                           lxw_chart *chart, lxw_image_options *user_options)
+                           lxw_chart *chart, lxw_chart_options *user_options)
 {
-    lxw_image_options *options;
+    lxw_object_properties *object_props;
     lxw_chart_series *series;
 
     if (!chart) {
@@ -5749,35 +5749,35 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
         }
     }
 
-    /* Create a new object to hold the chart image options. */
-    options = calloc(1, sizeof(lxw_image_options));
-    RETURN_ON_MEM_ERROR(options, LXW_ERROR_MEMORY_MALLOC_FAILED);
+    /* Create a new object to hold the chart image properties. */
+    object_props = calloc(1, sizeof(lxw_object_properties));
+    RETURN_ON_MEM_ERROR(object_props, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     if (user_options) {
-        options->x_offset = user_options->x_offset;
-        options->y_offset = user_options->y_offset;
-        options->x_scale = user_options->x_scale;
-        options->y_scale = user_options->y_scale;
+        object_props->x_offset = user_options->x_offset;
+        object_props->y_offset = user_options->y_offset;
+        object_props->x_scale = user_options->x_scale;
+        object_props->y_scale = user_options->y_scale;
     }
 
     /* Copy other options or set defaults. */
-    options->row = row_num;
-    options->col = col_num;
+    object_props->row = row_num;
+    object_props->col = col_num;
 
     /* TODO. Read defaults from chart. */
-    options->width = 480;
-    options->height = 288;
+    object_props->width = 480;
+    object_props->height = 288;
 
-    if (!options->x_scale)
-        options->x_scale = 1;
+    if (!object_props->x_scale)
+        object_props->x_scale = 1;
 
-    if (!options->y_scale)
-        options->y_scale = 1;
+    if (!object_props->y_scale)
+        object_props->y_scale = 1;
 
     /* Store chart references so they can be ordered in the workbook. */
-    options->chart = chart;
+    object_props->chart = chart;
 
-    STAILQ_INSERT_TAIL(self->chart_data, options, list_pointers);
+    STAILQ_INSERT_TAIL(self->chart_data, object_props, list_pointers);
 
     chart->in_use = LXW_TRUE;
 

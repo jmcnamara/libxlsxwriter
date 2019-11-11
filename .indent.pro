@@ -71,6 +71,7 @@
 -T lxw_chart_line_dash_type
 -T lxw_chart_marker
 -T lxw_chart_marker_type
+-T lxw_chart_options
 -T lxw_chart_pattern
 -T lxw_chart_pattern_type
 -T lxw_chart_point
@@ -104,6 +105,7 @@
 -T lxw_heading_pair
 -T lxw_image_options
 -T lxw_merged_range
+-T lxw_object_properties
 -T lxw_packager
 -T lxw_panes
 -T lxw_part_name

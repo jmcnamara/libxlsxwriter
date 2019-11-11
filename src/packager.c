@@ -247,7 +247,7 @@ _write_image_files(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     lxw_sheet *sheet;
     lxw_worksheet *worksheet;
-    lxw_image_options *image;
+    lxw_object_properties *object_props;
     lxw_error err;
     FILE *image_stream;
 
@@ -260,21 +260,22 @@ _write_image_files(lxw_packager *self)
         else
             worksheet = sheet->u.worksheet;
 
-        if (STAILQ_EMPTY(worksheet->image_data))
+        if (STAILQ_EMPTY(worksheet->image_props))
             continue;
 
-        STAILQ_FOREACH(image, worksheet->image_data, list_pointers) {
+        STAILQ_FOREACH(object_props, worksheet->image_props, list_pointers) {
 
             lxw_snprintf(filename, LXW_FILENAME_LENGTH,
-                         "xl/media/image%d.%s", index++, image->extension);
+                         "xl/media/image%d.%s", index++,
+                         object_props->extension);
 
-            if (!image->is_image_buffer) {
+            if (!object_props->is_image_buffer) {
                 /* Check that the image file exists and can be opened. */
-                image_stream = lxw_fopen(image->filename, "rb");
+                image_stream = lxw_fopen(object_props->filename, "rb");
                 if (!image_stream) {
                     LXW_WARN_FORMAT1("Error adding image to xlsx file: file "
                                      "doesn't exist or can't be opened: %s.",
-                                     image->filename);
+                                     object_props->filename);
                     return LXW_ERROR_CREATING_TMPFILE;
                 }
 
@@ -283,8 +284,9 @@ _write_image_files(lxw_packager *self)
             }
             else {
                 err = _add_buffer_to_zip(self,
-                                         image->image_buffer,
-                                         image->image_buffer_size, filename);
+                                         object_props->image_buffer,
+                                         object_props->image_buffer_size,
+                                         filename);
             }
 
             RETURN_ON_ERROR(err);

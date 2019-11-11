@@ -36,7 +36,7 @@ int main() {
     chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5");
     chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
 
-    lxw_image_options options = {.x_offset = 8, .y_offset = 9};
+    lxw_chart_options options = {.x_offset = 8, .y_offset = 9};
     worksheet_insert_chart_opt(worksheet, CELL("E9"), chart, &options);
 
     return workbook_close(workbook);

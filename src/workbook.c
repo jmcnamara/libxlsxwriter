@@ -886,7 +886,7 @@ _prepare_drawings(lxw_workbook *self)
 {
     lxw_sheet *sheet;
     lxw_worksheet *worksheet;
-    lxw_image_options *image_options;
+    lxw_object_properties *object_props;
     uint32_t chart_ref_id = 0;
     uint32_t image_ref_id = 0;
     uint32_t drawing_id = 0;
@@ -902,36 +902,36 @@ _prepare_drawings(lxw_workbook *self)
             is_chartsheet = LXW_FALSE;
         }
 
-        if (STAILQ_EMPTY(worksheet->image_data)
+        if (STAILQ_EMPTY(worksheet->image_props)
             && STAILQ_EMPTY(worksheet->chart_data))
             continue;
 
         drawing_id++;
 
-        STAILQ_FOREACH(image_options, worksheet->chart_data, list_pointers) {
+        STAILQ_FOREACH(object_props, worksheet->chart_data, list_pointers) {
             chart_ref_id++;
             lxw_worksheet_prepare_chart(worksheet, chart_ref_id, drawing_id,
-                                        image_options, is_chartsheet);
-            if (image_options->chart)
-                STAILQ_INSERT_TAIL(self->ordered_charts, image_options->chart,
+                                        object_props, is_chartsheet);
+            if (object_props->chart)
+                STAILQ_INSERT_TAIL(self->ordered_charts, object_props->chart,
                                    ordered_list_pointers);
         }
 
-        STAILQ_FOREACH(image_options, worksheet->image_data, list_pointers) {
+        STAILQ_FOREACH(object_props, worksheet->image_props, list_pointers) {
 
-            if (image_options->image_type == LXW_IMAGE_PNG)
+            if (object_props->image_type == LXW_IMAGE_PNG)
                 self->has_png = LXW_TRUE;
 
-            if (image_options->image_type == LXW_IMAGE_JPEG)
+            if (object_props->image_type == LXW_IMAGE_JPEG)
                 self->has_jpeg = LXW_TRUE;
 
-            if (image_options->image_type == LXW_IMAGE_BMP)
+            if (object_props->image_type == LXW_IMAGE_BMP)
                 self->has_bmp = LXW_TRUE;
 
             image_ref_id++;
 
             lxw_worksheet_prepare_image(worksheet, image_ref_id, drawing_id,
-                                        image_options);
+                                        object_props);
         }
     }
 
