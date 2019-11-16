@@ -158,7 +158,7 @@ typedef struct lxw_defined_name {
 } lxw_defined_name;
 
 /**
- * Workbook document properties.
+ * Workbook document properties. Set any unused fields to NULL or 0.
  */
 typedef struct lxw_doc_properties {
     /** The title of the Excel Document. */
@@ -188,9 +188,13 @@ typedef struct lxw_doc_properties {
     /** The status of the Excel Document. */
     char *status;
 
-    /** The hyperlink base url of the Excel Document. */
+    /** The hyperlink base URL of the Excel Document. */
     char *hyperlink_base;
 
+    /** The file creation date/time shown in Excel. This defaults to the
+     * current time and date if set to 0. If you wish to create files that are
+     * binary equivalent (for the same input data) then you should set this
+     * creation date/time to a known value. */
     time_t created;
 
 } lxw_doc_properties;
