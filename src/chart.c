@@ -331,11 +331,6 @@ _chart_convert_font_args(lxw_chart_font *user_font)
     if (font->rotation)
         font->rotation = font->rotation * 60000;
 
-    if (font->color) {
-        font->color = lxw_format_check_color(font->color);
-        font->has_color = LXW_TRUE;
-    }
-
     return font;
 }
 
@@ -359,11 +354,6 @@ _chart_convert_line_args(lxw_chart_line *user_line)
     line->width = user_line->width;
     line->dash_type = user_line->dash_type;
     line->transparency = user_line->transparency;
-
-    if (line->color) {
-        line->color = lxw_format_check_color(line->color);
-        line->has_color = LXW_TRUE;
-    }
 
     if (line->transparency > 100)
         line->transparency = 0;
@@ -389,11 +379,6 @@ _chart_convert_fill_args(lxw_chart_fill *user_fill)
     fill->color = user_fill->color;
     fill->none = user_fill->none;
     fill->transparency = user_fill->transparency;
-
-    if (fill->color) {
-        fill->color = lxw_format_check_color(fill->color);
-        fill->has_color = LXW_TRUE;
-    }
 
     if (fill->transparency > 100)
         fill->transparency = 0;
@@ -430,11 +415,9 @@ _chart_convert_pattern_args(lxw_chart_pattern *user_pattern)
     pattern->bg_color = user_pattern->bg_color;
     pattern->type = user_pattern->type;
 
-    pattern->fg_color = lxw_format_check_color(pattern->fg_color);
     pattern->has_fg_color = LXW_TRUE;
 
     if (pattern->bg_color) {
-        pattern->bg_color = lxw_format_check_color(pattern->bg_color);
         pattern->has_bg_color = LXW_TRUE;
     }
     else {
@@ -857,7 +840,7 @@ _chart_write_a_def_rpr(lxw_chart *self, lxw_chart_font *font)
     LXW_INIT_ATTRIBUTES();
 
     if (font) {
-        has_color = font->color || font->has_color;
+        has_color = !!font->color;
         has_latin = font->name || font->pitch_family || font->charset;
         use_font_default = !(has_color || has_latin || font->baseline == -1);
 
@@ -929,7 +912,7 @@ _chart_write_a_r_pr(lxw_chart *self, lxw_chart_font *font)
     LXW_PUSH_ATTRIBUTES_STR("lang", "en-US");
 
     if (font) {
-        has_color = font->color || font->has_color;
+        has_color = !!font->color;
         has_latin = font->name || font->pitch_family || font->charset;
         use_font_default = !(has_color || has_latin || font->baseline == -1);
 
@@ -1679,7 +1662,7 @@ _chart_write_a_ln(lxw_chart *self, lxw_chart_line *line)
         /* Write the a:noFill element. */
         _chart_write_a_no_fill(self);
     }
-    else if (line->has_color) {
+    else if (line->color) {
         /* Write the a:solidFill element. */
         _chart_write_a_solid_fill(self, line->color, line->transparency);
     }
@@ -4515,8 +4498,7 @@ _chart_write_scatter_chart(lxw_chart *self)
                     LXW_TRUE,
                     2.25,
                     LXW_CHART_LINE_DASH_SOLID,
-                    0,
-                    LXW_FALSE
+                    0
                 };
                 series->line = _chart_convert_line_args(&line);
             }

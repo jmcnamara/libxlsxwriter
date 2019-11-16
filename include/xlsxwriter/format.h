@@ -72,14 +72,14 @@
  * The type for RGB colors in libxlsxwriter. The valid range is `0x000000`
  * (black) to `0xFFFFFF` (white). See @ref working_with_colors.
  */
-typedef int32_t lxw_color_t;
+typedef uint32_t lxw_color_t;
 
 #define LXW_FORMAT_FIELD_LEN            128
 #define LXW_DEFAULT_FONT_NAME           "Calibri"
 #define LXW_DEFAULT_FONT_FAMILY         2
 #define LXW_DEFAULT_FONT_THEME          1
 #define LXW_PROPERTY_UNSET              -1
-#define LXW_COLOR_UNSET                 -1
+#define LXW_COLOR_UNSET                 0x000000
 #define LXW_COLOR_MASK                  0xFFFFFF
 #define LXW_MIN_FONT_SIZE               1.0
 #define LXW_MAX_FONT_SIZE               409.0
@@ -486,8 +486,6 @@ int32_t lxw_format_get_xf_index(lxw_format *format);
 lxw_font *lxw_format_get_font_key(lxw_format *format);
 lxw_border *lxw_format_get_border_key(lxw_format *format);
 lxw_fill *lxw_format_get_fill_key(lxw_format *format);
-
-lxw_color_t lxw_format_check_color(lxw_color_t color);
 
 /**
  * @brief Set the font used in the cell.

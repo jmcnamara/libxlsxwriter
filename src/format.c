@@ -120,7 +120,7 @@ lxw_format_free(lxw_format *format)
  * Check a user input color.
  */
 lxw_color_t
-lxw_format_check_color(lxw_color_t color)
+lxw_format_check_colorz(lxw_color_t color)
 {
     if (color == LXW_COLOR_UNSET)
         return color;
@@ -322,7 +322,7 @@ format_set_font_size(lxw_format *self, double size)
 void
 format_set_font_color(lxw_format *self, lxw_color_t color)
 {
-    self->font_color = lxw_format_check_color(color);
+    self->font_color = color;
 }
 
 /*
@@ -508,7 +508,7 @@ format_set_pattern(lxw_format *self, uint8_t value)
 void
 format_set_bg_color(lxw_format *self, lxw_color_t color)
 {
-    self->bg_color = lxw_format_check_color(color);
+    self->bg_color = color;
 }
 
 /*
@@ -517,7 +517,7 @@ format_set_bg_color(lxw_format *self, lxw_color_t color)
 void
 format_set_fg_color(lxw_format *self, lxw_color_t color)
 {
-    self->fg_color = lxw_format_check_color(color);
+    self->fg_color = color;
 }
 
 /*
@@ -539,7 +539,6 @@ format_set_border(lxw_format *self, uint8_t style)
 void
 format_set_border_color(lxw_format *self, lxw_color_t color)
 {
-    color = lxw_format_check_color(color);
     self->bottom_color = color;
     self->top_color = color;
     self->left_color = color;
@@ -561,7 +560,7 @@ format_set_bottom(lxw_format *self, uint8_t style)
 void
 format_set_bottom_color(lxw_format *self, lxw_color_t color)
 {
-    self->bottom_color = lxw_format_check_color(color);
+    self->bottom_color = color;
 }
 
 /*
@@ -579,7 +578,7 @@ format_set_left(lxw_format *self, uint8_t style)
 void
 format_set_left_color(lxw_format *self, lxw_color_t color)
 {
-    self->left_color = lxw_format_check_color(color);
+    self->left_color = color;
 }
 
 /*
@@ -597,7 +596,7 @@ format_set_right(lxw_format *self, uint8_t style)
 void
 format_set_right_color(lxw_format *self, lxw_color_t color)
 {
-    self->right_color = lxw_format_check_color(color);
+    self->right_color = color;
 }
 
 /*
@@ -615,7 +614,7 @@ format_set_top(lxw_format *self, uint8_t style)
 void
 format_set_top_color(lxw_format *self, lxw_color_t color)
 {
-    self->top_color = lxw_format_check_color(color);
+    self->top_color = color;
 }
 
 /*
@@ -634,7 +633,7 @@ format_set_diag_type(lxw_format *self, uint8_t type)
 void
 format_set_diag_color(lxw_format *self, lxw_color_t color)
 {
-    self->diag_color = lxw_format_check_color(color);
+    self->diag_color = color;
 }
 
 /*
