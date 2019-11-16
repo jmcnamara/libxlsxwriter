@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_macro02.xlsm");
+    lxw_workbook  *workbook  = workbook_new("test_macro02.xlsm");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     workbook_add_vba_project(workbook, "images/vbaProject03.bin");

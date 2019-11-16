@@ -28,7 +28,7 @@ void write_worksheet_data(lxw_worksheet *worksheet) {
 /* Create a worksheet with a chart. */
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("chart.xlsx");
+    lxw_workbook  *workbook  = workbook_new("chart.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Write some data for the chart. */

@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_properties04.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_properties04.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_datetime   datetime  = {2016, 12, 12,  23, 0, 0};
 

@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_escapes03.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_escapes03.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     lxw_format *bold = workbook_add_format(workbook);

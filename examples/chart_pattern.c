@@ -12,7 +12,7 @@
 /* Create a worksheet with a chart. */
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("chart_pattern.xlsx");
+    lxw_workbook  *workbook  = workbook_new("chart_pattern.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_chart *chart;
 

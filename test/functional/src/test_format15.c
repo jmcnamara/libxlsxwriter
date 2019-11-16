@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_format15.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_format15.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     lxw_format *format1 = workbook_add_format(workbook);

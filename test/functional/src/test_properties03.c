@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_properties03.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_properties03.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     workbook_set_custom_property_string(workbook, "Checked by", "Adam");

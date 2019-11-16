@@ -13,7 +13,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("macro.xlsm");
+    lxw_workbook  *workbook  = workbook_new("macro.xlsm");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Add a macro that will execute when the file is opened. */

@@ -25,6 +25,14 @@
 #define STATIC
 #endif
 
+#ifdef __GNUC__
+#define DEPRECATED(func, msg) func __attribute__ ((deprecated(msg)))
+#elif defined(_MSC_VER)
+#define DEPRECATED(func, msg) __declspec(deprecated, msg) func
+#else
+#define DEPRECATED(func, msg) func
+#endif
+
 /** Integer data type to represent a row value. Equivalent to `uint32_t`.
  *
  * The maximum row in Excel is 1,048,576.

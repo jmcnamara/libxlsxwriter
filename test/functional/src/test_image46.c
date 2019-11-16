@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_image46.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_image46.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     lxw_image_options image_options = {.x_offset = 0, .y_offset = 4};

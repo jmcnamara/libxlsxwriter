@@ -65,7 +65,7 @@ STAILQ_HEAD(lxw_chartsheets, lxw_chartsheet);
 STAILQ_HEAD(lxw_charts, lxw_chart);
 TAILQ_HEAD(lxw_defined_names, lxw_defined_name);
 
-/* TODO */
+/* Struct to hold the 2 sheet types. */
 typedef struct lxw_sheet {
     uint8_t is_chartsheet;
 
@@ -367,13 +367,6 @@ lxw_workbook *workbook_new(const char *filename);
  *
  */
 lxw_workbook *workbook_new_opt(const char *filename,
-                               lxw_workbook_options *options);
-
-/* Deprecated function name for backwards compatibility. */
-lxw_workbook *new_workbook(const char *filename);
-
-/* Deprecated function name for backwards compatibility. */
-lxw_workbook *new_workbook_opt(const char *filename,
                                lxw_workbook_options *options);
 
 /**
@@ -775,8 +768,7 @@ lxw_error workbook_set_custom_property_datetime(lxw_workbook *workbook,
  * @endcode
  *
  * The rules for names in Excel are explained in the
- * [Microsoft Office
-documentation](http://office.microsoft.com/en-001/excel-help/define-and-use-names-in-formulas-HA010147120.aspx).
+ * [Microsoft Office documentation](http://office.microsoft.com/en-001/excel-help/define-and-use-names-in-formulas-HA010147120.aspx).
  *
  */
 lxw_error workbook_define_name(lxw_workbook *workbook, const char *name,
@@ -913,6 +905,12 @@ lxw_error workbook_set_vba_name(lxw_workbook *workbook, const char *name);
 void lxw_workbook_free(lxw_workbook *workbook);
 void lxw_workbook_assemble_xml_file(lxw_workbook *workbook);
 void lxw_workbook_set_default_xf_indices(lxw_workbook *workbook);
+
+DEPRECATED(lxw_workbook *new_workbook(const char *filename),
+           "use 'workbook_new' instead");
+DEPRECATED(lxw_workbook *new_workbook_opt(const char *filename,
+                                          lxw_workbook_options *options),
+           "use 'workbook_new_opt()' instead");
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

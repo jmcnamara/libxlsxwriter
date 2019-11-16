@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_outline01.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_outline01.xlsx");
     lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, "Outlined Rows");
 
     lxw_format *bold = workbook_add_format(workbook);
