@@ -88,6 +88,7 @@
 -T lxw_core
 -T lxw_custom
 -T lxw_custom_property
+-T lxw_data_val_obj
 -T lxw_data_validation
 -T lxw_datetime
 -T lxw_defined_name
@@ -111,6 +112,7 @@
 -T lxw_part_name
 -T lxw_print_area
 -T lxw_protection
+-T lxw_protection_obj
 -T lxw_rel_tuple
 -T lxw_relationships
 -T lxw_repeat_cols

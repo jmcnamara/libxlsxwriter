@@ -77,7 +77,7 @@ typedef struct lxw_chartsheet {
     lxw_worksheet *worksheet;
     lxw_chart *chart;
 
-    struct lxw_protection protection;
+    struct lxw_protection_obj protection;
     uint8_t is_protected;
 
     char *name;

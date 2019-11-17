@@ -386,7 +386,7 @@ void
 chartsheet_protect(lxw_chartsheet *self, const char *password,
                    lxw_protection *options)
 {
-    struct lxw_protection *protect = &self->protection;
+    struct lxw_protection_obj *protect = &self->protection;
 
     /* Copy any user parameters to the internal structure. */
     if (options) {

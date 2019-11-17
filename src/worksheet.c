@@ -3414,7 +3414,7 @@ mem_error:
  */
 STATIC void
 _worksheet_write_sheet_protection(lxw_worksheet *self,
-                                  lxw_protection *protect)
+                                  lxw_protection_obj *protect)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -3760,7 +3760,7 @@ lxw_worksheet_write_drawings(lxw_worksheet *self)
 
 void
 lxw_worksheet_write_sheet_protection(lxw_worksheet *self,
-                                     lxw_protection *protect)
+                                     lxw_protection_obj *protect)
 {
     _worksheet_write_sheet_protection(self, protect);
 }
@@ -5456,7 +5456,7 @@ void
 worksheet_protect(lxw_worksheet *self, const char *password,
                   lxw_protection *options)
 {
-    struct lxw_protection *protect = &self->protection;
+    struct lxw_protection_obj *protect = &self->protection;
 
     /* Copy any user parameters to the internal structure. */
     if (options) {
@@ -5482,6 +5482,7 @@ worksheet_protect(lxw_worksheet *self, const char *password,
         lxw_snprintf(protect->hash, 5, "%X", hash);
     }
 
+    protect->no_sheet = LXW_FALSE;
     protect->no_content = LXW_TRUE;
     protect->is_configured = LXW_TRUE;
 }

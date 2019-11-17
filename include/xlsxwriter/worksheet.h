@@ -610,6 +610,9 @@ typedef struct lxw_chart_options {
 
 } lxw_chart_options;
 
+/* Internal struct to represent lxw_image_options and lxw_chart_options
+ * values as well as internal metadata.
+ */
 typedef struct lxw_object_properties {
     int32_t x_offset;
     int32_t y_offset;
@@ -704,10 +707,32 @@ typedef struct lxw_protection {
     /** Turn off chartsheet objects. */
     uint8_t no_objects;
 
+} lxw_protection;
+
+/* Internal struct to copy lxw_protection options and internal metadata. */
+typedef struct lxw_protection_obj {
+    uint8_t no_select_locked_cells;
+    uint8_t no_select_unlocked_cells;
+    uint8_t format_cells;
+    uint8_t format_columns;
+    uint8_t format_rows;
+    uint8_t insert_columns;
+    uint8_t insert_rows;
+    uint8_t insert_hyperlinks;
+    uint8_t delete_columns;
+    uint8_t delete_rows;
+    uint8_t sort;
+    uint8_t autofilter;
+    uint8_t pivot_tables;
+    uint8_t scenarios;
+    uint8_t objects;
+    uint8_t no_content;
+    uint8_t no_objects;
     uint8_t no_sheet;
     uint8_t is_configured;
     char hash[5];
-} lxw_protection;
+} lxw_protection_obj;
+
 
 /**
  * @brief Struct to represent a rich string format/string pair.
@@ -852,7 +877,7 @@ typedef struct lxw_worksheet {
 
     struct lxw_panes panes;
 
-    struct lxw_protection protection;
+    struct lxw_protection_obj protection;
 
     lxw_drawing *drawing;
 
@@ -3349,7 +3374,7 @@ void lxw_worksheet_write_sheet_views(lxw_worksheet *worksheet);
 void lxw_worksheet_write_page_margins(lxw_worksheet *worksheet);
 void lxw_worksheet_write_drawings(lxw_worksheet *worksheet);
 void lxw_worksheet_write_sheet_protection(lxw_worksheet *worksheet,
-                                          lxw_protection *protect);
+                                          lxw_protection_obj *protect);
 void lxw_worksheet_write_sheet_pr(lxw_worksheet *worksheet);
 void lxw_worksheet_write_page_setup(lxw_worksheet *worksheet);
 void lxw_worksheet_write_header_footer(lxw_worksheet *worksheet);
@@ -3361,10 +3386,8 @@ STATIC void _worksheet_xml_declaration(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_worksheet(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_dimension(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_view(lxw_worksheet *worksheet);
-STATIC void _worksheet_write_sheet_views(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_format_pr(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_data(lxw_worksheet *worksheet);
-STATIC void _worksheet_write_page_margins(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_page_setup(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_col_info(lxw_worksheet *worksheet,
                                       lxw_col_options *options);
@@ -3378,13 +3401,9 @@ STATIC void _worksheet_write_merge_cells(lxw_worksheet *worksheet);
 
 STATIC void _worksheet_write_odd_header(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_odd_footer(lxw_worksheet *worksheet);
-STATIC void _worksheet_write_header_footer(lxw_worksheet *worksheet);
 
 STATIC void _worksheet_write_print_options(lxw_worksheet *worksheet);
-STATIC void _worksheet_write_sheet_pr(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_tab_color(lxw_worksheet *worksheet);
-STATIC void _worksheet_write_sheet_protection(lxw_worksheet *worksheet,
-                                              lxw_protection *protect);
 STATIC void _worksheet_write_data_validations(lxw_worksheet *self);
 #endif /* TESTING */
 
