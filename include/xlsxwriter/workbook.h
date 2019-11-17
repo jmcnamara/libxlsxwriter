@@ -591,10 +591,11 @@ lxw_error workbook_close(lxw_workbook *workbook);
  * - `keywords`
  * - `comments`
  * - `hyperlink_base`
+ * - `created`
  *
  * The properties are specified via a `lxw_doc_properties` struct. All the
- * members are `char *` and they are all optional. An example of how to create
- * and pass the properties is:
+ * fields are all optional. An example of how to create and pass the
+ * properties is:
  *
  * @code
  *     // Create a properties structure and set some of the fields.
@@ -615,6 +616,12 @@ lxw_error workbook_close(lxw_workbook *workbook);
  * @endcode
  *
  * @image html doc_properties.png
+ *
+ * The `created` parameter sets the file creation date/time shown in
+ * Excel. This defaults to the current time and date if set to 0. If you wish
+ * to create files that are binary equivalent (for the same input data) then
+ * you should set this creation date/time to a known value using a `time_t`
+ * value.
  *
  */
 lxw_error workbook_set_properties(lxw_workbook *workbook,
