@@ -1,6 +1,33 @@
 /**
 @page changes Changes
 
+## 0.8.8 November 17 2019
+
+- Added option to allow a user defined, or overridden, image description used
+  with `worksheet_insert_image()`. By default it uses the filename as the
+  description.
+  Issue [#238][gh_238].
+
+  [gh_238]: https://github.com/jmcnamara/libxlsxwriter/issues/238
+
+- Added Windows portable version of `fopen` to handle utf8 filenames when
+  working with images.
+  Issue [#238][gh_238].
+
+  [gh_238]: https://github.com/jmcnamara/libxlsxwriter/issues/238
+
+- Added an option to allow chart fonts to be rotation to 270 deg to give a
+  stacked orientation. Also added support for East Asian vertical chart fonts.
+
+- Refactored struct types used in pubic APIs to remove or document hidden
+  fields. @b Note: This change introduces backward incompatible API
+  changes. However, it should minimize any future changes of this nature.
+  See issue [#252][gh_252].
+
+  [gh_252]: https://github.com/jmcnamara/libxlsxwriter/issues/252
+
+
+
 ## 0.8.7 June 20 2019
 
 - Added support for adding VBA macros to workbooks. These macros can be
