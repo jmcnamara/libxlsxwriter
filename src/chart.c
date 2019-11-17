@@ -415,15 +415,9 @@ _chart_convert_pattern_args(lxw_chart_pattern *user_pattern)
     pattern->bg_color = user_pattern->bg_color;
     pattern->type = user_pattern->type;
 
-    pattern->has_fg_color = LXW_TRUE;
-
-    if (pattern->bg_color) {
-        pattern->has_bg_color = LXW_TRUE;
-    }
-    else {
+    if (!pattern->bg_color) {
         /* Default background color in Excel is white, when unspecified. */
         pattern->bg_color = LXW_COLOR_WHITE;
-        pattern->has_bg_color = LXW_TRUE;
     }
 
     return pattern;
@@ -1818,10 +1812,10 @@ _chart_write_a_patt_fill(lxw_chart *self, lxw_chart_pattern *pattern)
 
     lxw_xml_start_tag(self->file, "a:pattFill", &attributes);
 
-    if (pattern->has_fg_color)
+    if (pattern->fg_color)
         _chart_write_a_fg_clr(self, pattern->fg_color);
 
-    if (pattern->has_bg_color)
+    if (pattern->bg_color)
         _chart_write_a_bg_clr(self, pattern->bg_color);
 
     lxw_xml_end_tag(self->file, "a:pattFill");

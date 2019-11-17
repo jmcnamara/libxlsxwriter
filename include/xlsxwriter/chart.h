@@ -683,10 +683,6 @@ typedef struct lxw_chart_pattern {
     /** The pattern type. See #lxw_chart_pattern_type. */
     uint8_t type;
 
-    /* Members for internal use only. */
-    uint8_t has_fg_color;
-    uint8_t has_bg_color;
-
 } lxw_chart_pattern;
 
 /**
