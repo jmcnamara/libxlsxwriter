@@ -279,9 +279,13 @@ STAILQ_HEAD(lxw_chart_props, lxw_object_properties);
  *
  */
 typedef struct lxw_row_col_options {
-    /** Hide the row/column */
+    /** Hide the row/column. @ref ww_outlines_grouping.*/
     uint8_t hidden;
+
+    /** Outline level. See @ref ww_outlines_grouping.*/
     uint8_t level;
+
+    /** Set the outline row as collapsed. See @ref ww_outlines_grouping.*/
     uint8_t collapsed;
 } lxw_row_col_options;
 
