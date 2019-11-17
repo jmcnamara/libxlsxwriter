@@ -670,6 +670,9 @@ void format_set_font_script(lxw_format *format, uint8_t style);
  *
  * @image html format_set_num_format.png
  *
+ * To set a number format that matches an Excel format category such as "Date"
+ * or "Currency" see @ref ww_formats_categories.
+ *
  * The number system used for dates is described in @ref working_with_dates.
  *
  * For more information on number formats in Excel refer to the
@@ -747,6 +750,7 @@ void format_set_num_format(lxw_format *format, const char *num_format);
  *  - The dollar sign in the above format appears as the defined local currency
  *    symbol.
  *  - These formats can also be set via format_set_num_format().
+ *  - See also @ref ww_formats_categories.
  */
 void format_set_num_format_index(lxw_format *format, uint8_t index);
 
