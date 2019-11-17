@@ -1903,6 +1903,8 @@ workbook_set_properties(lxw_workbook *self, lxw_doc_properties *user_props)
         GOTO_LABEL_ON_MEM_ERROR(doc_props->hyperlink_base, mem_error);
     }
 
+    doc_props->created = user_props->created;
+
     self->properties = doc_props;
 
     return LXW_NO_ERROR;
