@@ -49,7 +49,7 @@ ifndef USE_STANDARD_TMPFILE
 endif
 
 # Run the unit tests.
-test : all test_functional test_unit
+test : all test_unit test_functional
 
 # Test for C++ const correctness on APIs.
 test_const : all

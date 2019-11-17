@@ -259,7 +259,7 @@ struct lxw_table_rows {
 
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
 STAILQ_HEAD(lxw_selections, lxw_selection);
-STAILQ_HEAD(lxw_data_validations, lxw_data_validation);
+STAILQ_HEAD(lxw_data_validations, lxw_data_val_obj);
 STAILQ_HEAD(lxw_image_props, lxw_object_properties);
 STAILQ_HEAD(lxw_chart_props, lxw_object_properties);
 
@@ -405,8 +405,6 @@ typedef struct lxw_data_validation {
      */
     uint8_t dropdown;
 
-    uint8_t is_between;
-
     /**
      * This parameter is used to set the limiting value to which the criteria
      * is applied using a whole or decimal number.
@@ -519,11 +517,38 @@ typedef struct lxw_data_validation {
      */
     char *error_message;
 
+} lxw_data_validation;
+
+
+/* A copy of lxw_data_validation which is used internally and which contains
+ * some additional fields.
+ */
+typedef struct lxw_data_val_obj {
+    uint8_t validate;
+    uint8_t criteria;
+    uint8_t ignore_blank;
+    uint8_t show_input;
+    uint8_t show_error;
+    uint8_t error_type;
+    uint8_t dropdown;
+    double value_number;
+    char *value_formula;
+    char **value_list;
+    double minimum_number;
+    char *minimum_formula;
+    lxw_datetime minimum_datetime;
+    double maximum_number;
+    char *maximum_formula;
+    lxw_datetime maximum_datetime;
+    char *input_title;
+    char *input_message;
+    char *error_title;
+    char *error_message;
     char sqref[LXW_MAX_CELL_RANGE_LENGTH];
 
-    STAILQ_ENTRY (lxw_data_validation) list_pointers;
+    STAILQ_ENTRY (lxw_data_val_obj) list_pointers;
+} lxw_data_val_obj;
 
-} lxw_data_validation;
 
 /**
  * @brief Options for inserted images.

@@ -281,7 +281,7 @@ _free_object_properties(lxw_object_properties *object_property)
  * Free a worksheet data_validation.
  */
 STATIC void
-_free_data_validation(lxw_data_validation *data_validation)
+_free_data_validation(lxw_data_val_obj *data_validation)
 {
     if (!data_validation)
         return;
@@ -309,7 +309,7 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     lxw_merged_range *merged_range;
     lxw_object_properties *object_props;
     lxw_selection *selection;
-    lxw_data_validation *data_validation;
+    lxw_data_val_obj *data_validation;
     lxw_rel_tuple *relationship;
 
     if (!worksheet)
@@ -3568,7 +3568,7 @@ _worksheet_write_formula2_str(lxw_worksheet *self, char *str)
  */
 STATIC void
 _worksheet_write_data_validation(lxw_worksheet *self,
-                                 lxw_data_validation *validation)
+                                 lxw_data_val_obj *validation)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -3717,7 +3717,7 @@ _worksheet_write_data_validations(lxw_worksheet *self)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    lxw_data_validation *data_validation;
+    lxw_data_val_obj *data_validation;
 
     if (self->num_validations == 0)
         return;
@@ -5805,7 +5805,7 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
                                 lxw_col_t last_col,
                                 lxw_data_validation *validation)
 {
-    lxw_data_validation *copy;
+    lxw_data_val_obj *copy;
     uint8_t is_between = LXW_FALSE;
     uint8_t is_formula = LXW_FALSE;
     uint8_t has_criteria = LXW_TRUE;
@@ -5961,7 +5961,7 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
         return err;
 
     /* Create a copy of the parameters from the user data validation. */
-    copy = calloc(1, sizeof(lxw_data_validation));
+    copy = calloc(1, sizeof(lxw_data_val_obj));
     GOTO_LABEL_ON_MEM_ERROR(copy, mem_error);
 
     /* Create the data validation range. */
@@ -5976,7 +5976,6 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
     copy->value_number = validation->value_number;
     copy->error_type = validation->error_type;
     copy->dropdown = validation->dropdown;
-    copy->is_between = is_between;
 
     if (has_criteria)
         copy->criteria = validation->criteria;
