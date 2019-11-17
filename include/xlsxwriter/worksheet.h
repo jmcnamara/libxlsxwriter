@@ -3390,8 +3390,10 @@ STATIC void _worksheet_xml_declaration(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_worksheet(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_dimension(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_view(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_sheet_views(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_format_pr(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_data(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_page_margins(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_page_setup(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_col_info(lxw_worksheet *worksheet,
                                       lxw_col_options *options);
@@ -3405,9 +3407,13 @@ STATIC void _worksheet_write_merge_cells(lxw_worksheet *worksheet);
 
 STATIC void _worksheet_write_odd_header(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_odd_footer(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_header_footer(lxw_worksheet *worksheet);
 
 STATIC void _worksheet_write_print_options(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_sheet_pr(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_tab_color(lxw_worksheet *worksheet);
+STATIC void _worksheet_write_sheet_protection(lxw_worksheet *worksheet,
+                                              lxw_protection_obj *protect);
 STATIC void _worksheet_write_data_validations(lxw_worksheet *self);
 #endif /* TESTING */
 
