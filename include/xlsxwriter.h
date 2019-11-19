@@ -19,5 +19,7 @@
 #include "xlsxwriter/utility.h"
 
 #define LXW_VERSION "0.8.8"
+/* ID = Major = 1000000 + Minor * 1000 + Patch */
+#define LXW_VERSION_ID 8008
 
 #endif /* __LXW_XLSXWRITER_H__ */
