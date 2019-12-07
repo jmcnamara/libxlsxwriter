@@ -72,7 +72,7 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
         self.run_exe_test('test_hyperlink18')
 
     # This test requires that we check if the cell that the hyperlink refers
-    # to is a string. If it isn't be have to add a display attribute. However,
+    # to is a string. If it isn't we have to add a display attribute. However,
     # looking up the cell is currently too expensive.
     # 
     # def test_hyperlink19(self):
@@ -85,3 +85,6 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
         # Ignore custom colours.
         self.ignore_files = ['xl/styles.xml']
         self.run_exe_test('test_hyperlink20')
+
+    def test_hyperlink21(self):
+        self.run_exe_test('test_hyperlink21')

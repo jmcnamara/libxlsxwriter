@@ -7,8 +7,6 @@
  *
  */
 
-#include <ctype.h>
-
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/worksheet.h"
 #include "xlsxwriter/format.h"
@@ -4184,6 +4182,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
     char *url_string = NULL;
     char *tooltip_copy = NULL;
     char *found_string;
+    char *tmp_string = NULL;
     lxw_error err;
     size_t string_size;
     size_t i;
@@ -4249,52 +4248,12 @@ worksheet_write_url_opt(lxw_worksheet *self,
     }
 
     /* Escape the URL. */
-    if (link_type == HYPERLINK_URL && strlen(url_copy) >= 3) {
-        uint8_t not_escaped = 1;
+    if (link_type == HYPERLINK_URL || link_type == HYPERLINK_EXTERNAL) {
+        tmp_string = lxw_escape_url_characters(url_copy);
+        GOTO_LABEL_ON_MEM_ERROR(tmp_string, mem_error);
 
-        /* First check if the URL is already escaped by the user. */
-        for (i = 0; i <= strlen(url_copy) - 3; i++) {
-            if (url_copy[i] == '%' && isxdigit(url_copy[i + 1])
-                && isxdigit(url_copy[i + 2])) {
-
-                not_escaped = 0;
-                break;
-            }
-        }
-
-        if (not_escaped) {
-            url_external = calloc(1, strlen(url_copy) * 3 + 1);
-            GOTO_LABEL_ON_MEM_ERROR(url_external, mem_error);
-
-            for (i = 0; i <= strlen(url_copy); i++) {
-                switch (url_copy[i]) {
-                    case (' '):
-                    case ('"'):
-                    case ('%'):
-                    case ('<'):
-                    case ('>'):
-                    case ('['):
-                    case (']'):
-                    case ('`'):
-                    case ('^'):
-                    case ('{'):
-                    case ('}'):
-                        lxw_snprintf(url_external + strlen(url_external),
-                                     sizeof("%xx"), "%%%2x", url_copy[i]);
-                        break;
-                    default:
-                        url_external[strlen(url_external)] = url_copy[i];
-                }
-
-            }
-
-            free(url_copy);
-            url_copy = lxw_strdup(url_external);
-            GOTO_LABEL_ON_MEM_ERROR(url_copy, mem_error);
-
-            free(url_external);
-            url_external = NULL;
-        }
+        free(url_copy);
+        url_copy = tmp_string;
     }
 
     if (link_type == HYPERLINK_EXTERNAL) {

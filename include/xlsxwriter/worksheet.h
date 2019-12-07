@@ -523,7 +523,6 @@ typedef struct lxw_data_validation {
 
 } lxw_data_validation;
 
-
 /* A copy of lxw_data_validation which is used internally and which contains
  * some additional fields.
  */
@@ -552,7 +551,6 @@ typedef struct lxw_data_val_obj {
 
     STAILQ_ENTRY (lxw_data_val_obj) list_pointers;
 } lxw_data_val_obj;
-
 
 /**
  * @brief Options for inserted images.
@@ -736,7 +734,6 @@ typedef struct lxw_protection_obj {
     uint8_t is_configured;
     char hash[5];
 } lxw_protection_obj;
-
 
 /**
  * @brief Struct to represent a rich string format/string pair.
