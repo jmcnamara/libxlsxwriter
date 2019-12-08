@@ -4247,15 +4247,6 @@ worksheet_write_url_opt(lxw_worksheet *self,
         GOTO_LABEL_ON_MEM_ERROR(url_string, mem_error);
     }
 
-    /* Escape the URL. */
-    if (link_type == HYPERLINK_URL || link_type == HYPERLINK_EXTERNAL) {
-        tmp_string = lxw_escape_url_characters(url_copy);
-        GOTO_LABEL_ON_MEM_ERROR(tmp_string, mem_error);
-
-        free(url_copy);
-        url_copy = tmp_string;
-    }
-
     /* Split url into the link and optional anchor/location. */
     found_string = strchr(url_copy, '#');
 
@@ -4266,12 +4257,18 @@ worksheet_write_url_opt(lxw_worksheet *self,
         *found_string = '\0';
     }
 
+    /* Escape the URL. */
+    if (link_type == HYPERLINK_URL || link_type == HYPERLINK_EXTERNAL) {
+        tmp_string = lxw_escape_url_characters(url_copy);
+        GOTO_LABEL_ON_MEM_ERROR(tmp_string, mem_error);
+
+        free(url_copy);
+        url_copy = tmp_string;
+    }
+
     if (link_type == HYPERLINK_EXTERNAL) {
         /* External Workbook links need to be modified into the right format.
-         * The URL will look something like "c:\temp\file.xlsx#Sheet!A1".
-         * We need the part to the left of the # as the URL and the part to
-         * the right as the "location" string (if it exists).
-         */
+         * The URL will look something like "c:\temp\file.xlsx#Sheet!A1". */
 
         /* For external links change the dir separator from Unix to DOS. */
         for (i = 0; i <= strlen(url_copy); i++)

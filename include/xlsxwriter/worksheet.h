@@ -1186,11 +1186,6 @@ lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
                                    lxw_col_t col, lxw_datetime *datetime,
                                    lxw_format *format);
 
-lxw_error worksheet_write_url_opt(lxw_worksheet *worksheet,
-                                  lxw_row_t row_num,
-                                  lxw_col_t col_num, const char *url,
-                                  lxw_format *format, const char *string,
-                                  const char *tooltip);
 /**
  *
  * @param worksheet pointer to a lxw_worksheet instance to be updated.
@@ -1325,6 +1320,15 @@ lxw_error worksheet_write_url(lxw_worksheet *worksheet,
                               lxw_row_t row,
                               lxw_col_t col, const char *url,
                               lxw_format *format);
+
+ /* Don't document for now since the string option can be achieved by a
+  * subsequent cell worksheet_write() as shown in the docs, and the
+  * tooltip option isn't very useful. */
+lxw_error worksheet_write_url_opt(lxw_worksheet *worksheet,
+                                  lxw_row_t row_num,
+                                  lxw_col_t col_num, const char *url,
+                                  lxw_format *format, const char *string,
+                                  const char *tooltip);
 
 /**
  * @brief Write a formatted boolean worksheet cell.

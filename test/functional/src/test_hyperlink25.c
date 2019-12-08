@@ -11,11 +11,11 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = workbook_new("test_hyperlink22.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_hyperlink25.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
 
-    worksheet_write_url(worksheet, CELL("A1"), "external:\\\\Vboxsvr\\share\\foo bar.xlsx", NULL);
+    worksheet_write_url(worksheet, CELL("A1"), "http://www.google.com/#foo#bar", NULL);
 
     return workbook_close(workbook);
 }
