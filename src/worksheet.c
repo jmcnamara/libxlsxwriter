@@ -4256,6 +4256,16 @@ worksheet_write_url_opt(lxw_worksheet *self,
         url_copy = tmp_string;
     }
 
+    /* Split url into the link and optional anchor/location. */
+    found_string = strchr(url_copy, '#');
+
+    if (found_string) {
+        url_string = lxw_strdup(found_string + 1);
+        GOTO_LABEL_ON_MEM_ERROR(url_string, mem_error);
+
+        *found_string = '\0';
+    }
+
     if (link_type == HYPERLINK_EXTERNAL) {
         /* External Workbook links need to be modified into the right format.
          * The URL will look something like "c:\temp\file.xlsx#Sheet!A1".
@@ -4271,15 +4281,6 @@ worksheet_write_url_opt(lxw_worksheet *self,
         for (i = 0; i <= strlen(string_copy); i++)
             if (string_copy[i] == '/')
                 string_copy[i] = '\\';
-
-        found_string = strchr(url_copy, '#');
-
-        if (found_string) {
-            url_string = lxw_strdup(found_string + 1);
-            GOTO_LABEL_ON_MEM_ERROR(url_string, mem_error);
-
-            *found_string = '\0';
-        }
 
         /* Look for Windows style "C:/" link or Windows share "\\" link. */
         found_string = strchr(url_copy, ':');

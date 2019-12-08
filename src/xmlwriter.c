@@ -290,6 +290,7 @@ lxw_escape_control_characters(const char *string)
 char *
 lxw_escape_url_characters(const char *string)
 {
+
     size_t escape_len = sizeof("%XX") - 1;
     size_t encoded_len = (strlen(string) * escape_len + 1);
 
@@ -318,6 +319,7 @@ lxw_escape_url_characters(const char *string)
                     p_encoded += escape_len;
                     break;
                 }
+                /* No break. This % is an encoding. Fall through to default. */
             default:
                 *p_encoded = *string;
                 p_encoded++;
