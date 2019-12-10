@@ -220,9 +220,15 @@ void
 lxw_workbook_set_default_xf_indices(lxw_workbook *self)
 {
     lxw_format *format;
+    int32_t index = 0;
 
     STAILQ_FOREACH(format, self->formats, list_pointers) {
-        lxw_format_get_xf_index(format);
+
+        /* Skip the hyperlink format. */
+        if (index != 1)
+            lxw_format_get_xf_index(format);
+
+        index++;
     }
 }
 
@@ -1476,6 +1482,12 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
 
     /* Initialize its index. */
     lxw_format_get_xf_index(format);
+
+    /* Add the default hyperlink format. */
+    format = workbook_add_format(workbook);
+    GOTO_LABEL_ON_MEM_ERROR(format, mem_error);
+    format_set_hyperlink(format);
+    workbook->default_url_format = format;
 
     if (options) {
         workbook->options.constant_memory = options->constant_memory;

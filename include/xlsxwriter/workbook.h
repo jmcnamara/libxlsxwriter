@@ -292,6 +292,8 @@ typedef struct lxw_workbook {
     char *vba_project;
     char *vba_codename;
 
+    lxw_format *default_url_format;
+
 } lxw_workbook;
 
 

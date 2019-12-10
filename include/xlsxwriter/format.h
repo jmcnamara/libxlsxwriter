@@ -92,8 +92,10 @@ typedef uint32_t lxw_color_t;
 
 /** Format underline values for format_set_underline(). */
 enum lxw_format_underlines {
+    LXW_UNDERLINE_NONE = 0,
+
     /** Single underline */
-    LXW_UNDERLINE_SINGLE = 1,
+    LXW_UNDERLINE_SINGLE,
 
     /** Double underline */
     LXW_UNDERLINE_DOUBLE,
@@ -352,6 +354,7 @@ typedef struct lxw_format {
 
     int32_t xf_index;
     int32_t dxf_index;
+    int32_t xf_id;
 
     char num_format[LXW_FORMAT_FIELD_LEN];
     char font_name[LXW_FORMAT_FIELD_LEN];
@@ -431,6 +434,7 @@ typedef struct lxw_font {
     uint8_t bold;
     uint8_t italic;
     uint8_t underline;
+    uint8_t theme;
     uint8_t font_strikeout;
     uint8_t font_outline;
     uint8_t font_shadow;
@@ -1201,6 +1205,7 @@ void format_set_font_condense(lxw_format *format);
 void format_set_font_extend(lxw_format *format);
 void format_set_reading_order(lxw_format *format, uint8_t value);
 void format_set_theme(lxw_format *format, uint8_t value);
+void format_set_hyperlink(lxw_format *format);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

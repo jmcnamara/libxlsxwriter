@@ -20,7 +20,7 @@ CTEST(styles, write_cell_style) {
     lxw_styles *styles = lxw_styles_new();
     styles->file = testfile;
 
-    _write_cell_style(styles);
+    _write_cell_style(styles, "Normal", 0, 0);
 
     RUN_XLSX_STREQ(exp, got);
 

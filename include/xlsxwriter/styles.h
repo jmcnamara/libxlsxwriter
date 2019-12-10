@@ -28,6 +28,8 @@ typedef struct lxw_styles {
     uint32_t fill_count;
     struct lxw_formats *xf_formats;
     struct lxw_formats *dxf_formats;
+    uint8_t has_hyperlink;
+    uint16_t hyperlink_font_id;
 
 } lxw_styles;
 
@@ -62,11 +64,13 @@ STATIC void _write_default_fill(lxw_styles *self, const char *pattern);
 STATIC void _write_fills(lxw_styles *self);
 STATIC void _write_border(lxw_styles *self, lxw_format *format);
 STATIC void _write_borders(lxw_styles *self);
-STATIC void _write_style_xf(lxw_styles *self);
+STATIC void _write_style_xf(lxw_styles *self, uint8_t has_hyperlink,
+                            uint16_t font_id);
 STATIC void _write_cell_style_xfs(lxw_styles *self);
 STATIC void _write_xf(lxw_styles *self, lxw_format *format);
 STATIC void _write_cell_xfs(lxw_styles *self);
-STATIC void _write_cell_style(lxw_styles *self);
+STATIC void _write_cell_style(lxw_styles *self, char *name, uint8_t xf_id,
+                              uint8_t builtin_id);
 STATIC void _write_cell_styles(lxw_styles *self);
 STATIC void _write_dxfs(lxw_styles *self);
 STATIC void _write_table_styles(lxw_styles *self);

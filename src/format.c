@@ -30,6 +30,7 @@ lxw_format_new(void)
 
     format->xf_index = LXW_PROPERTY_UNSET;
     format->dxf_index = LXW_PROPERTY_UNSET;
+    format->xf_id = 0;
 
     format->font_name[0] = '\0';
     format->font_scheme[0] = '\0';
@@ -42,7 +43,7 @@ lxw_format_new(void)
     format->bold = LXW_FALSE;
     format->italic = LXW_FALSE;
     format->font_color = LXW_COLOR_UNSET;
-    format->underline = LXW_FALSE;
+    format->underline = LXW_UNDERLINE_NONE;
     format->font_strikeout = LXW_FALSE;
     format->font_outline = LXW_FALSE;
     format->font_shadow = LXW_FALSE;
@@ -51,7 +52,7 @@ lxw_format_new(void)
     format->font_charset = LXW_FALSE;
     format->font_condense = LXW_FALSE;
     format->font_extend = LXW_FALSE;
-    format->theme = LXW_FALSE;
+    format->theme = 0;
     format->hyperlink = LXW_FALSE;
 
     format->hidden = LXW_FALSE;
@@ -182,8 +183,9 @@ lxw_format_get_font_key(lxw_format *self)
     key->font_size = self->font_size;
     key->bold = self->bold;
     key->italic = self->italic;
-    key->font_color = self->font_color;
     key->underline = self->underline;
+    key->theme = self->theme;
+    key->font_color = self->font_color;
     key->font_strikeout = self->font_strikeout;
     key->font_outline = self->font_outline;
     key->font_shadow = self->font_shadow;
@@ -724,4 +726,16 @@ void
 format_set_theme(lxw_format *self, uint8_t value)
 {
     self->theme = value;
+}
+
+/*
+ * Set the theme property.
+ */
+void
+format_set_hyperlink(lxw_format *self)
+{
+    self->hyperlink = LXW_TRUE;
+    self->xf_id = 1;
+    self->underline = LXW_UNDERLINE_SINGLE;
+    self->theme = 10;
 }

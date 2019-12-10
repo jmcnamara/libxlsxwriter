@@ -106,3 +106,6 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_hyperlink27(self):
         self.run_exe_test('test_hyperlink27')
+
+    def test_hyperlink28(self):
+        self.run_exe_test('test_hyperlink28')
