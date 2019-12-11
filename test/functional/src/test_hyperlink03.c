@@ -15,6 +15,8 @@ int main() {
     lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, NULL);
     lxw_worksheet *worksheet2 = workbook_add_worksheet(workbook, NULL);
 
+    workbook_unset_default_url_format(workbook);
+
     worksheet_write_url(worksheet1, CELL("A1"),  "http://www.perl.org/", NULL);
     worksheet_write_url(worksheet1, CELL("D4"),  "http://www.perl.org/", NULL);
     worksheet_write_url(worksheet1, CELL("A8"),  "http://www.perl.org/", NULL);

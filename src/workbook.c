@@ -1513,7 +1513,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     lxw_worksheet *worksheet = NULL;
     lxw_worksheet_name *worksheet_name = NULL;
     lxw_error error;
-    lxw_worksheet_init_data init_data = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    lxw_worksheet_init_data init_data = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     char *new_name = NULL;
 
     if (sheetname) {
@@ -1552,6 +1552,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     init_data.active_sheet = &self->active_sheet;
     init_data.first_sheet = &self->first_sheet;
     init_data.tmpdir = self->options.tmpdir;
+    init_data.default_url_format = self->default_url_format;
 
     /* Create a new worksheet object. */
     worksheet = lxw_worksheet_new(&init_data);
@@ -1595,7 +1596,7 @@ workbook_add_chartsheet(lxw_workbook *self, const char *sheetname)
     lxw_chartsheet *chartsheet = NULL;
     lxw_chartsheet_name *chartsheet_name = NULL;
     lxw_error error;
-    lxw_worksheet_init_data init_data = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    lxw_worksheet_init_data init_data = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     char *new_name = NULL;
 
     if (sheetname) {
@@ -2163,6 +2164,29 @@ workbook_get_chartsheet_by_name(lxw_workbook *self, const char *name)
     else
         return NULL;
 }
+
+/*
+ * Get the default URL format.
+ */
+lxw_format *
+workbook_get_default_url_format(lxw_workbook *self)
+{
+    return self->default_url_format;
+}
+
+/*
+ * Get the default URL format.
+ */
+void
+workbook_unset_default_url_format(lxw_workbook *self)
+{
+    self->default_url_format->hyperlink = LXW_FALSE;
+    self->default_url_format->xf_id = 0;
+    self->default_url_format->underline = LXW_UNDERLINE_NONE;
+    self->default_url_format->theme = 0;
+}
+
+lxw_format *default_url_format;
 
 /*
  * Validate the worksheet name based on Excel's rules.

@@ -15,36 +15,34 @@ int main() {
     /* Add a worksheet. */
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
-    /* Add some cell formats for the hyperlinks. */
-    lxw_format *url_format   = workbook_add_format(workbook);
-    lxw_format *red_format   = workbook_add_format(workbook);
+    /* Get the default url format (used in the overwriting examples below). */
+    lxw_format *url_format = workbook_get_default_url_format(workbook);
 
-    /* Create the standard url link format. */
-    format_set_underline (url_format, LXW_UNDERLINE_SINGLE);
-    format_set_font_color(url_format, LXW_COLOR_BLUE);
-
-    /* Create another sample format. */
+    /* Create a user defined link format. */
+    lxw_format *red_format = workbook_add_format(workbook);
     format_set_underline (red_format, LXW_UNDERLINE_SINGLE);
     format_set_font_color(red_format, LXW_COLOR_RED);
 
     /* Widen the first column to make the text clearer. */
     worksheet_set_column(worksheet, 0, 0, 30, NULL);
 
-    /* Write a hyperlink. */
-    worksheet_write_url(worksheet,    0, 0, "http://libxlsxwriter.github.io", url_format);
+    /* Write a hyperlink. A default blue underline will be used if the format is NULL. */
+    worksheet_write_url(worksheet,    0, 0, "http://libxlsxwriter.github.io", NULL);
 
-    /* Write a hyperlink but overwrite the displayed string. */
-    worksheet_write_url   (worksheet, 2, 0, "http://libxlsxwriter.github.io", url_format);
+    /* Write a hyperlink but overwrite the displayed string. Note, we need to
+     * specify the format for the string to match the default hyperlink. */
+    worksheet_write_url   (worksheet, 2, 0, "http://libxlsxwriter.github.io", NULL);
     worksheet_write_string(worksheet, 2, 0, "Read the documentation.",        url_format);
 
     /* Write a hyperlink with a different format. */
     worksheet_write_url(worksheet,    4, 0, "http://libxlsxwriter.github.io", red_format);
 
     /* Write a mail hyperlink. */
-    worksheet_write_url   (worksheet, 6, 0, "mailto:jmcnamara@cpan.org",      url_format);
+    worksheet_write_url   (worksheet, 6, 0, "mailto:jmcnamara@cpan.org",      NULL);
 
-    /* Write a mail hyperlink and overwrite the displayed string. */
-    worksheet_write_url   (worksheet, 8, 0, "mailto:jmcnamara@cpan.org",      url_format);
+    /* Write a mail hyperlink and overwrite the displayed string. We again
+     * specify the format for the string to match the default hyperlink. */
+    worksheet_write_url   (worksheet, 8, 0, "mailto:jmcnamara@cpan.org",      NULL);
     worksheet_write_string(worksheet, 8, 0, "Drop me a line.",                url_format);
 
 

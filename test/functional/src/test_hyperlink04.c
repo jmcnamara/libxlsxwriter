@@ -16,6 +16,8 @@ int main() {
     lxw_worksheet *worksheet2 = workbook_add_worksheet(workbook, NULL);
     lxw_worksheet *worksheet3 = workbook_add_worksheet(workbook, "Data Sheet");
 
+    workbook_unset_default_url_format(workbook);
+
     (void)worksheet2;
     (void)worksheet3;
 

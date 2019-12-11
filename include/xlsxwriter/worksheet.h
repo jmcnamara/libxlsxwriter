@@ -881,6 +881,7 @@ typedef struct lxw_worksheet {
     struct lxw_protection_obj protection;
 
     lxw_drawing *drawing;
+    lxw_format *default_url_format;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -899,6 +900,7 @@ typedef struct lxw_worksheet_init_data {
     char *name;
     char *quoted_name;
     char *tmpdir;
+    lxw_format *default_url_format;
 
 } lxw_worksheet_init_data;
 
@@ -1201,21 +1203,22 @@ lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
  * worksheet cell specified by `row` and `column`.
  *
  * @code
- *     worksheet_write_url(worksheet, 0, 0, "http://libxlsxwriter.github.io", url_format);
+ *     worksheet_write_url(worksheet, 0, 0, "http://libxlsxwriter.github.io", NULL);
  * @endcode
  *
  * @image html hyperlinks_short.png
  *
  * The `format` parameter is used to apply formatting to the cell. This
- * parameter can be `NULL` to indicate no formatting or it can be a @ref
- * format.h "Format" object. The typical worksheet format for a hyperlink is a
- * blue underline:
+ * parameter can be `NULL`, in which case the default Excel blue underlined
+ * hyperlink style will be used. If required a user defined @ref format.h
+ * "Format" object can be used:
+ * underline:
  *
  * @code
  *    lxw_format *url_format   = workbook_add_format(workbook);
  *
  *    format_set_underline (url_format, LXW_UNDERLINE_SINGLE);
- *    format_set_font_color(url_format, LXW_COLOR_BLUE);
+ *    format_set_font_color(url_format, LXW_COLOR_RED);
  *
  * @endcode
  *
@@ -1223,10 +1226,10 @@ lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
  * and `mailto:` :
  *
  * @code
- *     worksheet_write_url(worksheet, 0, 0, "ftp://www.python.org/",     url_format);
- *     worksheet_write_url(worksheet, 1, 0, "http://www.python.org/",    url_format);
- *     worksheet_write_url(worksheet, 2, 0, "https://www.python.org/",   url_format);
- *     worksheet_write_url(worksheet, 3, 0, "mailto:jmcnamara@cpan.org", url_format);
+ *     worksheet_write_url(worksheet, 0, 0, "ftp://www.python.org/",     NULL);
+ *     worksheet_write_url(worksheet, 1, 0, "http://www.python.org/",    NULL);
+ *     worksheet_write_url(worksheet, 2, 0, "https://www.python.org/",   NULL);
+ *     worksheet_write_url(worksheet, 3, 0, "mailto:jmcnamara@cpan.org", NULL);
  *
  * @endcode
  *
@@ -1235,13 +1238,18 @@ lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
  * link. However, it is possible to overwrite it with any other
  * `libxlsxwriter` type using the appropriate `worksheet_write_*()`
  * function. The most common case is to overwrite the displayed link text with
- * another string:
+ * another string. To do this we must also match the default URL format using
+ * `workbook_get_default_url_format()`:
  *
  * @code
- *  // Write a hyperlink but overwrite the displayed string.
- *  worksheet_write_url   (worksheet, 2, 0, "http://libxlsxwriter.github.io", url_format);
- *  worksheet_write_string(worksheet, 2, 0, "Read the documentation.",        url_format);
+ *     // Write a hyperlink with the default blue underline format.
+ *     worksheet_write_url(worksheet, 2, 0, "http://libxlsxwriter.github.io", NULL);
  *
+ *     // Get the default url format.
+ *     lxw_format *url_format = workbook_get_default_url_format(workbook);
+ *
+ *     // Overwrite the hyperlink with a user defined string and default format.
+ *     worksheet_write_string(worksheet, 2, 0, "Read the documentation.", url_format);
  * @endcode
  *
  * @image html hyperlinks_short2.png
@@ -1251,15 +1259,15 @@ lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
  * worksheet references:
  *
  * @code
- *     worksheet_write_url(worksheet, 0, 0, "internal:Sheet2!A1",                url_format);
- *     worksheet_write_url(worksheet, 1, 0, "internal:Sheet2!B2",                url_format);
- *     worksheet_write_url(worksheet, 2, 0, "internal:Sheet2!A1:B2",             url_format);
- *     worksheet_write_url(worksheet, 3, 0, "internal:'Sales Data'!A1",          url_format);
- *     worksheet_write_url(worksheet, 4, 0, "external:c:\\temp\\foo.xlsx",       url_format);
- *     worksheet_write_url(worksheet, 5, 0, "external:c:\\foo.xlsx#Sheet2!A1",   url_format);
- *     worksheet_write_url(worksheet, 6, 0, "external:..\\foo.xlsx",             url_format);
- *     worksheet_write_url(worksheet, 7, 0, "external:..\\foo.xlsx#Sheet2!A1",   url_format);
- *     worksheet_write_url(worksheet, 8, 0, "external:\\\\NET\\share\\foo.xlsx", url_format);
+ *     worksheet_write_url(worksheet, 0, 0, "internal:Sheet2!A1",                NULL);
+ *     worksheet_write_url(worksheet, 1, 0, "internal:Sheet2!B2",                NULL);
+ *     worksheet_write_url(worksheet, 2, 0, "internal:Sheet2!A1:B2",             NULL);
+ *     worksheet_write_url(worksheet, 3, 0, "internal:'Sales Data'!A1",          NULL);
+ *     worksheet_write_url(worksheet, 4, 0, "external:c:\\temp\\foo.xlsx",       NULL);
+ *     worksheet_write_url(worksheet, 5, 0, "external:c:\\foo.xlsx#Sheet2!A1",   NULL);
+ *     worksheet_write_url(worksheet, 6, 0, "external:..\\foo.xlsx",             NULL);
+ *     worksheet_write_url(worksheet, 7, 0, "external:..\\foo.xlsx#Sheet2!A1",   NULL);
+ *     worksheet_write_url(worksheet, 8, 0, "external:\\\\NET\\share\\foo.xlsx", NULL);
  *
  * @endcode
  *
@@ -1271,7 +1279,7 @@ lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
  * `#` character:
  *
  * @code
- *     worksheet_write_url(worksheet, 0, 0, "external:c:\\foo.xlsx#Sheet2!A1",   url_format);
+ *     worksheet_write_url(worksheet, 0, 0, "external:c:\\foo.xlsx#Sheet2!A1",   NULL);
  * @endcode
  *
  * You can also link to a named range in the target worksheet: For example say
@@ -1279,7 +1287,7 @@ lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
  * you could link to it as follows:
  *
  * @code
- *     worksheet_write_url(worksheet, 0, 0, "external:c:\\temp\\foo.xlsx#my_name", url_format);
+ *     worksheet_write_url(worksheet, 0, 0, "external:c:\\temp\\foo.xlsx#my_name", NULL);
  *
  * @endcode
  *
@@ -1287,14 +1295,14 @@ lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
  * characters are single quoted as follows:
  *
  * @code
- *     worksheet_write_url(worksheet, 0, 0, "internal:'Sales Data'!A1", url_format);
+ *     worksheet_write_url(worksheet, 0, 0, "internal:'Sales Data'!A1", NULL);
  * @endcode
  *
  * Links to network files are also supported. Network files normally begin
  * with two back slashes as follows `\\NETWORK\etc`. In order to represent
  * this in a C string literal the backslashes should be escaped:
  * @code
- *     worksheet_write_url(worksheet, 0, 0, "external:\\\\NET\\share\\foo.xlsx", url_format);
+ *     worksheet_write_url(worksheet, 0, 0, "external:\\\\NET\\share\\foo.xlsx", NULL);
  * @endcode
  *
  *
@@ -1302,8 +1310,8 @@ lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
  * translated internally to backslashes:
  *
  * @code
- *     worksheet_write_url(worksheet, 0, 0, "external:c:/temp/foo.xlsx",     url_format);
- *     worksheet_write_url(worksheet, 1, 0, "external://NET/share/foo.xlsx", url_format);
+ *     worksheet_write_url(worksheet, 0, 0, "external:c:/temp/foo.xlsx",     NULL);
+ *     worksheet_write_url(worksheet, 1, 0, "external://NET/share/foo.xlsx", NULL);
  *
  * @endcode
  *

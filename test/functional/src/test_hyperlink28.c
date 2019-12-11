@@ -14,7 +14,7 @@ int main() {
     lxw_workbook  *workbook  = workbook_new("test_hyperlink28.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
-    worksheet_write_url(worksheet, CELL("A1"), "http://www.perl.org/", workbook->default_url_format);
+    worksheet_write_url(worksheet, CELL("A1"), "http://www.perl.org/", NULL);
 
     return workbook_close(workbook);
 }

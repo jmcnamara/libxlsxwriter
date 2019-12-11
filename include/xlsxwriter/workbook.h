@@ -784,6 +784,26 @@ lxw_error workbook_define_name(lxw_workbook *workbook, const char *name,
                                const char *formula);
 
 /**
+ * @brief Get the default URL format used with `worksheet_write_url()`.
+ *
+ * @param  workbook Pointer to a lxw_workbook instance.
+ * @return A lxw_format instance that has hyperlink properties set.
+ *
+ * This function returns a lxw_format instance that is used for the default
+ * blue underline hyperlink in the `worksheet_write_url()` function when a
+ * format isn't specified:
+ *
+ * @code
+ *     lxw_format *url_format = workbook_get_default_url_format(workbook);
+ * @endcode
+ *
+ * The format is the hyperlink style defined by Excel for the default theme.
+ * This format is only ever required when overwriting a string URL with
+ * data of a different type. See the example below.
+ */
+lxw_format *workbook_get_default_url_format(lxw_workbook *workbook);
+
+/**
  * @brief Get a worksheet object from its name.
  *
  * @param workbook Pointer to a lxw_workbook instance.
@@ -914,6 +934,7 @@ lxw_error workbook_set_vba_name(lxw_workbook *workbook, const char *name);
 void lxw_workbook_free(lxw_workbook *workbook);
 void lxw_workbook_assemble_xml_file(lxw_workbook *workbook);
 void lxw_workbook_set_default_xf_indices(lxw_workbook *workbook);
+void workbook_unset_default_url_format(lxw_workbook *workbook);
 
 DEPRECATED(lxw_workbook *new_workbook(const char *filename),
            "use 'workbook_new' instead");

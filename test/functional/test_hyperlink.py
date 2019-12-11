@@ -109,3 +109,21 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_hyperlink28(self):
         self.run_exe_test('test_hyperlink28')
+
+    def test_hyperlink29(self):
+        self.run_exe_test('test_hyperlink29')
+
+    def test_hyperlink30(self):
+        # Ignore custom colors in styles.xml file.
+        self.ignore_elements = {'xl/styles.xml': ['<color',
+                                                  '<mruColors>',
+                                                  '</mruColors>',
+                                                  '</colors>']}
+        self.run_exe_test('test_hyperlink30')
+
+    def test_hyperlink31(self):
+        self.run_exe_test('test_hyperlink31')
+
+    # Copy of hyperlink28 with explicit formatting.
+    def test_hyperlink78(self):
+        self.run_exe_test('test_hyperlink78', 'hyperlink28.xlsx')

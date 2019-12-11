@@ -17,6 +17,8 @@ int main() {
     lxw_chart     *chart2 = workbook_add_chart(workbook, LXW_CHART_BAR);
     lxw_chart     *chart3 = workbook_add_chart(workbook, LXW_CHART_BAR);
 
+    workbook_unset_default_url_format(workbook);
+
     /* For testing, copy the randomly generated axis ids in the target file. */
     chart1->axis_id_1 = 40274944;
     chart1->axis_id_2 = 40294272;

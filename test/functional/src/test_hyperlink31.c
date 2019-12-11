@@ -11,12 +11,14 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = workbook_new("test_hyperlink15.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_hyperlink31.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+    lxw_format *format1 = workbook_add_format(workbook);
 
-    workbook_unset_default_url_format(workbook);
+    format_set_bold(format1);
 
-    worksheet_write_url(worksheet, CELL("B2"), "external:subdir/blank.xlsx", NULL);
+    worksheet_write_string(worksheet, CELL("A1"), "Test", format1);
+    worksheet_write_url(worksheet, CELL("A3"), "http://www.python.org/" , NULL);
 
     return workbook_close(workbook);
 }

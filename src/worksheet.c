@@ -205,6 +205,7 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
         worksheet->optimize = init_data->optimize;
         worksheet->active_sheet = init_data->active_sheet;
         worksheet->first_sheet = init_data->first_sheet;
+        worksheet->default_url_format = init_data->default_url_format;
     }
 
     return worksheet;
@@ -4172,7 +4173,7 @@ lxw_error
 worksheet_write_url_opt(lxw_worksheet *self,
                         lxw_row_t row_num,
                         lxw_col_t col_num, const char *url,
-                        lxw_format *format, const char *string,
+                        lxw_format *user_format, const char *string,
                         const char *tooltip)
 {
     lxw_cell *link;
@@ -4183,6 +4184,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
     char *tooltip_copy = NULL;
     char *found_string;
     char *tmp_string = NULL;
+    lxw_format *format = NULL;
     lxw_error err;
     size_t string_size;
     size_t i;
@@ -4313,6 +4315,12 @@ worksheet_write_url_opt(lxw_worksheet *self,
     /* Excel limits escaped URL to 255 characters. */
     if (lxw_utf8_strlen(url_copy) > 255)
         goto mem_error;
+
+    /* Use the default URL format if none is specified. */
+    if (!user_format)
+        format = self->default_url_format;
+    else
+        format = user_format;
 
     err = worksheet_write_string(self, row_num, col_num, string_copy, format);
     if (err)
