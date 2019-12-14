@@ -62,8 +62,9 @@ typedef struct lxw_drawing_object {
     uint32_t width;
     uint32_t height;
     uint8_t shape;
+    uint32_t rel_index;
+    uint32_t url_rel_index;
     char *description;
-    char *url;
     char *tip;
 
     STAILQ_ENTRY (lxw_drawing_object) list_pointers;

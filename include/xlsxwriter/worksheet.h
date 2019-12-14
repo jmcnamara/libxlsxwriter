@@ -579,10 +579,11 @@ typedef struct lxw_image_options {
      *  as in Excel. Set to "" to ignore the description field. */
     char *description;
 
-    /** Image hyperlink - not implemented yet. Set to NULL.*/
+    /** Add an optional hyperlink to the image. Follows the same URL rules
+     *  and types as `worksheet_write_url()`. */
     char *url;
 
-    /** Image hyperlink tip - not implemented yet. Set to NULL. */
+    /** Add an optional mouseover tip for a hyperlink to the image. */
     char *tip;
 
 } lxw_image_options;
@@ -872,6 +873,7 @@ typedef struct lxw_worksheet {
     uint16_t hbreaks_count;
     uint16_t vbreaks_count;
 
+    uint32_t drawing_rel_id;
     struct lxw_rel_tuples *external_hyperlinks;
     struct lxw_rel_tuples *external_drawing_links;
     struct lxw_rel_tuples *drawing_links;
@@ -1837,14 +1839,36 @@ lxw_error worksheet_insert_image(lxw_worksheet *worksheet,
  * #lxw_image_options struct to scale and position the image:
  *
  * @code
- *    lxw_image_options options = {.x_offset = 30,  .y_offset = 10,
+ *     lxw_image_options options = {.x_offset = 30,  .y_offset = 10,
  *                                 .x_scale  = 0.5, .y_scale  = 0.5};
  *
- *    worksheet_insert_image_opt(worksheet, 2, 1, "logo.png", &options);
+ *     worksheet_insert_image_opt(worksheet, 2, 1, "logo.png", &options);
  *
  * @endcode
  *
  * @image html insert_image_opt.png
+ *
+ * The `url` field of lxw_image_options can be use to used to add a hyperlink
+ * to an image:
+ *
+ * @code
+ *     lxw_image_options options = {.url = "https://github.com/jmcnamara"};
+ *
+ *     worksheet_insert_image_opt(worksheet, 3, 1, "logo.png", &options);
+ * @endcode
+ *
+ * The supported URL formats are the same as those supported by the
+ * `worksheet_write_url()` method and the same rules/limits apply.
+ *
+ * The `tip` field of lxw_image_options can be use to used to add a mouseover
+ * tip to the hyperlink:
+ *
+ * @code
+ *      lxw_image_options options = {.url = "https://github.com/jmcnamara",
+                                     .tip = "GitHub"};
+ *
+ *     worksheet_insert_image_opt(worksheet, 4, 1, "logo.png", &options);
+ * @endcode
  *
  * @note See the notes about row scaling and BMP images in
  * `worksheet_insert_image()` above.

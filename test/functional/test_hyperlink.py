@@ -127,3 +127,44 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     # Copy of hyperlink28 with explicit formatting.
     def test_hyperlink78(self):
         self.run_exe_test('test_hyperlink78', 'hyperlink28.xlsx')
+
+    def test_hyperlink32(self):
+        self.run_exe_test('test_hyperlink32')
+
+    def test_hyperlink33(self):
+        self.run_exe_test('test_hyperlink33')
+
+    def test_hyperlink34(self):
+        self.run_exe_test('test_hyperlink34')
+
+    def test_hyperlink35(self):
+        self.run_exe_test('test_hyperlink35')
+
+    def test_hyperlink36(self):
+        self.run_exe_test('test_hyperlink36')
+
+    # Skip 37 since it contains a textbox.
+
+    def test_hyperlink38(self):
+        self.run_exe_test('test_hyperlink38')
+
+    def test_hyperlink39(self):
+        self.run_exe_test('test_hyperlink39')
+
+    def test_hyperlink40(self):
+        self.run_exe_test('test_hyperlink40')
+
+    def test_hyperlink41(self):
+        self.run_exe_test('test_hyperlink41')
+
+    def test_hyperlink42(self):
+        self.run_exe_test('test_hyperlink42')
+
+    def test_hyperlink43(self):
+        self.run_exe_test('test_hyperlink43')
+
+    def test_hyperlink44(self):
+        self.run_exe_test('test_hyperlink44')
+
+    def test_hyperlink45(self):
+        self.run_exe_test('test_hyperlink45')

@@ -861,6 +861,21 @@ _cell_cmp(lxw_cell *cell1, lxw_cell *cell2)
 }
 
 /*
+ * Get the index used to address a drawing rel link.
+ */
+STATIC uint32_t
+_get_drawing_rel_index(lxw_worksheet *self, char *target)
+{
+
+    if (!target) {
+        self->drawing_rel_id++;
+        return self->drawing_rel_id;
+    }
+
+    return 0;
+}
+
+/*
  * Simple replacement for libgen.h basename() for compatibility with MSVC. It
  * handles forward and back slashes. It doesn't copy exactly the return
  * format of basename().
@@ -2000,7 +2015,9 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
     lxw_rel_tuple *relationship;
     double width;
     double height;
+    char *url;
     char filename[LXW_FILENAME_LENGTH];
+    enum cell_types link_type = HYPERLINK_URL;
 
     if (!self->drawing) {
         self->drawing = lxw_drawing_new();
@@ -2029,6 +2046,9 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
     drawing_object->anchor_type = LXW_ANCHOR_TYPE_IMAGE;
     drawing_object->edit_as = LXW_ANCHOR_EDIT_AS_ONE_CELL;
     drawing_object->description = lxw_strdup(object_props->description);
+    drawing_object->tip = lxw_strdup(object_props->tip);
+    drawing_object->rel_index = 0;
+    drawing_object->url_rel_index = 0;
 
     /* Scale to user scale. */
     width = object_props->width * object_props->x_scale;
@@ -2049,6 +2069,58 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
     drawing_object->height = (uint32_t) (0.5 + height * 9525);
 
     lxw_add_drawing_object(self->drawing, drawing_object);
+
+    if (object_props->url) {
+        url = object_props->url;
+
+        relationship = calloc(1, sizeof(lxw_rel_tuple));
+        GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
+
+        relationship->type = lxw_strdup("/hyperlink");
+        GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
+
+        /* Check the link type. Default to external hyperlinks. */
+        if (strstr(url, "internal:"))
+            link_type = HYPERLINK_INTERNAL;
+        else if (strstr(url, "external:"))
+            link_type = HYPERLINK_EXTERNAL;
+        else
+            link_type = HYPERLINK_URL;
+
+        /* Set the relationship object for each type of link. */
+        if (link_type == HYPERLINK_INTERNAL) {
+            relationship->target_mode = NULL;
+            relationship->target = lxw_strdup(url + sizeof("internal") - 1);
+            GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+
+            /* We need to prefix the internal link/range with #. */
+            relationship->target[0] = '#';
+        }
+        else if (link_type == HYPERLINK_EXTERNAL) {
+            relationship->target_mode = lxw_strdup("External");
+            GOTO_LABEL_ON_MEM_ERROR(relationship->target_mode, mem_error);
+
+            relationship->target =
+                lxw_escape_url_characters(url + 1, LXW_TRUE);
+            GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+            strncpy(relationship->target, "file:///", sizeof("file:///") - 1);
+        }
+        else {
+            relationship->target_mode = lxw_strdup("External");
+            GOTO_LABEL_ON_MEM_ERROR(relationship->target_mode, mem_error);
+
+            relationship->target =
+                lxw_escape_url_characters(object_props->url, LXW_FALSE);
+            GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+        }
+
+        STAILQ_INSERT_TAIL(self->drawing_links, relationship, list_pointers);
+
+        drawing_object->url_rel_index = _get_drawing_rel_index(self, NULL);
+
+    }
+
+    drawing_object->rel_index = _get_drawing_rel_index(self, NULL);
 
     relationship = calloc(1, sizeof(lxw_rel_tuple));
     GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
@@ -2125,6 +2197,9 @@ lxw_worksheet_prepare_chart(lxw_worksheet *self,
     drawing_object->anchor_type = LXW_ANCHOR_TYPE_CHART;
     drawing_object->edit_as = LXW_ANCHOR_EDIT_AS_ONE_CELL;
     drawing_object->description = lxw_strdup("TODO_DESC");
+    drawing_object->tip = NULL;
+    drawing_object->rel_index = _get_drawing_rel_index(self, NULL);
+    drawing_object->url_rel_index = 0;
 
     /* Scale to user scale. */
     width = object_props->width * object_props->x_scale;
@@ -4261,7 +4336,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
 
     /* Escape the URL. */
     if (link_type == HYPERLINK_URL || link_type == HYPERLINK_EXTERNAL) {
-        tmp_string = lxw_escape_url_characters(url_copy);
+        tmp_string = lxw_escape_url_characters(url_copy, LXW_FALSE);
         GOTO_LABEL_ON_MEM_ERROR(tmp_string, mem_error);
 
         free(url_copy);
@@ -5539,6 +5614,8 @@ worksheet_insert_image_opt(lxw_worksheet *self,
         object_props->y_offset = user_options->y_offset;
         object_props->x_scale = user_options->x_scale;
         object_props->y_scale = user_options->y_scale;
+        object_props->url = lxw_strdup(user_options->url);
+        object_props->tip = lxw_strdup(user_options->tip);
 
         if (user_options->description)
             description = user_options->description;

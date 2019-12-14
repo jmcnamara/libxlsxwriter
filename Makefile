@@ -14,6 +14,7 @@ endif
 INSTALL_DIR ?= /usr/local
 
 PYTEST ?= py.test
+PYTESTFILES ?= test
 
 .PHONY: docs tags examples
 
@@ -60,7 +61,7 @@ test_const : all
 # Run the functional tests.
 test_functional : all
 	$(Q)$(MAKE) -C test/functional/src
-	$(Q)$(PYTEST) test/functional -v
+	$(Q)$(PYTEST) test/functional -v -k $(PYTESTFILES)
 
 # Run all tests.
 test_unit :

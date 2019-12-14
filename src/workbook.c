@@ -914,15 +914,6 @@ _prepare_drawings(lxw_workbook *self)
 
         drawing_id++;
 
-        STAILQ_FOREACH(object_props, worksheet->chart_data, list_pointers) {
-            chart_ref_id++;
-            lxw_worksheet_prepare_chart(worksheet, chart_ref_id, drawing_id,
-                                        object_props, is_chartsheet);
-            if (object_props->chart)
-                STAILQ_INSERT_TAIL(self->ordered_charts, object_props->chart,
-                                   ordered_list_pointers);
-        }
-
         STAILQ_FOREACH(object_props, worksheet->image_props, list_pointers) {
 
             if (object_props->image_type == LXW_IMAGE_PNG)
@@ -938,6 +929,15 @@ _prepare_drawings(lxw_workbook *self)
 
             lxw_worksheet_prepare_image(worksheet, image_ref_id, drawing_id,
                                         object_props);
+        }
+
+        STAILQ_FOREACH(object_props, worksheet->chart_data, list_pointers) {
+            chart_ref_id++;
+            lxw_worksheet_prepare_chart(worksheet, chart_ref_id, drawing_id,
+                                        object_props, is_chartsheet);
+            if (object_props->chart)
+                STAILQ_INSERT_TAIL(self->ordered_charts, object_props->chart,
+                                   ordered_list_pointers);
         }
     }
 
