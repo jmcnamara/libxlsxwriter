@@ -12,6 +12,10 @@
 int main() {
 
     lxw_workbook  *workbook  = workbook_new("test_hyperlink18.xlsx");
+
+    /* Set shorter length for testing. */
+    workbook->max_url_length = 255;
+
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     workbook_unset_default_url_format(workbook);

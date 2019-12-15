@@ -194,6 +194,7 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     worksheet->outline_below = LXW_TRUE;
     worksheet->outline_right = LXW_FALSE;
     worksheet->tab_color = LXW_COLOR_UNSET;
+    worksheet->max_url_length = 2079;
 
     if (init_data) {
         worksheet->name = init_data->name;
@@ -206,6 +207,7 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
         worksheet->active_sheet = init_data->active_sheet;
         worksheet->first_sheet = init_data->first_sheet;
         worksheet->default_url_format = init_data->default_url_format;
+        worksheet->max_url_length = init_data->max_url_length;
     }
 
     return worksheet;
@@ -2112,6 +2114,14 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
             relationship->target =
                 lxw_escape_url_characters(object_props->url, LXW_FALSE);
             GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+        }
+
+        /* Check if URL exceeds Excel's length limit. */
+        if (lxw_utf8_strlen(url) > self->max_url_length) {
+            LXW_WARN_FORMAT2("worksheet_insert_image()/_opt(): URL exceeds "
+                             "Excel's allowable length of %d characters: %s",
+                             self->max_url_length, url);
+            goto mem_error;
         }
 
         STAILQ_INSERT_TAIL(self->drawing_links, relationship, list_pointers);
@@ -4260,21 +4270,27 @@ worksheet_write_url_opt(lxw_worksheet *self,
     char *found_string;
     char *tmp_string = NULL;
     lxw_format *format = NULL;
-    lxw_error err;
     size_t string_size;
     size_t i;
+    lxw_error err = LXW_ERROR_MEMORY_MALLOC_FAILED;
     enum cell_types link_type = HYPERLINK_URL;
 
     if (!url || !*url)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
     /* Check the Excel limit of URLS per worksheet. */
-    if (self->hlink_count > LXW_MAX_NUMBER_URLS)
+    if (self->hlink_count > LXW_MAX_NUMBER_URLS) {
+        LXW_WARN("worksheet_write_url()/_opt(): URL ignored since it exceeds "
+                 "the maximum number of allowed worksheet URLs (65530).");
         return LXW_ERROR_WORKSHEET_MAX_NUMBER_URLS_EXCEEDED;
+    }
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
         return err;
+
+    /* Reset default error condition. */
+    err = LXW_ERROR_MEMORY_MALLOC_FAILED;
 
     /* Set the URI scheme from internal links. */
     found_string = strstr(url, "internal:");
@@ -4387,9 +4403,14 @@ worksheet_write_url_opt(lxw_worksheet *self,
 
     }
 
-    /* Excel limits escaped URL to 255 characters. */
-    if (lxw_utf8_strlen(url_copy) > 255)
+    /* Check if URL exceeds Excel's length limit. */
+    if (lxw_utf8_strlen(url_copy) > self->max_url_length) {
+        LXW_WARN_FORMAT2("worksheet_write_url()/_opt(): URL exceeds "
+                         "Excel's allowable length of %d characters: %s",
+                         self->max_url_length, url_copy);
+        err = LXW_ERROR_WORKSHEET_MAX_URL_LENGTH_EXCEEDED;
         goto mem_error;
+    }
 
     /* Use the default URL format if none is specified. */
     if (!user_format)
@@ -4400,6 +4421,9 @@ worksheet_write_url_opt(lxw_worksheet *self,
     err = worksheet_write_string(self, row_num, col_num, string_copy, format);
     if (err)
         goto mem_error;
+
+    /* Reset default error condition. */
+    err = LXW_ERROR_MEMORY_MALLOC_FAILED;
 
     link = _new_hyperlink_cell(row_num, col_num, link_type, url_copy,
                                url_string, tooltip_copy);
@@ -4417,7 +4441,7 @@ mem_error:
     free(url_external);
     free(url_string);
     free(tooltip_copy);
-    return LXW_ERROR_MEMORY_MALLOC_FAILED;
+    return err;
 }
 
 /*

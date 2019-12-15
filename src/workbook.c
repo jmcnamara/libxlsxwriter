@@ -1495,6 +1495,8 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
         workbook->options.use_zip64 = options->use_zip64;
     }
 
+    workbook->max_url_length = 2079;
+
     return workbook;
 
 mem_error:
@@ -1513,7 +1515,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     lxw_worksheet *worksheet = NULL;
     lxw_worksheet_name *worksheet_name = NULL;
     lxw_error error;
-    lxw_worksheet_init_data init_data = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    lxw_worksheet_init_data init_data = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     char *new_name = NULL;
 
     if (sheetname) {
@@ -1553,6 +1555,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     init_data.first_sheet = &self->first_sheet;
     init_data.tmpdir = self->options.tmpdir;
     init_data.default_url_format = self->default_url_format;
+    init_data.max_url_length = self->max_url_length;
 
     /* Create a new worksheet object. */
     worksheet = lxw_worksheet_new(&init_data);
@@ -1596,7 +1599,7 @@ workbook_add_chartsheet(lxw_workbook *self, const char *sheetname)
     lxw_chartsheet *chartsheet = NULL;
     lxw_chartsheet_name *chartsheet_name = NULL;
     lxw_error error;
-    lxw_worksheet_init_data init_data = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    lxw_worksheet_init_data init_data = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     char *new_name = NULL;
 
     if (sheetname) {

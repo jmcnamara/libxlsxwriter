@@ -133,6 +133,9 @@ typedef enum lxw_error {
     /** Worksheet row or column index out of range. */
     LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE,
 
+    /** Maximum hyperlink length (2079) exceeded. */
+    LXW_ERROR_WORKSHEET_MAX_URL_LENGTH_EXCEEDED,
+
     /** Maximum number of worksheet URLs (65530) exceeded. */
     LXW_ERROR_WORKSHEET_MAX_NUMBER_URLS_EXCEEDED,
 

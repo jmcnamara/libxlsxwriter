@@ -867,6 +867,7 @@ typedef struct lxw_worksheet {
     struct lxw_autofilter autofilter;
 
     uint16_t merged_range_count;
+    uint16_t max_url_length;
 
     lxw_row_t *hbreaks;
     lxw_col_t *vbreaks;
@@ -903,6 +904,7 @@ typedef struct lxw_worksheet_init_data {
     char *quoted_name;
     char *tmpdir;
     lxw_format *default_url_format;
+    uint16_t max_url_length;
 
 } lxw_worksheet_init_data;
 
@@ -1321,10 +1323,14 @@ lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
  * **Note:**
  *
  *    libxlsxwriter will escape the following characters in URLs as required
- *    by Excel: `\s " < > \ [ ]  ^ { }` unless the URL already contains `%%xx`
- *    style escapes. In which case it is assumed that the URL was escaped
- *    correctly by the user and will by passed directly to Excel.
+ *    by Excel: `\s " < > \ [ ]  ^ { }`. Existing URL `%%xx` style escapes in
+ *    the string are ignored to allow for user-escaped strings.
  *
+ * **Note:**
+ *
+ *    The maximum allowable URL length in recent versions of Excel is 2079
+ *    characters. In older versions of Excel (and libxlsxwriter <= 0.8.8) the
+ *    limit was 255 characters.
  */
 lxw_error worksheet_write_url(lxw_worksheet *worksheet,
                               lxw_row_t row,

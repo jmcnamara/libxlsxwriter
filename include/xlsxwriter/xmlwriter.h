@@ -24,7 +24,7 @@
 #include <stdint.h>
 #include "utility.h"
 
-#define LXW_MAX_ATTRIBUTE_LENGTH 256
+#define LXW_MAX_ATTRIBUTE_LENGTH 2080   /* Max URL length. */
 #define LXW_ATTR_32              32
 
 #define LXW_ATTRIBUTE_COPY(dst, src)                    \

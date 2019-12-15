@@ -40,6 +40,7 @@ char *error_strings[LXW_MAX_ERRNO + 1] = {
     "String exceeds Excel's limit of 32,767 characters.",
     "Error finding internal string index.",
     "Worksheet row or column index out of range.",
+    "Maximum hyperlink length (2079) exceeded.",
     "Maximum number of worksheet URLs (65530) exceeded.",
     "Couldn't read image dimensions or DPI.",
     "Unknown error number."
