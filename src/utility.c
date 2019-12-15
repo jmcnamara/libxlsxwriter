@@ -562,12 +562,21 @@ lxw_sprintf_dbl(char *data, double number)
 #endif
 
 /*
- * Retrieve runtime library version
+ * Retrieve runtime library version.
  */
 const char *
 lxw_version(void)
 {
     return LXW_VERSION;
+}
+
+/*
+ * Retrieve runtime library version ID.
+ */
+uint16_t
+lxw_version_id(void)
+{
+    return LXW_VERSION_ID;
 }
 
 /*

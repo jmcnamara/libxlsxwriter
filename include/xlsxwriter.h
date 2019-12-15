@@ -19,5 +19,6 @@
 #include "xlsxwriter/utility.h"
 
 #define LXW_VERSION "0.8.8"
+#define LXW_VERSION_ID 88
 
 #endif /* __LXW_XLSXWRITER_H__ */

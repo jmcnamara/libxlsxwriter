@@ -104,6 +104,20 @@ extern "C" {
 const char *lxw_version(void);
 
 /**
+ * @brief Retrieve the library version ID.
+ *
+ * @return The version ID.
+ *
+ * Get the library version such as "X.Y.Z" as a XYZ integer.
+ *
+ *  @code
+ *      printf("Libxlsxwriter version id = %d\n", lxw_version_id());
+ *  @endcode
+ *
+ */
+uint16_t lxw_version_id(void);
+
+/**
  * @brief Converts a libxlsxwriter error number to a string.
  *
  * The `%lxw_strerror` function converts a libxlsxwriter error number defined
