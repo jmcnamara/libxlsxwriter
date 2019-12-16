@@ -2178,7 +2178,7 @@ workbook_get_default_url_format(lxw_workbook *self)
 }
 
 /*
- * Get the default URL format.
+ * Unset the default URL format.
  */
 void
 workbook_unset_default_url_format(lxw_workbook *self)

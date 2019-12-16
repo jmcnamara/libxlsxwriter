@@ -401,7 +401,6 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
         free(worksheet->data_validations);
     }
 
-    /* TODO. Add function for freeing the relationship lists. */
     while (!STAILQ_EMPTY(worksheet->external_hyperlinks)) {
         relationship = STAILQ_FIRST(worksheet->external_hyperlinks);
         STAILQ_REMOVE_HEAD(worksheet->external_hyperlinks, list_pointers);
