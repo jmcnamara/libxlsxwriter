@@ -1,6 +1,15 @@
 /**
 @page changes Changes
 
+## 0.8.9 December 16 2019
+
+- Added support for default hyperlink style in `worksheet_write_url()`.
+
+- Added support for hyperlink in images, see `worksheet_insert_image_opt()`.
+
+- Fixed several `worksheet_write_url()` edge cases.
+
+
 ## 0.8.8 November 17 2019
 
 - Added option to allow a user defined, or overridden, image description used
