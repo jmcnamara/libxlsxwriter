@@ -105,7 +105,6 @@ endif()
 
 # OPTIONS
 # -------
-
 SET(ZLIB_ROOT "" CACHE STRING "Optional root for the ZLIB installation")
 
 option(BUILD_TESTS "Build libxlsxwriter tests" OFF)
@@ -113,9 +112,11 @@ option(BUILD_EXAMPLES "Build libxlsxwriter examples" OFF)
 option(USE_SYSTEM_MINIZIP "Use system minizip installation" OFF)
 option(USE_STANDARD_TMPFILE "Use the C standard library's tmpfile()" OFF)
 option(IOAPI_NO_64 "Disable 64-bit filesystem support" OFF)
+
 if(MSVC)
     option(USE_STATIC_MSVC_RUNTIME "Use the static runtime library" OFF)
 endif()
+
 if(DEFINED ENV{${ZLIB_ROOT}})
     set(ZLIB_ROOT $ENV{ZLIB_ROOT})
 endif()
@@ -126,7 +127,6 @@ endif()
 
 # CONFIGURATIONS
 # --------------
-
 if(USE_SYSTEM_MINIZIP)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_SYSTEM_MINIZIP)
 endif()
@@ -163,7 +163,6 @@ endif()
 
 # INCLUDES
 # --------
-
 enable_language(CXX)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -180,7 +179,6 @@ endif()
 
 # LIBRARY
 # -------
-
 list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS NOCRYPT NOUNCRYPT)
 
 # Fix for modified zconf.h on Gentoo.
@@ -200,12 +198,14 @@ endif()
 
 file(GLOB LXW_SOURCES src/*.c)
 file(GLOB_RECURSE LXW_HEADERS RELATIVE include *.h)
+
 if(NOT USE_SYSTEM_MINIZIP)
     list(APPEND LXW_SOURCES third_party/minizip/ioapi.c third_party/minizip/zip.c)
     if(MSVC)
         list(APPEND LXW_SOURCES third_party/minizip/iowin32.c)
     endif()
 endif()
+
 if (NOT USE_STANDARD_TMPFILE)
     list(APPEND LXW_SOURCES third_party/tmpfileplus/tmpfileplus.c)
 endif()
@@ -219,11 +219,17 @@ target_sources(${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LIBRARIES} ${MINIZIP_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LXW_PRIVATE_COMPILE_DEFINITIONS})
+
 # /utf-8 needs VS2015 Update 2 or above.
-# In CMake 3.7 and above, we can use (MSVC_VERSION GREATER_EQUAL 1900) here. 
+# In CMake 3.7 and above, we can use (MSVC_VERSION GREATER_EQUAL 1900) here.
 if(MSVC AND NOT (MSVC_VERSION LESS 1900))
     target_compile_options(${PROJECT_NAME} PRIVATE /utf-8)
 endif()
+
+if (WINDOWSSTORE)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE -DIOWIN32_USING_WINRT_API)
+endif()
+
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${LXW_PRIVATE_INCLUDE_DIRS}
     PUBLIC include include/xlsxwriter
@@ -250,7 +256,6 @@ macro(CreateTest sources target)
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
 endmacro(CreateTest)
-
 
 file(GLOB LXW_UTILITY_SOURCES test/unit/utility/test*.c)
 file(GLOB LXW_XMLWRITER_SOURCES test/unit/xmlwriter/test*.c)
@@ -303,7 +308,6 @@ endif()
 
 # EXAMPLES
 # --------
-
 file(GLOB LXW_EXAMPLE_SOURCES examples/*.c)
 
 if(BUILD_EXAMPLES)
@@ -316,34 +320,13 @@ endif()
 
 # INSTALL
 # -------
-
 include(GNUInstallDirs)
 
-if(MSVC)
-    if(CMAKE_CL_64)
-        set(MSVC_FOLDER_PREFIX x64)
-    else()
-        set(MSVC_FOLDER_PREFIX Win32)
-    endif()
-
-    install(TARGETS ${PROJECT_NAME}
-        LIBRARY DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
-        ARCHIVE DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
-        RUNTIME DESTINATION "bin/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
-    )
-    if (NOT BUILD_SHARED_LIBS)
-        install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb
-            DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
-        )
-    endif()
-
-else(MSVC)
-    install(TARGETS ${PROJECT_NAME}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    )
-endif(MSVC)
+install(TARGETS ${PROJECT_NAME}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 install(FILES include/xlsxwriter.h DESTINATION include)
 install(DIRECTORY include/xlsxwriter
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
