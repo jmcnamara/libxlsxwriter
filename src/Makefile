@@ -27,7 +27,6 @@ MINIZIP_OBJ = $(MINIZIP_DIR)/ioapi.o  $(MINIZIP_DIR)/zip.o
 MINIZIP_SO  = $(MINIZIP_DIR)/ioapi.so $(MINIZIP_DIR)/zip.so
 endif
 
-
 ifdef USE_STANDARD_TMPFILE
 # Use standard/C tmpfile().
 CFLAGS += -DUSE_STANDARD_TMPFILE
@@ -36,6 +35,16 @@ else
 TMPFILEPLUS_DIR = ../third_party/tmpfileplus
 TMPFILEPLUS_OBJ = $(TMPFILEPLUS_DIR)/tmpfileplus.o
 TMPFILEPLUS_SO  = $(TMPFILEPLUS_DIR)/tmpfileplus.so
+endif
+
+ifdef USE_NO_MD5
+# Don't use MD5 to avoid duplicate image files.
+CFLAGS += -DUSE_NO_MD5
+else
+# Use md5 (the default).
+MD5_DIR = ../third_party/md5
+MD5_OBJ = $(MD5_DIR)/md5.o
+MD5_SO  = $(MD5_DIR)/md5.so
 endif
 
 # Set flag for big endian architecture.
@@ -122,7 +131,7 @@ test_lib : libxlsxwriter_test.a
 
 # The static library.
 $(LIBXLSXWRITER_A) : $(OBJS)
-	$(Q)$(AR) $(ARFLAGS) $@ $(MINIZIP_OBJ) $(TMPFILEPLUS_OBJ) $^
+	$(Q)$(AR) $(ARFLAGS) $@ $(MINIZIP_OBJ) $(TMPFILEPLUS_OBJ) $(MD5_OBJ) $^
 
 # The dynamic library.
 ifeq ($(findstring m32,$(CFLAGS)),m32)
@@ -130,11 +139,11 @@ ARCH = -m32
 endif
 
 $(LIBXLSXWRITER_SO) : $(SOBJS)
-	$(Q)$(CC) $(LDFLAGS) $(SOFLAGS) $(ARCH) -o $@ $(MINIZIP_SO) $(TMPFILEPLUS_SO) $^ $(LIBS)
+	$(Q)$(CC) $(LDFLAGS) $(SOFLAGS) $(ARCH) -o $@ $(MINIZIP_SO) $(TMPFILEPLUS_SO) $(MD5_SO) $^ $(LIBS)
 
 # The test library.
 $(LIBXLSXWRITER_TO) : $(TOBJS)
-	$(Q)$(AR) $(ARFLAGS) $@ $(MINIZIP_OBJ) $(TMPFILEPLUS_OBJ) $^
+	$(Q)$(AR) $(ARFLAGS) $@ $(MINIZIP_OBJ) $(TMPFILEPLUS_OBJ) $(MD5_OBJ) $^
 
 # Minimal target for quick compile without creating the libs.
 test_compile : $(OBJS)

@@ -26,6 +26,9 @@ endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
 endif
+ifndef USE_NO_MD5
+	$(Q)$(MAKE) -C third_party/md5
+endif
 	$(Q)$(MAKE) -C src
 
 # Build the example programs.
@@ -47,6 +50,9 @@ ifndef USE_STANDARD_TMPFILE
 endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) clean -C third_party/tmpfileplus
+endif
+ifndef USE_NO_MD5
+	$(Q)$(MAKE) clean -C third_party/md5
 endif
 
 # Run the unit tests.
@@ -71,6 +77,9 @@ ifndef USE_SYSTEM_MINIZIP
 endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
+endif
+ifndef USE_NO_MD5
+	$(Q)$(MAKE) -C third_party/md5
 endif
 	$(Q)$(MAKE) -C src test_lib
 	$(Q)$(MAKE) -C test/unit test
@@ -123,6 +132,9 @@ endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
 endif
+ifndef USE_NO_MD5
+	$(Q)$(MAKE) -C third_party/md5
+endif
 	$(Q)$(MAKE) -C src clean
 	$(Q)rm -f  lib/*
 	$(Q)rm -rf  cov-int
@@ -139,6 +151,9 @@ ifndef USE_SYSTEM_MINIZIP
 endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
+endif
+ifndef USE_NO_MD5
+	$(Q)$(MAKE) -C third_party/md5
 endif
 	$(Q)$(MAKE) -C src clean
 	$(Q)rm -f  lib/*

@@ -47,6 +47,12 @@
 #           during configuration. This may produce bugs while cross-
 #           compiling or using MinGW/MSYS.
 #
+#       USE_NO_MD5
+#           Compile without third party MD5 support. This will turn off the
+#           functionality of avoiding duplicate image files in the output xlsx
+#           file. To enable this option pass `-DUSE_NO_MD5=ON` during
+#           configuration.
+#
 #       USE_STATIC_MSVC_RUNTIME
 #           Use the static msvc runtime library when compiling with msvc (default off)
 #           To enable, pass `-DUSE_STATIC_MSVC_RUNTIME` during configuration.
@@ -111,6 +117,7 @@ option(BUILD_TESTS "Build libxlsxwriter tests" OFF)
 option(BUILD_EXAMPLES "Build libxlsxwriter examples" OFF)
 option(USE_SYSTEM_MINIZIP "Use system minizip installation" OFF)
 option(USE_STANDARD_TMPFILE "Use the C standard library's tmpfile()" OFF)
+option(USE_NO_MD5 "Build libxlsxwriter without third party MD5 lib" OFF)
 option(IOAPI_NO_64 "Disable 64-bit filesystem support" OFF)
 
 if(MSVC)
@@ -134,6 +141,11 @@ endif()
 if(USE_STANDARD_TMPFILE)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_STANDARD_TMPFILE)
 endif()
+
+if(USE_NO_MD5)
+    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_NO_MD5)
+endif()
+
 
 if(NOT BUILD_SHARED_LIBS)
     if(UNIX)
@@ -208,6 +220,10 @@ endif()
 
 if (NOT USE_STANDARD_TMPFILE)
     list(APPEND LXW_SOURCES third_party/tmpfileplus/tmpfileplus.c)
+endif()
+
+if (NOT USE_NO_MD5)
+    list(APPEND LXW_SOURCES third_party/md5/md5.c)
 endif()
 
 set(LXW_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
