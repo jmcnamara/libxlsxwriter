@@ -62,6 +62,7 @@
 #define LXW_HEADER_FOOTER_MAX 255
 #define LXW_MAX_NUMBER_URLS   65530
 #define LXW_PANE_NAME_LENGTH  12        /* bottomRight + 1 */
+#define LXW_IMAGE_BUFFER_SIZE 10
 
 /* The Excel 2007 specification says that the maximum number of page
  * breaks is 1026. However, in practice it is actually 1023. */
@@ -639,6 +640,8 @@ typedef struct lxw_object_properties {
     double x_dpi;
     double y_dpi;
     lxw_chart *chart;
+    uint8_t is_duplicate;
+    unsigned char md5[LXW_MD5_SIZE];
 
     STAILQ_ENTRY (lxw_object_properties) list_pointers;
 } lxw_object_properties;

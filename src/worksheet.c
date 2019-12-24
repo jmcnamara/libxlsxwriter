@@ -12,6 +12,7 @@
 #include "xlsxwriter/format.h"
 #include "xlsxwriter/utility.h"
 #include "xlsxwriter/relationships.h"
+#include "xlsxwriter/third_party/md5.h"
 
 #define LXW_STR_MAX                      32767
 #define LXW_BUFFER_SIZE                  4096
@@ -2541,6 +2542,11 @@ STATIC lxw_error
 _get_image_properties(lxw_object_properties *image_props)
 {
     unsigned char signature[4];
+#ifndef USE_NO_MD5
+    MD5_CTX context;
+    size_t size_read;
+    char buffer[LXW_IMAGE_BUFFER_SIZE];
+#endif
 
     /* Read 4 bytes to look for the file header/signature. */
     if (fread(signature, 1, 4, image_props->stream) < 4) {
@@ -2568,6 +2574,20 @@ _get_image_properties(lxw_object_properties *image_props)
                          image_props->filename);
         return LXW_ERROR_IMAGE_DIMENSIONS;
     }
+
+#ifndef USE_NO_MD5
+    rewind(image_props->stream);
+    MD5_Init(&context);
+    size_read = fread(buffer, 1, LXW_IMAGE_BUFFER_SIZE, image_props->stream);
+
+    while (size_read) {
+        MD5_Update(&context, buffer, size_read);
+        size_read =
+            fread(buffer, 1, LXW_IMAGE_BUFFER_SIZE, image_props->stream);
+    }
+
+    MD5_Final(image_props->md5, &context);
+#endif
 
     return LXW_NO_ERROR;
 }

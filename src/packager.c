@@ -265,6 +265,9 @@ _write_image_files(lxw_packager *self)
 
         STAILQ_FOREACH(object_props, worksheet->image_props, list_pointers) {
 
+            if (object_props->is_duplicate)
+                continue;
+
             lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                          "xl/media/image%d.%s", index++,
                          object_props->extension);

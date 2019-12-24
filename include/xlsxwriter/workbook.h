@@ -57,6 +57,7 @@
 /* Define the tree.h RB structs for the red-black head types. */
 RB_HEAD(lxw_worksheet_names, lxw_worksheet_name);
 RB_HEAD(lxw_chartsheet_names, lxw_chartsheet_name);
+RB_HEAD(lxw_image_md5s, lxw_image_md5);
 
 /* Define the queue.h structs for the workbook lists. */
 STAILQ_HEAD(lxw_sheets, lxw_sheet);
@@ -93,6 +94,14 @@ typedef struct lxw_chartsheet_name {
     RB_ENTRY (lxw_chartsheet_name) tree_pointers;
 } lxw_chartsheet_name;
 
+/* Struct to represent an image MD5/ID pair. */
+typedef struct lxw_image_md5 {
+    uint32_t id;
+    unsigned char md5[LXW_MD5_SIZE];
+
+    RB_ENTRY (lxw_image_md5) tree_pointers;
+} lxw_image_md5;
+
 /* Wrapper around RB_GENERATE_STATIC from tree.h to avoid unused function
  * warnings and to avoid portability issues with the _unused attribute. */
 #define LXW_RB_GENERATE_WORKSHEET_NAMES(name, type, field, cmp)  \
@@ -116,6 +125,17 @@ typedef struct lxw_chartsheet_name {
     RB_GENERATE_MINMAX(name, type, field, static)                \
     /* Add unused struct to allow adding a semicolon */          \
     struct lxw_rb_generate_charsheet_names{int unused;}
+
+#define LXW_RB_GENERATE_IMAGE_MD5S(name, type, field, cmp) \
+    RB_GENERATE_INSERT_COLOR(name, type, field, static)          \
+    RB_GENERATE_REMOVE_COLOR(name, type, field, static)          \
+    RB_GENERATE_INSERT(name, type, field, cmp, static)           \
+    RB_GENERATE_REMOVE(name, type, field, static)                \
+    RB_GENERATE_FIND(name, type, field, cmp, static)             \
+    RB_GENERATE_NEXT(name, type, field, static)                  \
+    RB_GENERATE_MINMAX(name, type, field, static)                \
+    /* Add unused struct to allow adding a semicolon */          \
+    struct lxw_rb_generate_image_md5s{int unused;}
 
 /**
  * @brief Macro to loop over all the worksheets in a workbook.
@@ -258,6 +278,7 @@ typedef struct lxw_workbook {
     struct lxw_chartsheets *chartsheets;
     struct lxw_worksheet_names *worksheet_names;
     struct lxw_chartsheet_names *chartsheet_names;
+    struct lxw_image_md5s *image_md5s;
     struct lxw_charts *charts;
     struct lxw_charts *ordered_charts;
     struct lxw_formats *formats;

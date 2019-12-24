@@ -17,11 +17,15 @@ STATIC int _worksheet_name_cmp(lxw_worksheet_name *name1,
                                lxw_worksheet_name *name2);
 STATIC int _chartsheet_name_cmp(lxw_chartsheet_name *name1,
                                 lxw_chartsheet_name *name2);
+STATIC int _image_md5_cmp(lxw_image_md5 *tuple1, lxw_image_md5 *tuple2);
+
 #ifndef __clang_analyzer__
 LXW_RB_GENERATE_WORKSHEET_NAMES(lxw_worksheet_names, lxw_worksheet_name,
                                 tree_pointers, _worksheet_name_cmp);
 LXW_RB_GENERATE_CHARTSHEET_NAMES(lxw_chartsheet_names, lxw_chartsheet_name,
                                  tree_pointers, _chartsheet_name_cmp);
+LXW_RB_GENERATE_IMAGE_MD5S(lxw_image_md5s, lxw_image_md5,
+                           tree_pointers, _image_md5_cmp);
 #endif
 
 /*
@@ -47,6 +51,12 @@ STATIC int
 _chartsheet_name_cmp(lxw_chartsheet_name *name1, lxw_chartsheet_name *name2)
 {
     return lxw_strcasecmp(name1->name, name2->name);
+}
+
+STATIC int
+_image_md5_cmp(lxw_image_md5 *tuple1, lxw_image_md5 *tuple2)
+{
+    return memcmp(tuple1->md5, tuple2->md5, LXW_MD5_SIZE);
 }
 
 /*
@@ -97,6 +107,8 @@ lxw_workbook_free(lxw_workbook *workbook)
     struct lxw_worksheet_name *next_worksheet_name;
     struct lxw_chartsheet_name *chartsheet_name;
     struct lxw_chartsheet_name *next_chartsheet_name;
+    struct lxw_image_md5 *image_md5;
+    struct lxw_image_md5 *next_image_md5;
     lxw_chart *chart;
     lxw_format *format;
     lxw_defined_name *defined_name;
@@ -202,6 +214,19 @@ lxw_workbook_free(lxw_workbook *workbook)
         }
 
         free(workbook->chartsheet_names);
+    }
+
+    if (workbook->image_md5s) {
+        for (image_md5 = RB_MIN(lxw_image_md5s, workbook->image_md5s);
+             image_md5; image_md5 = next_image_md5) {
+
+            next_image_md5 =
+                RB_NEXT(lxw_image_md5s, workbook->image_md5, image_md5);
+            RB_REMOVE(lxw_image_md5s, workbook->image_md5s, image_md5);
+            free(image_md5);
+        }
+
+        free(workbook->image_md5s);
     }
 
     lxw_hash_free(workbook->used_xf_formats);
@@ -895,8 +920,12 @@ _prepare_drawings(lxw_workbook *self)
     lxw_object_properties *object_props;
     uint32_t chart_ref_id = 0;
     uint32_t image_ref_id = 0;
+    uint32_t ref_id = 0;
     uint32_t drawing_id = 0;
     uint8_t is_chartsheet;
+    lxw_image_md5 tmp_image_md5;
+    lxw_image_md5 *new_image_md5 = NULL;
+    lxw_image_md5 *found;
 
     STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
         if (sheet->is_chartsheet) {
@@ -925,9 +954,32 @@ _prepare_drawings(lxw_workbook *self)
             if (object_props->image_type == LXW_IMAGE_BMP)
                 self->has_bmp = LXW_TRUE;
 
-            image_ref_id++;
+            memcpy(tmp_image_md5.md5, object_props->md5, LXW_MD5_SIZE);
 
-            lxw_worksheet_prepare_image(worksheet, image_ref_id, drawing_id,
+            found = RB_FIND(lxw_image_md5s, self->image_md5s, &tmp_image_md5);
+
+            if (found) {
+                ref_id = found->id;
+                object_props->is_duplicate = LXW_TRUE;
+            }
+            else {
+                image_ref_id++;
+                ref_id = image_ref_id;
+
+#ifndef USE_NO_MD5
+                new_image_md5 = calloc(1, sizeof(lxw_image_md5));
+#endif
+                if (new_image_md5) {
+                    new_image_md5->id = ref_id;
+                    memcpy(new_image_md5->md5, object_props->md5,
+                           LXW_MD5_SIZE);
+
+                    RB_INSERT(lxw_image_md5s, self->image_md5s,
+                              new_image_md5);
+                }
+            }
+
+            lxw_worksheet_prepare_image(worksheet, ref_id, drawing_id,
                                         object_props);
         }
 
@@ -1437,6 +1489,11 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
                                         sizeof(struct lxw_chartsheet_names));
     GOTO_LABEL_ON_MEM_ERROR(workbook->chartsheet_names, mem_error);
     RB_INIT(workbook->chartsheet_names);
+
+    /* Add the image MD5 tree. */
+    workbook->image_md5s = calloc(1, sizeof(struct lxw_image_md5s));
+    GOTO_LABEL_ON_MEM_ERROR(workbook->image_md5s, mem_error);
+    RB_INIT(workbook->image_md5s);
 
     /* Add the charts list. */
     workbook->charts = calloc(1, sizeof(struct lxw_charts));

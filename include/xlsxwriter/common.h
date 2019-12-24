@@ -175,6 +175,9 @@ enum lxw_custom_property_types {
     LXW_CUSTOM_DATETIME
 };
 
+/* Size of MD5 byte arrays. */
+#define LXW_MD5_SIZE              16
+
 /* Excel sheetname max of 31 chars. */
 #define LXW_SHEETNAME_MAX         31
 

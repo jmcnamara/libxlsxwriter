@@ -5,6 +5,8 @@
 # Copyright 2014-2019, John McNamara, jmcnamara@cpan.org
 #
 
+import os
+import pytest
 import base_test_class
 
 class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
@@ -124,6 +126,14 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_image47(self):
         self.run_exe_test('test_image47')
+
+    @pytest.mark.skipif(os.environ.get('USE_NO_MD5'), reason="compiled without MD5 support")
+    def test_image48(self):
+        self.run_exe_test('test_image48')
+
+    @pytest.mark.skipif(os.environ.get('USE_NO_MD5'), reason="compiled without MD5 support")
+    def test_image49(self):
+        self.run_exe_test('test_image49')
 
     # Test in-memory image handling.
     def test_image81(self):
