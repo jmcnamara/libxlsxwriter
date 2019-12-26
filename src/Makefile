@@ -94,7 +94,7 @@ UNAME := $(shell uname)
 # Change make options on OS X.
 ifeq ($(UNAME), Darwin)
 LIBXLSXWRITER_SO = libxlsxwriter.dylib
-SOFLAGS = -dynamiclib $(FPIC) -install_name /usr/lib/$(LIBXLSXWRITER_SO)
+SOFLAGS = -dynamiclib $(FPIC) -install_name $(PREFIX)/lib/$(LIBXLSXWRITER_SO)
 endif
 
 # Check for MinGW/MinGW64/Cygwin environments.
