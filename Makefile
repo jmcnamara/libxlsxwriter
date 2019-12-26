@@ -11,7 +11,8 @@ ifdef V
 Q=
 endif
 
-INSTALL_DIR ?= /usr/local
+DESTIDR ?=
+PREFIX  ?= /usr/local
 
 PYTEST ?= py.test
 PYTESTFILES ?= test
@@ -123,15 +124,15 @@ docs:
 
 # Simple minded install.
 install: all
-	$(Q)mkdir -p        $(INSTALL_DIR)/include
-	$(Q)cp -R include/* $(INSTALL_DIR)/include
-	$(Q)mkdir -p        $(INSTALL_DIR)/lib
-	$(Q)cp lib/*        $(INSTALL_DIR)/lib
+	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/include
+	$(Q)cp -R include/* $(DESTDIR)$(PREFIX)/include
+	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/lib
+	$(Q)cp lib/*        $(DESTDIR)$(PREFIX)/lib
 
 # Simpler minded uninstall.
 uninstall:
-	$(Q)rm -rf $(INSTALL_DIR)/include/xlsxwriter*
-	$(Q)rm     $(INSTALL_DIR)/lib/libxlsxwriter.*
+	$(Q)rm -rf $(DESTDIR)$(PREFIX)/include/xlsxwriter*
+	$(Q)rm     $(DESTDIR)$(PREFIX)/lib/libxlsxwriter.*
 
 # Strip the lib files.
 strip:
