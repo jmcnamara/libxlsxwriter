@@ -166,7 +166,7 @@ has the following licence:
 
 Note, the MD5 library is used to avoid including duplicate image files in the
 xlsx file. If this functionality isn't required it is possible to compile
-libxlsxwriter without this library, see @ref gsg_tmpdir.
+libxlsxwriter without this library by passing `USE_NO_MD5=1` to make.
 
 Next: @ref changes
 */

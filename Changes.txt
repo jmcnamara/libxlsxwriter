@@ -1,6 +1,22 @@
 /**
 @page changes Changes
 
+## 0.9.0 December 26 2019
+
+- Fix to avoid duplicate images being copied to an libxlsxwriter file. Excel
+  uses an optimization where it only stores one copy of a repeated/duplicate
+  image in a workbook. Libxlsxwriter didn't do this which meant that the file
+  size would increase when then was a large number of repeated images. This
+  release fixes that issue and replicates Excel's behavior.
+
+  Note, that this change adds a dependency on the [Openwall MD5] library,
+  which is now included with the libxlsxwriter third party source files. It is
+  possible to compile libxlsxwriter without this library, and thus getting the
+  older behavior, by passing `USE_NO_MD5=1` to make.
+
+
+  [Openwall MD5]: https://openwall.info/wiki/people/solar/software/public-domain-source-code/md5
+
 ## 0.8.9 December 16 2019
 
 - Added support for default hyperlink style in `worksheet_write_url()`.
