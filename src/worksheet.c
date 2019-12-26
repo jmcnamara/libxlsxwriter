@@ -26,10 +26,14 @@
 STATIC void _worksheet_write_rows(lxw_worksheet *self);
 STATIC int _row_cmp(lxw_row *row1, lxw_row *row2);
 STATIC int _cell_cmp(lxw_cell *cell1, lxw_cell *cell2);
+STATIC int _drawing_rel_id_cmp(lxw_drawing_rel_id *tuple1,
+                               lxw_drawing_rel_id *tuple2);
 
 #ifndef __clang_analyzer__
 LXW_RB_GENERATE_ROW(lxw_table_rows, lxw_row, tree_pointers, _row_cmp);
 LXW_RB_GENERATE_CELL(lxw_table_cells, lxw_cell, tree_pointers, _cell_cmp);
+LXW_RB_GENERATE_DRAWING_REL_IDS(lxw_drawing_rel_ids, lxw_drawing_rel_id,
+                                tree_pointers, _drawing_rel_id_cmp);
 #endif
 
 /*****************************************************************************
@@ -155,6 +159,11 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
         worksheet->file = worksheet->optimize_tmpfile;
     }
 
+    worksheet->drawing_rel_ids =
+        calloc(1, sizeof(struct lxw_drawing_rel_ids));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->drawing_rel_ids, mem_error);
+    RB_INIT(worksheet->drawing_rel_ids);
+
     /* Initialize the worksheet dimensions. */
     worksheet->dim_rowmax = 0;
     worksheet->dim_colmax = 0;
@@ -276,6 +285,7 @@ _free_object_properties(lxw_object_properties *object_property)
     free(object_property->url);
     free(object_property->tip);
     free(object_property->image_buffer);
+    free(object_property->md5);
     free(object_property);
 }
 
@@ -313,6 +323,8 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     lxw_selection *selection;
     lxw_data_val_obj *data_validation;
     lxw_rel_tuple *relationship;
+    struct lxw_drawing_rel_id *drawing_rel_id;
+    struct lxw_drawing_rel_id *next_drawing_rel_id;
 
     if (!worksheet)
         return;
@@ -431,6 +443,23 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
         free(relationship);
     }
     free(worksheet->drawing_links);
+
+    if (worksheet->drawing_rel_ids) {
+        for (drawing_rel_id =
+             RB_MIN(lxw_drawing_rel_ids, worksheet->drawing_rel_ids);
+             drawing_rel_id; drawing_rel_id = next_drawing_rel_id) {
+
+            next_drawing_rel_id =
+                RB_NEXT(lxw_drawing_rel_ids, worksheet->drawing_rel_id,
+                        drawing_rel_id);
+            RB_REMOVE(lxw_drawing_rel_ids, worksheet->drawing_rel_ids,
+                      drawing_rel_id);
+            free(drawing_rel_id->target);
+            free(drawing_rel_id);
+        }
+
+        free(worksheet->drawing_rel_ids);
+    }
 
     if (worksheet->array) {
         for (col = 0; col < LXW_COL_MAX; col++) {
@@ -862,19 +891,72 @@ _cell_cmp(lxw_cell *cell1, lxw_cell *cell2)
     return 0;
 }
 
+STATIC int
+_drawing_rel_id_cmp(lxw_drawing_rel_id *rel_id1, lxw_drawing_rel_id *rel_id2)
+{
+    return strcmp(rel_id1->target, rel_id2->target);
+}
+
 /*
  * Get the index used to address a drawing rel link.
  */
 STATIC uint32_t
 _get_drawing_rel_index(lxw_worksheet *self, char *target)
 {
+    lxw_drawing_rel_id tmp_drawing_rel_id;
+    lxw_drawing_rel_id *found_duplicate_target = NULL;
+    lxw_drawing_rel_id *new_drawing_rel_id = NULL;
 
-    if (!target) {
-        self->drawing_rel_id++;
-        return self->drawing_rel_id;
+    if (target) {
+        tmp_drawing_rel_id.target = target;
+        found_duplicate_target = RB_FIND(lxw_drawing_rel_ids,
+                                         self->drawing_rel_ids,
+                                         &tmp_drawing_rel_id);
     }
 
-    return 0;
+    if (found_duplicate_target) {
+        return found_duplicate_target->id;
+    }
+    else {
+        self->drawing_rel_id++;
+
+        if (target) {
+            new_drawing_rel_id = calloc(1, sizeof(lxw_drawing_rel_id));
+
+            if (new_drawing_rel_id) {
+                new_drawing_rel_id->id = self->drawing_rel_id;
+                new_drawing_rel_id->target = lxw_strdup(target);
+
+                RB_INSERT(lxw_drawing_rel_ids, self->drawing_rel_ids,
+                          new_drawing_rel_id);
+            }
+        }
+
+        return self->drawing_rel_id;
+    }
+}
+
+/*
+ * find the index used to address a drawing rel link.
+ */
+STATIC uint32_t
+_find_drawing_rel_index(lxw_worksheet *self, char *target)
+{
+    lxw_drawing_rel_id tmp_drawing_rel_id;
+    lxw_drawing_rel_id *found_duplicate_target = NULL;
+
+    if (!target)
+        return 0;
+
+    tmp_drawing_rel_id.target = target;
+    found_duplicate_target = RB_FIND(lxw_drawing_rel_ids,
+                                         self->drawing_rel_ids,
+                                         &tmp_drawing_rel_id);
+
+    if (found_duplicate_target)
+        return found_duplicate_target->id;
+    else
+        return 0;
 }
 
 /*
@@ -2124,27 +2206,38 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
             goto mem_error;
         }
 
-        STAILQ_INSERT_TAIL(self->drawing_links, relationship, list_pointers);
+        if (!_find_drawing_rel_index(self, url)) {
+            STAILQ_INSERT_TAIL(self->drawing_links, relationship,
+                               list_pointers);
+        }
+        else {
+            free(relationship->type);
+            free(relationship->target);
+            free(relationship->target_mode);
+            free(relationship);
+        }
 
-        drawing_object->url_rel_index = _get_drawing_rel_index(self, NULL);
+        drawing_object->url_rel_index = _get_drawing_rel_index(self, url);
 
     }
 
-    drawing_object->rel_index = _get_drawing_rel_index(self, NULL);
+    if (!_find_drawing_rel_index(self, object_props->md5)) {
+        relationship = calloc(1, sizeof(lxw_rel_tuple));
+        GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
 
-    relationship = calloc(1, sizeof(lxw_rel_tuple));
-    GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
+        relationship->type = lxw_strdup("/image");
+        GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
 
-    relationship->type = lxw_strdup("/image");
-    GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
+        lxw_snprintf(filename, 32, "../media/image%d.%s", image_ref_id,
+                     object_props->extension);
 
-    lxw_snprintf(filename, 32, "../media/image%d.%s", image_ref_id,
-                 object_props->extension);
+        relationship->target = lxw_strdup(filename);
+        GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
 
-    relationship->target = lxw_strdup(filename);
-    GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+        STAILQ_INSERT_TAIL(self->drawing_links, relationship, list_pointers);
+    }
 
-    STAILQ_INSERT_TAIL(self->drawing_links, relationship, list_pointers);
+    drawing_object->rel_index = _get_drawing_rel_index(self, object_props->md5);
 
     return;
 
@@ -2543,9 +2636,11 @@ _get_image_properties(lxw_object_properties *image_props)
 {
     unsigned char signature[4];
 #ifndef USE_NO_MD5
-    MD5_CTX context;
+    uint8_t i;
+    MD5_CTX md5_context;
     size_t size_read;
     char buffer[LXW_IMAGE_BUFFER_SIZE];
+    unsigned char md5_checksum[LXW_MD5_SIZE];
 #endif
 
     /* Read 4 bytes to look for the file header/signature. */
@@ -2576,17 +2671,31 @@ _get_image_properties(lxw_object_properties *image_props)
     }
 
 #ifndef USE_NO_MD5
+    /* Calculate an MD5 checksum for the image so that we can remove duplicate
+     * images to reduce the xlsx file size.*/
     rewind(image_props->stream);
-    MD5_Init(&context);
-    size_read = fread(buffer, 1, LXW_IMAGE_BUFFER_SIZE, image_props->stream);
 
+    MD5_Init(&md5_context);
+
+    size_read = fread(buffer, 1, LXW_IMAGE_BUFFER_SIZE, image_props->stream);
     while (size_read) {
-        MD5_Update(&context, buffer, size_read);
+        MD5_Update(&md5_context, buffer, size_read);
         size_read =
             fread(buffer, 1, LXW_IMAGE_BUFFER_SIZE, image_props->stream);
     }
 
-    MD5_Final(image_props->md5, &context);
+    MD5_Final(md5_checksum, &md5_context);
+
+    /* Create a 32 char hex string buffer for the MD5 checksum. */
+    image_props->md5 = calloc(1, LXW_MD5_SIZE * 2 + 1);
+
+    /* If this calloc fails we just return and don't remove duplicates. */
+    RETURN_ON_MEM_ERROR(image_props->md5, LXW_NO_ERROR);
+
+    /* Convert the 16 byte MD5 buffer to a 32 char hex string. */
+    for (i = 0; i < LXW_MD5_SIZE; i++) {
+        lxw_snprintf(&image_props->md5[2 * i], 3, "%02x", md5_checksum[i]);
+    }
 #endif
 
     return LXW_NO_ERROR;

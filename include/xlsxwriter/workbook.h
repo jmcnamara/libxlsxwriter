@@ -97,7 +97,7 @@ typedef struct lxw_chartsheet_name {
 /* Struct to represent an image MD5/ID pair. */
 typedef struct lxw_image_md5 {
     uint32_t id;
-    unsigned char md5[LXW_MD5_SIZE];
+    char *md5;
 
     RB_ENTRY (lxw_image_md5) tree_pointers;
 } lxw_image_md5;

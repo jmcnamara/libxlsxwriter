@@ -62,7 +62,7 @@
 #define LXW_HEADER_FOOTER_MAX 255
 #define LXW_MAX_NUMBER_URLS   65530
 #define LXW_PANE_NAME_LENGTH  12        /* bottomRight + 1 */
-#define LXW_IMAGE_BUFFER_SIZE 10
+#define LXW_IMAGE_BUFFER_SIZE 1024
 
 /* The Excel 2007 specification says that the maximum number of page
  * breaks is 1026. However, in practice it is actually 1023. */
@@ -226,6 +226,7 @@ enum pane_types {
 
 /* Define the tree.h RB structs for the red-black head types. */
 RB_HEAD(lxw_table_cells, lxw_cell);
+RB_HEAD(lxw_drawing_rel_ids, lxw_drawing_rel_id);
 
 /* Define a RB_TREE struct manually to add extra members. */
 struct lxw_table_rows {
@@ -257,6 +258,17 @@ struct lxw_table_rows {
     RB_GENERATE_MINMAX(name, type, field, static)         \
     /* Add unused struct to allow adding a semicolon */   \
     struct lxw_rb_generate_cell{int unused;}
+
+#define LXW_RB_GENERATE_DRAWING_REL_IDS(name, type, field, cmp) \
+    RB_GENERATE_INSERT_COLOR(name, type, field, static)          \
+    RB_GENERATE_REMOVE_COLOR(name, type, field, static)          \
+    RB_GENERATE_INSERT(name, type, field, cmp, static)           \
+    RB_GENERATE_REMOVE(name, type, field, static)                \
+    RB_GENERATE_FIND(name, type, field, cmp, static)             \
+    RB_GENERATE_NEXT(name, type, field, static)                  \
+    RB_GENERATE_MINMAX(name, type, field, static)                \
+    /* Add unused struct to allow adding a semicolon */          \
+    struct lxw_rb_generate_drawing_rel_ids{int unused;}
 
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
 STAILQ_HEAD(lxw_selections, lxw_selection);
@@ -641,7 +653,7 @@ typedef struct lxw_object_properties {
     double y_dpi;
     lxw_chart *chart;
     uint8_t is_duplicate;
-    unsigned char md5[LXW_MD5_SIZE];
+    char *md5;
 
     STAILQ_ENTRY (lxw_object_properties) list_pointers;
 } lxw_object_properties;
@@ -777,6 +789,7 @@ typedef struct lxw_worksheet {
     struct lxw_data_validations *data_validations;
     struct lxw_image_props *image_props;
     struct lxw_chart_props *chart_data;
+    struct lxw_drawing_rel_ids *drawing_rel_ids;
 
     lxw_row_t dim_rowmin;
     lxw_row_t dim_rowmax;
@@ -949,6 +962,14 @@ typedef struct lxw_cell {
     /* List pointers for tree.h. */
     RB_ENTRY (lxw_cell) tree_pointers;
 } lxw_cell;
+
+/* Struct to represent a drawing Target/ID pair. */
+typedef struct lxw_drawing_rel_id {
+    uint32_t id;
+    char *target;
+
+    RB_ENTRY (lxw_drawing_rel_id) tree_pointers;
+} lxw_drawing_rel_id;
 
 /* *INDENT-OFF* */
 #ifdef __cplusplus

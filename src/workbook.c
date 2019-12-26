@@ -56,7 +56,7 @@ _chartsheet_name_cmp(lxw_chartsheet_name *name1, lxw_chartsheet_name *name2)
 STATIC int
 _image_md5_cmp(lxw_image_md5 *tuple1, lxw_image_md5 *tuple2)
 {
-    return memcmp(tuple1->md5, tuple2->md5, LXW_MD5_SIZE);
+    return strcmp(tuple1->md5, tuple2->md5);
 }
 
 /*
@@ -223,6 +223,7 @@ lxw_workbook_free(lxw_workbook *workbook)
             next_image_md5 =
                 RB_NEXT(lxw_image_md5s, workbook->image_md5, image_md5);
             RB_REMOVE(lxw_image_md5s, workbook->image_md5s, image_md5);
+            free(image_md5->md5);
             free(image_md5);
         }
 
@@ -925,7 +926,7 @@ _prepare_drawings(lxw_workbook *self)
     uint8_t is_chartsheet;
     lxw_image_md5 tmp_image_md5;
     lxw_image_md5 *new_image_md5 = NULL;
-    lxw_image_md5 *found;
+    lxw_image_md5 *found_duplicate_image = NULL;
 
     STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
         if (sheet->is_chartsheet) {
@@ -954,12 +955,16 @@ _prepare_drawings(lxw_workbook *self)
             if (object_props->image_type == LXW_IMAGE_BMP)
                 self->has_bmp = LXW_TRUE;
 
-            memcpy(tmp_image_md5.md5, object_props->md5, LXW_MD5_SIZE);
+            /* Check for duplicate images and only store the first instance. */
+            if (object_props->md5) {
+                tmp_image_md5.md5 = object_props->md5;
+                found_duplicate_image = RB_FIND(lxw_image_md5s,
+                                                self->image_md5s,
+                                                &tmp_image_md5);
+            }
 
-            found = RB_FIND(lxw_image_md5s, self->image_md5s, &tmp_image_md5);
-
-            if (found) {
-                ref_id = found->id;
+            if (found_duplicate_image) {
+                ref_id = found_duplicate_image->id;
                 object_props->is_duplicate = LXW_TRUE;
             }
             else {
@@ -969,10 +974,9 @@ _prepare_drawings(lxw_workbook *self)
 #ifndef USE_NO_MD5
                 new_image_md5 = calloc(1, sizeof(lxw_image_md5));
 #endif
-                if (new_image_md5) {
+                if (new_image_md5 && object_props->md5) {
                     new_image_md5->id = ref_id;
-                    memcpy(new_image_md5->md5, object_props->md5,
-                           LXW_MD5_SIZE);
+                    new_image_md5->md5 = lxw_strdup(object_props->md5);
 
                     RB_INSERT(lxw_image_md5s, self->image_md5s,
                               new_image_md5);
