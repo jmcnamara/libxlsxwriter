@@ -87,11 +87,15 @@ endif
 # Test Cmake. This test should really be done with Cmake in the cmake dir but
 # this is a workaround for now.
 test_cmake :
+ifneq ($(findstring m32,$(CFLAGS)),m32)
 	$(Q)$(MAKE) -C src clean
 	$(Q)cd cmake; cmake .. -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON; make clean; make; cp libxlsxwriter.a ../src/
 	$(Q)cmake/xlsxwriter_unit
 	$(Q)$(MAKE) -C test/functional/src
 	$(Q)$(PYTEST) test/functional -v -k $(PYTESTFILES)
+else
+	@echo "Skipping Cmake tests on 32 bit target."
+endif
 
 # Test the functional test exes with valgrind (in 64bit mode only).
 test_valgrind : all
