@@ -48,3 +48,8 @@ third_party/zlib-1.2.8/examplesh
 third_party/zlib-1.2.8/minigzip
 third_party/zlib-1.2.8/minigzipsh
 third_party/zlib-1.2.8/zlib.pc
+
+cmake
+!cmake/FindMINIZIP.cmake
+!cmake/FindPackage.cmake
+!cmake/i686-toolchain.cmake
