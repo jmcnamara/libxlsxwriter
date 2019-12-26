@@ -950,8 +950,8 @@ _find_drawing_rel_index(lxw_worksheet *self, char *target)
 
     tmp_drawing_rel_id.target = target;
     found_duplicate_target = RB_FIND(lxw_drawing_rel_ids,
-                                         self->drawing_rel_ids,
-                                         &tmp_drawing_rel_id);
+                                     self->drawing_rel_ids,
+                                     &tmp_drawing_rel_id);
 
     if (found_duplicate_target)
         return found_duplicate_target->id;
@@ -2237,7 +2237,8 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
         STAILQ_INSERT_TAIL(self->drawing_links, relationship, list_pointers);
     }
 
-    drawing_object->rel_index = _get_drawing_rel_index(self, object_props->md5);
+    drawing_object->rel_index =
+        _get_drawing_rel_index(self, object_props->md5);
 
     return;
 
