@@ -106,9 +106,17 @@ dynamic/shared library and header files.
     sudo make install
 
 The files are installed to `/usr/local` by default but this can be overridden
-by using the `INSTALL_DIR` environmental variable:
+by using the `PREFIX` environmental variable:
 
-    make install INSTALL_DIR=/usr/third_party
+    make install PREFIX=/usr/third_party
+
+A staging directory can be set with `DESTDIR` which is prepended to all
+install paths, a feature mostly useful for packaging:
+
+    make install PREFIX=/usr/third_party DESTDIR=./staging/
+
+This would build and link the code with `/usr/third_party` as the
+installation location but actually install to `./staging/usr/third_party`.
 
 This installation method isn't fool proof but if it fails on your system you
 will probably know exactly how to fix it or have no idea how to fix it. I'm
@@ -141,7 +149,7 @@ should be able to compile the program as follows:
 
     cc myexcel.c -o myexcel -lxlsxwriter
 
-In some environments, or if you changed the `INSTALL_DIR` location, you may
+In some environments, or if you changed the `PREFIX` location, you may
 have to provide explicit `include` and `lib` paths:
 
     cc myexcel.c -o myexcel -I/usr/local/include -L/usr/local/lib -lxlsxwriter
