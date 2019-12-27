@@ -94,6 +94,9 @@ typedef enum lxw_error {
     /** Unknown zip error when closing xlsx file. */
     LXW_ERROR_ZIP_CLOSE,
 
+    /** Feature is not currently supported in this configuration. */
+    LXW_ERROR_FEATURE_NOT_SUPPORTED,
+
     /** NULL function parameter ignored. */
     LXW_ERROR_NULL_PARAMETER_IGNORED,
 

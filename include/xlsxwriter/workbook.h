@@ -298,6 +298,7 @@ typedef struct lxw_workbook {
     uint16_t num_xf_formats;
     uint16_t num_format_count;
     uint16_t drawing_count;
+    uint16_t comment_count;
 
     uint16_t font_count;
     uint16_t border_count;
@@ -308,6 +309,7 @@ typedef struct lxw_workbook {
     uint8_t has_png;
     uint8_t has_jpeg;
     uint8_t has_bmp;
+    uint8_t has_vml;
 
     lxw_hash_table *used_xf_formats;
 

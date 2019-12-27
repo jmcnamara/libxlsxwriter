@@ -241,6 +241,23 @@ _write_font_color_rgb(lxw_styles *self, int32_t rgb)
 }
 
 /*
+ * Write the <color> element for indexed colors.
+ */
+STATIC void
+_write_font_color_indexed(lxw_styles *self, uint8_t index)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("indexed", index);
+
+    lxw_xml_empty_tag(self->file, "color", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <name> element.
  */
 STATIC void
@@ -386,6 +403,8 @@ _write_font(lxw_styles *self, lxw_format *format, uint8_t is_rich_string)
 
     if (format->theme)
         _write_font_color_theme(self, format->theme);
+    else if (format->color_indexed)
+        _write_font_color_indexed(self, format->color_indexed);
     else if (format->font_color != LXW_COLOR_UNSET)
         _write_font_color_rgb(self, format->font_color);
     else
@@ -1051,14 +1070,27 @@ _write_cell_xfs(lxw_styles *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
     lxw_format *format;
+    uint32_t count = self->xf_count;
+    uint32_t i = 0;
+
+    /* If the last format is "font_only" it is for the comment font and
+     * shouldn't be counted. This is a workaround to get the last object
+     * in the list since STAILQ_LAST() requires __containerof and isn't
+     * ANSI compatible. */
+    STAILQ_FOREACH(format, self->xf_formats, list_pointers) {
+        i++;
+        if (i == self->xf_count && format->font_only)
+            count--;
+    }
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_INT("count", self->xf_count);
+    LXW_PUSH_ATTRIBUTES_INT("count", count);
 
     lxw_xml_start_tag(self->file, "cellXfs", &attributes);
 
     STAILQ_FOREACH(format, self->xf_formats, list_pointers) {
-        _write_xf(self, format);
+        if (!format->font_only)
+            _write_xf(self, format);
     }
 
     lxw_xml_end_tag(self->file, "cellXfs");

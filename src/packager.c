@@ -446,6 +446,120 @@ _get_drawing_count(lxw_packager *self)
 }
 
 /*
+ * Write the comment/header VML files.
+ */
+STATIC lxw_error
+_write_vml_files(lxw_packager *self)
+{
+    lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
+    lxw_worksheet *worksheet;
+    lxw_vml *vml;
+    char filename[LXW_FILENAME_LENGTH] = { 0 };
+    uint32_t index = 1;
+    lxw_error err;
+
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
+
+        if (!worksheet->has_vml)
+            continue;
+
+        vml = lxw_vml_new();
+        if (!vml)
+            return LXW_ERROR_MEMORY_MALLOC_FAILED;
+
+        lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+                     "xl/drawings/vmlDrawing%d.vml", index++);
+
+        vml->file = lxw_tmpfile(self->tmpdir);
+        if (!vml->file) {
+            lxw_vml_free(vml);
+            return LXW_ERROR_CREATING_TMPFILE;
+        }
+
+        vml->comment_objs = worksheet->comment_objs;
+        vml->vml_shape_id = worksheet->vml_shape_id;
+        vml->comment_display_default = worksheet->comment_display_default;
+
+        if (worksheet->vml_data_id_str) {
+            vml->vml_data_id_str = worksheet->vml_data_id_str;
+        }
+        else {
+            fclose(vml->file);
+            lxw_vml_free(vml);
+            return LXW_ERROR_MEMORY_MALLOC_FAILED;
+        }
+
+        lxw_vml_assemble_xml_file(vml);
+
+        err = _add_file_to_zip(self, vml->file, filename);
+
+        fclose(vml->file);
+        lxw_vml_free(vml);
+
+        RETURN_ON_ERROR(err);
+    }
+
+    return LXW_NO_ERROR;
+}
+
+/*
+ * Write the comment files.
+ */
+STATIC lxw_error
+_write_comment_files(lxw_packager *self)
+{
+    lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
+    lxw_worksheet *worksheet;
+    lxw_comment *comment;
+    char filename[LXW_FILENAME_LENGTH] = { 0 };
+    uint32_t index = 1;
+    lxw_error err;
+
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
+
+        if (!worksheet->has_comments)
+            continue;
+
+        comment = lxw_comment_new();
+        if (!comment)
+            return LXW_ERROR_MEMORY_MALLOC_FAILED;
+
+        lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+                     "xl/comments%d.xml", index++);
+
+        comment->file = lxw_tmpfile(self->tmpdir);
+        if (!comment->file) {
+            lxw_comment_free(comment);
+            return LXW_ERROR_CREATING_TMPFILE;
+        }
+
+        comment->comment_objs = worksheet->comment_objs;
+        comment->comment_author = worksheet->comment_author;
+
+        lxw_comment_assemble_xml_file(comment);
+
+        err = _add_file_to_zip(self, comment->file, filename);
+
+        fclose(comment->file);
+        lxw_comment_free(comment);
+
+        RETURN_ON_ERROR(err);
+    }
+
+    return LXW_NO_ERROR;
+}
+
+/*
  * Write the sharedStrings.xml file.
  */
 STATIC lxw_error
@@ -792,6 +906,15 @@ _write_content_types_file(lxw_packager *self)
         lxw_ct_add_drawing_name(content_types, filename);
     }
 
+    if (workbook->has_vml)
+        lxw_ct_add_vml_name(content_types);
+
+    for (index = 1; index <= workbook->comment_count; index++) {
+        lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+                     "/xl/comments%d.xml", index);
+        lxw_ct_add_comment_name(content_types, filename);
+    }
+
     if (workbook->sst->string_count)
         lxw_ct_add_shared_strings(content_types);
 
@@ -898,7 +1021,9 @@ _write_worksheet_rels_file(lxw_packager *self)
         index++;
 
         if (STAILQ_EMPTY(worksheet->external_hyperlinks) &&
-            STAILQ_EMPTY(worksheet->external_drawing_links))
+            STAILQ_EMPTY(worksheet->external_drawing_links) &&
+            !worksheet->external_vml_comment_link &&
+            !worksheet->external_comment_link)
             continue;
 
         rels = lxw_relationships_new();
@@ -918,6 +1043,16 @@ _write_worksheet_rels_file(lxw_packager *self)
             lxw_add_worksheet_relationship(rels, rel->type, rel->target,
                                            rel->target_mode);
         }
+
+        rel = worksheet->external_vml_comment_link;
+        if (rel)
+            lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+                                           rel->target_mode);
+
+        rel = worksheet->external_comment_link;
+        if (rel)
+            lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+                                           rel->target_mode);
 
         lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
                      "xl/worksheets/_rels/sheet%d.xml.rels", index);
@@ -1226,6 +1361,12 @@ lxw_create_package(lxw_packager *self)
     RETURN_ON_ERROR(error);
 
     error = _write_drawing_files(self);
+    RETURN_ON_ERROR(error);
+
+    error = _write_vml_files(self);
+    RETURN_ON_ERROR(error);
+
+    error = _write_comment_files(self);
     RETURN_ON_ERROR(error);
 
     error = _write_shared_strings_file(self);

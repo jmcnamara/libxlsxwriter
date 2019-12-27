@@ -11,7 +11,6 @@
 #include "xlsxwriter/worksheet.h"
 #include "xlsxwriter/format.h"
 #include "xlsxwriter/utility.h"
-#include "xlsxwriter/relationships.h"
 #include "xlsxwriter/third_party/md5.h"
 
 #define LXW_STR_MAX                      32767
@@ -48,27 +47,27 @@ LXW_RB_GENERATE_DRAWING_REL_IDS(lxw_drawing_rel_ids, lxw_drawing_rel_id,
 lxw_row *
 lxw_worksheet_find_row(lxw_worksheet *self, lxw_row_t row_num)
 {
-    lxw_row row;
+    lxw_row tmp_row;
 
-    row.row_num = row_num;
+    tmp_row.row_num = row_num;
 
-    return RB_FIND(lxw_table_rows, self->table, &row);
+    return RB_FIND(lxw_table_rows, self->table, &tmp_row);
 }
 
 /*
  * Find but don't create a cell object for a given row object and col number.
  */
 lxw_cell *
-lxw_worksheet_find_cell(lxw_row *row, lxw_col_t col_num)
+lxw_worksheet_find_cell_in_row(lxw_row *row, lxw_col_t col_num)
 {
-    lxw_cell cell;
+    lxw_cell tmp_cell;
 
     if (!row)
         return NULL;
 
-    cell.col_num = col_num;
+    tmp_cell.col_num = col_num;
 
-    return RB_FIND(lxw_table_cells, row->cells, &cell);
+    return RB_FIND(lxw_table_cells, row->cells, &tmp_cell);
 }
 
 /*
@@ -121,6 +120,10 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     worksheet->chart_data = calloc(1, sizeof(struct lxw_chart_props));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->chart_data, mem_error);
     STAILQ_INIT(worksheet->chart_data);
+
+    worksheet->comment_objs = calloc(1, sizeof(struct lxw_comment_objs));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->comment_objs, mem_error);
+    STAILQ_INIT(worksheet->comment_objs);
 
     worksheet->selections = calloc(1, sizeof(struct lxw_selections));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->selections, mem_error);
@@ -205,6 +208,7 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     worksheet->outline_right = LXW_FALSE;
     worksheet->tab_color = LXW_COLOR_UNSET;
     worksheet->max_url_length = 2079;
+    worksheet->comment_display_default = LXW_COMMENT_DISPLAY_HIDDEN;
 
     if (init_data) {
         worksheet->name = init_data->name;
@@ -228,6 +232,22 @@ mem_error:
 }
 
 /*
+ * Free a worksheet data_validation.
+ */
+STATIC void
+_free_vml_object(lxw_vml_obj *vml_obj)
+{
+    if (!vml_obj)
+        return;
+
+    free(vml_obj->author);
+    free(vml_obj->font_name);
+    free(vml_obj->text);
+
+    free(vml_obj);
+}
+
+/*
  * Free a worksheet cell.
  */
 STATIC void
@@ -244,6 +264,8 @@ _free_cell(lxw_cell *cell)
 
     free(cell->user_data1);
     free(cell->user_data2);
+
+    _free_vml_object(cell->comment);
 
     free(cell);
 }
@@ -307,6 +329,22 @@ _free_data_validation(lxw_data_val_obj *data_validation)
     free(data_validation->minimum_formula);
 
     free(data_validation);
+}
+
+/*
+ * Free a relationship structure.
+ */
+STATIC void
+_free_relationship(lxw_rel_tuple *relationship)
+{
+    if (!relationship)
+        return;
+
+    free(relationship->type);
+    free(relationship->target);
+    free(relationship->target_mode);
+
+    free(relationship);
 }
 
 /*
@@ -394,6 +432,9 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
         free(worksheet->chart_data);
     }
 
+    /* Just free the list. The list objects are free elsewhere. */
+    free(worksheet->comment_objs);
+
     if (worksheet->selections) {
         while (!STAILQ_EMPTY(worksheet->selections)) {
             selection = STAILQ_FIRST(worksheet->selections);
@@ -417,30 +458,21 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     while (!STAILQ_EMPTY(worksheet->external_hyperlinks)) {
         relationship = STAILQ_FIRST(worksheet->external_hyperlinks);
         STAILQ_REMOVE_HEAD(worksheet->external_hyperlinks, list_pointers);
-        free(relationship->type);
-        free(relationship->target);
-        free(relationship->target_mode);
-        free(relationship);
+        _free_relationship(relationship);
     }
     free(worksheet->external_hyperlinks);
 
     while (!STAILQ_EMPTY(worksheet->external_drawing_links)) {
         relationship = STAILQ_FIRST(worksheet->external_drawing_links);
         STAILQ_REMOVE_HEAD(worksheet->external_drawing_links, list_pointers);
-        free(relationship->type);
-        free(relationship->target);
-        free(relationship->target_mode);
-        free(relationship);
+        _free_relationship(relationship);
     }
     free(worksheet->external_drawing_links);
 
     while (!STAILQ_EMPTY(worksheet->drawing_links)) {
         relationship = STAILQ_FIRST(worksheet->drawing_links);
         STAILQ_REMOVE_HEAD(worksheet->drawing_links, list_pointers);
-        free(relationship->type);
-        free(relationship->target);
-        free(relationship->target_mode);
-        free(relationship);
+        _free_relationship(relationship);
     }
     free(worksheet->drawing_links);
 
@@ -461,6 +493,9 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
         free(worksheet->drawing_rel_ids);
     }
 
+    _free_relationship(worksheet->external_vml_comment_link);
+    _free_relationship(worksheet->external_comment_link);
+
     if (worksheet->array) {
         for (col = 0; col < LXW_COL_MAX; col++) {
             _free_cell(worksheet->array[col]);
@@ -479,6 +514,8 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     free(worksheet->name);
     free(worksheet->quoted_name);
     free(worksheet->vba_codename);
+    free(worksheet->vml_data_id_str);
+    free(worksheet->comment_author);
 
     free(worksheet);
     worksheet = NULL;
@@ -758,6 +795,7 @@ _insert_cell_list(struct lxw_table_cells *cell_list,
     /* If existing_cell is not NULL, then that cell already existed. */
     /* Remove existing_cell and add new one in again. */
     if (existing_cell) {
+        existing_cell->comment = NULL;
         RB_REMOVE(lxw_table_cells, cell_list, existing_cell);
 
         /* Add it in again. */
@@ -776,6 +814,7 @@ _insert_cell(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
              lxw_cell *cell)
 {
     lxw_row *row = _get_row(self, row_num);
+    lxw_vml_obj *existing_comment = NULL;
 
     if (!self->optimize) {
         row->data_changed = LXW_TRUE;
@@ -786,10 +825,14 @@ _insert_cell(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
             row->data_changed = LXW_TRUE;
 
             /* Overwrite an existing cell if necessary. */
-            if (self->array[col_num])
+            if (self->array[col_num]) {
+                existing_comment = self->array[col_num]->comment;
+                self->array[col_num]->comment = NULL;
                 _free_cell(self->array[col_num]);
+            }
 
             self->array[col_num] = cell;
+            self->array[col_num]->comment = existing_comment;
         }
     }
 }
@@ -891,6 +934,9 @@ _cell_cmp(lxw_cell *cell1, lxw_cell *cell2)
     return 0;
 }
 
+/*
+ * Comparator for the image/hyperlink relationship ids.
+ */
 STATIC int
 _drawing_rel_id_cmp(lxw_drawing_rel_id *rel_id1, lxw_drawing_rel_id *rel_id2)
 {
@@ -2088,6 +2134,154 @@ _worksheet_position_object_emus(lxw_worksheet *self,
 }
 
 /*
+ * This function handles the additional optional parameters to
+ * worksheet_write_comment_opt() as well as calculating the comment object
+ * position and vertices.
+ */
+void
+_get_comment_params(lxw_vml_obj *comment, lxw_comment_options *options)
+{
+
+    lxw_row_t start_row;
+    lxw_col_t start_col;
+    int32_t x_offset;
+    int32_t y_offset;
+    uint32_t height = 74;
+    uint32_t width = 128;
+    double x_scale = 1.0;
+    double y_scale = 1.0;
+    lxw_row_t row = comment->row;
+    lxw_col_t col = comment->col;;
+
+    /* Set the default start cell and offsets for the comment. These are
+     * generally fixed in relation to the parent cell. However there are some
+     * edge cases for cells at the, er, edges. */
+    if (row == 0)
+        y_offset = 2;
+    else if (row == LXW_ROW_MAX - 3)
+        y_offset = 16;
+    else if (row == LXW_ROW_MAX - 2)
+        y_offset = 16;
+    else if (row == LXW_ROW_MAX - 1)
+        y_offset = 14;
+    else
+        y_offset = 10;
+
+    if (col == LXW_COL_MAX - 3)
+        x_offset = 49;
+    else if (col == LXW_COL_MAX - 2)
+        x_offset = 49;
+    else if (col == LXW_COL_MAX - 1)
+        x_offset = 49;
+    else
+        x_offset = 15;
+
+    if (row == 0)
+        start_row = 0;
+    else if (row == LXW_ROW_MAX - 3)
+        start_row = LXW_ROW_MAX - 7;
+    else if (row == LXW_ROW_MAX - 2)
+        start_row = LXW_ROW_MAX - 6;
+    else if (row == LXW_ROW_MAX - 1)
+        start_row = LXW_ROW_MAX - 5;
+    else
+        start_row = row - 1;
+
+    if (col == LXW_COL_MAX - 3)
+        start_col = LXW_COL_MAX - 6;
+    else if (col == LXW_COL_MAX - 2)
+        start_col = LXW_COL_MAX - 5;
+    else if (col == LXW_COL_MAX - 1)
+        start_col = LXW_COL_MAX - 4;
+    else
+        start_col = col + 1;
+
+    /* Set the default font properties. */
+    comment->font_size = 8;
+    comment->font_family = 2;
+
+    /* Set any user defined options. */
+    if (options) {
+
+        if (options->width > 0.0)
+            width = options->width;
+
+        if (options->height > 0.0)
+            height = options->height;
+
+        if (options->x_scale > 0.0)
+            x_scale = options->x_scale;
+
+        if (options->y_scale > 0.0)
+            y_scale = options->y_scale;
+
+        if (options->x_offset != 0)
+            x_offset = options->x_offset;
+
+        if (options->y_offset != 0)
+            y_offset = options->y_offset;
+
+        if (options->start_row > 0 || options->start_col > 0) {
+            start_row = options->start_row;
+            start_col = options->start_col;
+        }
+
+        if (options->font_size > 0.0)
+            comment->font_size = options->font_size;
+
+        if (options->font_family > 0)
+            comment->font_family = options->font_family;
+
+        comment->visible = options->visible;
+        comment->color = options->color;
+        comment->author = lxw_strdup(options->author);
+        comment->font_name = lxw_strdup(options->font_name);
+    }
+
+    /* Scale the width/height to the default/user scale and round to the
+     * nearest pixel. */
+    width = (uint32_t) (0.5 + x_scale * width);
+    height = (uint32_t) (0.5 + y_scale * height);
+
+    comment->width = width;
+    comment->height = height;
+    comment->start_col = start_col;
+    comment->start_row = start_row;
+    comment->x_offset = x_offset;
+    comment->y_offset = y_offset;
+}
+
+/*
+ * Calculate the comment object position and vertices.
+ */
+void
+_worksheet_position_vml_object(lxw_worksheet *self, lxw_vml_obj *comment)
+{
+    lxw_object_properties object_props;
+    lxw_drawing_object drawing_object;
+
+    object_props.col = comment->start_col;
+    object_props.row = comment->start_row;
+    object_props.x_offset = comment->x_offset;
+    object_props.y_offset = comment->y_offset;
+    object_props.width = comment->width;
+    object_props.height = comment->height;
+
+    _worksheet_position_object_pixels(self, &object_props, &drawing_object);
+
+    comment->from.col = drawing_object.from.col;
+    comment->from.row = drawing_object.from.row;
+    comment->from.col_offset = drawing_object.from.col_offset;
+    comment->from.row_offset = drawing_object.from.row_offset;
+    comment->to.col = drawing_object.to.col;
+    comment->to.row = drawing_object.to.row;
+    comment->to.col_offset = drawing_object.to.col_offset;
+    comment->to.row_offset = drawing_object.to.row_offset;
+    comment->col_absolute = drawing_object.col_absolute;
+    comment->row_absolute = drawing_object.row_absolute;
+}
+
+/*
  * Set up image/drawings.
  */
 void
@@ -2142,7 +2336,6 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
     width *= 96.0 / object_props->x_dpi;
     height *= 96.0 / object_props->y_dpi;
 
-    /* Convert to the nearest pixel. */
     object_props->width = width;
     object_props->height = height;
 
@@ -2187,7 +2380,7 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
             relationship->target =
                 lxw_escape_url_characters(url + 1, LXW_TRUE);
             GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
-            strncpy(relationship->target, "file:///", sizeof("file:///") - 1);
+            memcpy(relationship->target, "file:///", sizeof("file:///") - 1);
         }
         else {
             relationship->target_mode = lxw_strdup("External");
@@ -2343,6 +2536,124 @@ mem_error:
         free(relationship->target_mode);
         free(relationship);
     }
+}
+
+/*
+ * Set up VML objects, such as comments, in the worksheet.
+ */
+uint32_t
+lxw_worksheet_prepare_vml_objects(lxw_worksheet *self,
+                                  uint32_t vml_data_id,
+                                  uint32_t vml_shape_id,
+                                  uint32_t vml_drawing_id,
+                                  uint32_t comment_id)
+{
+    lxw_row *row;
+    lxw_cell *cell;
+    lxw_rel_tuple *relationship;
+    char filename[LXW_FILENAME_LENGTH];
+    uint32_t comment_count = 0;
+    uint32_t i;
+    uint32_t tmp_data_id;
+    size_t data_str_len = 0;
+    size_t used = 0;
+    char *vml_data_id_str;
+
+    RB_FOREACH(row, lxw_table_rows, self->table) {
+
+        if (row->has_comments) {
+            RB_FOREACH(cell, lxw_table_cells, row->cells) {
+                if (cell->comment) {
+                    /* Calculate the worksheet position of the comment. */
+                    _worksheet_position_vml_object(self, cell->comment);
+
+                    /* Store comment in a simple list for use by packager. */
+                    STAILQ_INSERT_TAIL(self->comment_objs, cell->comment,
+                                       list_pointers);
+                    comment_count++;
+                }
+            }
+        }
+    }
+
+    /* Set up the VML relationship for comments/buttons/header images. */
+    relationship = calloc(1, sizeof(lxw_rel_tuple));
+    GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
+
+    relationship->type = lxw_strdup("/vmlDrawing");
+    GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
+
+    lxw_snprintf(filename, 32, "../drawings/vmlDrawing%d.vml",
+                 vml_drawing_id);
+
+    relationship->target = lxw_strdup(filename);
+    GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+
+    self->external_vml_comment_link = relationship;
+
+    if (self->has_comments) {
+        /* Only need this relationship object for comment VMLs. */
+
+        relationship = calloc(1, sizeof(lxw_rel_tuple));
+        GOTO_LABEL_ON_MEM_ERROR(relationship, mem_error);
+
+        relationship->type = lxw_strdup("/comments");
+        GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
+
+        lxw_snprintf(filename, 32, "../comments%d.xml", comment_id);
+
+        relationship->target = lxw_strdup(filename);
+        GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+
+        self->external_comment_link = relationship;
+    }
+
+    /* The vml.c <o:idmap> element data id contains a comma separated range
+     * when there is more than one 1024 block of comments, like this:
+     * data="1,2,3". Since this could potentially (but unlikely) exceed
+     * LXW_MAX_ATTRIBUTE_LENGTH we need to allocate space dynamically. */
+
+    /* Calculate the total space required for the ID for each 1024 block. */
+    for (i = 0; i <= comment_count / 1024; i++) {
+        tmp_data_id = vml_data_id + i;
+
+        /* Calculate the space required for the digits in the id. */
+        while (tmp_data_id) {
+            data_str_len++;
+            tmp_data_id /= 10;
+        }
+
+        /* Add an extra char for comma separator or '\O'. */
+        data_str_len++;
+    };
+
+    /* If this allocation fails it will be dealt with in packager.c. */
+    vml_data_id_str = calloc(1, data_str_len);
+    GOTO_LABEL_ON_MEM_ERROR(vml_data_id_str, mem_error);
+
+    /* Create the CSV list in the allocated space. */
+    for (i = 0; i <= comment_count / 1024; i++) {
+        tmp_data_id = vml_data_id + i;
+        lxw_snprintf(vml_data_id_str + used, data_str_len - used, "%d,",
+                     tmp_data_id);
+
+        used = strlen(vml_data_id_str);
+    };
+
+    self->vml_shape_id = vml_shape_id;
+    self->vml_data_id_str = vml_data_id_str;
+
+    return comment_count;
+
+mem_error:
+    if (relationship) {
+        free(relationship->type);
+        free(relationship->target);
+        free(relationship->target_mode);
+        free(relationship);
+    }
+
+    return 0;
 }
 
 /*
@@ -2986,7 +3297,8 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
         lxw_xml_end_tag(self->file, "c");
     }
     else if (cell->type == BLANK_CELL) {
-        lxw_xml_empty_tag(self->file, "c", &attributes);
+        if (cell->format)
+            lxw_xml_empty_tag(self->file, "c", &attributes);
     }
     else if (cell->type == BOOLEAN_CELL) {
         LXW_PUSH_ATTRIBUTES_STR("t", "b");
@@ -3032,10 +3344,13 @@ _worksheet_write_rows(lxw_worksheet *self)
 
             _write_row(self, row, spans);
 
-            RB_FOREACH(cell, lxw_table_cells, row->cells) {
-                _write_cell(self, cell, row->format);
+            if (row->data_changed) {
+                RB_FOREACH(cell, lxw_table_cells, row->cells) {
+                    _write_cell(self, cell, row->format);
+                }
+
+                lxw_xml_end_tag(self->file, "row");
             }
-            lxw_xml_end_tag(self->file, "row");
         }
     }
 }
@@ -3257,10 +3572,10 @@ _worksheet_write_header_footer(lxw_worksheet *self)
 
     lxw_xml_start_tag(self->file, "headerFooter", NULL);
 
-    if (self->header[0] != '\0')
+    if (*self->header)
         _worksheet_write_odd_header(self);
 
-    if (self->footer[0] != '\0')
+    if (*self->footer)
         _worksheet_write_odd_footer(self);
 
     lxw_xml_end_tag(self->file, "headerFooter");
@@ -3697,6 +4012,31 @@ _worksheet_write_sheet_protection(lxw_worksheet *self,
 }
 
 /*
+ * Write the <legacyDrawing> element.
+ */
+STATIC void
+_worksheet_write_legacy_drawing(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char r_id[LXW_MAX_ATTRIBUTE_LENGTH];
+
+    if (!self->has_vml)
+        return;
+    else
+        self->rel_count++;
+
+    lxw_snprintf(r_id, LXW_ATTR_32, "rId%d", self->rel_count);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("r:id", r_id);
+
+    lxw_xml_empty_tag(self->file, "legacyDrawing", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+
+}
+
+/*
  * Write the <drawing> element.
  */
 STATIC void
@@ -3707,9 +4047,7 @@ _worksheet_write_drawing(lxw_worksheet *self, uint16_t id)
     char r_id[LXW_MAX_ATTRIBUTE_LENGTH];
 
     lxw_snprintf(r_id, LXW_ATTR_32, "rId%d", id);
-
     LXW_INIT_ATTRIBUTES();
-
     LXW_PUSH_ATTRIBUTES_STR("r:id", r_id);
 
     lxw_xml_empty_tag(self->file, "drawing", &attributes);
@@ -4065,6 +4403,9 @@ lxw_worksheet_assemble_xml_file(lxw_worksheet *self)
     /* Write the drawing element. */
     _worksheet_write_drawings(self);
 
+    /* Write the legacyDrawing element. */
+    _worksheet_write_legacy_drawing(self);
+
     /* Close the worksheet tag. */
     lxw_xml_end_tag(self->file, "worksheet");
 }
@@ -4316,10 +4657,6 @@ worksheet_write_blank(lxw_worksheet *self,
     lxw_cell *cell;
     lxw_error err;
 
-    /* Blank cells without formatting are ignored by Excel. */
-    if (!format)
-        return LXW_NO_ERROR;
-
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
         return err;
@@ -4343,7 +4680,6 @@ worksheet_write_boolean(lxw_worksheet *self,
     lxw_error err;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
-
     if (err)
         return err;
 
@@ -4473,6 +4809,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
     found_string = strchr(url_copy, '#');
 
     if (found_string) {
+        free(url_string);
         url_string = lxw_strdup(found_string + 1);
         GOTO_LABEL_ON_MEM_ERROR(url_string, mem_error);
 
@@ -4733,6 +5070,96 @@ mem_error:
     fclose(tmpfile);
 
     return LXW_ERROR_MEMORY_MALLOC_FAILED;
+}
+
+/*
+ * Write a comment to a worksheet cell in Excel.
+ */
+lxw_error
+worksheet_write_comment_opt(lxw_worksheet *self,
+                            lxw_row_t row_num, lxw_col_t col_num,
+                            char *text, lxw_comment_options *options)
+{
+    lxw_row *row;
+    lxw_cell *cell;
+    lxw_error err;
+    lxw_vml_obj *comment;
+    uint8_t data_changed = LXW_FALSE;
+
+    if (self->optimize) {
+        LXW_WARN("worksheet_write_comment/opt(): "
+                 "Not supported in 'constant_memory' mode.");
+
+        return LXW_ERROR_FEATURE_NOT_SUPPORTED;
+    }
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
+    if (err)
+        return err;
+
+    if (!text)
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+
+    if (lxw_utf8_strlen(text) > LXW_STR_MAX)
+        return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
+
+    comment = calloc(1, sizeof(lxw_vml_obj));
+    GOTO_LABEL_ON_MEM_ERROR(comment, mem_error);
+
+    comment->text = lxw_strdup(text);
+    GOTO_LABEL_ON_MEM_ERROR(comment->text, mem_error);
+
+    row = lxw_worksheet_find_row(self, row_num);
+    if (row)
+        data_changed = row->data_changed;
+
+    cell = lxw_worksheet_find_cell_in_row(row, col_num);
+    if (cell) {
+        free(cell->comment);
+    }
+    else {
+        /* If there isn't an existing cell we use a new blank cell. */
+        cell = _new_blank_cell(row_num, col_num, NULL);
+        _insert_cell(self, row_num, col_num, cell);
+    }
+
+    comment->row = row_num;
+    comment->col = col_num;
+
+    /* Set user and default parameters for the comment. */
+    _get_comment_params(comment, options);
+
+    cell->comment = comment;
+
+    if (!row) {
+        row = lxw_worksheet_find_row(self, row_num);
+        row->data_changed = LXW_FALSE;
+    }
+    else {
+        row->data_changed = data_changed;
+    }
+
+    row->has_comments = LXW_TRUE;
+    self->has_vml = LXW_TRUE;
+    self->has_comments = LXW_TRUE;
+
+    return LXW_NO_ERROR;
+
+mem_error:
+    if (comment)
+        _free_vml_object(comment);
+
+    return LXW_ERROR_MEMORY_MALLOC_FAILED;
+}
+
+/*
+ * Write a comment to a worksheet cell in Excel.
+ */
+lxw_error
+worksheet_write_comment(lxw_worksheet *self,
+                        lxw_row_t row_num, lxw_col_t col_num, char *string)
+{
+    return worksheet_write_comment_opt(self, row_num, col_num, string, NULL);
 }
 
 /*
@@ -5960,7 +6387,6 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
     object_props->row = row_num;
     object_props->col = col_num;
 
-    /* TODO. Read defaults from chart. */
     object_props->width = 480;
     object_props->height = 288;
 
@@ -6288,4 +6714,22 @@ worksheet_set_vba_name(lxw_worksheet *self, const char *name)
     self->vba_codename = lxw_strdup(name);
 
     return LXW_NO_ERROR;
+}
+
+/*
+ * Set the default author of the cell comments.
+ */
+void
+worksheet_set_comments_author(lxw_worksheet *self, const char *author)
+{
+    self->comment_author = lxw_strdup(author);
+}
+
+/*
+ * Make any comments in the worksheet visible, unless explicitly hidden.
+ */
+void
+worksheet_show_comments(lxw_worksheet *self)
+{
+    self->comment_display_default = LXW_COMMENT_DISPLAY_VISIBLE;
 }

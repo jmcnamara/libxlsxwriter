@@ -55,6 +55,7 @@
 #include "format.h"
 #include "styles.h"
 #include "utility.h"
+#include "relationships.h"
 
 #define LXW_ROW_MAX           1048576
 #define LXW_COL_MAX           16384
@@ -203,6 +204,20 @@ enum lxw_validation_error_types {
     LXW_VALIDATION_ERROR_TYPE_INFORMATION
 };
 
+/** Set the display type for a cell comment. This is hidden by default but
+ *  can be set to visible with the `worksheet_show_comments()` function. */
+enum lxw_comment_display_types {
+    /** Default to the worksheet default which can be hidden or visible.*/
+    LXW_COMMENT_DISPLAY_DEFAULT,
+
+    /** Hide the cell comment. Usually the default. */
+    LXW_COMMENT_DISPLAY_HIDDEN,
+
+    /** Show the cell comment. Can also be set for the worksheet with the
+     *  `worksheet_show_comments()` function.*/
+    LXW_COMMENT_DISPLAY_VISIBLE
+};
+
 enum cell_types {
     NUMBER_CELL = 1,
     STRING_CELL,
@@ -260,14 +275,14 @@ struct lxw_table_rows {
     struct lxw_rb_generate_cell{int unused;}
 
 #define LXW_RB_GENERATE_DRAWING_REL_IDS(name, type, field, cmp) \
-    RB_GENERATE_INSERT_COLOR(name, type, field, static)          \
-    RB_GENERATE_REMOVE_COLOR(name, type, field, static)          \
-    RB_GENERATE_INSERT(name, type, field, cmp, static)           \
-    RB_GENERATE_REMOVE(name, type, field, static)                \
-    RB_GENERATE_FIND(name, type, field, cmp, static)             \
-    RB_GENERATE_NEXT(name, type, field, static)                  \
-    RB_GENERATE_MINMAX(name, type, field, static)                \
-    /* Add unused struct to allow adding a semicolon */          \
+    RB_GENERATE_INSERT_COLOR(name, type, field, static)         \
+    RB_GENERATE_REMOVE_COLOR(name, type, field, static)         \
+    RB_GENERATE_INSERT(name, type, field, cmp, static)          \
+    RB_GENERATE_REMOVE(name, type, field, static)               \
+    RB_GENERATE_FIND(name, type, field, cmp, static)            \
+    RB_GENERATE_NEXT(name, type, field, static)                 \
+    RB_GENERATE_MINMAX(name, type, field, static)               \
+    /* Add unused struct to allow adding a semicolon */         \
     struct lxw_rb_generate_drawing_rel_ids{int unused;}
 
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
@@ -275,6 +290,7 @@ STAILQ_HEAD(lxw_selections, lxw_selection);
 STAILQ_HEAD(lxw_data_validations, lxw_data_val_obj);
 STAILQ_HEAD(lxw_image_props, lxw_object_properties);
 STAILQ_HEAD(lxw_chart_props, lxw_object_properties);
+STAILQ_HEAD(lxw_comment_objs, lxw_vml_obj);
 
 /**
  * @brief Options for rows and columns.
@@ -659,6 +675,105 @@ typedef struct lxw_object_properties {
 } lxw_object_properties;
 
 /**
+ * @brief Options for inserted comments.
+ *
+ * Options for modifying comments inserted via `worksheet_write_comment_opt()`.
+ *
+ */
+typedef struct lxw_comment_options {
+
+    /** This option is used to make a cell comment visible when the worksheet
+     *  is opened. The default behavior in Excel is that comments are
+     *  initially hidden. However, it is also possible in Excel to make
+     *  individual comments or all comments visible.  You can make all
+     *  comments in the worksheet visible using the
+     *  `worksheet_show_comments()` function. Defaults to LXW_FALSE.*/
+    uint8_t visible;
+
+    /** This option is used to set the row in which the comment will
+     *  appear. By default Excel displays comments one cell to the right and
+     *  one cell above the cell to which the comment relates. The `start_row`
+     *  and `start_col` options should both be set to 0 if not used.*/
+    lxw_row_t start_row;
+
+    /** This option is used to set the column in which the comment will
+     *   appear. See the `start_row` option for more information. */
+    lxw_col_t start_col;
+
+    /** This option is used to set the width of the cell comment box
+     *  explicitly in pixels. The default width is 128 pixels. */
+    uint16_t width;
+
+    /** This option is used to set the height of the cell comment box
+     *  explicitly in pixels. The default height is 74 pixels. */
+    uint16_t height;
+
+    /** X scale of the comment as a decimal. */
+    double x_scale;
+
+    /** Y scale of the comment as a decimal. */
+    double y_scale;
+
+    /** Offset from the left of the cell in pixels. */
+    int32_t x_offset;
+
+    /** Offset from the top of the cell in pixels. */
+    int32_t y_offset;
+
+    /** This option is used to set the background color of cell comment
+     *  box. The color should be an RGB integer value, see @ref
+     *  working_with_colors. */
+    lxw_color_t color;
+
+    /** This option is used to set the font for the comment. The default font
+     *  is 'Tahoma'. */
+    char *font_name;
+
+     /** This option is used to set the font size for the comment. The default
+      * is 8. */
+    double font_size;
+
+    /** This option is used to set the font family number for the comment.
+     *  Not required very often. Set to 0. */
+    uint8_t font_family;
+
+    /** This option is used to indicate the author of the cell comment. Excel
+     *  displays the author in the status bar at the bottom of the
+     *  worksheet. The default author for all cell comments in a worksheet can
+     *  be set using the `worksheet_set_comments_author()` function. Set to
+     *  NULL if not required.*/
+    char *author;
+
+} lxw_comment_options;
+
+/* Internal structure for VML object options. */
+typedef struct lxw_vml_obj {
+
+    lxw_row_t row;
+    lxw_col_t col;
+    lxw_row_t start_row;
+    lxw_col_t start_col;
+    int32_t x_offset;
+    int32_t y_offset;
+    uint32_t col_absolute;
+    uint32_t row_absolute;
+    uint32_t width;
+    uint32_t height;
+    lxw_color_t color;
+    uint8_t font_family;
+    uint8_t visible;
+    uint32_t author_id;
+    double font_size;
+    struct lxw_drawing_coords from;
+    struct lxw_drawing_coords to;
+    char *author;
+    char *font_name;
+    char *text;
+    STAILQ_ENTRY (lxw_vml_obj) list_pointers;
+
+} lxw_vml_obj;
+
+/**
  * @brief Header and footer options.
  *
  * Optional parameters used in the worksheet_set_header_opt() and
@@ -790,6 +905,7 @@ typedef struct lxw_worksheet {
     struct lxw_image_props *image_props;
     struct lxw_chart_props *chart_data;
     struct lxw_drawing_rel_ids *drawing_rel_ids;
+    struct lxw_comment_objs *comment_objs;
 
     lxw_row_t dim_rowmin;
     lxw_row_t dim_rowmax;
@@ -902,6 +1018,16 @@ typedef struct lxw_worksheet {
     lxw_drawing *drawing;
     lxw_format *default_url_format;
 
+    uint8_t has_vml;
+    uint8_t has_comments;
+    uint8_t has_header_vml;
+    lxw_rel_tuple *external_vml_comment_link;
+    lxw_rel_tuple *external_comment_link;
+    char *comment_author;
+    char *vml_data_id_str;
+    uint32_t vml_shape_id;
+    uint8_t comment_display_default;
+
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
 } lxw_worksheet;
@@ -935,6 +1061,8 @@ typedef struct lxw_row {
     uint8_t row_changed;
     uint8_t data_changed;
     uint8_t height_changed;
+    uint8_t has_comments;
+
     struct lxw_table_cells *cells;
 
     /* tree management pointers for tree.h. */
@@ -947,6 +1075,7 @@ typedef struct lxw_cell {
     lxw_col_t col_num;
     enum cell_types type;
     lxw_format *format;
+    lxw_vml_obj *comment;
 
     union {
         double number;
@@ -1546,6 +1675,14 @@ lxw_error worksheet_write_rich_string(lxw_worksheet *worksheet,
                                       lxw_col_t col,
                                       lxw_rich_string_tuple *rich_string[],
                                       lxw_format *format);
+
+lxw_error worksheet_write_comment_opt(lxw_worksheet *worksheet,
+                                      lxw_row_t row_num, lxw_col_t col_num,
+                                      char *string,
+                                      lxw_comment_options *options);
+
+lxw_error worksheet_write_comment(lxw_worksheet *worksheet,
+                                  lxw_row_t row, lxw_col_t col, char *string);
 
 /**
  * @brief Set the properties for a row of cells.
@@ -3417,6 +3554,11 @@ void worksheet_set_default_row(lxw_worksheet *worksheet, double height,
  */
 lxw_error worksheet_set_vba_name(lxw_worksheet *worksheet, const char *name);
 
+void worksheet_set_comments_author(lxw_worksheet *worksheet,
+                                   const char *author);
+
+void worksheet_show_comments(lxw_worksheet *worksheet);
+
 lxw_worksheet *lxw_worksheet_new(lxw_worksheet_init_data *init_data);
 void lxw_worksheet_free(lxw_worksheet *worksheet);
 void lxw_worksheet_assemble_xml_file(lxw_worksheet *worksheet);
@@ -3431,9 +3573,14 @@ void lxw_worksheet_prepare_chart(lxw_worksheet *worksheet,
                                  lxw_object_properties *object_props,
                                  uint8_t is_chartsheet);
 
-lxw_row *lxw_worksheet_find_row(lxw_worksheet *worksheet, lxw_row_t row_num);
-lxw_cell *lxw_worksheet_find_cell(lxw_row *row, lxw_col_t col_num);
+uint32_t lxw_worksheet_prepare_vml_objects(lxw_worksheet *worksheet,
+                                           uint32_t vml_data_id,
+                                           uint32_t vml_shape_id,
+                                           uint32_t vml_drawing_id,
+                                           uint32_t comment_id);
 
+lxw_row *lxw_worksheet_find_row(lxw_worksheet *worksheet, lxw_row_t row_num);
+lxw_cell *lxw_worksheet_find_cell_in_row(lxw_row *row, lxw_col_t col_num);
 /*
  * External functions to call intern XML methods shared with chartsheet.
  */

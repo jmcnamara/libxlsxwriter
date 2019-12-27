@@ -27,6 +27,7 @@ char *error_strings[LXW_MAX_ERRNO + 1] = {
     "Zip error ZIP_INTERNALERROR while creating the xlsx file.",
     "File error or unknown zip error when adding sub file to xlsx file.",
     "Unknown zip error when closing xlsx file.",
+    "Feature is not currently supported in this configuration.",
     "NULL function parameter ignored.",
     "Function parameter validation error.",
     "Worksheet name exceeds Excel's limit of 31 characters.",
