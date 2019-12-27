@@ -1,6 +1,15 @@
 /**
 @page changes Changes
 
+
+## 0.9.0 December 26 2019
+
+- Fix to missing MD5 linkage in Cocoapod file.
+  Issue [#259][gh_259].
+
+  [gh_259]: https://github.com/jmcnamara/libxlsxwriter/issues/259
+
+
 ## 0.9.0 December 26 2019
 
 - Fix to avoid duplicate images being copied to an libxlsxwriter file. Excel
