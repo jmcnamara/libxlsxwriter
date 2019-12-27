@@ -44,6 +44,7 @@
 
 /* libxlsxwriter typedefs. */
 -T lxw_app
+-T lxw_author_id
 -T lxw_autofilter
 -T lxw_border
 -T lxw_cell
@@ -84,6 +85,8 @@
 -T lxw_col_options
 -T lxw_col_t
 -T lxw_color_t
+-T lxw_comment
+-T lxw_comment_options
 -T lxw_content_types
 -T lxw_core
 -T lxw_custom
@@ -132,6 +135,8 @@
 -T lxw_styles
 -T lxw_theme
 -T lxw_tuple
+-T lxw_vml
+-T lxw_vml_obj
 -T lxw_workbook
 -T lxw_workbook_options
 -T lxw_worksheet

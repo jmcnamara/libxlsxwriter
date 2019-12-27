@@ -53,6 +53,10 @@ void lxw_ct_add_chart_name(lxw_content_types *content_types,
                            const char *name);
 void lxw_ct_add_drawing_name(lxw_content_types *content_types,
                              const char *name);
+void lxw_ct_add_comment_name(lxw_content_types *content_types,
+                             const char *name);
+void lxw_ct_add_vml_name(lxw_content_types *content_types);
+
 void lxw_ct_add_shared_strings(lxw_content_types *content_types);
 void lxw_ct_add_calc_chain(lxw_content_types *content_types);
 void lxw_ct_add_custom_properties(lxw_content_types *content_types);

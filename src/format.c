@@ -118,18 +118,6 @@ lxw_format_free(lxw_format *format)
 }
 
 /*
- * Check a user input color.
- */
-lxw_color_t
-lxw_format_check_colorz(lxw_color_t color)
-{
-    if (color == LXW_COLOR_UNSET)
-        return color;
-    else
-        return color & LXW_COLOR_MASK;
-}
-
-/*
  * Check a user input border.
  */
 STATIC uint8_t
@@ -726,6 +714,24 @@ void
 format_set_theme(lxw_format *self, uint8_t value)
 {
     self->theme = value;
+}
+
+/*
+ * Set the color_indexed property.
+ */
+void
+format_set_color_indexed(lxw_format *self, uint8_t value)
+{
+    self->color_indexed = value;
+}
+
+/*
+ * Set the font_only property.
+ */
+void
+format_set_font_only(lxw_format *self)
+{
+    self->font_only = LXW_TRUE;
 }
 
 /*

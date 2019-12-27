@@ -767,7 +767,7 @@ _populate_range_data_cache(lxw_workbook *self, lxw_series_range *range)
                 return;
             }
 
-            cell_obj = lxw_worksheet_find_cell(row_obj, col_num);
+            cell_obj = lxw_worksheet_find_cell_in_row(row_obj, col_num);
 
             if (cell_obj) {
                 if (cell_obj->type == NUMBER_CELL) {
@@ -998,6 +998,65 @@ _prepare_drawings(lxw_workbook *self)
     }
 
     self->drawing_count = drawing_id;
+}
+
+/*
+ * Iterate through the worksheets and set up the VML objects.
+ */
+
+STATIC void
+_prepare_vml(lxw_workbook *self)
+{
+    lxw_worksheet *worksheet;
+    lxw_sheet *sheet;
+    uint32_t comment_id = 0;
+    uint32_t vml_drawing_id = 0;
+    uint32_t vml_data_id = 1;
+    uint32_t vml_shape_id = 1024;
+    lxw_format *format;
+    uint32_t comment_count = 0;
+
+    STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
+
+        if (!worksheet->has_vml && !worksheet->has_header_vml)
+            continue;
+
+        if (worksheet->has_vml) {
+            self->has_vml = LXW_TRUE;
+            if (worksheet->has_comments) {
+                self->comment_count += 1;
+                comment_id += 1;
+            }
+
+            vml_drawing_id += 1;
+
+            comment_count = lxw_worksheet_prepare_vml_objects(worksheet,
+                                                              vml_data_id,
+                                                              vml_shape_id,
+                                                              vml_drawing_id,
+                                                              comment_id);
+
+            /* Each VML should start with a shape id incremented by 1024. */
+            vml_data_id += 1 * ((1024 + comment_count) / 1024);
+            vml_shape_id += 1024 * ((1024 + comment_count) / 1024);
+
+        }
+    }
+
+    if (self->comment_count) {
+        /* Add a font format for cell comments. */
+        format = workbook_add_format(self);
+        format_set_font_name(format, "Tahoma");
+        format_set_font_size(format, 8);
+        format_set_color_indexed(format, 81);
+        format_set_font_only(format);
+        /* Initialize its index. */
+        lxw_format_get_xf_index(format);
+    }
 }
 
 /*
@@ -1821,6 +1880,9 @@ workbook_close(lxw_workbook *self)
         }
     }
 
+    /* Prepare the worksheet VML elements such as comments. */
+    _prepare_vml(self);
+
     /* Set the defined names for the worksheets such as Print Titles. */
     _prepare_defined_names(self);
 
@@ -2249,8 +2311,6 @@ workbook_unset_default_url_format(lxw_workbook *self)
     self->default_url_format->underline = LXW_UNDERLINE_NONE;
     self->default_url_format->theme = 0;
 }
-
-lxw_format *default_url_format;
 
 /*
  * Validate the worksheet name based on Excel's rules.
