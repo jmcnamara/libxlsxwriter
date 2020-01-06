@@ -2638,7 +2638,7 @@ _get_image_properties(lxw_object_properties *image_props)
     unsigned char signature[4];
 #ifndef USE_NO_MD5
     uint8_t i;
-    MD5_CTX md5_context;
+    LXW_MD5_CTX md5_context;
     size_t size_read;
     char buffer[LXW_IMAGE_BUFFER_SIZE];
     unsigned char md5_checksum[LXW_MD5_SIZE];
@@ -2676,16 +2676,16 @@ _get_image_properties(lxw_object_properties *image_props)
      * images to reduce the xlsx file size.*/
     rewind(image_props->stream);
 
-    MD5_Init(&md5_context);
+    LXW_MD5_Init(&md5_context);
 
     size_read = fread(buffer, 1, LXW_IMAGE_BUFFER_SIZE, image_props->stream);
     while (size_read) {
-        MD5_Update(&md5_context, buffer, size_read);
+        LXW_MD5_Update(&md5_context, buffer, size_read);
         size_read =
             fread(buffer, 1, LXW_IMAGE_BUFFER_SIZE, image_props->stream);
     }
 
-    MD5_Final(md5_checksum, &md5_context);
+    LXW_MD5_Final(md5_checksum, &md5_context);
 
     /* Create a 32 char hex string buffer for the MD5 checksum. */
     image_props->md5 = calloc(1, LXW_MD5_SIZE * 2 + 1);
