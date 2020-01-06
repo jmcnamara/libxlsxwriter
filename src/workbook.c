@@ -1732,8 +1732,8 @@ workbook_close(lxw_workbook *self)
     /* If the packager fails it is generally due to a zip permission error. */
     if (packager == NULL) {
         fprintf(stderr, "[ERROR] workbook_close(): "
-                "Error creating '%s' using '%s'. "
-                "Error = %s\n", self->filename, self->options.tmpdir, strerror(errno));
+                "Error creating '%s'. "
+                "Error = %s\n", self->filename, strerror(errno));
 
         error = LXW_ERROR_CREATING_XLSX_FILE;
         goto mem_error;
