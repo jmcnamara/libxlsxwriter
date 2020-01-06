@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook   = new_workbook("test_chart_order02.xlsx");
+    lxw_workbook  *workbook   = workbook_new("test_chart_order02.xlsx");
     lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, NULL);
     lxw_worksheet *worksheet2 = workbook_add_worksheet(workbook, NULL);
     lxw_worksheet *worksheet3 = workbook_add_worksheet(workbook, NULL);

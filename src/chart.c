@@ -331,11 +331,6 @@ _chart_convert_font_args(lxw_chart_font *user_font)
     if (font->rotation)
         font->rotation = font->rotation * 60000;
 
-    if (font->color) {
-        font->color = lxw_format_check_color(font->color);
-        font->has_color = LXW_TRUE;
-    }
-
     return font;
 }
 
@@ -359,11 +354,6 @@ _chart_convert_line_args(lxw_chart_line *user_line)
     line->width = user_line->width;
     line->dash_type = user_line->dash_type;
     line->transparency = user_line->transparency;
-
-    if (line->color) {
-        line->color = lxw_format_check_color(line->color);
-        line->has_color = LXW_TRUE;
-    }
 
     if (line->transparency > 100)
         line->transparency = 0;
@@ -389,11 +379,6 @@ _chart_convert_fill_args(lxw_chart_fill *user_fill)
     fill->color = user_fill->color;
     fill->none = user_fill->none;
     fill->transparency = user_fill->transparency;
-
-    if (fill->color) {
-        fill->color = lxw_format_check_color(fill->color);
-        fill->has_color = LXW_TRUE;
-    }
 
     if (fill->transparency > 100)
         fill->transparency = 0;
@@ -430,17 +415,9 @@ _chart_convert_pattern_args(lxw_chart_pattern *user_pattern)
     pattern->bg_color = user_pattern->bg_color;
     pattern->type = user_pattern->type;
 
-    pattern->fg_color = lxw_format_check_color(pattern->fg_color);
-    pattern->has_fg_color = LXW_TRUE;
-
-    if (pattern->bg_color) {
-        pattern->bg_color = lxw_format_check_color(pattern->bg_color);
-        pattern->has_bg_color = LXW_TRUE;
-    }
-    else {
+    if (!pattern->bg_color) {
         /* Default background color in Excel is white, when unspecified. */
         pattern->bg_color = LXW_COLOR_WHITE;
-        pattern->has_bg_color = LXW_TRUE;
     }
 
     return pattern;
@@ -857,7 +834,7 @@ _chart_write_a_def_rpr(lxw_chart *self, lxw_chart_font *font)
     LXW_INIT_ATTRIBUTES();
 
     if (font) {
-        has_color = font->color || font->has_color;
+        has_color = !!font->color;
         has_latin = font->name || font->pitch_family || font->charset;
         use_font_default = !(has_color || has_latin || font->baseline == -1);
 
@@ -929,7 +906,7 @@ _chart_write_a_r_pr(lxw_chart *self, lxw_chart_font *font)
     LXW_PUSH_ATTRIBUTES_STR("lang", "en-US");
 
     if (font) {
-        has_color = font->color || font->has_color;
+        has_color = !!font->color;
         has_latin = font->name || font->pitch_family || font->charset;
         use_font_default = !(has_color || has_latin || font->baseline == -1);
 
@@ -1127,11 +1104,22 @@ _chart_write_a_body_pr(lxw_chart *self, int32_t rotation,
     if (rotation == 0 && is_horizontal)
         rotation = -5400000;
 
-    if (rotation)
-        LXW_PUSH_ATTRIBUTES_INT("rot", rotation);
-
-    if (is_horizontal)
-        LXW_PUSH_ATTRIBUTES_STR("vert", "horz");
+    if (rotation) {
+        if (rotation == 16200000) {
+            /* 270 deg/stacked angle. */
+            LXW_PUSH_ATTRIBUTES_STR("rot", "0");
+            LXW_PUSH_ATTRIBUTES_STR("vert", "wordArtVert");
+        }
+        else if (rotation == 16260000) {
+            /* 271 deg/East Asian vertical. */
+            LXW_PUSH_ATTRIBUTES_STR("rot", "0");
+            LXW_PUSH_ATTRIBUTES_STR("vert", "eaVert");
+        }
+        else {
+            LXW_PUSH_ATTRIBUTES_INT("rot", rotation);
+            LXW_PUSH_ATTRIBUTES_STR("vert", "horz");
+        }
+    }
 
     lxw_xml_empty_tag(self->file, "a:bodyPr", &attributes);
 
@@ -1668,7 +1656,7 @@ _chart_write_a_ln(lxw_chart *self, lxw_chart_line *line)
         /* Write the a:noFill element. */
         _chart_write_a_no_fill(self);
     }
-    else if (line->has_color) {
+    else if (line->color) {
         /* Write the a:solidFill element. */
         _chart_write_a_solid_fill(self, line->color, line->transparency);
     }
@@ -1824,10 +1812,10 @@ _chart_write_a_patt_fill(lxw_chart *self, lxw_chart_pattern *pattern)
 
     lxw_xml_start_tag(self->file, "a:pattFill", &attributes);
 
-    if (pattern->has_fg_color)
+    if (pattern->fg_color)
         _chart_write_a_fg_clr(self, pattern->fg_color);
 
-    if (pattern->has_bg_color)
+    if (pattern->bg_color)
         _chart_write_a_bg_clr(self, pattern->bg_color);
 
     lxw_xml_end_tag(self->file, "a:pattFill");
@@ -4504,8 +4492,7 @@ _chart_write_scatter_chart(lxw_chart *self)
                     LXW_TRUE,
                     2.25,
                     LXW_CHART_LINE_DASH_SOLID,
-                    0,
-                    LXW_FALSE
+                    0
                 };
                 series->line = _chart_convert_line_args(&line);
             }

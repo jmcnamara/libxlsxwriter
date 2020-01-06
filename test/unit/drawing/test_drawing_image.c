@@ -88,6 +88,8 @@ CTEST(drawing, drawing_image01) {
     drawing_object->width  = 1142857;
     drawing_object->height = 1142857;
 
+    drawing_object->rel_index = 1;
+
     lxw_add_drawing_object(drawing, drawing_object);
 
     lxw_drawing_assemble_xml_file(drawing);

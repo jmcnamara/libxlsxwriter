@@ -11,6 +11,7 @@ env:
   - NO_VALGRIND=1                        CFLAGS='-Werror -m32'
   - NO_VALGRIND=1 USE_SYSTEM_MINIZIP=1   CFLAGS='-Werror'
   - NO_VALGRIND=1 USE_DOUBLE_FUNCTION=1  CFLAGS='-Werror'
+  - NO_VALGRIND=1 USE_NO_MD5=1           CFLAGS='-Werror'
 
 install:
   - sudo pip install pytest
@@ -31,6 +32,7 @@ script:
   - make V=1
   - make test_functional V=1
   - make test_unit V=1
+  - make test_cmake V=1
   - make examples V=1
   - make test_valgrind V=1
   - sudo make install V=1

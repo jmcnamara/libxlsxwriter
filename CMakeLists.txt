@@ -47,6 +47,12 @@
 #           during configuration. This may produce bugs while cross-
 #           compiling or using MinGW/MSYS.
 #
+#       USE_NO_MD5
+#           Compile without third party MD5 support. This will turn off the
+#           functionality of avoiding duplicate image files in the output xlsx
+#           file. To enable this option pass `-DUSE_NO_MD5=ON` during
+#           configuration.
+#
 #       USE_STATIC_MSVC_RUNTIME
 #           Use the static msvc runtime library when compiling with msvc (default off)
 #           To enable, pass `-DUSE_STATIC_MSVC_RUNTIME` during configuration.
@@ -93,19 +99,31 @@ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 project(${PROJECT_NAME} C)
 enable_testing()
 
+# POLICY
+# ------
+
+# The use of the word ZLIB_ROOT should still work prior to "3.12.0",
+# just it's been generalized for all packages now. Just set the policy
+# to new, so we use it, and it will be used prior to 3.12 anyway.
+if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.12")
+    cmake_policy(SET CMP0074 NEW)
+endif()
+
 # OPTIONS
 # -------
-
 SET(ZLIB_ROOT "" CACHE STRING "Optional root for the ZLIB installation")
 
 option(BUILD_TESTS "Build libxlsxwriter tests" OFF)
 option(BUILD_EXAMPLES "Build libxlsxwriter examples" OFF)
 option(USE_SYSTEM_MINIZIP "Use system minizip installation" OFF)
 option(USE_STANDARD_TMPFILE "Use the C standard library's tmpfile()" OFF)
+option(USE_NO_MD5 "Build libxlsxwriter without third party MD5 lib" OFF)
 option(IOAPI_NO_64 "Disable 64-bit filesystem support" OFF)
+
 if(MSVC)
     option(USE_STATIC_MSVC_RUNTIME "Use the static runtime library" OFF)
 endif()
+
 if(DEFINED ENV{${ZLIB_ROOT}})
     set(ZLIB_ROOT $ENV{ZLIB_ROOT})
 endif()
@@ -116,7 +134,6 @@ endif()
 
 # CONFIGURATIONS
 # --------------
-
 if(USE_SYSTEM_MINIZIP)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_SYSTEM_MINIZIP)
 endif()
@@ -125,6 +142,11 @@ if(USE_STANDARD_TMPFILE)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_STANDARD_TMPFILE)
 endif()
 
+if(USE_NO_MD5)
+    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_NO_MD5)
+endif()
+
+
 if(NOT BUILD_SHARED_LIBS)
     if(UNIX)
         set(CMAKE_POSITION_INDEPENDENT_CODE ON)
@@ -132,14 +154,12 @@ if(NOT BUILD_SHARED_LIBS)
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -static -static-libgcc -Wno-char-subscripts -Wno-long-long")
         list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_FILE32API)
     elseif(MSVC)
-        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /O0 /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
-        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /Ox /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
-        set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /Zi /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
-        set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /Fd${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb")
+        set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /Fd\"${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb\"")
+        set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /Ox /Zi /Fd\"${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb\"")
+        set(CMAKE_C_FLAGS_MINSIZEREL "${CMAKE_C_FLAGS_MINSIZEREL} /Zi /Fd\"${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb\"")
+        set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} /Fd\"${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb\"")
     endif()
 endif()
-
-message(status "BEFORE: ${CMAKE_C_FLAGS_DEBUG}")
 
 if(MSVC AND USE_STATIC_MSVC_RUNTIME)
     foreach(flag_var CMAKE_C_FLAGS
@@ -155,7 +175,6 @@ endif()
 
 # INCLUDES
 # --------
-
 enable_language(CXX)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
@@ -172,7 +191,6 @@ endif()
 
 # LIBRARY
 # -------
-
 list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS NOCRYPT NOUNCRYPT)
 
 # Fix for modified zconf.h on Gentoo.
@@ -192,14 +210,20 @@ endif()
 
 file(GLOB LXW_SOURCES src/*.c)
 file(GLOB_RECURSE LXW_HEADERS RELATIVE include *.h)
+
 if(NOT USE_SYSTEM_MINIZIP)
     list(APPEND LXW_SOURCES third_party/minizip/ioapi.c third_party/minizip/zip.c)
     if(MSVC)
         list(APPEND LXW_SOURCES third_party/minizip/iowin32.c)
     endif()
 endif()
+
 if (NOT USE_STANDARD_TMPFILE)
     list(APPEND LXW_SOURCES third_party/tmpfileplus/tmpfileplus.c)
+endif()
+
+if (NOT USE_NO_MD5)
+    list(APPEND LXW_SOURCES third_party/md5/md5.c)
 endif()
 
 set(LXW_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -211,6 +235,17 @@ target_sources(${PROJECT_NAME}
 )
 target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LIBRARIES} ${MINIZIP_LIBRARIES})
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LXW_PRIVATE_COMPILE_DEFINITIONS})
+
+# /utf-8 needs VS2015 Update 2 or above.
+# In CMake 3.7 and above, we can use (MSVC_VERSION GREATER_EQUAL 1900) here.
+if(MSVC AND NOT (MSVC_VERSION LESS 1900))
+    target_compile_options(${PROJECT_NAME} PRIVATE /utf-8)
+endif()
+
+if (WINDOWSSTORE)
+  target_compile_definitions(${PROJECT_NAME} PRIVATE -DIOWIN32_USING_WINRT_API)
+endif()
+
 target_include_directories(${PROJECT_NAME}
     PRIVATE ${LXW_PRIVATE_INCLUDE_DIRS}
     PUBLIC include include/xlsxwriter
@@ -237,7 +272,6 @@ macro(CreateTest sources target)
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
 endmacro(CreateTest)
-
 
 file(GLOB LXW_UTILITY_SOURCES test/unit/utility/test*.c)
 file(GLOB LXW_XMLWRITER_SOURCES test/unit/xmlwriter/test*.c)
@@ -290,7 +324,6 @@ endif()
 
 # EXAMPLES
 # --------
-
 file(GLOB LXW_EXAMPLE_SOURCES examples/*.c)
 
 if(BUILD_EXAMPLES)
@@ -303,34 +336,13 @@ endif()
 
 # INSTALL
 # -------
-
 include(GNUInstallDirs)
 
-if(MSVC)
-    if(CMAKE_CL_64)
-        set(MSVC_FOLDER_PREFIX x64)
-    else()
-        set(MSVC_FOLDER_PREFIX Win32)
-    endif()
-
-    install(TARGETS ${PROJECT_NAME}
-        LIBRARY DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
-        ARCHIVE DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
-        RUNTIME DESTINATION "bin/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
-    )
-    if (NOT BUILD_SHARED_LIBS)
-        install(FILES ${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pdb
-            DESTINATION "lib/${MSVC_FOLDER_PREFIX}/\${CMAKE_INSTALL_CONFIG_NAME}"
-        )
-    endif()
-
-else(MSVC)
-    install(TARGETS ${PROJECT_NAME}
-        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    )
-endif(MSVC)
+install(TARGETS ${PROJECT_NAME}
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+)
 install(FILES include/xlsxwriter.h DESTINATION include)
 install(DIRECTORY include/xlsxwriter
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}

@@ -11,9 +11,11 @@ ifdef V
 Q=
 endif
 
-INSTALL_DIR ?= /usr/local
+DESTIDR ?=
+PREFIX  ?= /usr/local
 
 PYTEST ?= py.test
+PYTESTFILES ?= test
 
 .PHONY: docs tags examples
 
@@ -24,6 +26,9 @@ ifndef USE_SYSTEM_MINIZIP
 endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
+endif
+ifndef USE_NO_MD5
+	$(Q)$(MAKE) -C third_party/md5
 endif
 	$(Q)$(MAKE) -C src
 
@@ -47,9 +52,12 @@ endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) clean -C third_party/tmpfileplus
 endif
+ifndef USE_NO_MD5
+	$(Q)$(MAKE) clean -C third_party/md5
+endif
 
 # Run the unit tests.
-test : all test_functional test_unit
+test : all test_unit test_functional
 
 # Test for C++ const correctness on APIs.
 test_const : all
@@ -60,7 +68,7 @@ test_const : all
 # Run the functional tests.
 test_functional : all
 	$(Q)$(MAKE) -C test/functional/src
-	$(Q)$(PYTEST) test/functional -v
+	$(Q)$(PYTEST) test/functional -v -k $(PYTESTFILES)
 
 # Run all tests.
 test_unit :
@@ -71,8 +79,24 @@ endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
 endif
+ifndef USE_NO_MD5
+	$(Q)$(MAKE) -C third_party/md5
+endif
 	$(Q)$(MAKE) -C src test_lib
 	$(Q)$(MAKE) -C test/unit test
+
+# Test Cmake. This test should really be done with Cmake in the cmake dir but
+# this is a workaround for now.
+test_cmake :
+ifneq ($(findstring m32,$(CFLAGS)),m32)
+	$(Q)$(MAKE) -C src clean
+	$(Q)cd cmake; cmake .. -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON; make clean; make; cp libxlsxwriter.a ../src/
+	$(Q)cmake/xlsxwriter_unit
+	$(Q)$(MAKE) -C test/functional/src
+	$(Q)$(PYTEST) test/functional -v -k $(PYTESTFILES)
+else
+	@echo "Skipping Cmake tests on 32 bit target."
+endif
 
 # Test the functional test exes with valgrind (in 64bit mode only).
 test_valgrind : all
@@ -100,15 +124,15 @@ docs:
 
 # Simple minded install.
 install: all
-	$(Q)mkdir -p        $(INSTALL_DIR)/include
-	$(Q)cp -R include/* $(INSTALL_DIR)/include
-	$(Q)mkdir -p        $(INSTALL_DIR)/lib
-	$(Q)cp lib/*        $(INSTALL_DIR)/lib
+	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/include
+	$(Q)cp -R include/* $(DESTDIR)$(PREFIX)/include
+	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/lib
+	$(Q)cp lib/*        $(DESTDIR)$(PREFIX)/lib
 
 # Simpler minded uninstall.
 uninstall:
-	$(Q)rm -rf $(INSTALL_DIR)/include/xlsxwriter*
-	$(Q)rm     $(INSTALL_DIR)/lib/libxlsxwriter.*
+	$(Q)rm -rf $(DESTDIR)$(PREFIX)/include/xlsxwriter*
+	$(Q)rm     $(DESTDIR)$(PREFIX)/lib/libxlsxwriter.*
 
 # Strip the lib files.
 strip:
@@ -121,6 +145,9 @@ ifndef USE_SYSTEM_MINIZIP
 endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
+endif
+ifndef USE_NO_MD5
+	$(Q)$(MAKE) -C third_party/md5
 endif
 	$(Q)$(MAKE) -C src clean
 	$(Q)rm -f  lib/*
@@ -138,6 +165,9 @@ ifndef USE_SYSTEM_MINIZIP
 endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
+endif
+ifndef USE_NO_MD5
+	$(Q)$(MAKE) -C third_party/md5
 endif
 	$(Q)$(MAKE) -C src clean
 	$(Q)rm -f  lib/*

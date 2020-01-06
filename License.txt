@@ -35,7 +35,8 @@ Libxlsxwriter is released under a FreeBSD license:
 
 
 Libxlsxwriter includes `queue.h` and `tree.h` from FreeBSD, the `minizip`
-component of `zlib` and `tmpfileplus` which have the following licenses:
+component of `zlib`, `tmpfileplus` and `md5` which have the following
+licenses:
 
 
 Queue.h from FreeBSD:
@@ -145,6 +146,27 @@ See the [Mozilla Public License, v. 2.0](http://mozilla.org/MPL/2.0/).
 
 Note, it is possible to compile libxlsxwriter using the standard library
 `tmpfile()` function instead of `tmpfileplus`, see @ref gsg_tmpdir.
+
+[Openwall MD5](https://openwall.info/wiki/people/solar/software/public-domain-source-code/md5)
+has the following licence:
+
+    This software was written by Alexander Peslyak in 2001.  No copyright is
+    claimed, and the software is hereby placed in the public domain.
+    In case this attempt to disclaim copyright and place the software in the
+    public domain is deemed null and void, then the software is
+    Copyright (c) 2001 Alexander Peslyak and it is hereby released to the
+    general public under the following terms:
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted.
+
+    There's ABSOLUTELY NO WARRANTY, express or implied.
+
+    (This is a heavily cut-down "BSD license".)
+
+Note, the MD5 library is used to avoid including duplicate image files in the
+xlsx file. If this functionality isn't required it is possible to compile
+libxlsxwriter without this library by passing `USE_NO_MD5=1` to make.
 
 Next: @ref changes
 */

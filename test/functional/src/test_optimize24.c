@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook_options options = {1, NULL};
+    lxw_workbook_options options = {LXW_TRUE, NULL, LXW_FALSE};
 
     lxw_workbook  *workbook  = workbook_new_opt("test_optimize24.xlsx", &options);
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);

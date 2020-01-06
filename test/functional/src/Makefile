@@ -11,6 +11,7 @@ ifdef V
 Q=
 endif
 
+
 # Directory variables.
 INC_DIR     = ../../../include
 
@@ -18,7 +19,8 @@ INC_DIR     = ../../../include
 CFLAGS += -g -Wall -Wextra
 
 # Source files to compile.
-SRCS = $(wildcard *.c)
+SRCTESTFILES ?= *.c
+SRCS = $(wildcard $(SRCTESTFILES))
 EXES = $(patsubst %.c,%,$(SRCS))
 
 LIBXLSXWRITER = ../../../src/libxlsxwriter.a

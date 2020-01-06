@@ -17,6 +17,7 @@
 
 #define LXW_APP_PACKAGE  "application/vnd.openxmlformats-package."
 #define LXW_APP_DOCUMENT "application/vnd.openxmlformats-officedocument."
+#define LXW_APP_MSEXCEL  "application/vnd.ms-excel."
 
 /*
  * Struct to represent a content_types.

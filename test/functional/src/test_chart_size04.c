@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_chart_size04.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_chart_size04.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_COLUMN);
 
@@ -36,7 +36,7 @@ int main() {
     chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5");
     chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
 
-    lxw_image_options options = {.x_offset = 8, .y_offset = 9};
+    lxw_chart_options options = {.x_offset = 8, .y_offset = 9};
     worksheet_insert_chart_opt(worksheet, CELL("E9"), chart, &options);
 
     return workbook_close(workbook);

@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "xlsxwriter/xmlwriter.h"
 
 #define LXW_AMP  "&amp;"
@@ -227,7 +228,7 @@ lxw_escape_data(const char *data)
 }
 
 /*
- * Escape control characters in strings with with _xHHHH_.
+ * Escape control characters in strings with _xHHHH_.
  */
 char *
 lxw_escape_control_characters(const char *string)
@@ -271,6 +272,67 @@ lxw_escape_control_characters(const char *string)
             case '\x1F':
                 lxw_snprintf(p_encoded, escape_len + 1, "_x%04X_", *string);
                 p_encoded += escape_len;
+                break;
+            default:
+                *p_encoded = *string;
+                p_encoded++;
+                break;
+        }
+        string++;
+    }
+
+    return encoded;
+}
+
+/*
+ * Escape special characters in URL strings with with %XX.
+ */
+char *
+lxw_escape_url_characters(const char *string, uint8_t escape_hash)
+{
+
+    size_t escape_len = sizeof("%XX") - 1;
+    size_t encoded_len = (strlen(string) * escape_len + 1);
+
+    char *encoded = (char *) calloc(encoded_len, 1);
+    char *p_encoded = encoded;
+
+    while (*string) {
+        switch (*string) {
+            case (' '):
+            case ('"'):
+            case ('<'):
+            case ('>'):
+            case ('['):
+            case (']'):
+            case ('`'):
+            case ('^'):
+            case ('{'):
+            case ('}'):
+                lxw_snprintf(p_encoded, escape_len + 1, "%%%2x", *string);
+                p_encoded += escape_len;
+                break;
+            case ('#'):
+                /* This is only escaped for "external:" style links. */
+                if (escape_hash) {
+                    lxw_snprintf(p_encoded, escape_len + 1, "%%%2x", *string);
+                    p_encoded += escape_len;
+                }
+                else {
+                    *p_encoded = *string;
+                    p_encoded++;
+                }
+                break;
+            case ('%'):
+                /* Only escape % if it isn't already an escape. */
+                if (!isxdigit(*(string + 1)) || !isxdigit(*(string + 2))) {
+                    lxw_snprintf(p_encoded, escape_len + 1, "%%%2x", *string);
+                    p_encoded += escape_len;
+                }
+                else {
+                    *p_encoded = *string;
+                    p_encoded++;
+                }
                 break;
             default:
                 *p_encoded = *string;

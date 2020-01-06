@@ -2,6 +2,99 @@
 @page changes Changes
 
 
+## 0.9.0 December 26 2019
+
+- Fix to missing MD5 linkage in Cocoapod file.
+  Issue [#259][gh_259].
+
+  [gh_259]: https://github.com/jmcnamara/libxlsxwriter/issues/259
+
+
+## 0.9.0 December 26 2019
+
+- Fix to avoid duplicate images being copied to an libxlsxwriter file. Excel
+  uses an optimization where it only stores one copy of a repeated/duplicate
+  image in a workbook. Libxlsxwriter didn't do this which meant that the file
+  size would increase when then was a large number of repeated images. This
+  release fixes that issue and replicates Excel's behavior.
+
+  Note, that this change adds a dependency on the [Openwall MD5] library,
+  which is now included with the libxlsxwriter third party source files. It is
+  possible to compile libxlsxwriter without this library, and thus getting the
+  older behavior, by passing `USE_NO_MD5=1` to make.
+
+
+  [Openwall MD5]: https://openwall.info/wiki/people/solar/software/public-domain-source-code/md5
+
+## 0.8.9 December 16 2019
+
+- Added support for default hyperlink style in `worksheet_write_url()`.
+
+- Added support for hyperlink in images, see `worksheet_insert_image_opt()`.
+
+- Fixed several `worksheet_write_url()` edge cases.
+
+
+## 0.8.8 November 17 2019
+
+- Added option to allow a user defined, or overridden, image description used
+  with `worksheet_insert_image()`. By default it uses the filename as the
+  description.
+  Issue [#238][gh_238].
+
+  [gh_238]: https://github.com/jmcnamara/libxlsxwriter/issues/238
+
+- Added Windows portable version of `fopen` to handle utf8 filenames when
+  working with images.
+  Issue [#238][gh_238].
+
+  [gh_238]: https://github.com/jmcnamara/libxlsxwriter/issues/238
+
+- Added an option to allow chart fonts to be rotation to 270 deg to give a
+  stacked orientation. Also added support for East Asian vertical chart fonts.
+
+- Refactored struct types used in pubic APIs to remove or document hidden
+  fields. @b Note: This change introduces backward incompatible API
+  changes. However, it should minimize any future changes of this nature.
+  See issue [#252][gh_252].
+
+  [gh_252]: https://github.com/jmcnamara/libxlsxwriter/issues/252
+
+
+
+## 0.8.7 June 20 2019
+
+- Added support for adding VBA macros to workbooks. These macros can be
+  extracted from existing xlsm files, created in Excel, and added to new xlsm
+  files. See @ref working_with_macros.
+  Feature request [#29][gh_29].
+
+  [gh_29]: https://github.com/jmcnamara/libxlsxwriter/issues/29
+
+- Added support for ZIP64 extensions when writing very large xlsx files to
+  allow the zip container, or individual XML files within it, to be greater
+  than 4 GB. See @ref workbook_new_opt().
+  Feature request [#228][gh_228].
+
+  [gh_228]: https://github.com/jmcnamara/libxlsxwriter/issues/228
+
+- Added extra validity checks on worksheet names.
+  Issues [#223][gh_223] and [#230][gh_230].
+
+  [gh_223]: https://github.com/jmcnamara/libxlsxwriter/issues/223
+  [gh_230]: https://github.com/jmcnamara/libxlsxwriter/issues/230
+
+
+## 0.8.6 April 7 2019
+
+- Fixed issue where images that started in hidden rows/columns weren't placed
+  correctly in the worksheet.
+
+- Fixed the mime-type reported by system `file(1)`. The mime-type reported
+  by "file --mime-type"/magic was incorrect for XlsxWriter files since it
+  expected the `[Content_types]` to be the first file in the zip container.
+
+
 ## 0.8.5 February 10 2019
 
 - Fix compile-time warnings with strict prototypes enabled.

@@ -7,11 +7,20 @@ Libxlsxwriter was written by John McNamara.
 - [Twitter \@jmcnamara13](https://twitter.com/jmcnamara13)
 
 
-@section donations Donations
+@section donations Sponsorship and Donations
 
-If you would like to donate to the libxlsxwriter project to keep it active
-you can do so via
+I write and maintain a series of open source libraries for creating Excel
+files. The most commonly used are XlsxWriter in Python, Libxlsxwriter in C and
+Excel::Writer::XLSX and Spreadsheet::WriteExcel in Perl.
+
+My aim is to write well documented and well tested code that does what the
+user needs and doesn't get in their way.  You can help make this continue, or
+show your appreciation for work to date, by becoming a
+[GitHub Sponsor](https://github.com/sponsors/jmcnamara).
+
+Or make a one-off donation via
 [PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=ATE9EFWNF7PBJ).
+
 
 Next: @ref license
 

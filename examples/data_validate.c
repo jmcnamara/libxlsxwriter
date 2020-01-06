@@ -45,7 +45,7 @@ void write_worksheet_data(lxw_worksheet *worksheet, lxw_format *format) {
  */
 int main() {
 
-    lxw_workbook        *workbook  = new_workbook("data_validate1.xlsx");
+    lxw_workbook        *workbook  = workbook_new("data_validate1.xlsx");
     lxw_worksheet       *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
 

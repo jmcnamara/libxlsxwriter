@@ -11,11 +11,13 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_chart_bar11.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_chart_bar11.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_chart     *chart1 = workbook_add_chart(workbook, LXW_CHART_BAR);
     lxw_chart     *chart2 = workbook_add_chart(workbook, LXW_CHART_BAR);
     lxw_chart     *chart3 = workbook_add_chart(workbook, LXW_CHART_BAR);
+
+    workbook_unset_default_url_format(workbook);
 
     /* For testing, copy the randomly generated axis ids in the target file. */
     chart1->axis_id_1 = 40274944;

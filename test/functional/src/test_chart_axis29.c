@@ -11,13 +11,13 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_chart_axis29.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_chart_axis29.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_LINE);
 
     /* For testing, copy the randomly generated axis ids in the target file. */
-    chart->axis_id_1 = 45444480;
-    chart->axis_id_2 = 47402368;
+    chart->axis_id_1 = 145169024;
+    chart->axis_id_2 = 145176448;
 
     uint8_t data[5][3] = {
         {1, 2,  3},

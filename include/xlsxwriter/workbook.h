@@ -57,6 +57,7 @@
 /* Define the tree.h RB structs for the red-black head types. */
 RB_HEAD(lxw_worksheet_names, lxw_worksheet_name);
 RB_HEAD(lxw_chartsheet_names, lxw_chartsheet_name);
+RB_HEAD(lxw_image_md5s, lxw_image_md5);
 
 /* Define the queue.h structs for the workbook lists. */
 STAILQ_HEAD(lxw_sheets, lxw_sheet);
@@ -65,7 +66,7 @@ STAILQ_HEAD(lxw_chartsheets, lxw_chartsheet);
 STAILQ_HEAD(lxw_charts, lxw_chart);
 TAILQ_HEAD(lxw_defined_names, lxw_defined_name);
 
-/* TODO */
+/* Struct to hold the 2 sheet types. */
 typedef struct lxw_sheet {
     uint8_t is_chartsheet;
 
@@ -93,6 +94,14 @@ typedef struct lxw_chartsheet_name {
     RB_ENTRY (lxw_chartsheet_name) tree_pointers;
 } lxw_chartsheet_name;
 
+/* Struct to represent an image MD5/ID pair. */
+typedef struct lxw_image_md5 {
+    uint32_t id;
+    char *md5;
+
+    RB_ENTRY (lxw_image_md5) tree_pointers;
+} lxw_image_md5;
+
 /* Wrapper around RB_GENERATE_STATIC from tree.h to avoid unused function
  * warnings and to avoid portability issues with the _unused attribute. */
 #define LXW_RB_GENERATE_WORKSHEET_NAMES(name, type, field, cmp)  \
@@ -116,6 +125,17 @@ typedef struct lxw_chartsheet_name {
     RB_GENERATE_MINMAX(name, type, field, static)                \
     /* Add unused struct to allow adding a semicolon */          \
     struct lxw_rb_generate_charsheet_names{int unused;}
+
+#define LXW_RB_GENERATE_IMAGE_MD5S(name, type, field, cmp) \
+    RB_GENERATE_INSERT_COLOR(name, type, field, static)          \
+    RB_GENERATE_REMOVE_COLOR(name, type, field, static)          \
+    RB_GENERATE_INSERT(name, type, field, cmp, static)           \
+    RB_GENERATE_REMOVE(name, type, field, static)                \
+    RB_GENERATE_FIND(name, type, field, cmp, static)             \
+    RB_GENERATE_NEXT(name, type, field, static)                  \
+    RB_GENERATE_MINMAX(name, type, field, static)                \
+    /* Add unused struct to allow adding a semicolon */          \
+    struct lxw_rb_generate_image_md5s{int unused;}
 
 /**
  * @brief Macro to loop over all the worksheets in a workbook.
@@ -158,7 +178,7 @@ typedef struct lxw_defined_name {
 } lxw_defined_name;
 
 /**
- * Workbook document properties.
+ * Workbook document properties. Set any unused fields to NULL or 0.
  */
 typedef struct lxw_doc_properties {
     /** The title of the Excel Document. */
@@ -188,9 +208,13 @@ typedef struct lxw_doc_properties {
     /** The status of the Excel Document. */
     char *status;
 
-    /** The hyperlink base url of the Excel Document. */
+    /** The hyperlink base URL of the Excel Document. */
     char *hyperlink_base;
 
+    /** The file creation date/time shown in Excel. This defaults to the
+     * current time and date if set to 0. If you wish to create files that are
+     * binary equivalent (for the same input data) then you should set this
+     * creation date/time to a known value. */
     time_t created;
 
 } lxw_doc_properties;
@@ -203,27 +227,40 @@ typedef struct lxw_doc_properties {
  *
  * The following properties are supported:
  *
- * - `constant_memory`: Reduces the amount of data stored in memory so that
- *   large files can be written efficiently.
+ * - `constant_memory`: This option reduces the amount of data stored in
+ *   memory so that large files can be written efficiently. This option is off
+ *   by default. See the note below for limitations when this mode is on.
  *
- *   @note In this mode a row of data is written and then discarded when a
- *   cell in a new row is added via one of the `worksheet_write_*()`
- *   functions. Therefore, once this option is active, data should be written in
- *   sequential row order. For this reason the `worksheet_merge_range()`
- *   doesn't work in this mode. See also @ref ww_mem_constant.
- *
- * - `tmpdir`: libxlsxwriter stores workbook data in temporary files prior
- *   to assembling the final XLSX file. The temporary files are created in the
+ * - `tmpdir`: libxlsxwriter stores workbook data in temporary files prior to
+ *   assembling the final XLSX file. The temporary files are created in the
  *   system's temp directory. If the default temporary directory isn't
  *   accessible to your application, or doesn't contain enough space, you can
  *   specify an alternative location using the `tmpdir` option.
+ *
+ * - `use_zip64`: Make the zip library use ZIP64 extensions when writing very
+ *   large xlsx files to allow the zip container, or individual XML files
+ *   within it, to be greater than 4 GB. See [ZIP64 on Wikipedia][zip64_wiki]
+ *   for more information. This option is off by default.
+ *
+ *   [zip64_wiki]: https://en.wikipedia.org/wiki/Zip_(file_format)#ZIP64
+ *
+ * @note In `constant_memory` mode a row of data is written and then discarded
+ * when a cell in a new row is added via one of the `worksheet_write_*()`
+ * functions. Therefore, once this option is active, data should be written in
+ * sequential row order. For this reason the `worksheet_merge_range()` doesn't
+ * work in this mode. See also @ref ww_mem_constant.
+ *
  */
 typedef struct lxw_workbook_options {
-    /** Optimize the workbook to use constant memory for worksheets */
+    /** Optimize the workbook to use constant memory for worksheets. */
     uint8_t constant_memory;
 
     /** Directory to use for the temporary files created by libxlsxwriter. */
     char *tmpdir;
+
+    /** Allow ZIP64 extensions when creating the xlsx file zip container. */
+    uint8_t use_zip64;
+
 } lxw_workbook_options;
 
 /**
@@ -241,6 +278,7 @@ typedef struct lxw_workbook {
     struct lxw_chartsheets *chartsheets;
     struct lxw_worksheet_names *worksheet_names;
     struct lxw_chartsheet_names *chartsheet_names;
+    struct lxw_image_md5s *image_md5s;
     struct lxw_charts *charts;
     struct lxw_charts *ordered_charts;
     struct lxw_formats *formats;
@@ -265,12 +303,18 @@ typedef struct lxw_workbook {
     uint16_t border_count;
     uint16_t fill_count;
     uint8_t optimize;
+    uint16_t max_url_length;
 
     uint8_t has_png;
     uint8_t has_jpeg;
     uint8_t has_bmp;
 
     lxw_hash_table *used_xf_formats;
+
+    char *vba_project;
+    char *vba_codename;
+
+    lxw_format *default_url_format;
 
 } lxw_workbook;
 
@@ -313,40 +357,40 @@ lxw_workbook *workbook_new(const char *filename);
  * additional options to be set.
  *
  * @code
- *    lxw_workbook_options options = {.constant_memory = 1,
- *                                    .tmpdir = "C:\\Temp"};
+ *    lxw_workbook_options options = {.constant_memory = LXW_TRUE,
+ *                                    .tmpdir = "C:\\Temp",
+ *                                    .use_zip64 = LXW_FALSE};
  *
  *    lxw_workbook  *workbook  = workbook_new_opt("filename.xlsx", &options);
  * @endcode
  *
  * The options that can be set via #lxw_workbook_options are:
  *
- * - `constant_memory`: Reduces the amount of data stored in memory so that
- *   large files can be written efficiently.
+ * - `constant_memory`: This option reduces the amount of data stored in
+ *   memory so that large files can be written efficiently. This option is off
+ *   by default. See the note below for limitations when this mode is on.
  *
- *   @note In this mode a row of data is written and then discarded when a
- *   cell in a new row is added via one of the `worksheet_write_*()`
- *   functions. Therefore, once this option is active, data should be written in
- *   sequential row order. For this reason the `worksheet_merge_range()`
- *   doesn't work in this mode. See also @ref ww_mem_constant.
- *
- * - `tmpdir`: libxlsxwriter stores workbook data in temporary files prior
- *   to assembling the final XLSX file. The temporary files are created in the
+ * - `tmpdir`: libxlsxwriter stores workbook data in temporary files prior to
+ *   assembling the final XLSX file. The temporary files are created in the
  *   system's temp directory. If the default temporary directory isn't
  *   accessible to your application, or doesn't contain enough space, you can
- *   specify an alternative location using the `tmpdir` option.*
+ *   specify an alternative location using the `tmpdir` option.
  *
- * See @ref working_with_memory for more details.
+ * - `use_zip64`: Make the zip library use ZIP64 extensions when writing very
+ *   large xlsx files to allow the zip container, or individual XML files
+ *   within it, to be greater than 4 GB. See [ZIP64 on Wikipedia][zip64_wiki]
+ *   for more information. This option is off by default.
+ *
+ *   [zip64_wiki]: https://en.wikipedia.org/wiki/Zip_(file_format)#ZIP64
+ *
+ * @note In `constant_memory` mode a row of data is written and then discarded
+ * when a cell in a new row is added via one of the `worksheet_write_*()`
+ * functions. Therefore, once this option is active, data should be written in
+ * sequential row order. For this reason the `worksheet_merge_range()` doesn't
+ * work in this mode. See also @ref ww_mem_constant.
  *
  */
 lxw_workbook *workbook_new_opt(const char *filename,
-                               lxw_workbook_options *options);
-
-/* Deprecated function name for backwards compatibility. */
-lxw_workbook *new_workbook(const char *filename);
-
-/* Deprecated function name for backwards compatibility. */
-lxw_workbook *new_workbook_opt(const char *filename,
                                lxw_workbook_options *options);
 
 /**
@@ -376,14 +420,17 @@ lxw_workbook *new_workbook_opt(const char *filename,
  *
  * @image html workbook02.png
  *
- * The worksheet name must be a valid Excel worksheet name, i.e. it must be
- * less than 32 character and it cannot contain any of the characters:
+ * The worksheet name must be a valid Excel worksheet name, i.e:
  *
- *     / \ [ ] : * ?
+ * - The name is less than or equal to 31 UTF-8 characters.
+ * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
+ * - The name doesn't start or end with an apostrophe.
+ * - The name isn't "History", which is reserved by Excel. (Case insensitive).
+ * - The name isn't already in use. (Case insensitive).
  *
- * In addition, you cannot use the same, case insensitive, `sheetname` for more
- * than one worksheet, or chartsheet.
- *
+ * If any of these errors are encountered the function will return NULL.
+ * You can check for valid name using the `workbook_validate_sheet_name()`
+ * function.
  */
 lxw_worksheet *workbook_add_worksheet(lxw_workbook *workbook,
                                       const char *sheetname);
@@ -412,13 +459,17 @@ lxw_worksheet *workbook_add_worksheet(lxw_workbook *workbook,
  *
  * @endcode
  *
- * The chartsheet name must be a valid Excel worksheet name, i.e. it must be
- * less than 32 character and it cannot contain any of the characters:
+ * The chartsheet name must be a valid Excel worksheet name, i.e.:
  *
- *     / \ [ ] : * ?
+ * - The name is less than or equal to 31 UTF-8 characters.
+ * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
+ * - The name doesn't start or end with an apostrophe.
+ * - The name isn't "History", which is reserved by Excel. (Case insensitive).
+ * - The name isn't already in use. (Case insensitive).
  *
- * In addition, you cannot use the same, case insensitive, `sheetname` for more
- * than one chartsheet, or worksheet.
+ * If any of these errors are encountered the function will return NULL.
+ * You can check for valid name using the `workbook_validate_sheet_name()`
+ * function.
  *
  * At least one worksheet should be added to a new workbook when creating a
  * chartsheet in order to provide data for the chart. The @ref worksheet.h
@@ -564,10 +615,11 @@ lxw_error workbook_close(lxw_workbook *workbook);
  * - `keywords`
  * - `comments`
  * - `hyperlink_base`
+ * - `created`
  *
  * The properties are specified via a `lxw_doc_properties` struct. All the
- * members are `char *` and they are all optional. An example of how to create
- * and pass the properties is:
+ * fields are all optional. An example of how to create and pass the
+ * properties is:
  *
  * @code
  *     // Create a properties structure and set some of the fields.
@@ -588,6 +640,12 @@ lxw_error workbook_close(lxw_workbook *workbook);
  * @endcode
  *
  * @image html doc_properties.png
+ *
+ * The `created` parameter sets the file creation date/time shown in
+ * Excel. This defaults to the current time and date if set to 0. If you wish
+ * to create files that are binary equivalent (for the same input data) then
+ * you should set this creation date/time to a known value using a `time_t`
+ * value.
  *
  */
 lxw_error workbook_set_properties(lxw_workbook *workbook,
@@ -741,12 +799,31 @@ lxw_error workbook_set_custom_property_datetime(lxw_workbook *workbook,
  * @endcode
  *
  * The rules for names in Excel are explained in the
- * [Microsoft Office
-documentation](http://office.microsoft.com/en-001/excel-help/define-and-use-names-in-formulas-HA010147120.aspx).
+ * [Microsoft Office documentation](http://office.microsoft.com/en-001/excel-help/define-and-use-names-in-formulas-HA010147120.aspx).
  *
  */
 lxw_error workbook_define_name(lxw_workbook *workbook, const char *name,
                                const char *formula);
+
+/**
+ * @brief Get the default URL format used with `worksheet_write_url()`.
+ *
+ * @param  workbook Pointer to a lxw_workbook instance.
+ * @return A lxw_format instance that has hyperlink properties set.
+ *
+ * This function returns a lxw_format instance that is used for the default
+ * blue underline hyperlink in the `worksheet_write_url()` function when a
+ * format isn't specified:
+ *
+ * @code
+ *     lxw_format *url_format = workbook_get_default_url_format(workbook);
+ * @endcode
+ *
+ * The format is the hyperlink style defined by Excel for the default theme.
+ * This format is only ever required when overwriting a string URL with
+ * data of a different type. See the example below.
+ */
+lxw_format *workbook_get_default_url_format(lxw_workbook *workbook);
 
 /**
  * @brief Get a worksheet object from its name.
@@ -797,7 +874,9 @@ lxw_chartsheet *workbook_get_chartsheet_by_name(lxw_workbook *workbook,
  *
  * - The name is less than or equal to 31 UTF-8 characters.
  * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
- * - The name isn't already in use.
+ * - The name doesn't start or end with an apostrophe.
+ * - The name isn't "History", which is reserved by Excel. (Case insensitive).
+ * - The name isn't already in use. (Case insensitive, see the note below).
  *
  * @code
  *     lxw_error err = workbook_validate_sheet_name(workbook, "Foglio");
@@ -807,13 +886,83 @@ lxw_chartsheet *workbook_get_chartsheet_by_name(lxw_workbook *workbook,
  * `workbook_add_chartsheet()` but it can be explicitly called by the user
  * beforehand to ensure that the sheet name is valid.
  *
+ * @note This function does an ASCII lowercase string comparison to determine
+ * if the sheet name is already in use. It doesn't take UTF-8 characters into
+ * account. Thus it would flag "Café" and "café" as a duplicate (just like
+ * Excel) but it wouldn't catch "CAFÉ". If you need a full UTF-8 case
+ * insensitive check you should use a third party library to implement it.
+ *
  */
 lxw_error workbook_validate_sheet_name(lxw_workbook *workbook,
                                        const char *sheetname);
 
+/**
+ * @brief Add a vbaProject binary to the Excel workbook.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param filename The path/filename of the vbaProject.bin file.
+ *
+ * The `%workbook_add_vba_project()` function can be used to add macros or
+ * functions to a workbook using a binary VBA project file that has been
+ * extracted from an existing Excel xlsm file:
+ *
+ * @code
+ *     workbook_add_vba_project(workbook, "vbaProject.bin");
+ * @endcode
+ *
+ * Only one `vbaProject.bin file` can be added per workbook. The name doesn't
+ * have to be `vbaProject.bin`. Any suitable path/name for an existing VBA bin
+ * file will do.
+ *
+ * Once you add a VBA project had been add to an libxlsxwriter workbook you
+ * should ensure that the file extension is `.xlsm` to prevent Excel from
+ * giving a warning when it opens the file:
+ *
+ * @code
+ *     lxw_workbook *workbook = new_workbook("macro.xlsm");
+ * @endcode
+ *
+ * See also @ref working_with_macros
+ *
+ * @return A #lxw_error.
+ */
+lxw_error workbook_add_vba_project(lxw_workbook *workbook,
+                                   const char *filename);
+
+/**
+ * @brief Set the VBA name for the workbook.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param name     Name of the workbook used by VBA.
+ *
+ * The `workbook_set_vba_name()` function can be used to set the VBA name for
+ * the workbook. This is sometimes required when a vbaProject macro included
+ * via `workbook_add_vba_project()` refers to the workbook by a name other
+ * than `ThisWorkbook`.
+ *
+ * @code
+ *     workbook_set_vba_name(workbook, "MyWorkbook");
+ * @endcode
+ *
+ * If an Excel VBA name for the workbook isn't specified then libxlsxwriter
+ * will use `ThisWorkbook`.
+ *
+ * See also @ref working_with_macros
+ *
+ * @return A #lxw_error.
+ */
+lxw_error workbook_set_vba_name(lxw_workbook *workbook, const char *name);
+
 void lxw_workbook_free(lxw_workbook *workbook);
 void lxw_workbook_assemble_xml_file(lxw_workbook *workbook);
 void lxw_workbook_set_default_xf_indices(lxw_workbook *workbook);
+void workbook_unset_default_url_format(lxw_workbook *workbook);
+
+DEPRECATED(lxw_workbook *new_workbook(const char *filename),
+           "use 'workbook_new' instead");
+DEPRECATED(lxw_workbook *new_workbook_opt(const char *filename,
+                                          lxw_workbook_options *options),
+           "use 'workbook_new_opt()' instead");
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

@@ -225,9 +225,9 @@ lxw_chartsheet_assemble_xml_file(lxw_chartsheet *self)
  */
 lxw_error
 chartsheet_set_chart_opt(lxw_chartsheet *self,
-                         lxw_chart *chart, lxw_image_options *user_options)
+                         lxw_chart *chart, lxw_chart_options *user_options)
 {
-    lxw_image_options *options;
+    lxw_object_properties *object_props;
     lxw_chart_series *series;
 
     if (!chart) {
@@ -260,32 +260,33 @@ chartsheet_set_chart_opt(lxw_chartsheet *self,
         }
     }
 
-    /* Create a new object to hold the chart image options. */
-    options = calloc(1, sizeof(lxw_image_options));
-    RETURN_ON_MEM_ERROR(options, LXW_ERROR_MEMORY_MALLOC_FAILED);
+    /* Create a new object to hold the chart image properties. */
+    object_props = calloc(1, sizeof(lxw_object_properties));
+    RETURN_ON_MEM_ERROR(object_props, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     if (user_options) {
-        options->x_offset = user_options->x_offset;
-        options->y_offset = user_options->y_offset;
-        options->x_scale = user_options->x_scale;
-        options->y_scale = user_options->y_scale;
+        object_props->x_offset = user_options->x_offset;
+        object_props->y_offset = user_options->y_offset;
+        object_props->x_scale = user_options->x_scale;
+        object_props->y_scale = user_options->y_scale;
     }
 
     /* TODO. Read defaults from chart. */
-    options->width = 480;
-    options->height = 288;
+    object_props->width = 480;
+    object_props->height = 288;
 
-    if (!options->x_scale)
-        options->x_scale = 1;
+    if (!object_props->x_scale)
+        object_props->x_scale = 1;
 
-    if (!options->y_scale)
-        options->y_scale = 1;
+    if (!object_props->y_scale)
+        object_props->y_scale = 1;
 
     /* Store chart references so they can be ordered in the workbook. */
-    options->chart = chart;
+    object_props->chart = chart;
 
     /* Store the chart data in the embedded worksheet. */
-    STAILQ_INSERT_TAIL(self->worksheet->chart_data, options, list_pointers);
+    STAILQ_INSERT_TAIL(self->worksheet->chart_data, object_props,
+                       list_pointers);
 
     chart->in_use = LXW_TRUE;
     chart->is_chartsheet = LXW_TRUE;
@@ -385,7 +386,7 @@ void
 chartsheet_protect(lxw_chartsheet *self, const char *password,
                    lxw_protection *options)
 {
-    struct lxw_protection *protect = &self->protection;
+    struct lxw_protection_obj *protect = &self->protection;
 
     /* Copy any user parameters to the internal structure. */
     if (options) {

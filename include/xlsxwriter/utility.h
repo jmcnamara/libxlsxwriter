@@ -17,6 +17,9 @@
 #define __LXW_UTILITY_H__
 
 #include <stdint.h>
+#ifndef _MSC_VER
+#include <strings.h>
+#endif
 #include "common.h"
 #include "xmlwriter.h"
 
@@ -101,6 +104,20 @@ extern "C" {
 const char *lxw_version(void);
 
 /**
+ * @brief Retrieve the library version ID.
+ *
+ * @return The version ID.
+ *
+ * Get the library version such as "X.Y.Z" as a XYZ integer.
+ *
+ *  @code
+ *      printf("Libxlsxwriter version id = %d\n", lxw_version_id());
+ *  @endcode
+ *
+ */
+uint16_t lxw_version_id(void);
+
+/**
  * @brief Converts a libxlsxwriter error number to a string.
  *
  * The `%lxw_strerror` function converts a libxlsxwriter error number defined
@@ -166,7 +183,15 @@ size_t lxw_utf8_strlen(const char *str);
 
 void lxw_str_tolower(char *str);
 
+/* Define a portable version of strcasecmp(). */
+#ifdef _MSC_VER
+#define lxw_strcasecmp _stricmp
+#else
+#define lxw_strcasecmp strcasecmp
+#endif
+
 FILE *lxw_tmpfile(char *tmpdir);
+FILE *lxw_fopen(const char *filename, const char *mode);
 
 /* Use a user defined function to format doubles in sprintf or else a simple
  * macro (the default). */

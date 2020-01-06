@@ -54,7 +54,6 @@ lxw_free_drawing_object(lxw_drawing_object *drawing_object)
         return;
 
     free(drawing_object->description);
-    free(drawing_object->url);
     free(drawing_object->tip);
 
     free(drawing_object);
@@ -222,10 +221,36 @@ _drawing_write_to(lxw_drawing *self, lxw_drawing_coords *coords)
 }
 
 /*
+ * Write the <a:hlinkClick> element.
+ */
+STATIC void
+_drawing_write_a_hlink_click(lxw_drawing *self, uint32_t rel_index, char *tip)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char xmlns_r[] = "http://schemas.openxmlformats.org/"
+        "officeDocument/2006/relationships";
+    char r_id[LXW_MAX_ATTRIBUTE_LENGTH];
+
+    lxw_snprintf(r_id, LXW_ATTR_32, "rId%d", rel_index);
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:r", xmlns_r);
+    LXW_PUSH_ATTRIBUTES_STR("r:id", r_id);
+
+    if (tip)
+        LXW_PUSH_ATTRIBUTES_STR("tooltip", tip);
+
+    lxw_xml_empty_tag(self->file, "a:hlinkClick", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <xdr:cNvPr> element.
  */
 STATIC void
-_drawing_write_c_nv_pr(lxw_drawing *self, char *object_name, uint16_t index,
+_drawing_write_c_nv_pr(lxw_drawing *self, char *object_name, uint32_t index,
                        lxw_drawing_object *drawing_object)
 {
     struct xml_attribute_list attributes;
@@ -239,10 +264,24 @@ _drawing_write_c_nv_pr(lxw_drawing *self, char *object_name, uint16_t index,
     LXW_PUSH_ATTRIBUTES_INT("id", index + 1);
     LXW_PUSH_ATTRIBUTES_STR("name", name);
 
-    if (drawing_object && drawing_object->description)
+    if (drawing_object && drawing_object->description
+        && strlen(drawing_object->description)) {
         LXW_PUSH_ATTRIBUTES_STR("descr", drawing_object->description);
+    }
 
-    lxw_xml_empty_tag(self->file, "xdr:cNvPr", &attributes);
+    if (drawing_object && drawing_object->url_rel_index) {
+        lxw_xml_start_tag(self->file, "xdr:cNvPr", &attributes);
+
+        /* Write the a:hlinkClick element. */
+        _drawing_write_a_hlink_click(self,
+                                     drawing_object->url_rel_index,
+                                     drawing_object->tip);
+
+        lxw_xml_end_tag(self->file, "xdr:cNvPr");
+    }
+    else {
+        lxw_xml_empty_tag(self->file, "xdr:cNvPr", &attributes);
+    }
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -282,7 +321,7 @@ _drawing_write_c_nv_pic_pr(lxw_drawing *self)
  * Write the <xdr:nvPicPr> element.
  */
 STATIC void
-_drawing_write_nv_pic_pr(lxw_drawing *self, uint16_t index,
+_drawing_write_nv_pic_pr(lxw_drawing *self, uint32_t index,
                          lxw_drawing_object *drawing_object)
 {
     lxw_xml_start_tag(self->file, "xdr:nvPicPr", NULL);
@@ -300,7 +339,7 @@ _drawing_write_nv_pic_pr(lxw_drawing *self, uint16_t index,
  * Write the <a:blip> element.
  */
 STATIC void
-_drawing_write_a_blip(lxw_drawing *self, uint16_t index)
+_drawing_write_a_blip(lxw_drawing *self, uint32_t index)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -345,7 +384,7 @@ _drawing_write_a_stretch(lxw_drawing *self)
  * Write the <xdr:blipFill> element.
  */
 STATIC void
-_drawing_write_blip_fill(lxw_drawing *self, uint16_t index)
+_drawing_write_blip_fill(lxw_drawing *self, uint32_t index)
 {
     lxw_xml_start_tag(self->file, "xdr:blipFill", NULL);
 
@@ -463,7 +502,7 @@ _drawing_write_sp_pr(lxw_drawing *self, lxw_drawing_object *drawing_object)
  * Write the <xdr:pic> element.
  */
 STATIC void
-_drawing_write_pic(lxw_drawing *self, uint16_t index,
+_drawing_write_pic(lxw_drawing *self, uint32_t index,
                    lxw_drawing_object *drawing_object)
 {
     lxw_xml_start_tag(self->file, "xdr:pic", NULL);
@@ -472,7 +511,7 @@ _drawing_write_pic(lxw_drawing *self, uint16_t index,
     _drawing_write_nv_pic_pr(self, index, drawing_object);
 
     /* Write the xdr:blipFill element. */
-    _drawing_write_blip_fill(self, index);
+    _drawing_write_blip_fill(self, drawing_object->rel_index);
 
     /* Write the xdr:spPr element. */
     _drawing_write_sp_pr(self, drawing_object);
@@ -529,7 +568,7 @@ _drawing_write_c_nv_graphic_frame_pr(lxw_drawing *self)
  * Write the <xdr:nvGraphicFramePr> element.
  */
 STATIC void
-_drawing_write_nv_graphic_frame_pr(lxw_drawing *self, uint16_t index)
+_drawing_write_nv_graphic_frame_pr(lxw_drawing *self, uint32_t index)
 {
     lxw_xml_start_tag(self->file, "xdr:nvGraphicFramePr", NULL);
 
@@ -599,7 +638,7 @@ _drawing_write_xfrm(lxw_drawing *self)
  * Write the <c:chart> element.
  */
 STATIC void
-_drawing_write_chart(lxw_drawing *self, uint16_t index)
+_drawing_write_chart(lxw_drawing *self, uint32_t index)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -623,7 +662,7 @@ _drawing_write_chart(lxw_drawing *self, uint16_t index)
  * Write the <a:graphicData> element.
  */
 STATIC void
-_drawing_write_a_graphic_data(lxw_drawing *self, uint16_t index)
+_drawing_write_a_graphic_data(lxw_drawing *self, uint32_t index)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -646,7 +685,7 @@ _drawing_write_a_graphic_data(lxw_drawing *self, uint16_t index)
  * Write the <a:graphic> element.
  */
 STATIC void
-_drawing_write_a_graphic(lxw_drawing *self, uint16_t index)
+_drawing_write_a_graphic(lxw_drawing *self, uint32_t index)
 {
 
     lxw_xml_start_tag(self->file, "a:graphic", NULL);
@@ -661,7 +700,8 @@ _drawing_write_a_graphic(lxw_drawing *self, uint16_t index)
  * Write the <xdr:graphicFrame> element.
  */
 STATIC void
-_drawing_write_graphic_frame(lxw_drawing *self, uint16_t index)
+_drawing_write_graphic_frame(lxw_drawing *self, uint32_t index,
+                             uint32_t rel_index)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -678,7 +718,7 @@ _drawing_write_graphic_frame(lxw_drawing *self, uint16_t index)
     _drawing_write_xfrm(self);
 
     /* Write the a:graphic element. */
-    _drawing_write_a_graphic(self, index);
+    _drawing_write_a_graphic(self, rel_index);
 
     lxw_xml_end_tag(self->file, "xdr:graphicFrame");
 
@@ -689,7 +729,7 @@ _drawing_write_graphic_frame(lxw_drawing *self, uint16_t index)
  * Write the <xdr:twoCellAnchor> element.
  */
 STATIC void
-_drawing_write_two_cell_anchor(lxw_drawing *self, uint16_t index,
+_drawing_write_two_cell_anchor(lxw_drawing *self, uint32_t index,
                                lxw_drawing_object *drawing_object)
 {
     struct xml_attribute_list attributes;
@@ -712,7 +752,7 @@ _drawing_write_two_cell_anchor(lxw_drawing *self, uint16_t index,
 
     if (drawing_object->anchor_type == LXW_ANCHOR_TYPE_CHART) {
         /* Write the xdr:graphicFrame element for charts. */
-        _drawing_write_graphic_frame(self, index);
+        _drawing_write_graphic_frame(self, index, drawing_object->rel_index);
     }
     else if (drawing_object->anchor_type == LXW_ANCHOR_TYPE_IMAGE) {
         /* Write the xdr:pic element. */
@@ -772,7 +812,7 @@ _drawing_write_pos(lxw_drawing *self, int32_t x, int32_t y)
  * Write the <xdr:absoluteAnchor> element.
  */
 STATIC void
-_drawing_write_absolute_anchor(lxw_drawing *self)
+_drawing_write_absolute_anchor(lxw_drawing *self, uint32_t frame_index)
 {
     lxw_xml_start_tag(self->file, "xdr:absoluteAnchor", NULL);
 
@@ -791,7 +831,7 @@ _drawing_write_absolute_anchor(lxw_drawing *self)
         _drawing_write_ext(self, 6162675, 6124575);
     }
 
-    _drawing_write_graphic_frame(self, 1);
+    _drawing_write_graphic_frame(self, frame_index, frame_index);
 
     /* Write the xdr:clientData element. */
     _drawing_write_client_data(self);
@@ -811,7 +851,7 @@ _drawing_write_absolute_anchor(lxw_drawing *self)
 void
 lxw_drawing_assemble_xml_file(lxw_drawing *self)
 {
-    uint16_t index;
+    uint32_t index;
     lxw_drawing_object *drawing_object;
 
     /* Write the XML declaration. */
@@ -830,7 +870,7 @@ lxw_drawing_assemble_xml_file(lxw_drawing *self)
     }
     else {
         /* Write the xdr:absoluteAnchor element. Mainly for chartsheets. */
-        _drawing_write_absolute_anchor(self);
+        _drawing_write_absolute_anchor(self, 1);
     }
 
     lxw_xml_end_tag(self->file, "xdr:wsDr");

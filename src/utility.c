@@ -21,20 +21,26 @@ char *error_strings[LXW_MAX_ERRNO + 1] = {
     "Error creating output xlsx file. Usually a permissions error.",
     "Error encountered when creating a tmpfile during file assembly.",
     "Error reading a tmpfile.",
-    "Zlib error with a file operation while creating xlsx file.",
-    "Zlib error when adding sub file to xlsx file.",
-    "Zlib error when closing xlsx file.",
+    "Zip generic error ZIP_ERRNO while creating the xlsx file.",
+    "Zip error ZIP_PARAMERROR while creating the xlsx file.",
+    "Zip error ZIP_BADZIPFILE (use_zip64 option may be required).",
+    "Zip error ZIP_INTERNALERROR while creating the xlsx file.",
+    "File error or unknown zip error when adding sub file to xlsx file.",
+    "Unknown zip error when closing xlsx file.",
     "NULL function parameter ignored.",
     "Function parameter validation error.",
     "Worksheet name exceeds Excel's limit of 31 characters.",
-    "Worksheet name contains invalid Excel character: '[]:*?/\\'",
+    "Worksheet name cannot contain invalid characters: '[ ] : * ? / \\'",
+    "Worksheet name cannot start or end with an apostrophe.",
     "Worksheet name is already in use.",
+    "Worksheet name 'History' is reserved by Excel.",
     "Parameter exceeds Excel's limit of 32 characters.",
     "Parameter exceeds Excel's limit of 128 characters.",
     "Parameter exceeds Excel's limit of 255 characters.",
     "String exceeds Excel's limit of 32,767 characters.",
     "Error finding internal string index.",
     "Worksheet row or column index out of range.",
+    "Maximum hyperlink length (2079) exceeded.",
     "Maximum number of worksheet URLs (65530) exceeded.",
     "Couldn't read image dimensions or DPI.",
     "Unknown error number."
@@ -556,12 +562,21 @@ lxw_sprintf_dbl(char *data, double number)
 #endif
 
 /*
- * Retrieve runtime library version
+ * Retrieve runtime library version.
  */
 const char *
 lxw_version(void)
 {
     return LXW_VERSION;
+}
+
+/*
+ * Retrieve runtime library version ID.
+ */
+uint16_t
+lxw_version_id(void)
+{
+    return LXW_VERSION_ID;
 }
 
 /*
@@ -595,3 +610,45 @@ lxw_hash_password(const char *password)
 
     return hash;
 }
+
+/* Make a simple portable version of fopen() for Windows. */
+#ifdef __MINGW32__
+#undef _WIN32
+#endif
+
+#ifdef _WIN32
+
+#include <windows.h>
+
+FILE *
+lxw_fopen(const char *filename, const char *mode)
+{
+    int n;
+    wchar_t wide_filename[_MAX_PATH + 1] = L"";
+    wchar_t wide_mode[_MAX_PATH + 1] = L"";
+
+    n = MultiByteToWideChar(CP_UTF8, 0, filename, (int) strlen(filename),
+                            wide_filename, _MAX_PATH);
+
+    if (n == 0) {
+        LXW_ERROR("MultiByteToWideChar error: filename");
+        return NULL;
+    }
+
+    n = MultiByteToWideChar(CP_UTF8, 0, mode, (int) strlen(mode),
+                            wide_mode, _MAX_PATH);
+
+    if (n == 0) {
+        LXW_ERROR("MultiByteToWideChar error: mode");
+        return NULL;
+    }
+
+    return _wfopen(wide_filename, wide_mode);
+}
+#else
+FILE *
+lxw_fopen(const char *filename, const char *mode)
+{
+    return fopen(filename, mode);
+}
+#endif

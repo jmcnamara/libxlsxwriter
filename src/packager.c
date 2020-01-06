@@ -76,7 +76,7 @@ _open_zipfile_win32(const char *filename)
  * Create a new packager object.
  */
 lxw_packager *
-lxw_packager_new(const char *filename, char *tmpdir)
+lxw_packager_new(const char *filename, char *tmpdir, uint8_t use_zip64)
 {
     lxw_packager *packager = calloc(1, sizeof(lxw_packager));
     GOTO_LABEL_ON_MEM_ERROR(packager, mem_error);
@@ -89,6 +89,7 @@ lxw_packager_new(const char *filename, char *tmpdir)
     GOTO_LABEL_ON_MEM_ERROR(packager->filename, mem_error);
 
     packager->buffer_size = LXW_ZIP_BUFFER_SIZE;
+    packager->use_zip64 = use_zip64;
 
     /* Initialize the zip_fileinfo struct to Jan 1 1980 like Excel. */
     packager->zipfile_info.tmz_date.tm_sec = 0;
@@ -170,7 +171,7 @@ _write_worksheet_files(lxw_packager *self)
     lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
-    uint16_t index = 1;
+    uint32_t index = 1;
     lxw_error err;
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
@@ -210,7 +211,7 @@ _write_chartsheet_files(lxw_packager *self)
     lxw_sheet *sheet;
     lxw_chartsheet *chartsheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
-    uint16_t index = 1;
+    uint32_t index = 1;
     lxw_error err;
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
@@ -246,12 +247,12 @@ _write_image_files(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     lxw_sheet *sheet;
     lxw_worksheet *worksheet;
-    lxw_image_options *image;
+    lxw_object_properties *object_props;
     lxw_error err;
     FILE *image_stream;
 
     char filename[LXW_FILENAME_LENGTH] = { 0 };
-    uint16_t index = 1;
+    uint32_t index = 1;
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
         if (sheet->is_chartsheet)
@@ -259,21 +260,25 @@ _write_image_files(lxw_packager *self)
         else
             worksheet = sheet->u.worksheet;
 
-        if (STAILQ_EMPTY(worksheet->image_data))
+        if (STAILQ_EMPTY(worksheet->image_props))
             continue;
 
-        STAILQ_FOREACH(image, worksheet->image_data, list_pointers) {
+        STAILQ_FOREACH(object_props, worksheet->image_props, list_pointers) {
+
+            if (object_props->is_duplicate)
+                continue;
 
             lxw_snprintf(filename, LXW_FILENAME_LENGTH,
-                         "xl/media/image%d.%s", index++, image->extension);
+                         "xl/media/image%d.%s", index++,
+                         object_props->extension);
 
-            if (!image->is_image_buffer) {
+            if (!object_props->is_image_buffer) {
                 /* Check that the image file exists and can be opened. */
-                image_stream = fopen(image->filename, "rb");
+                image_stream = lxw_fopen(object_props->filename, "rb");
                 if (!image_stream) {
                     LXW_WARN_FORMAT1("Error adding image to xlsx file: file "
                                      "doesn't exist or can't be opened: %s.",
-                                     image->filename);
+                                     object_props->filename);
                     return LXW_ERROR_CREATING_TMPFILE;
                 }
 
@@ -282,13 +287,43 @@ _write_image_files(lxw_packager *self)
             }
             else {
                 err = _add_buffer_to_zip(self,
-                                         image->image_buffer,
-                                         image->image_buffer_size, filename);
+                                         object_props->image_buffer,
+                                         object_props->image_buffer_size,
+                                         filename);
             }
 
             RETURN_ON_ERROR(err);
         }
     }
+
+    return LXW_NO_ERROR;
+}
+
+/*
+ * Write the xl/vbaProject.bin file.
+ */
+STATIC lxw_error
+_add_vba_project(lxw_packager *self)
+{
+    lxw_workbook *workbook = self->workbook;
+    lxw_error err;
+    FILE *image_stream;
+
+    if (!workbook->vba_project)
+        return LXW_NO_ERROR;
+
+    /* Check that the image file exists and can be opened. */
+    image_stream = lxw_fopen(workbook->vba_project, "rb");
+    if (!image_stream) {
+        LXW_WARN_FORMAT1("Error adding vbaProject.bin to xlsx file: "
+                         "file doesn't exist or can't be opened: %s.",
+                         workbook->vba_project);
+        return LXW_ERROR_CREATING_TMPFILE;
+    }
+
+    err = _add_file_to_zip(self, image_stream, "xl/vbaProject.bin");
+    fclose(image_stream);
+    RETURN_ON_ERROR(err);
 
     return LXW_NO_ERROR;
 }
@@ -302,7 +337,7 @@ _write_chart_files(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     lxw_chart *chart;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
-    uint16_t index = 1;
+    uint32_t index = 1;
     lxw_error err;
 
     STAILQ_FOREACH(chart, workbook->ordered_charts, ordered_list_pointers) {
@@ -319,12 +354,27 @@ _write_chart_files(lxw_packager *self)
         err = _add_file_to_zip(self, chart->file, sheetname);
         RETURN_ON_ERROR(err);
 
-        self->chart_count++;
-
         fclose(chart->file);
     }
 
     return LXW_NO_ERROR;
+}
+
+/*
+ * Count the chart files.
+ */
+uint32_t
+_get_chart_count(lxw_packager *self)
+{
+    lxw_workbook *workbook = self->workbook;
+    lxw_chart *chart;
+    uint32_t chart_count = 0;
+
+    STAILQ_FOREACH(chart, workbook->ordered_charts, ordered_list_pointers) {
+        chart_count++;
+    }
+
+    return chart_count;
 }
 
 /*
@@ -338,7 +388,7 @@ _write_drawing_files(lxw_packager *self)
     lxw_worksheet *worksheet;
     lxw_drawing *drawing;
     char filename[LXW_FILENAME_LENGTH] = { 0 };
-    uint16_t index = 1;
+    uint32_t index = 1;
     lxw_error err;
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
@@ -362,12 +412,37 @@ _write_drawing_files(lxw_packager *self)
             RETURN_ON_ERROR(err);
 
             fclose(drawing->file);
-
-            self->drawing_count++;
         }
     }
 
     return LXW_NO_ERROR;
+}
+
+/*
+ * Count  the drawing files.
+ */
+uint32_t
+_get_drawing_count(lxw_packager *self)
+{
+    lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
+    lxw_worksheet *worksheet;
+    lxw_drawing *drawing;
+    uint32_t drawing_count = 0;
+
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            worksheet = sheet->u.chartsheet->worksheet;
+        else
+            worksheet = sheet->u.worksheet;
+
+        drawing = worksheet->drawing;
+
+        if (drawing)
+            drawing_count++;
+    }
+
+    return drawing_count;
 }
 
 /*
@@ -409,7 +484,7 @@ _write_app_file(lxw_packager *self)
     lxw_chartsheet *chartsheet;
     lxw_defined_name *defined_name;
     lxw_app *app;
-    uint16_t named_range_count = 0;
+    uint32_t named_range_count = 0;
     char *autofilter;
     char *has_range;
     char number[LXW_ATTR_32] = { 0 };
@@ -654,9 +729,11 @@ _write_content_types_file(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     lxw_sheet *sheet;
     char filename[LXW_MAX_ATTRIBUTE_LENGTH] = { 0 };
-    uint16_t index = 1;
-    uint16_t worksheet_index = 1;
-    uint16_t chartsheet_index = 1;
+    uint32_t index = 1;
+    uint32_t worksheet_index = 1;
+    uint32_t chartsheet_index = 1;
+    uint32_t drawing_count = _get_drawing_count(self);
+    uint32_t chart_count = _get_chart_count(self);
     lxw_error err = LXW_NO_ERROR;
 
     if (!content_types) {
@@ -679,6 +756,17 @@ _write_content_types_file(lxw_packager *self)
     if (workbook->has_bmp)
         lxw_ct_add_default(content_types, "bmp", "image/bmp");
 
+    if (workbook->vba_project)
+        lxw_ct_add_default(content_types, "bin",
+                           "application/vnd.ms-office.vbaProject");
+
+    if (workbook->vba_project)
+        lxw_ct_add_override(content_types, "/xl/workbook.xml",
+                            LXW_APP_MSEXCEL "sheet.macroEnabled.main+xml");
+    else
+        lxw_ct_add_override(content_types, "/xl/workbook.xml",
+                            LXW_APP_DOCUMENT "spreadsheetml.sheet.main+xml");
+
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
         if (sheet->is_chartsheet) {
             lxw_snprintf(filename, LXW_FILENAME_LENGTH,
@@ -692,13 +780,13 @@ _write_content_types_file(lxw_packager *self)
         }
     }
 
-    for (index = 1; index <= self->chart_count; index++) {
+    for (index = 1; index <= chart_count; index++) {
         lxw_snprintf(filename, LXW_FILENAME_LENGTH, "/xl/charts/chart%d.xml",
                      index);
         lxw_ct_add_chart_name(content_types, filename);
     }
 
-    for (index = 1; index <= self->drawing_count; index++) {
+    for (index = 1; index <= drawing_count; index++) {
         lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                      "/xl/drawings/drawing%d.xml", index);
         lxw_ct_add_drawing_name(content_types, filename);
@@ -732,8 +820,8 @@ _write_workbook_rels_file(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     lxw_sheet *sheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
-    uint16_t worksheet_index = 1;
-    uint16_t chartsheet_index = 1;
+    uint32_t worksheet_index = 1;
+    uint32_t chartsheet_index = 1;
     lxw_error err = LXW_NO_ERROR;
 
     if (!rels) {
@@ -769,6 +857,10 @@ _write_workbook_rels_file(lxw_packager *self)
         lxw_add_document_relationship(rels, "/sharedStrings",
                                       "sharedStrings.xml");
 
+    if (workbook->vba_project)
+        lxw_add_ms_package_relationship(rels, "/vbaProject",
+                                        "vbaProject.bin");
+
     lxw_relationships_assemble_xml_file(rels);
 
     err = _add_file_to_zip(self, rels->file, "xl/_rels/workbook.xml.rels");
@@ -794,7 +886,7 @@ _write_worksheet_rels_file(lxw_packager *self)
     lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
-    uint16_t index = 0;
+    uint32_t index = 0;
     lxw_error err;
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
@@ -856,7 +948,7 @@ _write_chartsheet_rels_file(lxw_packager *self)
     lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
-    uint16_t index = 0;
+    uint32_t index = 0;
     lxw_error err;
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
@@ -918,7 +1010,7 @@ _write_drawing_rels_file(lxw_packager *self)
     lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
-    uint16_t index = 1;
+    uint32_t index = 1;
     lxw_error err;
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
@@ -1024,7 +1116,8 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
                                     NULL, 0, NULL, 0, NULL,
                                     Z_DEFLATED, Z_DEFAULT_COMPRESSION, 0,
                                     -MAX_WBITS, DEF_MEM_LEVEL,
-                                    Z_DEFAULT_STRATEGY, NULL, 0, 0, 0, 0);
+                                    Z_DEFAULT_STRATEGY, NULL, 0, 0, 0,
+                                    self->use_zip64);
 
     if (error != ZIP_OK) {
         LXW_ERROR("Error adding member to zipfile");
@@ -1056,15 +1149,10 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
         size_read = fread(self->buffer, 1, self->buffer_size, file);
     }
 
-    if (error < 0) {
+    error = zipCloseFileInZip(self->zipfile);
+    if (error != ZIP_OK) {
+        LXW_ERROR("Error in closing member in the zipfile");
         RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
-    }
-    else {
-        error = zipCloseFileInZip(self->zipfile);
-        if (error != ZIP_OK) {
-            LXW_ERROR("Error in closing member in the zipfile");
-            RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
-        }
     }
 
     return LXW_NO_ERROR;
@@ -1082,7 +1170,8 @@ _add_buffer_to_zip(lxw_packager *self, unsigned char *buffer,
                                     NULL, 0, NULL, 0, NULL,
                                     Z_DEFLATED, Z_DEFAULT_COMPRESSION, 0,
                                     -MAX_WBITS, DEF_MEM_LEVEL,
-                                    Z_DEFAULT_STRATEGY, NULL, 0, 0, 0, 0);
+                                    Z_DEFAULT_STRATEGY, NULL, 0, 0, 0,
+                                    self->use_zip64);
 
     if (error != ZIP_OK) {
         LXW_ERROR("Error adding member to zipfile");
@@ -1097,15 +1186,10 @@ _add_buffer_to_zip(lxw_packager *self, unsigned char *buffer,
         RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
     }
 
-    if (error < 0) {
+    error = zipCloseFileInZip(self->zipfile);
+    if (error != ZIP_OK) {
+        LXW_ERROR("Error in closing member in the zipfile");
         RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
-    }
-    else {
-        error = zipCloseFileInZip(self->zipfile);
-        if (error != ZIP_OK) {
-            LXW_ERROR("Error in closing member in the zipfile");
-            RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
-        }
     }
 
     return LXW_NO_ERROR;
@@ -1119,6 +1203,15 @@ lxw_create_package(lxw_packager *self)
 {
     lxw_error error;
     int8_t zip_error;
+
+    error = _write_content_types_file(self);
+    RETURN_ON_ERROR(error);
+
+    error = _write_root_rels_file(self);
+    RETURN_ON_ERROR(error);
+
+    error = _write_workbook_rels_file(self);
+    RETURN_ON_ERROR(error);
 
     error = _write_worksheet_files(self);
     RETURN_ON_ERROR(error);
@@ -1138,12 +1231,6 @@ lxw_create_package(lxw_packager *self)
     error = _write_shared_strings_file(self);
     RETURN_ON_ERROR(error);
 
-    error = _write_app_file(self);
-    RETURN_ON_ERROR(error);
-
-    error = _write_core_file(self);
-    RETURN_ON_ERROR(error);
-
     error = _write_custom_file(self);
     RETURN_ON_ERROR(error);
 
@@ -1151,12 +1238,6 @@ lxw_create_package(lxw_packager *self)
     RETURN_ON_ERROR(error);
 
     error = _write_styles_file(self);
-    RETURN_ON_ERROR(error);
-
-    error = _write_content_types_file(self);
-    RETURN_ON_ERROR(error);
-
-    error = _write_workbook_rels_file(self);
     RETURN_ON_ERROR(error);
 
     error = _write_worksheet_rels_file(self);
@@ -1171,7 +1252,13 @@ lxw_create_package(lxw_packager *self)
     error = _write_image_files(self);
     RETURN_ON_ERROR(error);
 
-    error = _write_root_rels_file(self);
+    error = _add_vba_project(self);
+    RETURN_ON_ERROR(error);
+
+    error = _write_core_file(self);
+    RETURN_ON_ERROR(error);
+
+    error = _write_app_file(self);
     RETURN_ON_ERROR(error);
 
     zip_error = zipClose(self->zipfile, NULL);

@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_data_validation01.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_data_validation01.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     char *list[] = {"Foo", "Bar", "Baz", NULL};
 

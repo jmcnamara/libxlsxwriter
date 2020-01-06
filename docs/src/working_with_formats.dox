@@ -141,6 +141,82 @@ of adding italic to any previous uses of `format`. The result in this case is
 that "Hello" and "World" will both appear as bold and italic.
 
 
+@section ww_formats_categories Number Format Categories
+
+The `format_set_num_format()` function shown below, is used to set the number
+format for numbers used with `worksheet_write_number()`:
+
+@code
+    #include "xlsxwriter.h"
+
+    int main() {
+
+        lxw_workbook  *workbook  = workbook_new("currency_format.xlsx");
+        lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+
+        lxw_format *currency_format = workbook_add_format(workbook);
+
+        format_set_num_format(currency_format, "$#,##0.00");
+
+        worksheet_write_number(worksheet, 0, 0, 1234.56, currency_format);
+
+        workbook_close(workbook);
+
+        return 0;
+    }
+    @endcode
+
+If the number format you use is the same as one of Excel's built in number
+formats then it will have a number category such as "General", "Number",
+"Currency", "Accounting", "Date", "Time", "Percentage", "Fraction",
+"Scientific", "Text", "Special or "Custom". In the case of the example above
+the formatted output shows up as a Number category:
+
+@image html currency_format1.png
+
+If we wanted it to have a different category, such as Currency, then
+we would have to match the number format string with the number format used by
+Excel. The easiest way to do this is to open the Number Formatting dialog in
+Excel and set the format that you want:
+
+@image html currency_format2.png
+
+Then, while still in the dialog, change to Custom. The format displayed is the
+format used by Excel.
+
+@image html currency_format3.png
+
+If we put the format that we found (`"[$$-409]#,##0.00"`) into our previous
+example and rerun it we will get a number format in the Currency category:
+
+@code
+    include "xlsxwriter.h"
+
+    int main() {
+
+        lxw_workbook  *workbook  = workbook_new("currency_format.xlsx");
+        lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+
+        lxw_format *currency_format = workbook_add_format(workbook);
+
+        format_set_num_format(currency_format, "[$$-409]#,##0.00");
+
+        worksheet_write_number(worksheet, 0, 0, 1234.56, currency_format);
+
+        workbook_close(workbook);
+
+        return 0;
+    }
+    @endcode
+
+Here is the output:
+
+@image html currency_format4.png
+
+The same process can be used to find format strings for "Date" or
+"Accountancy" formats.
+
+
 Next: @ref working_with_colors
 
 

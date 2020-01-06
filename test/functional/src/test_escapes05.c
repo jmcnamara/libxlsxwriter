@@ -15,6 +15,8 @@ int main() {
     lxw_worksheet *worksheet1 = workbook_add_worksheet(workbook, "Start");
     lxw_worksheet *worksheet2 = workbook_add_worksheet(workbook, "A & B");
 
+    workbook_unset_default_url_format(workbook);
+
     (void)worksheet2;
 
     worksheet_write_url_opt(worksheet1, CELL("A1"), "internal:'A & B'!A1", NULL, "Jump to A & B" , NULL);

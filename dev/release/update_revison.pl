@@ -24,7 +24,15 @@ while (<>) {
         }
 
         my $new_version = $version->stringify();
-        s/(\d\.\d\.\d)/$new_version/;
+        s/\d\.\d\.\d/$new_version/;
+    }
+
+    # Increment the LXW_VERSION_ID number in xlsxwriter.h
+    if (m/LXW_VERSION_ID (\d+)/) {
+        my $version = $1;
+        my $new_version = $version + 1;
+
+        s/\d+/$new_version/;
     }
 
     print;

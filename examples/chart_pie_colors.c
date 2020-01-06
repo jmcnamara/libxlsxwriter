@@ -19,7 +19,7 @@
  */
 int main() {
 
-    lxw_workbook     *workbook  = new_workbook("chart_pie_colors.xlsx");
+    lxw_workbook     *workbook  = workbook_new("chart_pie_colors.xlsx");
     lxw_worksheet    *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_chart_series *series;
 

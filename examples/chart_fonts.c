@@ -12,7 +12,7 @@
 /* Create a worksheet with a chart. */
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("chart_fonts.xlsx");
+    lxw_workbook  *workbook  = workbook_new("chart_fonts.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
     /* Write some data for the chart. */

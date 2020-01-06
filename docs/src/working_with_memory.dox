@@ -67,7 +67,7 @@ Currently the library isn't highly optimized. Also, the library is currently
 single threaded.
 
 
-Next: @ref examples
+Next: @ref working_with_macros
 
 
 */

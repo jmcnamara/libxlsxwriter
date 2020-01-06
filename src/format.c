@@ -30,6 +30,7 @@ lxw_format_new(void)
 
     format->xf_index = LXW_PROPERTY_UNSET;
     format->dxf_index = LXW_PROPERTY_UNSET;
+    format->xf_id = 0;
 
     format->font_name[0] = '\0';
     format->font_scheme[0] = '\0';
@@ -42,7 +43,7 @@ lxw_format_new(void)
     format->bold = LXW_FALSE;
     format->italic = LXW_FALSE;
     format->font_color = LXW_COLOR_UNSET;
-    format->underline = LXW_FALSE;
+    format->underline = LXW_UNDERLINE_NONE;
     format->font_strikeout = LXW_FALSE;
     format->font_outline = LXW_FALSE;
     format->font_shadow = LXW_FALSE;
@@ -51,7 +52,7 @@ lxw_format_new(void)
     format->font_charset = LXW_FALSE;
     format->font_condense = LXW_FALSE;
     format->font_extend = LXW_FALSE;
-    format->theme = LXW_FALSE;
+    format->theme = 0;
     format->hyperlink = LXW_FALSE;
 
     format->hidden = LXW_FALSE;
@@ -120,7 +121,7 @@ lxw_format_free(lxw_format *format)
  * Check a user input color.
  */
 lxw_color_t
-lxw_format_check_color(lxw_color_t color)
+lxw_format_check_colorz(lxw_color_t color)
 {
     if (color == LXW_COLOR_UNSET)
         return color;
@@ -182,8 +183,9 @@ lxw_format_get_font_key(lxw_format *self)
     key->font_size = self->font_size;
     key->bold = self->bold;
     key->italic = self->italic;
-    key->font_color = self->font_color;
     key->underline = self->underline;
+    key->theme = self->theme;
+    key->font_color = self->font_color;
     key->font_strikeout = self->font_strikeout;
     key->font_outline = self->font_outline;
     key->font_shadow = self->font_shadow;
@@ -322,7 +324,7 @@ format_set_font_size(lxw_format *self, double size)
 void
 format_set_font_color(lxw_format *self, lxw_color_t color)
 {
-    self->font_color = lxw_format_check_color(color);
+    self->font_color = color;
 }
 
 /*
@@ -454,7 +456,7 @@ format_set_rotation(lxw_format *self, int16_t angle)
     if (angle == 270) {
         self->rotation = 255;
     }
-    else if (angle >= -90 || angle <= 90) {
+    else if (angle >= -90 && angle <= 90) {
         if (angle < 0)
             angle = -angle + 90;
 
@@ -508,7 +510,7 @@ format_set_pattern(lxw_format *self, uint8_t value)
 void
 format_set_bg_color(lxw_format *self, lxw_color_t color)
 {
-    self->bg_color = lxw_format_check_color(color);
+    self->bg_color = color;
 }
 
 /*
@@ -517,7 +519,7 @@ format_set_bg_color(lxw_format *self, lxw_color_t color)
 void
 format_set_fg_color(lxw_format *self, lxw_color_t color)
 {
-    self->fg_color = lxw_format_check_color(color);
+    self->fg_color = color;
 }
 
 /*
@@ -539,7 +541,6 @@ format_set_border(lxw_format *self, uint8_t style)
 void
 format_set_border_color(lxw_format *self, lxw_color_t color)
 {
-    color = lxw_format_check_color(color);
     self->bottom_color = color;
     self->top_color = color;
     self->left_color = color;
@@ -561,7 +562,7 @@ format_set_bottom(lxw_format *self, uint8_t style)
 void
 format_set_bottom_color(lxw_format *self, lxw_color_t color)
 {
-    self->bottom_color = lxw_format_check_color(color);
+    self->bottom_color = color;
 }
 
 /*
@@ -579,7 +580,7 @@ format_set_left(lxw_format *self, uint8_t style)
 void
 format_set_left_color(lxw_format *self, lxw_color_t color)
 {
-    self->left_color = lxw_format_check_color(color);
+    self->left_color = color;
 }
 
 /*
@@ -597,7 +598,7 @@ format_set_right(lxw_format *self, uint8_t style)
 void
 format_set_right_color(lxw_format *self, lxw_color_t color)
 {
-    self->right_color = lxw_format_check_color(color);
+    self->right_color = color;
 }
 
 /*
@@ -615,7 +616,7 @@ format_set_top(lxw_format *self, uint8_t style)
 void
 format_set_top_color(lxw_format *self, lxw_color_t color)
 {
-    self->top_color = lxw_format_check_color(color);
+    self->top_color = color;
 }
 
 /*
@@ -634,7 +635,7 @@ format_set_diag_type(lxw_format *self, uint8_t type)
 void
 format_set_diag_color(lxw_format *self, lxw_color_t color)
 {
-    self->diag_color = lxw_format_check_color(color);
+    self->diag_color = color;
 }
 
 /*
@@ -725,4 +726,16 @@ void
 format_set_theme(lxw_format *self, uint8_t value)
 {
     self->theme = value;
+}
+
+/*
+ * Set the theme property.
+ */
+void
+format_set_hyperlink(lxw_format *self)
+{
+    self->hyperlink = LXW_TRUE;
+    self->xf_id = 1;
+    self->underline = LXW_UNDERLINE_SINGLE;
+    self->theme = 10;
 }

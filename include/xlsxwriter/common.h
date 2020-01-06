@@ -25,6 +25,14 @@
 #define STATIC
 #endif
 
+#ifdef __GNUC__
+#define DEPRECATED(func, msg) func __attribute__ ((deprecated(msg)))
+#elif defined(_MSC_VER)
+#define DEPRECATED(func, msg) __declspec(deprecated, msg) func
+#else
+#define DEPRECATED(func, msg) func
+#endif
+
 /** Integer data type to represent a row value. Equivalent to `uint32_t`.
  *
  * The maximum row in Excel is 1,048,576.
@@ -68,13 +76,22 @@ typedef enum lxw_error {
     /** Error reading a tmpfile. */
     LXW_ERROR_READING_TMPFILE,
 
-    /** Zlib error with a file operation while creating xlsx file. */
+    /** Zip generic error ZIP_ERRNO while creating the xlsx file. */
     LXW_ERROR_ZIP_FILE_OPERATION,
 
-    /** Zlib error when adding sub file to xlsx file. */
+    /** Zip error ZIP_PARAMERROR while creating the xlsx file. */
+    LXW_ERROR_ZIP_PARAMETER_ERROR,
+
+    /** Zip error ZIP_BADZIPFILE (use_zip64 option may be required). */
+    LXW_ERROR_ZIP_BAD_ZIP_FILE,
+
+    /** Zip error ZIP_INTERNALERROR while creating the xlsx file. */
+    LXW_ERROR_ZIP_INTERNAL_ERROR,
+
+    /** File error or unknown zip error when adding sub file to xlsx file. */
     LXW_ERROR_ZIP_FILE_ADD,
 
-    /** Zlib error when closing xlsx file. */
+    /** Unknown zip error when closing xlsx file. */
     LXW_ERROR_ZIP_CLOSE,
 
     /** NULL function parameter ignored. */
@@ -86,11 +103,17 @@ typedef enum lxw_error {
     /** Worksheet name exceeds Excel's limit of 31 characters. */
     LXW_ERROR_SHEETNAME_LENGTH_EXCEEDED,
 
-    /** Worksheet name contains invalid Excel character: '[]:*?/\\' */
+    /** Worksheet name cannot contain invalid characters: '[ ] : * ? / \\' */
     LXW_ERROR_INVALID_SHEETNAME_CHARACTER,
+
+    /** Worksheet name cannot start or end with an apostrophe. */
+    LXW_ERROR_SHEETNAME_START_END_APOSTROPHE,
 
     /** Worksheet name is already in use. */
     LXW_ERROR_SHEETNAME_ALREADY_USED,
+
+    /** Worksheet name 'History' is reserved by Excel. */
+    LXW_ERROR_SHEETNAME_RESERVED,
 
     /** Parameter exceeds Excel's limit of 32 characters. */
     LXW_ERROR_32_STRING_LENGTH_EXCEEDED,
@@ -109,6 +132,9 @@ typedef enum lxw_error {
 
     /** Worksheet row or column index out of range. */
     LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE,
+
+    /** Maximum hyperlink length (2079) exceeded. */
+    LXW_ERROR_WORKSHEET_MAX_URL_LENGTH_EXCEEDED,
 
     /** Maximum number of worksheet URLs (65530) exceeded. */
     LXW_ERROR_WORKSHEET_MAX_NUMBER_URLS_EXCEEDED,
@@ -148,6 +174,9 @@ enum lxw_custom_property_types {
     LXW_CUSTOM_BOOLEAN,
     LXW_CUSTOM_DATETIME
 };
+
+/* Size of MD5 byte arrays. */
+#define LXW_MD5_SIZE              16
 
 /* Excel sheetname max of 31 chars. */
 #define LXW_SHEETNAME_MAX         31

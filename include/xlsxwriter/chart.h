@@ -647,9 +647,6 @@ typedef struct lxw_chart_line {
     /** Set the transparency of the line. 0 - 100. Default 0. */
     uint8_t transparency;
 
-    /* Members for internal use only. */
-    uint8_t has_color;
-
 } lxw_chart_line;
 
 /**
@@ -668,9 +665,6 @@ typedef struct lxw_chart_fill {
     /** Set the transparency of the fill. 0 - 100. Default 0. */
     uint8_t transparency;
 
-    /* Members for internal use only. */
-    uint8_t has_color;
-
 } lxw_chart_fill;
 
 /**
@@ -688,10 +682,6 @@ typedef struct lxw_chart_pattern {
 
     /** The pattern type. See #lxw_chart_pattern_type. */
     uint8_t type;
-
-    /* Members for internal use only. */
-    uint8_t has_fg_color;
-    uint8_t has_bg_color;
 
 } lxw_chart_pattern;
 
@@ -717,24 +707,23 @@ typedef struct lxw_chart_font {
     /** The chart font underline property. Set to 0 or 1. */
     uint8_t underline;
 
-    /** The chart font rotation property. Range: -90 to 90. */
+    /** The chart font rotation property. Range: -90 to 90, and 270-271.
+     *  The angle 270 gives a stacked (top to bottom) alignment.
+     *  The angle 271 gives a stacked alignment for East Asian fonts.
+     * */
     int32_t rotation;
 
     /** The chart font color. See @ref working_with_colors. */
     lxw_color_t color;
 
-    /** The chart font pitch family property. Rarely required. set to 0. */
+    /** The chart font pitch family property. Rarely required, set to 0. */
     uint8_t pitch_family;
 
-    /** The chart font character set property. Rarely required. set to 0. */
+    /** The chart font character set property. Rarely required, set to 0. */
     uint8_t charset;
 
-    /** The chart font baseline property. Rarely required. set to 0. */
+    /** The chart font baseline property. Rarely required, set to 0. */
     int8_t baseline;
-
-    /* Members for internal use only. */
-
-    uint8_t has_color;
 
 } lxw_chart_font;
 

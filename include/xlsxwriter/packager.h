@@ -32,11 +32,17 @@
 
 #define LXW_ZIP_BUFFER_SIZE (16384)
 
-/* If zlib returns Z_ERRNO then errno is set and we can trap that. Otherwise
- * return a default libxlsxwriter error. */
+/* If zip returns a ZIP_XXX error then errno is set and we can trap that in
+ * workbook.c. Otherwise return a default libxlsxwriter error. */
 #define RETURN_ON_ZIP_ERROR(err, default_err)   \
-    if (err == Z_ERRNO)                         \
+    if (err == ZIP_ERRNO)                       \
         return LXW_ERROR_ZIP_FILE_OPERATION;    \
+    else if (err == ZIP_PARAMERROR)             \
+        return LXW_ERROR_ZIP_PARAMETER_ERROR;   \
+    else if (err == ZIP_BADZIPFILE)             \
+        return LXW_ERROR_ZIP_BAD_ZIP_FILE;      \
+    else if (err == ZIP_INTERNALERROR)          \
+        return LXW_ERROR_ZIP_INTERNAL_ERROR;    \
     else                                        \
         return default_err;
 
@@ -54,9 +60,7 @@ typedef struct lxw_packager {
     char *filename;
     char *buffer;
     char *tmpdir;
-
-    uint16_t chart_count;
-    uint16_t drawing_count;
+    uint8_t use_zip64;
 
 } lxw_packager;
 
@@ -67,7 +71,8 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_packager *lxw_packager_new(const char *filename, char *tmpdir);
+lxw_packager *lxw_packager_new(const char *filename, char *tmpdir,
+                               uint8_t use_zip64);
 void lxw_packager_free(lxw_packager *packager);
 lxw_error lxw_create_package(lxw_packager *self);
 

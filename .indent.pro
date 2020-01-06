@@ -71,6 +71,7 @@
 -T lxw_chart_line_dash_type
 -T lxw_chart_marker
 -T lxw_chart_marker_type
+-T lxw_chart_options
 -T lxw_chart_pattern
 -T lxw_chart_pattern_type
 -T lxw_chart_point
@@ -87,6 +88,7 @@
 -T lxw_core
 -T lxw_custom
 -T lxw_custom_property
+-T lxw_data_val_obj
 -T lxw_data_validation
 -T lxw_datetime
 -T lxw_defined_name
@@ -94,6 +96,7 @@
 -T lxw_drawing
 -T lxw_drawing_coords
 -T lxw_drawing_object
+-T lxw_drawing_rel_id
 -T lxw_error
 -T lxw_fill
 -T lxw_font
@@ -102,13 +105,16 @@
 -T lxw_hash_table
 -T lxw_header_footer_options
 -T lxw_heading_pair
+-T lxw_image_md5
 -T lxw_image_options
 -T lxw_merged_range
+-T lxw_object_properties
 -T lxw_packager
 -T lxw_panes
 -T lxw_part_name
 -T lxw_print_area
 -T lxw_protection
+-T lxw_protection_obj
 -T lxw_rel_tuple
 -T lxw_relationships
 -T lxw_repeat_cols

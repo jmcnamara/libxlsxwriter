@@ -500,7 +500,7 @@ non-standard document properties.
 <table  width="600">
 <tr>
   <td>@ref doc_custom_properties.c "&lt;&lt; doc_custom_properties.c"</td>
-  <td align="right">@ref hide_row_col.c "hide_row_col.c &gt;&gt;"</td>
+  <td align="right">@ref macro.c "macro.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -511,11 +511,27 @@ Example of setting Excel worksheet protection.
 
 
 
-@example hide_row_col.c
+@example macro.c
 
 <table  width="600">
 <tr>
   <td>@ref worksheet_protection.c "&lt;&lt; worksheet_protection.c"</td>
+  <td align="right">@ref hide_row_col.c "hide_row_col.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example adding a VBA macro to a workbook.
+
+@image html macros.png
+
+
+
+
+@example hide_row_col.c
+
+<table  width="600">
+<tr>
+  <td>@ref macro.c "&lt;&lt; macro.c"</td>
   <td align="right">@ref panes.c "panes.c &gt;&gt;"</td>
 </tr>
 </table>

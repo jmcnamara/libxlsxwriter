@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = new_workbook("test_chart_axis43.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_chart_axis43.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_chart     *chart     = workbook_add_chart(workbook, LXW_CHART_COLUMN);
 
@@ -36,7 +36,7 @@ int main() {
     chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5");
     chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
 
-    chart_axis_set_label_align(chart->x_axis, LXW_CHART_AXIS_LABEL_ALIGN_RIGHT);
+    chart_axis_set_label_align(chart->x_axis, LXW_CHART_AXIS_LABEL_ALIGN_LEFT);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

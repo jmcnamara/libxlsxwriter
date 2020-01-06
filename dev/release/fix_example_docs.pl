@@ -43,6 +43,7 @@ my @examples = (
     [ 'doc_custom_properties.c','Example of setting custom doc properties' ],
     [ 'worksheet_protection.c', 'Example of enabling worksheet protection' ],
     [ 'hide_row_col.c',         'Example of hiding worksheet rows and columns' ],
+    [ 'macro.c',                'Example of adding a VBA macro to a workbook' ],
     [ 'panes.c',                'Example of how to create worksheet panes' ],
     [ 'chart.c',                'Example of a simple column chart' ],
     [ 'chart_area.c',           'Examples of area charts' ],

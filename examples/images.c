@@ -29,10 +29,16 @@ int main() {
     worksheet_insert_image_opt(worksheet, CELL("B12"), "logo.png", &options1);
 
     /* Insert an image with scaling. */
-    worksheet_write_string(worksheet, CELL("A23"), "Insert a scaled image:", NULL);
+    worksheet_write_string(worksheet, CELL("A22"), "Insert a scaled image:", NULL);
 
     lxw_image_options options2 = {.x_scale  = 0.5, .y_scale  = 0.5};
-    worksheet_insert_image_opt(worksheet, CELL("B23"), "logo.png", &options2);
+    worksheet_insert_image_opt(worksheet, CELL("B22"), "logo.png", &options2);
+
+    /* Insert an image with a hyperlink. */
+    worksheet_write_string(worksheet, CELL("A32"), "Insert an image with a hyperlink:", NULL);
+
+    lxw_image_options options3 = {.url = "https://github.com/jmcnamara"};
+    worksheet_insert_image_opt(worksheet, CELL("B32"), "logo.png", &options3);
 
     workbook_close(workbook);
 

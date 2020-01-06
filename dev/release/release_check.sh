@@ -122,7 +122,8 @@ function check_versions {
     echo
     echo "Latest file versions: "
 
-    grep -He "[0-9]\.[0-9]\.[0-9]" include/xlsxwriter.h libxlsxwriter.podspec | sed 's/:/ : /g' | awk '{printf "    | %-24s %s\n", $1, $5}'
+    grep -He "[0-9]\.[0-9]\.[0-9]"       include/xlsxwriter.h libxlsxwriter.podspec | sed 's/:/ : /g' | awk '{printf "    | %-24s %s\n", $1, $5}'
+    grep -He "LXW_VERSION_ID [0-9][0-9]" include/xlsxwriter.h                       | sed 's/:/ : /g' | awk '{printf "    | %-24s %s\n", $1, $5}'
 
     echo
     echo -n     "Are the versions up to date?           [y/N]: "
