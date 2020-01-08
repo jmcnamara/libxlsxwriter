@@ -1013,7 +1013,6 @@ _prepare_vml(lxw_workbook *self)
     uint32_t vml_drawing_id = 0;
     uint32_t vml_data_id = 1;
     uint32_t vml_shape_id = 1024;
-    lxw_format *format;
     uint32_t comment_count = 0;
 
     STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
@@ -1030,6 +1029,7 @@ _prepare_vml(lxw_workbook *self)
             if (worksheet->has_comments) {
                 self->comment_count += 1;
                 comment_id += 1;
+                self->has_comments = LXW_TRUE;
             }
 
             vml_drawing_id += 1;
@@ -1045,17 +1045,6 @@ _prepare_vml(lxw_workbook *self)
             vml_shape_id += 1024 * ((1024 + comment_count) / 1024);
 
         }
-    }
-
-    if (self->comment_count) {
-        /* Add a font format for cell comments. */
-        format = workbook_add_format(self);
-        format_set_font_name(format, "Tahoma");
-        format_set_font_size(format, 8);
-        format_set_color_indexed(format, 81);
-        format_set_font_only(format);
-        /* Initialize its index. */
-        lxw_format_get_xf_index(format);
     }
 }
 

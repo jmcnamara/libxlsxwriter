@@ -435,6 +435,22 @@ _write_font(lxw_styles *self, lxw_format *format, uint8_t is_rich_string)
 }
 
 /*
+ * Write the <font> element for comments.
+ */
+STATIC void
+_write_comment_font(lxw_styles *self)
+{
+    lxw_xml_start_tag(self->file, "font", NULL);
+
+    _write_font_size(self, 8);
+    _write_font_color_indexed(self, 81);
+    _write_font_name(self, "Tahoma", LXW_FALSE);
+    _write_font_family(self, 2);
+
+    lxw_xml_end_tag(self->file, "font");
+}
+
+/*
  * Write the <fonts> element.
  */
 STATIC void
@@ -443,9 +459,15 @@ _write_fonts(lxw_styles *self)
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
     lxw_format *format;
+    uint32_t count;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_INT("count", self->font_count);
+
+    count = self->font_count;
+    if (self->has_comments)
+        count++;
+
+    LXW_PUSH_ATTRIBUTES_INT("count", count);
 
     lxw_xml_start_tag(self->file, "fonts", &attributes);
 
@@ -453,6 +475,9 @@ _write_fonts(lxw_styles *self)
         if (format->has_font)
             _write_font(self, format, LXW_FALSE);
     }
+
+    if (self->has_comments)
+        _write_comment_font(self);
 
     lxw_xml_end_tag(self->file, "fonts");
 

@@ -593,7 +593,7 @@ lxw_hash_password(const char *password)
 
     count = strlen(password);
 
-    for (i = 0; i < (uint8_t)count; i++) {
+    for (i = 0; i < (uint8_t) count; i++) {
         uint32_t low_15;
         uint32_t high_15;
         uint32_t letter = password[i] << (i + 1);

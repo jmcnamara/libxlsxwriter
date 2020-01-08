@@ -55,3 +55,7 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_comment14(self):
         self.run_exe_test('test_comment14')
+
+    def test_comment15(self):
+        self.run_exe_test('test_comment15')
+

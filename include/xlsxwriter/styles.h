@@ -30,6 +30,7 @@ typedef struct lxw_styles {
     struct lxw_formats *dxf_formats;
     uint8_t has_hyperlink;
     uint16_t hyperlink_font_id;
+    uint8_t has_comments;
 
 } lxw_styles;
 

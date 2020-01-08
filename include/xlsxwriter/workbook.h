@@ -310,6 +310,7 @@ typedef struct lxw_workbook {
     uint8_t has_jpeg;
     uint8_t has_bmp;
     uint8_t has_vml;
+    uint8_t has_comments;
 
     lxw_hash_table *used_xf_formats;
 

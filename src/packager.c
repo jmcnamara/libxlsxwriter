@@ -814,6 +814,7 @@ _write_styles_file(lxw_packager *self)
     styles->fill_count = self->workbook->fill_count;
     styles->num_format_count = self->workbook->num_format_count;
     styles->xf_count = self->workbook->used_xf_formats->unique_count;
+    styles->has_comments = self->workbook->has_comments;
 
     styles->file = lxw_tmpfile(self->tmpdir);
     if (!styles->file) {
