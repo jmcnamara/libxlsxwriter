@@ -64,7 +64,7 @@ lxw_col_to_name(char *col_name, lxw_col_t col_num, uint8_t absolute)
 {
     uint8_t pos = 0;
     size_t len;
-    uint8_t i;
+    size_t i;
 
     /* Change from 0 index to 1 index. */
     col_num++;
@@ -588,12 +588,12 @@ uint16_t
 lxw_hash_password(const char *password)
 {
     size_t count;
-    uint8_t i;
+    size_t i;
     uint16_t hash = 0x0000;
 
     count = strlen(password);
 
-    for (i = 0; i < count; i++) {
+    for (i = 0; i < (uint8_t)count; i++) {
         uint32_t low_15;
         uint32_t high_15;
         uint32_t letter = password[i] << (i + 1);

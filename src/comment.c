@@ -207,7 +207,7 @@ _comment_write_r_font(lxw_comment *self, lxw_vml_obj *comment_obj)
     if (comment_obj->font_name)
         lxw_snprintf(font_name, LXW_ATTR_32, "%s", comment_obj->font_name);
     else
-        lxw_snprintf(font_name, LXW_MAX_ATTRIBUTE_LENGTH, "Tahoma");
+        lxw_snprintf(font_name, LXW_ATTR_32, "Tahoma");
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("val", font_name);
