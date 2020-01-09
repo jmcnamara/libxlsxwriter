@@ -237,6 +237,21 @@ Example adding a VBA macro to a workbook.
 @image html macros.png
 
 ##############################################################
+@example comments1.c
+
+A simple example of adding cell comments to a worksheet.
+
+@image html comments1.png
+
+##############################################################
+@example comments2.c
+
+Another example of adding cell comments to a worksheet. This example
+demonstrates most of the available comment formatting options.
+
+@image html comments2.png
+
+##############################################################
 @example hide_row_col.c
 
 Example of hiding rows and columns in an Excel worksheet.

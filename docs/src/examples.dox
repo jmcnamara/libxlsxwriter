@@ -516,7 +516,7 @@ Example of setting Excel worksheet protection.
 <table  width="600">
 <tr>
   <td>@ref worksheet_protection.c "&lt;&lt; worksheet_protection.c"</td>
-  <td align="right">@ref hide_row_col.c "hide_row_col.c &gt;&gt;"</td>
+  <td align="right">@ref comments1.c "comments1.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -527,11 +527,44 @@ Example adding a VBA macro to a workbook.
 
 
 
-@example hide_row_col.c
+@example comments1.c
 
 <table  width="600">
 <tr>
   <td>@ref macro.c "&lt;&lt; macro.c"</td>
+  <td align="right">@ref comments2.c "comments2.c &gt;&gt;"</td>
+</tr>
+</table>
+
+A simple example of adding cell comments to a worksheet.
+
+@image html comments1.png
+
+
+
+
+@example comments2.c
+
+<table  width="600">
+<tr>
+  <td>@ref comments1.c "&lt;&lt; comments1.c"</td>
+  <td align="right">@ref hide_row_col.c "hide_row_col.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Another example of adding cell comments to a worksheet. This example
+demonstrates most of the available comment formatting options.
+
+@image html comments2.png
+
+
+
+
+@example hide_row_col.c
+
+<table  width="600">
+<tr>
+  <td>@ref comments2.c "&lt;&lt; comments2.c"</td>
   <td align="right">@ref panes.c "panes.c &gt;&gt;"</td>
 </tr>
 </table>
