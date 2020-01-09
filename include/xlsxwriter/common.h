@@ -25,7 +25,7 @@
 #define STATIC
 #endif
 
-#if __GNUC__ > 5
+#if __GNUC__ >= 5
 #define DEPRECATED(func, msg) func __attribute__ ((deprecated(msg)))
 #elif defined(_MSC_VER)
 #define DEPRECATED(func, msg) __declspec(deprecated, msg) func
