@@ -961,12 +961,6 @@ void lxw_workbook_assemble_xml_file(lxw_workbook *workbook);
 void lxw_workbook_set_default_xf_indices(lxw_workbook *workbook);
 void workbook_unset_default_url_format(lxw_workbook *workbook);
 
-DEPRECATED(lxw_workbook *new_workbook(const char *filename),
-           "use 'workbook_new' instead");
-DEPRECATED(lxw_workbook *new_workbook_opt(const char *filename,
-                                          lxw_workbook_options *options),
-           "use 'workbook_new_opt()' instead");
-
 /* Declarations required for unit testing. */
 #ifdef TESTING
 
