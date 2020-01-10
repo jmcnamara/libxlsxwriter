@@ -227,6 +227,7 @@ enum cell_types {
     ARRAY_FORMULA_CELL,
     BLANK_CELL,
     BOOLEAN_CELL,
+    COMMENT,
     HYPERLINK_URL,
     HYPERLINK_INTERNAL,
     HYPERLINK_EXTERNAL
@@ -898,6 +899,7 @@ typedef struct lxw_worksheet {
     FILE *optimize_tmpfile;
     struct lxw_table_rows *table;
     struct lxw_table_rows *hyperlinks;
+    struct lxw_table_rows *comments;
     struct lxw_cell **array;
     struct lxw_merged_ranges *merged_ranges;
     struct lxw_selections *selections;
@@ -1061,7 +1063,6 @@ typedef struct lxw_row {
     uint8_t row_changed;
     uint8_t data_changed;
     uint8_t height_changed;
-    uint8_t has_comments;
 
     struct lxw_table_cells *cells;
 

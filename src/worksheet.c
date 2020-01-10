@@ -87,9 +87,14 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     GOTO_LABEL_ON_MEM_ERROR(worksheet->hyperlinks, mem_error);
     RB_INIT(worksheet->hyperlinks);
 
+    worksheet->comments = calloc(1, sizeof(struct lxw_table_rows));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->comments, mem_error);
+    RB_INIT(worksheet->comments);
+
     /* Initialize the cached rows. */
     worksheet->table->cached_row_num = LXW_ROW_MAX + 1;
     worksheet->hyperlinks->cached_row_num = LXW_ROW_MAX + 1;
+    worksheet->comments->cached_row_num = LXW_ROW_MAX + 1;
 
     if (init_data && init_data->optimize) {
         worksheet->array = calloc(LXW_COL_MAX, sizeof(struct lxw_cell *));
@@ -402,6 +407,18 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
         free(worksheet->hyperlinks);
     }
 
+    if (worksheet->comments) {
+        for (row = RB_MIN(lxw_table_rows, worksheet->comments); row;
+             row = next_row) {
+
+            next_row = RB_NEXT(lxw_table_rows, worksheet->comments, row);
+            RB_REMOVE(lxw_table_rows, worksheet->comments, row);
+            _free_row(row);
+        }
+
+        free(worksheet->comments);
+    }
+
     if (worksheet->merged_ranges) {
         while (!STAILQ_EMPTY(worksheet->merged_ranges)) {
             merged_range = STAILQ_FIRST(worksheet->merged_ranges);
@@ -432,7 +449,7 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
         free(worksheet->chart_data);
     }
 
-    /* Just free the list. The list objects are free elsewhere. */
+    /* Just free the list. The list objects are freed from the RB tree. */
     free(worksheet->comment_objs);
 
     if (worksheet->selections) {
@@ -701,6 +718,24 @@ _new_boolean_cell(lxw_row_t row_num, lxw_col_t col_num, int value,
 }
 
 /*
+ * Create a new comment cell object.
+ */
+STATIC lxw_cell *
+_new_comment_cell(lxw_row_t row_num, lxw_col_t col_num,
+                  lxw_vml_obj *comment_obj)
+{
+    lxw_cell *cell = calloc(1, sizeof(lxw_cell));
+    RETURN_ON_MEM_ERROR(cell, cell);
+
+    cell->row_num = row_num;
+    cell->col_num = col_num;
+    cell->type = COMMENT;
+    cell->comment = comment_obj;
+
+    return cell;
+}
+
+/*
  * Create a new worksheet hyperlink cell object.
  */
 STATIC lxw_cell *
@@ -795,7 +830,6 @@ _insert_cell_list(struct lxw_table_cells *cell_list,
     /* If existing_cell is not NULL, then that cell already existed. */
     /* Remove existing_cell and add new one in again. */
     if (existing_cell) {
-        existing_cell->comment = NULL;
         RB_REMOVE(lxw_table_cells, cell_list, existing_cell);
 
         /* Add it in again. */
@@ -814,7 +848,6 @@ _insert_cell(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
              lxw_cell *cell)
 {
     lxw_row *row = _get_row(self, row_num);
-    lxw_vml_obj *existing_comment = NULL;
 
     if (!self->optimize) {
         row->data_changed = LXW_TRUE;
@@ -825,26 +858,65 @@ _insert_cell(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
             row->data_changed = LXW_TRUE;
 
             /* Overwrite an existing cell if necessary. */
-            if (self->array[col_num]) {
-                existing_comment = self->array[col_num]->comment;
-                self->array[col_num]->comment = NULL;
+            if (self->array[col_num])
                 _free_cell(self->array[col_num]);
-            }
 
             self->array[col_num] = cell;
-            self->array[col_num]->comment = existing_comment;
         }
     }
 }
 
 /*
- * Insert a hyperlink object into the hyperlink list.
+ * Insert a blank placeholder cell in the cells RB tree in the same position
+ * as a comment so that the rows "spans" calculation is correct. Since the
+ * blank cell doesn't have a format it is ignored when writing. If there is
+ * already a cell in the required position we don't have add a new cell.
+ */
+STATIC void
+_insert_cell_placeholder(lxw_worksheet *self, lxw_row_t row_num,
+                         lxw_col_t col_num)
+{
+    lxw_row *row;
+    lxw_cell *cell;
+
+    /* The spans calculation isn't required in constant_memory mode. */
+    if (self->optimize)
+        return;
+
+    cell = _new_blank_cell(row_num, col_num, NULL);
+    if (!cell)
+        return;
+
+    /* Only add a cell if one doesn't already exist. */
+    row = _get_row(self, row_num);
+    if (!RB_FIND(lxw_table_cells, row->cells, cell)) {
+        _insert_cell_list(row->cells, cell, col_num);
+    }
+    else {
+        _free_cell(cell);
+    }
+}
+
+/*
+ * Insert a hyperlink object into the hyperlink RB tree.
  */
 STATIC void
 _insert_hyperlink(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
                   lxw_cell *link)
 {
     lxw_row *row = _get_row_list(self->hyperlinks, row_num);
+
+    _insert_cell_list(row->cells, link, col_num);
+}
+
+/*
+ * Insert a comment into the comment RB tree.
+ */
+STATIC void
+_insert_comment(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
+                lxw_cell *link)
+{
+    lxw_row *row = _get_row_list(self->comments, row_num);
 
     _insert_cell_list(row->cells, link, col_num);
 }
@@ -2155,7 +2227,7 @@ _get_comment_params(lxw_vml_obj *comment, lxw_comment_options *options)
 
     /* Set the default start cell and offsets for the comment. These are
      * generally fixed in relation to the parent cell. However there are some
-     * edge cases for cells at the, er, edges. */
+     * edge cases for cells at the, well yes, edges. */
     if (row == 0)
         y_offset = 2;
     else if (row == LXW_ROW_MAX - 3)
@@ -2559,20 +2631,16 @@ lxw_worksheet_prepare_vml_objects(lxw_worksheet *self,
     size_t used = 0;
     char *vml_data_id_str;
 
-    RB_FOREACH(row, lxw_table_rows, self->table) {
+    RB_FOREACH(row, lxw_table_rows, self->comments) {
 
-        if (row->has_comments) {
-            RB_FOREACH(cell, lxw_table_cells, row->cells) {
-                if (cell->comment) {
-                    /* Calculate the worksheet position of the comment. */
-                    _worksheet_position_vml_object(self, cell->comment);
+        RB_FOREACH(cell, lxw_table_cells, row->cells) {
+            /* Calculate the worksheet position of the comment. */
+            _worksheet_position_vml_object(self, cell->comment);
 
-                    /* Store comment in a simple list for use by packager. */
-                    STAILQ_INSERT_TAIL(self->comment_objs, cell->comment,
-                                       list_pointers);
-                    comment_count++;
-                }
-            }
+            /* Store comment in a simple list for use by packager. */
+            STAILQ_INSERT_TAIL(self->comment_objs, cell->comment,
+                               list_pointers);
+            comment_count++;
         }
     }
 
@@ -5080,18 +5148,9 @@ worksheet_write_comment_opt(lxw_worksheet *self,
                             lxw_row_t row_num, lxw_col_t col_num,
                             char *text, lxw_comment_options *options)
 {
-    lxw_row *row;
     lxw_cell *cell;
     lxw_error err;
     lxw_vml_obj *comment;
-    uint8_t data_changed = LXW_FALSE;
-
-    if (self->optimize) {
-        LXW_WARN("worksheet_write_comment/opt(): "
-                 "Not supported in 'constant_memory' mode.");
-
-        return LXW_ERROR_FEATURE_NOT_SUPPORTED;
-    }
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
@@ -5109,39 +5168,23 @@ worksheet_write_comment_opt(lxw_worksheet *self,
     comment->text = lxw_strdup(text);
     GOTO_LABEL_ON_MEM_ERROR(comment->text, mem_error);
 
-    row = lxw_worksheet_find_row(self, row_num);
-    if (row)
-        data_changed = row->data_changed;
-
-    cell = lxw_worksheet_find_cell_in_row(row, col_num);
-    if (cell) {
-        free(cell->comment);
-    }
-    else {
-        /* If there isn't an existing cell we use a new blank cell. */
-        cell = _new_blank_cell(row_num, col_num, NULL);
-        _insert_cell(self, row_num, col_num, cell);
-    }
-
     comment->row = row_num;
     comment->col = col_num;
+
+    cell = _new_comment_cell(row_num, col_num, comment);
+    GOTO_LABEL_ON_MEM_ERROR(cell, mem_error);
+
+    _insert_comment(self, row_num, col_num, cell);
 
     /* Set user and default parameters for the comment. */
     _get_comment_params(comment, options);
 
-    cell->comment = comment;
-
-    if (!row) {
-        row = lxw_worksheet_find_row(self, row_num);
-        row->data_changed = LXW_FALSE;
-    }
-    else {
-        row->data_changed = data_changed;
-    }
-
-    row->has_comments = LXW_TRUE;
     self->has_vml = LXW_TRUE;
     self->has_comments = LXW_TRUE;
+
+    /* Insert a placeholder in the cell RB table in the same position so
+     * that the worksheet row "spans" calculations are correct. */
+    _insert_cell_placeholder(self, row_num, col_num);
 
     return LXW_NO_ERROR;
 

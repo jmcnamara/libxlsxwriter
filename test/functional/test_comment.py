@@ -59,3 +59,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_comment15(self):
         self.run_exe_test('test_comment15')
 
+    def test_comment16(self):
+        self.run_exe_test('test_comment16')
+
+    # Memory leak test.
+    def test_comment56(self):
+        self.run_exe_test('test_comment56', 'comment16.xlsx')
