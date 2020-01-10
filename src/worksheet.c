@@ -795,12 +795,26 @@ _insert_cell_list(struct lxw_table_cells *cell_list,
     /* If existing_cell is not NULL, then that cell already existed. */
     /* Remove existing_cell and add new one in again. */
     if (existing_cell) {
-        existing_cell->comment = NULL;
-        RB_REMOVE(lxw_table_cells, cell_list, existing_cell);
 
-        /* Add it in again. */
-        RB_INSERT(lxw_table_cells, cell_list, cell);
-        _free_cell(existing_cell);
+        if (cell->comment) {
+            existing_cell->comment = cell->comment;
+            cell->comment = NULL;
+            _free_cell(cell);
+        }
+        else {
+
+            /* Transfer existing cell comment to new cell. */
+            if (existing_cell->comment) {
+                cell->comment = existing_cell->comment;
+                existing_cell->comment = NULL;
+            }
+
+            RB_REMOVE(lxw_table_cells, cell_list, existing_cell);
+
+            /* Add it in again. */
+            RB_INSERT(lxw_table_cells, cell_list, cell);
+            _free_cell(existing_cell);
+        }
     }
 
     return;
@@ -814,7 +828,6 @@ _insert_cell(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
              lxw_cell *cell)
 {
     lxw_row *row = _get_row(self, row_num);
-    lxw_vml_obj *existing_comment = NULL;
 
     if (!self->optimize) {
         row->data_changed = LXW_TRUE;
@@ -824,15 +837,28 @@ _insert_cell(lxw_worksheet *self, lxw_row_t row_num, lxw_col_t col_num,
         if (row) {
             row->data_changed = LXW_TRUE;
 
-            /* Overwrite an existing cell if necessary. */
+            /* Overwrite an existing cell or replace comment. */
             if (self->array[col_num]) {
-                existing_comment = self->array[col_num]->comment;
-                self->array[col_num]->comment = NULL;
-                _free_cell(self->array[col_num]);
-            }
 
-            self->array[col_num] = cell;
-            self->array[col_num]->comment = existing_comment;
+                if (cell->comment) {
+                    self->array[col_num]->comment = cell->comment;
+                    cell->comment = NULL;
+                    _free_cell(cell);
+                }
+                else {
+                    /* Transfer existing cell comment to new cell. */
+                    if (self->array[col_num]->comment) {
+                        cell->comment = self->array[col_num]->comment;
+                        self->array[col_num]->comment = NULL;
+                    }
+
+                    _free_cell(self->array[col_num]);
+                    self->array[col_num] = cell;
+                }
+            }
+            else {
+                self->array[col_num] = cell;
+            }
         }
     }
 }
@@ -2558,19 +2584,30 @@ lxw_worksheet_prepare_vml_objects(lxw_worksheet *self,
     size_t data_str_len = 0;
     size_t used = 0;
     char *vml_data_id_str;
+    lxw_vml_obj *comment_obj;
 
-    RB_FOREACH(row, lxw_table_rows, self->table) {
+    if (self->optimize) {
+        STAILQ_FOREACH(comment_obj, self->comment_objs, list_pointers) {
+            /* Calculate the worksheet position of the comment. */
+            _worksheet_position_vml_object(self, comment_obj);
 
-        if (row->has_comments) {
-            RB_FOREACH(cell, lxw_table_cells, row->cells) {
-                if (cell->comment) {
-                    /* Calculate the worksheet position of the comment. */
-                    _worksheet_position_vml_object(self, cell->comment);
+            comment_count++;
+        }
+    }
+    else {
+        RB_FOREACH(row, lxw_table_rows, self->table) {
 
-                    /* Store comment in a simple list for use by packager. */
-                    STAILQ_INSERT_TAIL(self->comment_objs, cell->comment,
-                                       list_pointers);
-                    comment_count++;
+            if (row->has_comments) {
+                RB_FOREACH(cell, lxw_table_cells, row->cells) {
+                    if (cell->comment) {
+                        /* Calculate the worksheet position of the comment. */
+                        _worksheet_position_vml_object(self, cell->comment);
+
+                        /* Store comment in a list for use by packager. */
+                        STAILQ_INSERT_TAIL(self->comment_objs, cell->comment,
+                                           list_pointers);
+                        comment_count++;
+                    }
                 }
             }
         }
@@ -5086,13 +5123,6 @@ worksheet_write_comment_opt(lxw_worksheet *self,
     lxw_vml_obj *comment;
     uint8_t data_changed = LXW_FALSE;
 
-    if (self->optimize) {
-        LXW_WARN("worksheet_write_comment/opt(): "
-                 "Not supported in 'constant_memory' mode.");
-
-        return LXW_ERROR_FEATURE_NOT_SUPPORTED;
-    }
-
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
         return err;
@@ -5109,39 +5139,29 @@ worksheet_write_comment_opt(lxw_worksheet *self,
     comment->text = lxw_strdup(text);
     GOTO_LABEL_ON_MEM_ERROR(comment->text, mem_error);
 
-    row = lxw_worksheet_find_row(self, row_num);
+    row = _get_row(self, row_num);
     if (row)
         data_changed = row->data_changed;
 
-    cell = lxw_worksheet_find_cell_in_row(row, col_num);
-    if (cell) {
-        free(cell->comment);
-    }
-    else {
-        /* If there isn't an existing cell we use a new blank cell. */
-        cell = _new_blank_cell(row_num, col_num, NULL);
-        _insert_cell(self, row_num, col_num, cell);
-    }
-
+    /* Set user and default parameters for the comment. */
     comment->row = row_num;
     comment->col = col_num;
-
-    /* Set user and default parameters for the comment. */
     _get_comment_params(comment, options);
 
+    cell = _new_blank_cell(row_num, col_num, NULL);
     cell->comment = comment;
+    _insert_cell(self, row_num, col_num, cell);
 
-    if (!row) {
-        row = lxw_worksheet_find_row(self, row_num);
-        row->data_changed = LXW_FALSE;
-    }
-    else {
-        row->data_changed = data_changed;
-    }
+    row = _get_row(self, row_num);
+    row->data_changed = data_changed;
 
     row->has_comments = LXW_TRUE;
     self->has_vml = LXW_TRUE;
     self->has_comments = LXW_TRUE;
+
+    /* Store comment in a simple list for use by packager. */
+    if (self->optimize)
+        STAILQ_INSERT_TAIL(self->comment_objs, comment, list_pointers);
 
     return LXW_NO_ERROR;
 
