@@ -1827,6 +1827,7 @@ workbook_close(lxw_workbook *self)
     lxw_worksheet *worksheet = NULL;
     lxw_packager *packager = NULL;
     lxw_error error = LXW_NO_ERROR;
+    char codename[LXW_MAX_SHEETNAME_LENGTH] = { 0 };
 
     /* Add a default worksheet if non have been added. */
     if (!self->num_sheets)
@@ -1864,8 +1865,12 @@ workbook_close(lxw_workbook *self)
             else
                 worksheet = sheet->u.worksheet;
 
-            if (!worksheet->vba_codename)
-                worksheet_set_vba_name(worksheet, worksheet->name);
+            if (!worksheet->vba_codename) {
+                lxw_snprintf(codename, LXW_MAX_SHEETNAME_LENGTH, "Sheet%d",
+                             worksheet->index + 1);
+
+                worksheet_set_vba_name(worksheet, codename);
+            }
         }
     }
 

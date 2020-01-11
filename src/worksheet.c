@@ -4725,6 +4725,10 @@ worksheet_write_blank(lxw_worksheet *self,
     lxw_cell *cell;
     lxw_error err;
 
+    /* Blank cells without formatting are ignored by Excel. */
+    if (!format)
+        return LXW_NO_ERROR;
+
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
         return err;
