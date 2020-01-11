@@ -688,62 +688,71 @@ typedef struct lxw_comment_options {
      *  initially hidden. However, it is also possible in Excel to make
      *  individual comments or all comments visible.  You can make all
      *  comments in the worksheet visible using the
-     *  `worksheet_show_comments()` function. Defaults to LXW_FALSE.*/
+     *  `worksheet_show_comments()` function. Defaults to
+     *  LXW_COMMENT_DISPLAY_DEFAULT. See also @ref ww_comments_visible. */
     uint8_t visible;
 
-    /** This option is used to set the row in which the comment will
-     *  appear. By default Excel displays comments one cell to the right and
-     *  one cell above the cell to which the comment relates. The `start_row`
-     *  and `start_col` options should both be set to 0 if not used.*/
-    lxw_row_t start_row;
-
-    /** This option is used to set the column in which the comment will
-     *   appear. See the `start_row` option for more information. */
-    lxw_col_t start_col;
+    /** This option is used to indicate the author of the cell comment. Excel
+     *  displays the author in the status bar at the bottom of the
+     *  worksheet. The default author for all cell comments in a worksheet can
+     *  be set using the `worksheet_set_comments_author()` function. Set to
+     *  NULL if not required.  See also @ref ww_comments_author. */
+    char *author;
 
     /** This option is used to set the width of the cell comment box
-     *  explicitly in pixels. The default width is 128 pixels. */
+     *  explicitly in pixels. The default width is 128 pixels. See also @ref
+     *  ww_comments_width. */
     uint16_t width;
 
     /** This option is used to set the height of the cell comment box
-     *  explicitly in pixels. The default height is 74 pixels. */
+     *  explicitly in pixels. The default height is 74 pixels.  See also @ref
+     *  ww_comments_height. */
     uint16_t height;
 
-    /** X scale of the comment as a decimal. */
+    /** X scale of the comment as a decimal. See also
+     * @ref ww_comments_x_scale. */
     double x_scale;
 
-    /** Y scale of the comment as a decimal. */
+    /** Y scale of the comment as a decimal. See also
+     * @ref ww_comments_y_scale. */
     double y_scale;
-
-    /** Offset from the left of the cell in pixels. */
-    int32_t x_offset;
-
-    /** Offset from the top of the cell in pixels. */
-    int32_t y_offset;
 
     /** This option is used to set the background color of cell comment
      *  box. The color should be an RGB integer value, see @ref
-     *  working_with_colors. */
+     *  working_with_colors. See also @ref ww_comments_color. */
     lxw_color_t color;
 
     /** This option is used to set the font for the comment. The default font
-     *  is 'Tahoma'. */
+     *  is 'Tahoma'.  See also @ref ww_comments_font_name. */
     char *font_name;
 
      /** This option is used to set the font size for the comment. The default
-      * is 8. */
+      * is 8. See also @ref ww_comments_font_size. */
     double font_size;
 
     /** This option is used to set the font family number for the comment.
      *  Not required very often. Set to 0. */
     uint8_t font_family;
 
-    /** This option is used to indicate the author of the cell comment. Excel
-     *  displays the author in the status bar at the bottom of the
-     *  worksheet. The default author for all cell comments in a worksheet can
-     *  be set using the `worksheet_set_comments_author()` function. Set to
-     *  NULL if not required.*/
-    char *author;
+    /** This option is used to set the row in which the comment will
+     *  appear. By default Excel displays comments one cell to the right and
+     *  one cell above the cell to which the comment relates. The `start_row`
+     *  and `start_col` options should both be set to 0 if not used.  See also
+     *  @ref ww_comments_start_row. */
+    lxw_row_t start_row;
+
+    /** This option is used to set the column in which the comment will
+     *   appear. See the `start_row` option for more information and see also
+     *   @ref ww_comments_start_col. */
+    lxw_col_t start_col;
+
+    /** Offset from the left of the cell in pixels. See also
+     * @ref ww_comments_x_offset. */
+    int32_t x_offset;
+
+    /** Offset from the top of the cell in pixels. See also
+     * @ref ww_comments_y_offset. */
+    int32_t y_offset;
 
 } lxw_comment_options;
 
@@ -1110,7 +1119,7 @@ extern "C" {
 /**
  * @brief Write a number to a worksheet cell.
  *
- * @param worksheet pointer to a lxw_worksheet instance to be updated.
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param number    The number to write to the cell.
@@ -1157,7 +1166,7 @@ lxw_error worksheet_write_number(lxw_worksheet *worksheet,
 /**
  * @brief Write a string to a worksheet cell.
  *
- * @param worksheet pointer to a lxw_worksheet instance to be updated.
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param string    String to write to cell.
@@ -1205,7 +1214,7 @@ lxw_error worksheet_write_string(lxw_worksheet *worksheet,
 /**
  * @brief Write a formula to a worksheet cell.
  *
- * @param worksheet pointer to a lxw_worksheet instance to be updated.
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param formula   Formula string to write to cell.
@@ -1258,7 +1267,7 @@ lxw_error worksheet_write_formula(lxw_worksheet *worksheet,
 /**
  * @brief Write an array formula to a worksheet cell.
  *
- * @param worksheet pointer to a lxw_worksheet instance to be updated.
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param first_row   The first row of the range. (All zero indexed.)
  * @param first_col   The first column of the range.
  * @param last_row    The last row of the range.
@@ -1317,7 +1326,7 @@ lxw_error worksheet_write_array_formula_num(lxw_worksheet *worksheet,
 /**
  * @brief Write a date or time to a worksheet cell.
  *
- * @param worksheet pointer to a lxw_worksheet instance to be updated.
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param datetime  The datetime to write to the cell.
@@ -1348,7 +1357,7 @@ lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
 
 /**
  *
- * @param worksheet pointer to a lxw_worksheet instance to be updated.
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param url       The url to write to the cell.
@@ -1503,7 +1512,7 @@ lxw_error worksheet_write_url_opt(lxw_worksheet *worksheet,
 /**
  * @brief Write a formatted boolean worksheet cell.
  *
- * @param worksheet pointer to a lxw_worksheet instance to be updated.
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param value     The boolean value to write to the cell.
@@ -1525,7 +1534,7 @@ lxw_error worksheet_write_boolean(lxw_worksheet *worksheet,
 /**
  * @brief Write a formatted blank worksheet cell.
  *
- * @param worksheet pointer to a lxw_worksheet instance to be updated.
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param format    A pointer to a Format instance or NULL.
@@ -1556,7 +1565,7 @@ lxw_error worksheet_write_blank(lxw_worksheet *worksheet,
 /**
  * @brief Write a formula to a worksheet cell with a user defined result.
  *
- * @param worksheet pointer to a lxw_worksheet instance to be updated.
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param formula   Formula string to write to cell.
@@ -1605,7 +1614,7 @@ lxw_error worksheet_write_formula_num(lxw_worksheet *worksheet,
 /**
  * @brief Write a "Rich" multi-format string to a worksheet cell.
  *
- * @param worksheet   pointer to a lxw_worksheet instance to be updated.
+ * @param worksheet   Pointer to a lxw_worksheet instance to be updated.
  * @param row         The zero indexed row number.
  * @param col         The zero indexed column number.
  * @param rich_string An array of format/string lxw_rich_string_tuple fragments.
@@ -1677,13 +1686,86 @@ lxw_error worksheet_write_rich_string(lxw_worksheet *worksheet,
                                       lxw_rich_string_tuple *rich_string[],
                                       lxw_format *format);
 
-lxw_error worksheet_write_comment_opt(lxw_worksheet *worksheet,
-                                      lxw_row_t row_num, lxw_col_t col_num,
-                                      char *string,
-                                      lxw_comment_options *options);
-
+/**
+ * @brief Write a comment to a worksheet cell.
+ *
+ * @param worksheet   Pointer to a lxw_worksheet instance to be updated.
+ * @param row         The zero indexed row number.
+ * @param col         The zero indexed column number.
+ * @param string      The comment string to be written.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_write_comment()` function is used to add a comment to a
+ * cell. A comment is indicated in Excel by a small red triangle in the upper
+ * right-hand corner of the cell. Moving the cursor over the red triangle will
+ * reveal the comment.
+ *
+ * The following example shows how to add a comment to a cell:
+ *
+ * @code
+ *     worksheet_write_comment(worksheet, 0, 0, "This is a comment");
+ * @endcode
+ *
+ * @image html comments1.png
+ *
+ * See also @ref working_with_comments
+ *
+ */
 lxw_error worksheet_write_comment(lxw_worksheet *worksheet,
                                   lxw_row_t row, lxw_col_t col, char *string);
+
+/**
+ * @brief Write a comment to a worksheet cell with options.
+ *
+ * @param worksheet   Pointer to a lxw_worksheet instance to be updated.
+ * @param row         The zero indexed row number.
+ * @param col         The zero indexed column number.
+ * @param string      The comment string to be written.
+ * @param options     #lxw_comment_options to control position and format
+ *                    of the comment.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_write_comment_opt()` function is used to add a comment to a
+ * cell with option that control the position, format and metadata of the
+ * comment. A comment is indicated in Excel by a small red triangle in the
+ * upper right-hand corner of the cell. Moving the cursor over the red
+ * triangle will reveal the comment.
+ *
+ * The following example shows how to add a comment to a cell with options:
+ *
+ * @code
+ *     lxw_comment_options options = {.visible = LXW_COMMENT_DISPLAY_VISIBLE};
+ *
+ *     worksheet_write_comment_opt(worksheet, CELL("C6"), "Hello.", &options);
+ * @endcode
+ *
+ * The following options are available in #lxw_comment_options:
+ *
+ * - `author`
+ * - `visible`
+ * - `width`
+ * - `height`
+ * - `x_scale`
+ * - `y_scale`
+ * - `color`
+ * - `font_name`
+ * - `font_size`
+ * - `start_row`
+ * - `start_col`
+ * - `x_offset`
+ * - `y_offset`
+ *
+ * @image html comments2.png
+ *
+ * Comment options are explained in detail in the @ref ww_comments_properties
+ * section of the docs.
+ */
+lxw_error worksheet_write_comment_opt(lxw_worksheet *worksheet,
+                                      lxw_row_t row, lxw_col_t col,
+                                      char *string,
+                                      lxw_comment_options *options);
 
 /**
  * @brief Set the properties for a row of cells.
@@ -2545,7 +2627,7 @@ void worksheet_split_panes_opt(lxw_worksheet *worksheet,
 /**
  * @brief Set the selected cell or cells in a worksheet:
  *
- * @param worksheet   Pointer to a lxw_worksheet instance to be updated.
+ * @param worksheet   A pointer to a lxw_worksheet instance to be updated.
  * @param first_row   The first row of the range. (All zero indexed.)
  * @param first_col   The first column of the range.
  * @param last_row    The last row of the range.
@@ -3555,10 +3637,43 @@ void worksheet_set_default_row(lxw_worksheet *worksheet, double height,
  */
 lxw_error worksheet_set_vba_name(lxw_worksheet *worksheet, const char *name);
 
+/**
+ * @brief Make all comments in the worksheet visible.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance.
+ *
+ * This `%worksheet_show_comments()` function is used to make all cell
+ * comments visible when a worksheet is opened:
+ *
+ * @code
+ *     worksheet_show_comments(worksheet);
+ * @endcode
+ *
+ * Individual comments can be made visible or hidden using the `visible`
+ * option of the #lxw_comment_options struct and the `worksheet_write_comment_opt()`
+ * function (see above and @ref ww_comments_visible).
+ */
+void worksheet_show_comments(lxw_worksheet *worksheet);
+
+/**
+ * @brief Set the default author of the cell comments.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance.
+ * @param author    The name of the comment author.
+ *
+ * This `%worksheet_set_comments_author()` function is used to set the
+ * default author of all cell comments:
+ *
+ * @code
+ *     worksheet_set_comments_author(worksheet, "Jane Gloriana Villanueva")
+ * @endcode
+ *
+ * Individual authors can be set using the `author` option of the
+ * #lxw_comment_options struct and the `worksheet_write_comment_opt()`
+ * function (see above and @ref ww_comments_author).
+ */
 void worksheet_set_comments_author(lxw_worksheet *worksheet,
                                    const char *author);
-
-void worksheet_show_comments(lxw_worksheet *worksheet);
 
 lxw_worksheet *lxw_worksheet_new(lxw_worksheet_init_data *init_data);
 void lxw_worksheet_free(lxw_worksheet *worksheet);

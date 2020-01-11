@@ -498,6 +498,6 @@ set using `error_message`. It is on by default.
 
 For a full example see @ref data_validate.c.
 
-Next: @ref working_with_outlines
+Next: @ref working_with_comments
 
 */

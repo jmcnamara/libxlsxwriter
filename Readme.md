@@ -22,6 +22,7 @@ It supports features such as:
 - Charts.
 - Data validation and drop down lists.
 - Worksheet PNG/JPEG images.
+- Cell comments.
 - Support for adding Macros.
 - Memory optimization mode for writing large files.
 - Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter).
