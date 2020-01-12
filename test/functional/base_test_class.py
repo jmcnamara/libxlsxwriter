@@ -2,7 +2,7 @@
 #
 # Base test class for libxlsxwriter functional tests.
 #
-# Copyright 2014-2019, John McNamara, jmcnamara@cpan.org
+# Copyright 2014-2020, John McNamara, jmcnamara@cpan.org
 #
 
 import unittest

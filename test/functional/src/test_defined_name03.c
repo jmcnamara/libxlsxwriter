@@ -3,7 +3,7 @@
  *
  * Simple test case for defined names.
  *
- * Copyright 2014-2019, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2020, John McNamara, jmcnamara@cpan.org
  *
  */
 

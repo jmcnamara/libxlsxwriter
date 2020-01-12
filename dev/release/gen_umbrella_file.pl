@@ -4,7 +4,7 @@
 # Simple program to generate the coccoapods unbrella file.
 # Run from the libxlsxwriter root dir.
 #
-# Copyright 2014-2019, John McNamara, jmcnamara@cpan.org
+# Copyright 2014-2020, John McNamara, jmcnamara@cpan.org
 #
 use warnings;
 use strict;

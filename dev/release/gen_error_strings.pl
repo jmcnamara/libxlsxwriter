@@ -6,7 +6,7 @@
 #
 #    perl dev/release/gen_error_strings.pl include/xlsxwriter/common.h
 #
-# Copyright 2014-2019, John McNamara, jmcnamara@cpan.org
+# Copyright 2014-2020, John McNamara, jmcnamara@cpan.org
 #
 use warnings;
 use strict;
