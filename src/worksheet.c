@@ -5150,7 +5150,7 @@ mem_error:
 lxw_error
 worksheet_write_comment_opt(lxw_worksheet *self,
                             lxw_row_t row_num, lxw_col_t col_num,
-                            char *text, lxw_comment_options *options)
+                            const char *text, lxw_comment_options *options)
 {
     lxw_cell *cell;
     lxw_error err;
@@ -5204,7 +5204,8 @@ mem_error:
  */
 lxw_error
 worksheet_write_comment(lxw_worksheet *self,
-                        lxw_row_t row_num, lxw_col_t col_num, char *string)
+                        lxw_row_t row_num, lxw_col_t col_num,
+                        const char *string)
 {
     return worksheet_write_comment_opt(self, row_num, col_num, string, NULL);
 }

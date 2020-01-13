@@ -1713,7 +1713,8 @@ lxw_error worksheet_write_rich_string(lxw_worksheet *worksheet,
  *
  */
 lxw_error worksheet_write_comment(lxw_worksheet *worksheet,
-                                  lxw_row_t row, lxw_col_t col, char *string);
+                                  lxw_row_t row, lxw_col_t col,
+                                  const char *string);
 
 /**
  * @brief Write a comment to a worksheet cell with options.
@@ -1764,7 +1765,7 @@ lxw_error worksheet_write_comment(lxw_worksheet *worksheet,
  */
 lxw_error worksheet_write_comment_opt(lxw_worksheet *worksheet,
                                       lxw_row_t row, lxw_col_t col,
-                                      char *string,
+                                      const char *string,
                                       lxw_comment_options *options);
 
 /**
