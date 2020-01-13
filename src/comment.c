@@ -101,7 +101,7 @@ _get_author_index(lxw_comment *self, char *author)
  * Create a new comment object.
  */
 lxw_comment *
-lxw_comment_new()
+lxw_comment_new(void)
 {
     lxw_comment *comment = calloc(1, sizeof(lxw_comment));
     GOTO_LABEL_ON_MEM_ERROR(comment, mem_error);

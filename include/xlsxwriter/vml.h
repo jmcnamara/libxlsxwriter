@@ -37,7 +37,7 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_vml *lxw_vml_new();
+lxw_vml *lxw_vml_new(void);
 void lxw_vml_free(lxw_vml *vml);
 void lxw_vml_assemble_xml_file(lxw_vml *self);
 

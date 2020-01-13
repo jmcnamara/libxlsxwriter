@@ -25,7 +25,7 @@
  * Create a new vml object.
  */
 lxw_vml *
-lxw_vml_new()
+lxw_vml_new(void)
 {
     lxw_vml *vml = calloc(1, sizeof(lxw_vml));
     GOTO_LABEL_ON_MEM_ERROR(vml, mem_error);
