@@ -23,19 +23,6 @@ enum lxw_drawing_types {
     LXW_DRAWING_SHAPE
 };
 
-enum lxw_anchor_types {
-    LXW_ANCHOR_TYPE_NONE = 0,
-    LXW_ANCHOR_TYPE_IMAGE,
-    LXW_ANCHOR_TYPE_CHART
-};
-
-enum lxw_anchor_edit_types {
-    LXW_ANCHOR_EDIT_AS_NONE = 0,
-    LXW_ANCHOR_EDIT_AS_RELATIVE,
-    LXW_ANCHOR_EDIT_AS_ONE_CELL,
-    LXW_ANCHOR_EDIT_AS_ABSOLUTE
-};
-
 enum image_types {
     LXW_IMAGE_UNKNOWN = 0,
     LXW_IMAGE_PNG,
@@ -53,8 +40,8 @@ typedef struct lxw_drawing_coords {
 
 /* Object to represent the properties of a drawing. */
 typedef struct lxw_drawing_object {
-    uint8_t anchor_type;
-    uint8_t edit_as;
+    uint8_t type;
+    uint8_t anchor;
     struct lxw_drawing_coords from;
     struct lxw_drawing_coords to;
     uint32_t col_absolute;

@@ -14,7 +14,7 @@ int main() {
     lxw_workbook  *workbook  = workbook_new("test_image46.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
-    lxw_image_options image_options = {.x_offset = 0, .y_offset = 4};
+    lxw_image_options image_options = {.y_offset = 4, .object_position = LXW_OBJECT_MOVE_AND_SIZE_AFTER};
     worksheet_insert_image_opt(worksheet, CELL("E9"), "images/red.png", &image_options);
 
     lxw_row_col_options row_options = {.hidden = LXW_TRUE};

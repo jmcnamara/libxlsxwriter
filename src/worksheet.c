@@ -1934,7 +1934,7 @@ _write_row(lxw_worksheet *self, lxw_row *row, char *spans)
  * we use the default value. If the column is hidden it has a value of zero.
  */
 STATIC int32_t
-_worksheet_size_col(lxw_worksheet *self, lxw_col_t col_num)
+_worksheet_size_col(lxw_worksheet *self, lxw_col_t col_num, uint8_t anchor)
 {
     lxw_col_options *col_opt = NULL;
     uint32_t pixels;
@@ -1958,13 +1958,10 @@ _worksheet_size_col(lxw_worksheet *self, lxw_col_t col_num)
     }
 
     if (col_opt) {
-        if (col_opt->hidden)
-            return 0;
-
         width = col_opt->width;
 
         /* Convert to pixels. */
-        if (width == 0) {
+        if (col_opt->hidden && anchor != LXW_OBJECT_MOVE_AND_SIZE_AFTER) {
             pixels = 0;
         }
         else if (width < 1.0) {
@@ -1987,24 +1984,18 @@ _worksheet_size_col(lxw_worksheet *self, lxw_col_t col_num)
  * it has a value of zero.
  */
 STATIC int32_t
-_worksheet_size_row(lxw_worksheet *self, lxw_row_t row_num)
+_worksheet_size_row(lxw_worksheet *self, lxw_row_t row_num, uint8_t anchor)
 {
     lxw_row *row;
     uint32_t pixels;
-    double height;
 
     row = lxw_worksheet_find_row(self, row_num);
 
     if (row) {
-        if (row->hidden)
-            return 0;
-
-        height = row->height;
-
-        if (height == 0)
+        if (row->hidden && anchor != LXW_OBJECT_MOVE_AND_SIZE_AFTER)
             pixels = 0;
         else
-            pixels = (uint32_t) (4.0 / 3.0 * height);
+            pixels = (uint32_t) (4.0 / 3.0 * row->height);
     }
     else {
         pixels = (uint32_t) (4.0 / 3.0 * self->default_row_height);
@@ -2072,6 +2063,8 @@ _worksheet_position_object_pixels(lxw_worksheet *self,
     uint32_t y_abs = 0;         /* Abs. distance to top  side of object. */
 
     uint32_t i;
+    uint8_t anchor = drawing_object->anchor;
+    uint8_t ignore_anchor = LXW_OBJECT_POSITION_DEFAULT;
 
     col_start = object_props->col;
     row_start = object_props->row;
@@ -2082,13 +2075,13 @@ _worksheet_position_object_pixels(lxw_worksheet *self,
 
     /* Adjust start column for negative offsets. */
     while (x1 < 0 && col_start > 0) {
-        x1 += _worksheet_size_col(self, col_start - 1);
+        x1 += _worksheet_size_col(self, col_start - 1, ignore_anchor);
         col_start--;
     }
 
     /* Adjust start row for negative offsets. */
     while (y1 < 0 && row_start > 0) {
-        y1 += _worksheet_size_row(self, row_start - 1);
+        y1 += _worksheet_size_row(self, row_start - 1, ignore_anchor);
         row_start--;
     }
 
@@ -2102,7 +2095,7 @@ _worksheet_position_object_pixels(lxw_worksheet *self,
     /* Calculate the absolute x offset of the top-left vertex. */
     if (self->col_size_changed) {
         for (i = 0; i < col_start; i++)
-            x_abs += _worksheet_size_col(self, i);
+            x_abs += _worksheet_size_col(self, i, ignore_anchor);
     }
     else {
         /* Optimization for when the column widths haven't changed. */
@@ -2115,7 +2108,7 @@ _worksheet_position_object_pixels(lxw_worksheet *self,
     /* Store the column change to allow optimizations. */
     if (self->row_size_changed) {
         for (i = 0; i < row_start; i++)
-            y_abs += _worksheet_size_row(self, i);
+            y_abs += _worksheet_size_row(self, i, ignore_anchor);
     }
     else {
         /* Optimization for when the row heights haven"t changed. */
@@ -2125,40 +2118,36 @@ _worksheet_position_object_pixels(lxw_worksheet *self,
     y_abs += y1;
 
     /* Adjust start col for offsets that are greater than the col width. */
-    if (_worksheet_size_col(self, col_start) > 0) {
-        while (x1 >= _worksheet_size_col(self, col_start)) {
-            x1 -= _worksheet_size_col(self, col_start);
-            col_start++;
-        }
+    while (x1 >= _worksheet_size_col(self, col_start, anchor)) {
+        x1 -= _worksheet_size_col(self, col_start, ignore_anchor);
+        col_start++;
     }
 
     /* Adjust start row for offsets that are greater than the row height. */
-    if (_worksheet_size_row(self, row_start) > 0) {
-        while (y1 >= _worksheet_size_row(self, row_start)) {
-            y1 -= _worksheet_size_row(self, row_start);
-            row_start++;
-        }
+    while (y1 >= _worksheet_size_row(self, row_start, anchor)) {
+        y1 -= _worksheet_size_row(self, row_start, ignore_anchor);
+        row_start++;
     }
 
     /* Initialize end cell to the same as the start cell. */
     col_end = col_start;
     row_end = row_start;
 
-    /* Only offset the image in the cell if the row/col isn't hidden. */
-    if (_worksheet_size_col(self, col_start) > 0)
+    /* Only offset the image in the cell if the row/col is hidden. */
+    if (_worksheet_size_col(self, col_start, anchor) > 0)
         width = width + x1;
-    if (_worksheet_size_row(self, row_start) > 0)
+    if (_worksheet_size_row(self, row_start, anchor) > 0)
         height = height + y1;
 
     /* Subtract the underlying cell widths to find the end cell. */
-    while (width >= _worksheet_size_col(self, col_end)) {
-        width -= _worksheet_size_col(self, col_end);
+    while (width >= _worksheet_size_col(self, col_end, anchor)) {
+        width -= _worksheet_size_col(self, col_end, anchor);
         col_end++;
     }
 
     /* Subtract the underlying cell heights to find the end cell. */
-    while (height >= _worksheet_size_row(self, row_end)) {
-        height -= _worksheet_size_row(self, row_end);
+    while (height >= _worksheet_size_row(self, row_end, anchor)) {
+        height -= _worksheet_size_row(self, row_end, anchor);
         row_end++;
     }
 
@@ -2393,8 +2382,11 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
     drawing_object = calloc(1, sizeof(lxw_drawing_object));
     RETURN_VOID_ON_MEM_ERROR(drawing_object);
 
-    drawing_object->anchor_type = LXW_ANCHOR_TYPE_IMAGE;
-    drawing_object->edit_as = LXW_ANCHOR_EDIT_AS_ONE_CELL;
+    drawing_object->anchor = LXW_OBJECT_MOVE_DONT_SIZE;
+    if (object_props->object_position)
+        drawing_object->anchor = object_props->object_position;
+
+    drawing_object->type = LXW_DRAWING_IMAGE;
     drawing_object->description = lxw_strdup(object_props->description);
     drawing_object->tip = lxw_strdup(object_props->tip);
     drawing_object->rel_index = 0;
@@ -2563,8 +2555,11 @@ lxw_worksheet_prepare_chart(lxw_worksheet *self,
     drawing_object = calloc(1, sizeof(lxw_drawing_object));
     RETURN_VOID_ON_MEM_ERROR(drawing_object);
 
-    drawing_object->anchor_type = LXW_ANCHOR_TYPE_CHART;
-    drawing_object->edit_as = LXW_ANCHOR_EDIT_AS_ONE_CELL;
+    drawing_object->anchor = LXW_OBJECT_MOVE_AND_SIZE;
+    if (object_props->object_position)
+        drawing_object->anchor = object_props->object_position;
+
+    drawing_object->type = LXW_DRAWING_CHART;
     drawing_object->description = lxw_strdup("TODO_DESC");
     drawing_object->tip = NULL;
     drawing_object->rel_index = _get_drawing_rel_index(self, NULL);
@@ -6242,6 +6237,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
         object_props->y_offset = user_options->y_offset;
         object_props->x_scale = user_options->x_scale;
         object_props->y_scale = user_options->y_scale;
+        object_props->object_position = user_options->object_position;
         object_props->url = lxw_strdup(user_options->url);
         object_props->tip = lxw_strdup(user_options->tip);
 
@@ -6340,6 +6336,7 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
         object_props->y_offset = user_options->y_offset;
         object_props->x_scale = user_options->x_scale;
         object_props->y_scale = user_options->y_scale;
+        object_props->object_position = user_options->object_position;
         object_props->description = lxw_strdup(user_options->description);
     }
 
@@ -6429,6 +6426,7 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
         object_props->y_offset = user_options->y_offset;
         object_props->x_scale = user_options->x_scale;
         object_props->y_scale = user_options->y_scale;
+        object_props->object_position = user_options->object_position;
     }
 
     /* Copy other options or set defaults. */
