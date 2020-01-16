@@ -11,7 +11,7 @@ ifdef V
 Q=
 endif
 
-DESTIDR ?=
+DESTDIR ?=
 PREFIX  ?= /usr/local
 
 # Directory variables.
