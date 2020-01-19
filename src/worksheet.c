@@ -2693,7 +2693,7 @@ lxw_worksheet_prepare_vml_objects(lxw_worksheet *self,
     };
 
     /* If this allocation fails it will be dealt with in packager.c. */
-    vml_data_id_str = calloc(1, data_str_len);
+    vml_data_id_str = calloc(1, data_str_len + 2);
     GOTO_LABEL_ON_MEM_ERROR(vml_data_id_str, mem_error);
 
     /* Create the CSV list in the allocated space. */
