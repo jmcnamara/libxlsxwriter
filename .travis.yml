@@ -32,8 +32,9 @@ script:
   - make V=1
   - make test_functional V=1
   - make test_unit V=1
-  - make test_cmake V=1
   - make examples V=1
   - make test_valgrind V=1
   - sudo make install V=1
   - sudo make uninstall V=1
+  - make test_cmake V=1
+  - make clean V=1
