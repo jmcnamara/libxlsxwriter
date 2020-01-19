@@ -2,6 +2,13 @@
 @page changes Changes
 
 
+## 0.9.4 January 19 2019
+
+- Added option to specify worksheet "object positioning" for images and charts
+  to define how they move or size with underlying cells. See @ref
+  ww_object_position_options and @ref working_with_object_positioning.
+
+
 ## 0.9.3 January 13 2019
 
 - Fix Xcode/Cocoapods build warnings.
