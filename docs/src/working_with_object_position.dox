@@ -1,0 +1,176 @@
+/**
+@page working_with_object_positioning Working with Object Positioning
+
+Libxlsxwriter positions worksheet objects such as images and charts in
+worksheets by calculating precise co-ordinates based on the object size, it's
+DPI (for images) and any scaling that the user specifies. It also takes into
+account the heights and widths of the rows and columns that the object
+crosses. In this way objects maintain their original sizes even if the rows or
+columns underneath change size or are hidden.
+
+For example:
+
+@code
+    #include "xlsxwriter.h"
+
+    int main() {
+
+        lxw_workbook  *workbook  = workbook_new("images.xlsx");
+        lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+
+        // Original image.
+        worksheet_insert_image(worksheet, CELL("B2"), "logo.png");
+
+        // Same as original, despite row/col changes.
+        worksheet_insert_image(worksheet, CELL("E8"), "logo.png");
+
+        // Make column F narrower.
+        worksheet_set_column(worksheet, COLS("F:F"), 2, NULL);
+
+        // Hide row 12 (zero indexed).
+        lxw_row_col_options row_options = {.hidden = LXW_TRUE};
+        worksheet_set_row_opt(worksheet, 11, LXW_DEF_ROW_HEIGHT, NULL, &row_options);
+
+        workbook_close(workbook);
+
+        return 0;
+    }
+@endcode
+
+
+@image html object_position1.png
+
+As can be seen the inserted images are the same size even though the second
+image crosses changed rows and columns.
+
+However, there are two cases where the image scale may change with row or
+columns changes. These are explained in the next two sections.
+
+@section ww_object_position_scaling Object scaling due to automatic row height adjustment
+
+The scaling of a image may be affected if is crosses a row that has its
+default height changed due to a font that is larger than the default font size
+or that has text wrapping turned on. In these cases Excel will automatically
+calculate a row height based on the text when it loads the file. Since this
+row height isn't available to Libxlsxwriter when it creates the file the object
+may appear as if it is sized incorrectly. For example::
+
+@code
+    #include "xlsxwriter.h"
+
+    int main() {
+
+        lxw_workbook  *workbook  = workbook_new("images.xlsx");
+        lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+
+        lxw_format *wrap = workbook_add_format(workbook);
+        format_set_text_wrap(wrap);
+
+        worksheet_write_string(worksheet,  CELL("A10"), "Some text that wraps", wrap);
+
+        worksheet_insert_image(worksheet, CELL("B1"),  "logo.png");
+        worksheet_insert_image(worksheet, CELL("B10"), "logo.png");
+
+        workbook_close(workbook);
+
+        return 0;
+    }
+    @endcode
+
+@image html object_position2.png
+
+As can be seen the second inserted image is distorted, compared to the first,
+due to the row being scaled automatically. To avoid this you should explicitly
+set the height of the row using `worksheet_set_row()` if it crosses an
+inserted object.
+
+@section ww_object_position_options Object Positioning with Cell Moving and Sizing
+
+Excel supports three options for "Object Positioning" within a worksheet:
+
+@image html object_position3.png
+
+
+Image and chart objects in Libxlsxwriter emulate these options using the
+`object_position` parameter in #lxw_image_options and #lxw_chart_options:
+
+@code
+    lxw_image_options options = {.object_position = LXW_OBJECT_MOVE_AND_SIZE};
+    worksheet_insert_image_opt(worksheet, CELL("E9"), "red.png", &options);
+@endcode
+
+Where `object_position` has one of the following allowable values from
+#lxw_object_position:
+
+1. #LXW_OBJECT_MOVE_AND_SIZE: Move and size with cells. This is the Excel
+   default for charts.
+2. #LXW_OBJECT_MOVE_DONT_SIZE: Move but don’t size with cells. This is the
+   Excel default for images.
+3. #LXW_OBJECT_DONT_MOVE_DONT_SIZE: Don’t move or size with cells.
+4. #LXW_OBJECT_MOVE_AND_SIZE_AFTER: Same as Option 1 to "move and size with
+   cells" except Libxlsxwriter applies hidden cells after the object is
+   inserted.
+
+Option 4 appears in Excel as Option 1. However, the worksheet object is sized
+to take hidden rows or columns into account. This allows the user to hide an
+image in a cell, possibly as part of an autofilter. For example:
+
+@code
+    #include "xlsxwriter.h"
+
+    int main() {
+
+        lxw_workbook  *workbook  = workbook_new("images.xlsx");
+        lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+
+        lxw_image_options image_options = {.object_position = LXW_OBJECT_MOVE_AND_SIZE_AFTER};
+
+        worksheet_insert_image(    worksheet, CELL("B4"), "logo.png");
+        worksheet_insert_image_opt(worksheet, CELL("B13"),  "logo.png", &image_options);
+
+        // Hide the rows that contain the images.
+        lxw_row_col_options row_options = {.hidden = LXW_TRUE};
+        for (int row_num = 1; row_num < 22; row_num++)
+            worksheet_set_row_opt(worksheet, row_num, LXW_DEF_ROW_HEIGHT, NULL, &row_options);
+
+        workbook_close(workbook);
+
+        return 0;
+    }
+    @endcode
+
+@image html object_position4.png
+
+In this example the first inserted image is visible over the hidden rows
+whilst the second image is hidden with the rows. Unhiding the rows in Excel
+would reveal the second image.
+
+@section ww_object_position_sizing Image sizing and DPI
+
+When an image is imported into Excel the DPI (dots per inch) resolution of the
+image is taken into account. Excel sizes the image according to a base DPI of
+96 dpi. Therefore an image with a DPI of 72 may appear slightly larger when
+imported into Excel while an image with a DPI of 200 may appear twice as
+small. Libxlsxwriter also reads the DPI of the images that the user inserts
+into a worksheet and stores the image dimensions in the same way that Excel
+does. If it cannot determine the DPI of the image it uses a default of 96.
+
+@section ww_object_position_image_issues Reporting issues with image insertion
+
+A lot of work has gone into ensuring that Libxlsxwriter inserts images into
+worksheets in exactly the same way that Excel does, even though the required
+calculations and units are arcane. There are over 80 test cases that check
+image insertion against files created in Excel to ensure that Libxlsxwriter's
+handling of images is correct.
+
+As such, before reporting any issues with image handling in Libxlsxwriter
+please check how the same image is handled in Excel (not OpenOffice,
+LibreOffice or other third party applications). If you do report an issue
+please use the Libxlsxwriter [Issue tracker is on GitHub][issue_tracker] that
+demonstrates the issue.
+
+[issue_tracker]: https://github.com/jmcnamara/libxlsxwriter/issues
+
+Next: @ref working_with_data_validation
+
+*/
