@@ -46,7 +46,7 @@ clean :
 	$(Q)rm -rf test/functional/__pycache__
 	$(Q)rm -f  test/functional/*.pyc
 	$(Q)rm -f  lib/*
-ifndef USE_STANDARD_TMPFILE
+ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) clean -C third_party/minizip
 endif
 ifndef USE_STANDARD_TMPFILE
