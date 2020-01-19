@@ -2328,6 +2328,8 @@ _worksheet_position_vml_object(lxw_worksheet *self, lxw_vml_obj *comment)
     object_props.width = comment->width;
     object_props.height = comment->height;
 
+    drawing_object.anchor = LXW_OBJECT_DONT_MOVE_DONT_SIZE;
+
     _worksheet_position_object_pixels(self, &object_props, &drawing_object);
 
     comment->from.col = drawing_object.from.col;
