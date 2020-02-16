@@ -33,6 +33,9 @@
 #define DEPRECATED(func, msg) func
 #endif
 
+#ifndef LXW_PRINT_ERR
+#define LXW_PRINT_ERR(...) fprintf(stderr, __VA_ARGS__);
+#endif
 /** Integer data type to represent a row value. Equivalent to `uint32_t`.
  *
  * The maximum row in Excel is 1,048,576.
@@ -224,7 +227,7 @@ enum lxw_custom_property_types {
 #define LXW_SCHEMA_CONTENT   LXW_SCHEMA_ROOT "/package/2006/content-types"
 
 #define LXW_ERROR(message)                      \
-    fprintf(stderr, "[ERROR][%s:%d]: " message "\n", __FILE__, __LINE__)
+    LXW_PRINT_ERR("[ERROR][%s:%d]: " message "\n", __FILE__, __LINE__)
 
 #define LXW_MEM_ERROR()                         \
     LXW_ERROR("Memory allocation failed.")
@@ -252,50 +255,50 @@ enum lxw_custom_property_types {
         return error;
 
 #define LXW_WARN(message)                       \
-    fprintf(stderr, "[WARNING]: " message "\n")
+    LXW_PRINT_ERR("[WARNING]: " message "\n")
 
 /* We can't use variadic macros here since we support ANSI C. */
 #define LXW_WARN_FORMAT(message)                \
-    fprintf(stderr, "[WARNING]: " message "\n")
+    LXW_PRINT_ERR("[WARNING]: " message "\n")
 
 #define LXW_WARN_FORMAT1(message, var)          \
-    fprintf(stderr, "[WARNING]: " message "\n", var)
+    LXW_PRINT_ERR("[WARNING]: " message "\n", var)
 
 #define LXW_WARN_FORMAT2(message, var1, var2)    \
-    fprintf(stderr, "[WARNING]: " message "\n", var1, var2)
+    LXW_PRINT_ERR("[WARNING]: " message "\n", var1, var2)
 
 /* Chart axis type checks. */
 #define LXW_WARN_CAT_AXIS_ONLY(function)                                   \
     if (!axis->is_category) {                                              \
-        fprintf(stderr, "[WARNING]: "                                      \
+        LXW_PRINT_ERR("[WARNING]: "                                      \
                 function "() is only valid for category axes\n");          \
        return;                                                             \
     }
 
 #define LXW_WARN_VALUE_AXIS_ONLY(function)                                 \
     if (!axis->is_value) {                                                 \
-        fprintf(stderr, "[WARNING]: "                                      \
+        LXW_PRINT_ERR("[WARNING]: "                                      \
                 function "() is only valid for value axes\n");             \
        return;                                                             \
     }
 
 #define LXW_WARN_DATE_AXIS_ONLY(function)                                  \
     if (!axis->is_date) {                                                  \
-        fprintf(stderr, "[WARNING]: "                                      \
+        LXW_PRINT_ERR("[WARNING]: "                                      \
                 function "() is only valid for date axes\n");              \
        return;                                                             \
     }
 
 #define LXW_WARN_CAT_AND_DATE_AXIS_ONLY(function)                          \
     if (!axis->is_category && !axis->is_date) {                            \
-        fprintf(stderr, "[WARNING]: "                                      \
+        LXW_PRINT_ERR("[WARNING]: "                                      \
                 function "() is only valid for category and date axes\n"); \
        return;                                                             \
     }
 
 #define LXW_WARN_VALUE_AND_DATE_AXIS_ONLY(function)                        \
     if (!axis->is_value && !axis->is_date) {                               \
-        fprintf(stderr, "[WARNING]: "                                      \
+        LXW_PRINT_ERR("[WARNING]: "                                      \
                 function "() is only valid for value and date axes\n");    \
        return;                                                             \
     }

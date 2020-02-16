@@ -1893,7 +1893,7 @@ workbook_close(lxw_workbook *self)
 
     /* If the packager fails it is generally due to a zip permission error. */
     if (packager == NULL) {
-        fprintf(stderr, "[ERROR] workbook_close(): "
+        LXW_PRINT_ERR("[ERROR] workbook_close(): "
                 "Error creating '%s'. "
                 "System error = %s\n", self->filename, strerror(errno));
 
@@ -1909,28 +1909,28 @@ workbook_close(lxw_workbook *self)
 
     /* Error and non-error conditions fall through to the cleanup code. */
     if (error == LXW_ERROR_CREATING_TMPFILE) {
-        fprintf(stderr, "[ERROR] workbook_close(): "
+        LXW_PRINT_ERR("[ERROR] workbook_close(): "
                 "Error creating tmpfile(s) to assemble '%s'. "
                 "System error = %s\n", self->filename, strerror(errno));
     }
 
     /* If LXW_ERROR_ZIP_FILE_OPERATION then errno is set by zip. */
     if (error == LXW_ERROR_ZIP_FILE_OPERATION) {
-        fprintf(stderr, "[ERROR] workbook_close(): "
+        LXW_PRINT_ERR("[ERROR] workbook_close(): "
                 "Zip ZIP_ERRNO error while creating xlsx file '%s'. "
                 "System error = %s\n", self->filename, strerror(errno));
     }
 
     /* If LXW_ERROR_ZIP_PARAMETER_ERROR then errno is set by zip. */
     if (error == LXW_ERROR_ZIP_PARAMETER_ERROR) {
-        fprintf(stderr, "[ERROR] workbook_close(): "
+        LXW_PRINT_ERR("[ERROR] workbook_close(): "
                 "Zip ZIP_PARAMERROR error while creating xlsx file '%s'. "
                 "System error = %s\n", self->filename, strerror(errno));
     }
 
     /* If LXW_ERROR_ZIP_BAD_ZIP_FILE then errno is set by zip. */
     if (error == LXW_ERROR_ZIP_BAD_ZIP_FILE) {
-        fprintf(stderr, "[ERROR] workbook_close(): "
+        LXW_PRINT_ERR("[ERROR] workbook_close(): "
                 "Zip ZIP_BADZIPFILE error while creating xlsx file '%s'. "
                 "This may require the use_zip64 option for large files. "
                 "System error = %s\n", self->filename, strerror(errno));
@@ -1938,19 +1938,19 @@ workbook_close(lxw_workbook *self)
 
     /* If LXW_ERROR_ZIP_INTERNAL_ERROR then errno is set by zip. */
     if (error == LXW_ERROR_ZIP_INTERNAL_ERROR) {
-        fprintf(stderr, "[ERROR] workbook_close(): "
+        LXW_PRINT_ERR("[ERROR] workbook_close(): "
                 "Zip ZIP_INTERNALERROR error while creating xlsx file '%s'. "
                 "System error = %s\n", self->filename, strerror(errno));
     }
 
     /* The next 2 error conditions don't set errno. */
     if (error == LXW_ERROR_ZIP_FILE_ADD) {
-        fprintf(stderr, "[ERROR] workbook_close(): "
+        LXW_PRINT_ERR("[ERROR] workbook_close(): "
                 "Zip error adding file to xlsx file '%s'.\n", self->filename);
     }
 
     if (error == LXW_ERROR_ZIP_CLOSE) {
-        fprintf(stderr, "[ERROR] workbook_close(): "
+        LXW_PRINT_ERR("[ERROR] workbook_close(): "
                 "Zip error closing xlsx file '%s'.\n", self->filename);
     }
 
