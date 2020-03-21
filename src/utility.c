@@ -34,7 +34,6 @@ char *error_strings[LXW_MAX_ERRNO + 1] = {
     "Worksheet name cannot contain invalid characters: '[ ] : * ? / \\'",
     "Worksheet name cannot start or end with an apostrophe.",
     "Worksheet name is already in use.",
-    "Worksheet name 'History' is reserved by Excel.",
     "Parameter exceeds Excel's limit of 32 characters.",
     "Parameter exceeds Excel's limit of 128 characters.",
     "Parameter exceeds Excel's limit of 255 characters.",

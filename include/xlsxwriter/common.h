@@ -115,9 +115,6 @@ typedef enum lxw_error {
     /** Worksheet name is already in use. */
     LXW_ERROR_SHEETNAME_ALREADY_USED,
 
-    /** Worksheet name 'History' is reserved by Excel. */
-    LXW_ERROR_SHEETNAME_RESERVED,
-
     /** Parameter exceeds Excel's limit of 32 characters. */
     LXW_ERROR_32_STRING_LENGTH_EXCEEDED,
 

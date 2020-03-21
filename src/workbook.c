@@ -2324,10 +2324,6 @@ workbook_validate_sheet_name(lxw_workbook *self, const char *sheetname)
     if (sheetname[0] == '\'' || sheetname[strlen(sheetname) - 1] == '\'')
         return LXW_ERROR_SHEETNAME_START_END_APOSTROPHE;
 
-    /* Check that the worksheet name isn't the reserved work "History". */
-    if (lxw_strcasecmp(sheetname, "history") == 0)
-        return LXW_ERROR_SHEETNAME_RESERVED;
-
     /* Check if the worksheet name is already in use. */
     if (workbook_get_worksheet_by_name(self, sheetname))
         return LXW_ERROR_SHEETNAME_ALREADY_USED;
