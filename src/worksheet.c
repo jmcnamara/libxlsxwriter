@@ -1991,14 +1991,15 @@ _worksheet_size_row(lxw_worksheet *self, lxw_row_t row_num, uint8_t anchor)
 
     row = lxw_worksheet_find_row(self, row_num);
 
+    /* Note, the 0.75 below is due to the difference between 72/96 DPI. */
     if (row) {
         if (row->hidden && anchor != LXW_OBJECT_MOVE_AND_SIZE_AFTER)
             pixels = 0;
         else
-            pixels = (uint32_t) (4.0 / 3.0 * row->height);
+            pixels = (uint32_t) (row->height / 0.75);
     }
     else {
-        pixels = (uint32_t) (4.0 / 3.0 * self->default_row_height);
+        pixels = (uint32_t) (self->default_row_height / 0.75);
     }
 
     return pixels;
