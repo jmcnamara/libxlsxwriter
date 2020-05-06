@@ -60,6 +60,11 @@ ifdef USE_DOUBLE_FUNCTION
 CFLAGS += -DUSE_DOUBLE_FUNCTION
 endif
 
+# Use fmemopen() to avoid creating certain temporary files
+ifdef USE_FMEMOPEN
+CFLAGS += -DUSE_FMEMOPEN
+endif
+
 # Flags passed to compiler.
 CFLAGS   += -g -O3 -Wall -Wextra -Wstrict-prototypes -pedantic -ansi
 
