@@ -7,6 +7,10 @@
  *
  */
 
+#ifdef USE_FMEMOPEN
+#define _POSIX_C_SOURCE 200809L
+#endif
+
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/worksheet.h"
 #include "xlsxwriter/format.h"
@@ -6301,9 +6305,14 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
-    /* Write the image buffer to a temporary file so we can read the
-     * dimensions like an ordinary file. */
+    /* Write the image buffer to a file (preferably in memory) so we can read
+     * the dimensions like an ordinary file. */
+#ifdef USE_FMEMOPEN
+    image_stream = fmemopen(NULL, image_size, "w+b");
+#else
     image_stream = lxw_tmpfile(self->tmpdir);
+#endif
+
     if (!image_stream)
         return LXW_ERROR_CREATING_TMPFILE;
 

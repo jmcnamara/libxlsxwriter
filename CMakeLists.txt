@@ -118,6 +118,7 @@ option(BUILD_EXAMPLES "Build libxlsxwriter examples" OFF)
 option(USE_SYSTEM_MINIZIP "Use system minizip installation" OFF)
 option(USE_STANDARD_TMPFILE "Use the C standard library's tmpfile()" OFF)
 option(USE_NO_MD5 "Build libxlsxwriter without third party MD5 lib" OFF)
+option(USE_FMEMOPEN "Use fmemopen() in place of some temporary files" OFF)
 option(IOAPI_NO_64 "Disable 64-bit filesystem support" OFF)
 
 if(MSVC)
@@ -146,6 +147,9 @@ if(USE_NO_MD5)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_NO_MD5)
 endif()
 
+if(USE_FMEMOPEN)
+    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_FMEMOPEN)
+endif()
 
 if(NOT BUILD_SHARED_LIBS)
     if(UNIX)
