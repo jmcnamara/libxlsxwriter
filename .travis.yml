@@ -1,5 +1,5 @@
 language: c
-dist: trusty
+dist: xenial
 
 compiler:
   - clang
@@ -13,20 +13,18 @@ env:
   - NO_VALGRIND=1 USE_DOUBLE_FUNCTION=1  CFLAGS='-Werror'
   - NO_VALGRIND=1 USE_NO_MD5=1           CFLAGS='-Werror'
 
-install:
-  - sudo pip install pytest
-  - sudo apt-get update
-  - sudo apt-get remove -y oracle-java9-installer
-  - sudo apt-get install -y gcc-multilib
-  - sudo apt-get install -y zlib1g-dev
-  - sudo apt-get install -y zlib1g-dev:i386
-  - sudo apt-get install -y gcc
-  - sudo apt-get install -y valgrind
+addons:
+  apt:
+    update: true
+    packages:
+      - gcc-multilib
+      - libminizip-dev
+      - valgrind
+      - zlib1g-dev
+      - zlib1g-dev:i386
 
-  - wget http://mirrors.kernel.org/ubuntu/pool/universe/m/minizip/libminizip-dev_1.1-8_amd64.deb
-  - wget http://mirrors.kernel.org/ubuntu/pool/universe/m/minizip/libminizip1_1.1-8_amd64.deb
-  - sudo dpkg -i libminizip1_1.1-8_amd64.deb
-  - sudo dpkg -i libminizip-dev_1.1-8_amd64.deb
+before_install:
+  - sudo pip install pytest
 
 script:
   - make V=1
