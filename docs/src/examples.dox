@@ -690,10 +690,16 @@ Percent stacked column chart:
 </tr>
 </table>
 
-Example of creating an Excel Line chart.
+Example of creating Excel Line charts. Three types of line chart are shown.
 
 The default line chart:
 @image html chart_line1.png
+
+Stacked line chart:
+@image html chart_line2.png
+
+Percent stacked line chart:
+@image html chart_line3.png
 
 
 

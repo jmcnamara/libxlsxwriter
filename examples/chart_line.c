@@ -81,5 +81,62 @@ int main() {
     worksheet_insert_chart(worksheet, CELL("E2"), chart);
 
 
+    /*
+     * Chart 2. Create a stacked line chart.
+     */
+    chart = workbook_add_chart(workbook, LXW_CHART_LINE_STACKED);
+
+    /* Add the first series to the chart. */
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
+
+    /* Set the name for the series instead of the default "Series 1". */
+    chart_series_set_name(series, "=Sheet1!$B$1");
+
+    /* Add the second series to the chart. */
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+
+    /* Set the name for the series instead of the default "Series 2". */
+    chart_series_set_name(series, "=Sheet1!$C$1");
+
+    /* Add a chart title and some axis labels. */
+    chart_title_set_name(chart,        "Results of sample analysis");
+    chart_axis_set_name(chart->x_axis, "Test number");
+    chart_axis_set_name(chart->y_axis, "Sample length (mm)");
+
+    /* Set an Excel chart style. */
+    chart_set_style(chart, 12);
+
+    /* Insert the chart into the worksheet. */
+    worksheet_insert_chart(worksheet, CELL("E18"), chart);
+
+
+    /*
+     * Chart 3. Create a percent stacked line chart.
+     */
+    chart = workbook_add_chart(workbook, LXW_CHART_LINE_STACKED_PERCENT);
+
+    /* Add the first series to the chart. */
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
+
+    /* Set the name for the series instead of the default "Series 1". */
+    chart_series_set_name(series, "=Sheet1!$B$1");
+
+    /* Add the second series to the chart. */
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+
+    /* Set the name for the series instead of the default "Series 2". */
+    chart_series_set_name(series, "=Sheet1!$C$1");
+
+    /* Add a chart title and some axis labels. */
+    chart_title_set_name(chart,        "Results of sample analysis");
+    chart_axis_set_name(chart->x_axis, "Test number");
+    chart_axis_set_name(chart->y_axis, "Sample length (mm)");
+
+    /* Set an Excel chart style. */
+    chart_set_style(chart, 13);
+
+    /* Insert the chart into the worksheet. */
+    worksheet_insert_chart(worksheet, CELL("E34"), chart);
+
     return workbook_close(workbook);
 }

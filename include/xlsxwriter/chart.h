@@ -124,6 +124,12 @@ typedef enum lxw_chart_type {
     /** Line chart. */
     LXW_CHART_LINE,
 
+    /** Line chart - stacked. */
+    LXW_CHART_LINE_STACKED,
+
+    /** Line chart - percentage stacked. */
+    LXW_CHART_LINE_STACKED_PERCENT,
+
     /** Pie chart. */
     LXW_CHART_PIE,
 

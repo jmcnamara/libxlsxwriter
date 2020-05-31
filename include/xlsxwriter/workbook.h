@@ -557,6 +557,8 @@ lxw_format *workbook_add_format(lxw_workbook *workbook);
  * | #LXW_CHART_COLUMN_STACKED_PERCENT        | Column chart - percentage stacked.     |
  * | #LXW_CHART_DOUGHNUT                      | Doughnut chart.                        |
  * | #LXW_CHART_LINE                          | Line chart.                            |
+ * | #LXW_CHART_LINE_STACKED                  | Line chart - stacked.                  |
+ * | #LXW_CHART_LINE_STACKED_PERCENT          | Line chart - percentage stacked.       |
  * | #LXW_CHART_PIE                           | Pie chart.                             |
  * | #LXW_CHART_SCATTER                       | Scatter chart.                         |
  * | #LXW_CHART_SCATTER_STRAIGHT              | Scatter chart - straight.              |
