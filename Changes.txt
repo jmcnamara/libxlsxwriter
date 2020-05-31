@@ -2,6 +2,23 @@
 @page changes Changes
 
 
+## 0.9.5 May 31 2020
+
+- Fix for issue where hyperlinks urls and tips were ignored for
+  `worksheet_insert_image_buffer_opt()` images.
+  Issue [#292][gh_292].
+
+  [gh_292]: https://github.com/jmcnamara/libxlsxwriter/issues/292
+
+- Added #LXW_CHART_LINE_STACKED and #LXW_CHART_LINE_STACKED_PERCENT line
+  charts subtypes.
+
+- Removed LXW_ERROR_SHEETNAME_RESERVED warning which was used with the
+  reserved worksheet name "History". However, this is an allowed worksheet
+  name in some Excel variants so the warning has been turned into a
+  documentation note instead.
+
+
 ## 0.9.4 January 19 2020
 
 - Added option to specify worksheet "object positioning" for images and charts
