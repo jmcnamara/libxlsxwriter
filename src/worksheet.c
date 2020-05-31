@@ -6348,6 +6348,8 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
         object_props->y_offset = user_options->y_offset;
         object_props->x_scale = user_options->x_scale;
         object_props->y_scale = user_options->y_scale;
+        object_props->url = lxw_strdup(user_options->url);
+        object_props->tip = lxw_strdup(user_options->tip);
         object_props->object_position = user_options->object_position;
         object_props->description = lxw_strdup(user_options->description);
     }
