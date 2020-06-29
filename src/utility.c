@@ -440,6 +440,78 @@ lxw_strdup_formula(const char *formula)
         return lxw_strdup(formula);
 }
 
+/* Find control characters in the string.
+ * \x01\x02\x03\x04\x05\x06\x07\x08\x0B\x0C
+ * \x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F */
+unsigned char
+lxw_exists_control_chars(const char *string)
+{
+    size_t str_len = strlen(string);
+
+#ifdef __SSE2__
+    /* If the CPU supports the SSE2 instruction set, use the SSE2 instruction set to quickly filter. */
+    /* Filtering 16 characters at a time. */
+    if (str_len >= 16) {
+        const __m128i _char_nul   = _mm_set1_epi8('\x00');
+        const __m128i _char_ht    = _mm_set1_epi8('\x09');
+        const __m128i _char_lf    = _mm_set1_epi8('\x0A');
+        const __m128i _char_space = _mm_set1_epi8('\x20');
+
+        while (str_len >= 16) {
+            __m128i _tm, _eq;
+            __m128i _value = _mm_loadu_si128((__m128i *)string);
+
+            /* There are no control characters in the current string */
+            _tm = _mm_max_epu8(_value, _char_space);
+            _eq = _mm_cmpeq_epi8(_value, _tm);
+            if (_eq[0] == -1 && _eq[1] == -1)
+                goto next;
+
+            /* There are control characters in the current string */
+            /* \x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1A\x1B\x1C\x1D\x1E\x1F */
+            _tm = _mm_min_epu8(_value, _char_lf);
+            _eq = _mm_cmpeq_epi8(_char_lf, _tm);
+            if (_eq[0] == -1 && _eq[1] == -1)
+                return LXW_TRUE;
+
+            /* Continue \x09 */
+            _tm = _mm_min_epu8(_value, _char_ht);
+            _eq = _mm_cmpeq_epi8(_char_ht, _tm);
+            if (_eq[0] && _eq[1])
+                goto next;
+
+            /* There are control character in the current string */
+            /* \x01\x02\x03\x04\x05\x06\x07\x08 */
+            _tm = _mm_min_epu8(_value, _char_nul);
+            _eq = _mm_cmpeq_epi8(_char_nul, _tm);
+            if (_eq[0] == -1 && _eq[1] == -1)
+                return LXW_TRUE;
+
+            next:
+
+            string += 16;
+            str_len -= 16;
+        }
+    }
+#endif
+
+    /* Filter the remaining characters. */
+    /* If the SSE2 instruction set is not supported, please use the conventional way to filter. */
+    /* But currently all x86 architecture CPUs on the market support the SSE2 instruction set. */
+    while (str_len > 0) {
+        unsigned char _string = *string;
+
+        if (_string < '\x20' && ((_string > '\x00' && _string < '\x09') || _string > '\x0A')) {
+                return LXW_TRUE;
+        }
+
+        ++string;
+        --str_len;
+    }
+
+    return LXW_FALSE;
+}
+
 /* Simple strlen that counts UTF-8 characters. Assumes well formed UTF-8. */
 size_t
 lxw_utf8_strlen(const char *str)

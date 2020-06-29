@@ -16,6 +16,10 @@
 #ifndef __LXW_UTILITY_H__
 #define __LXW_UTILITY_H__
 
+#ifdef __SSE2__
+#include <emmintrin.h>
+#endif
+
 #include <stdint.h>
 #ifndef _MSC_VER
 #include <strings.h>
@@ -178,6 +182,7 @@ double lxw_datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904);
 
 char *lxw_strdup(const char *str);
 char *lxw_strdup_formula(const char *formula);
+unsigned char lxw_exists_control_chars(const char *string);
 
 size_t lxw_utf8_strlen(const char *str);
 
