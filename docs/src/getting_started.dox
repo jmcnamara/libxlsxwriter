@@ -569,6 +569,12 @@ work in all of these environments.
 
 See also @ref gsg_tmpdir.
 
+@section gsg_qt Installation in Qt-Creator for Windows
+
+The following external guide shows how to [Build libxlsxwriter inside
+Qt-Creator for Windows](https://github.com/jmcnamara/libxlsxwriter/issues/270)
+with step by step instructions.
+
 @section gsg_minizip Linking against system minizip
 
 Libxlsxwriter uses the `minizip` component of [Zlib](http://www.zlib.net) to
