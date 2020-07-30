@@ -2822,7 +2822,7 @@ _process_png(lxw_object_properties *object_props)
     object_props->width = width;
     object_props->height = height;
     object_props->x_dpi = x_dpi ? x_dpi : 96;
-    object_props->y_dpi = y_dpi ? x_dpi : 96;
+    object_props->y_dpi = y_dpi ? y_dpi : 96;
     object_props->extension = lxw_strdup("png");
 
     return LXW_NO_ERROR;
@@ -2948,7 +2948,7 @@ _process_jpeg(lxw_object_properties *image_props)
     image_props->width = width;
     image_props->height = height;
     image_props->x_dpi = x_dpi ? x_dpi : 96;
-    image_props->y_dpi = y_dpi ? x_dpi : 96;
+    image_props->y_dpi = y_dpi ? y_dpi : 96;
     image_props->extension = lxw_strdup("jpeg");
 
     return LXW_NO_ERROR;
