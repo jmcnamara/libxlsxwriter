@@ -39,3 +39,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_data08(self):
         self.run_exe_test('test_data08', 'format06.xlsx')
+
+    def test_data09(self):
+        self.ignore_files = ['xl/calcChain.xml',
+                             '[Content_Types].xml',
+                             'xl/_rels/workbook.xml.rels']
+        self.run_exe_test('test_data09')

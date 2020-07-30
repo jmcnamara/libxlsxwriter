@@ -3227,6 +3227,16 @@ _write_formula_num_cell(lxw_worksheet *self, lxw_cell *cell)
 }
 
 /*
+ * Write out a formula worksheet cell with a numeric result.
+ */
+STATIC void
+_write_formula_str_cell(lxw_worksheet *self, lxw_cell *cell)
+{
+    lxw_xml_data_element(self->file, "f", cell->u.string, NULL);
+    lxw_xml_data_element(self->file, "v", cell->user_data2, NULL);
+}
+
+/*
  * Write out an array formula worksheet cell with a numeric result.
  */
 STATIC void
@@ -3362,8 +3372,17 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
         LXW_PUSH_ATTRIBUTES_INT("s", style_index);
 
     if (cell->type == FORMULA_CELL) {
+        /*If user_data2 is set then the formula has a string result. */
+        if (cell->user_data2)
+            LXW_PUSH_ATTRIBUTES_STR("t", "str");
+
         lxw_xml_start_tag(self->file, "c", &attributes);
-        _write_formula_num_cell(self, cell);
+
+        if (cell->user_data2)
+            _write_formula_str_cell(self, cell);
+        else
+            _write_formula_num_cell(self, cell);
+
         lxw_xml_end_tag(self->file, "c");
     }
     else if (cell->type == BLANK_CELL) {
@@ -4597,6 +4616,41 @@ worksheet_write_formula_num(lxw_worksheet *self,
 
     cell = _new_formula_cell(row_num, col_num, formula_copy, format);
     cell->formula_result = result;
+
+    _insert_cell(self, row_num, col_num, cell);
+
+    return LXW_NO_ERROR;
+}
+
+/*
+ * Write a formula with a string result to a cell in Excel.
+ */
+lxw_error
+worksheet_write_formula_str(lxw_worksheet *self,
+                            lxw_row_t row_num,
+                            lxw_col_t col_num,
+                            const char *formula,
+                            lxw_format *format, const char *result)
+{
+    lxw_cell *cell;
+    char *formula_copy;
+    lxw_error err;
+
+    if (!formula)
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
+    if (err)
+        return err;
+
+    /* Strip leading "=" from formula. */
+    if (formula[0] == '=')
+        formula_copy = lxw_strdup(formula + 1);
+    else
+        formula_copy = lxw_strdup(formula);
+
+    cell = _new_formula_cell(row_num, col_num, formula_copy, format);
+    cell->user_data2 = lxw_strdup(result);
 
     _insert_cell(self, row_num, col_num, cell);
 

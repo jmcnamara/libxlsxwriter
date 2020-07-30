@@ -1586,20 +1586,21 @@ lxw_error worksheet_write_blank(lxw_worksheet *worksheet,
                                 lxw_format *format);
 
 /**
- * @brief Write a formula to a worksheet cell with a user defined result.
+ * @brief Write a formula to a worksheet cell with a user defined numeric
+ *        result.
  *
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
  * @param col       The zero indexed column number.
  * @param formula   Formula string to write to cell.
  * @param format    A pointer to a Format instance or NULL.
- * @param result    A user defined result for a formula.
+ * @param result    A user defined numeric result for the formula.
  *
  * @return A #lxw_error code.
  *
  * The `%worksheet_write_formula_num()` function writes a formula or Excel
  * function to the cell specified by `row` and `column` with a user defined
- * result:
+ * numeric result:
  *
  * @code
  *     // Required as a workaround only.
@@ -1633,6 +1634,51 @@ lxw_error worksheet_write_formula_num(lxw_worksheet *worksheet,
                                       lxw_col_t col,
                                       const char *formula,
                                       lxw_format *format, double result);
+
+/**
+ * @brief Write a formula to a worksheet cell with a user defined string
+ *        result.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param formula   Formula string to write to cell.
+ * @param format    A pointer to a Format instance or NULL.
+ * @param result    A user defined string result for the formula.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_write_formula_str()` function writes a formula or Excel
+ * function to the cell specified by `row` and `column` with a user defined
+ * string result:
+ *
+ * @code
+ *     // The example formula is A & B -> AB.
+ *     worksheet_write_formula_str(worksheet, 0, 0, "=\"A\" & \"B\"", NULL, "AB");
+ * @endcode
+ *
+ * The `%worksheet_write_formula_str()` function is similar to the
+ * `%worksheet_write_formula_num()` function except it writes a string result
+ * instead or a numeric result. See `worksheet_write_formula_num()`  for more
+ * details on why/when these functions are required.
+ *
+ * One place where the `%worksheet_write_formula_str()` function may be required
+ * is to specify an empty result which will force a recalculation of the formula
+ * when loaded in LibreOffice.
+ *
+ * @code
+ *     worksheet_write_formula_str(worksheet, 0, 0, "=Sheet1!$A$1", NULL, "");
+ * @endcode
+ *
+ * See the FAQ @ref faq_formula_zero.
+ *
+ * See also @ref working_with_formulas.
+ */
+lxw_error worksheet_write_formula_str(lxw_worksheet *worksheet,
+                                      lxw_row_t row,
+                                      lxw_col_t col,
+                                      const char *formula,
+                                      lxw_format *format, const char *result);
 
 /**
  * @brief Write a "Rich" multi-format string to a worksheet cell.
