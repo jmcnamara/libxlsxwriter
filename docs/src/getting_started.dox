@@ -208,11 +208,11 @@ Add the following entry to your `Podfile`:
 
     pod 'libxlsxwriter', '~> 0.9'
 
-if you are using Swift, you can now
+if you are using Swift, you can now add an import:
 
     import xlsxwriter
 
-and call its C functions like so:
+And call its C functions like this:
 
     let documentDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create:false)
     let fileURL = documentDirectory.appendingPathComponent("hello_world.xlsx")
@@ -225,8 +225,9 @@ and call its C functions like so:
 
 For a sample Xcode project that uses the libxlsxwriter cocoapod for iOS and
 macOS with Objective-C and Swift see [libxlsxwriter Cocoa
-Examples](https://github.com/lrossi/libxlsxwriterCocoaExamples), provided by
-Ludovico Rossi or see [LibXlsxWriterSwiftSample](https://github.com/FrankenApps/LibXlsxWriterSwiftSample) for an updated sample for Swift 5.
+Examples](https://github.com/lrossi/libxlsxwriterCocoaExamples) or
+[LibXlsxWriterSwiftSample](https://github.com/FrankenApps/LibXlsxWriterSwiftSample)
+for an updated example for Swift 5.
 
 @subsection gsg_brew Installation on macOS with homebrew
 
