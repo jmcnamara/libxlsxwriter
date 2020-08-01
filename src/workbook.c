@@ -879,6 +879,9 @@ _populate_range_dimensions(lxw_workbook *self, lxw_series_range *range)
 STATIC void
 _populate_range(lxw_workbook *self, lxw_series_range *range)
 {
+    if (!range)
+        return;
+
     _populate_range_dimensions(self, range);
     _populate_range_data_cache(self, range);
 }
@@ -892,6 +895,7 @@ _add_chart_cache_data(lxw_workbook *self)
 {
     lxw_chart *chart;
     lxw_chart_series *series;
+    uint16_t i;
 
     STAILQ_FOREACH(chart, self->ordered_charts, ordered_list_pointers) {
 
@@ -906,6 +910,11 @@ _add_chart_cache_data(lxw_workbook *self)
             _populate_range(self, series->categories);
             _populate_range(self, series->values);
             _populate_range(self, series->title.range);
+
+            for (i = 0; i < series->data_label_count; i++) {
+                lxw_chart_custom_label *data_label = &series->data_labels[i];
+                _populate_range(self, data_label->range);
+            }
         }
     }
 }

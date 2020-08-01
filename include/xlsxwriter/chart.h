@@ -787,6 +787,29 @@ typedef struct lxw_chart_point {
 
 } lxw_chart_point;
 
+typedef struct lxw_chart_data_label {
+
+    char *value;
+    uint8_t delete;
+    lxw_chart_font *font;
+
+} lxw_chart_data_label;
+
+/* Internal version of lxw_chart_data_label with more metadata. */
+typedef struct lxw_chart_custom_label {
+
+    char *value;
+    uint8_t delete;
+    lxw_chart_font *font;
+
+    /* We use a range to hold the label formula properties even though it
+     * will only have 1 point in order to re-use similar functions.*/
+    lxw_series_range *range;
+
+    struct lxw_series_data_point data_point;
+
+} lxw_chart_custom_label;
+
 /**
  * @brief Define how blank values are displayed in a chart.
  */
@@ -916,7 +939,9 @@ typedef struct lxw_chart_series {
     lxw_chart_pattern *pattern;
     lxw_chart_marker *marker;
     lxw_chart_point *points;
+    lxw_chart_custom_label *data_labels;
     uint16_t point_count;
+    uint16_t data_label_count;
 
     uint8_t smooth;
     uint8_t invert_if_negative;
@@ -1658,6 +1683,9 @@ void chart_series_set_labels(lxw_chart_series *series);
 void chart_series_set_labels_options(lxw_chart_series *series,
                                      uint8_t show_name, uint8_t show_category,
                                      uint8_t show_value);
+
+lxw_error chart_series_set_labels_custom(lxw_chart_series *series, lxw_chart_data_label
+                                         *data_labels[]);
 
 /**
  * @brief Set the separator for the data label captions.
