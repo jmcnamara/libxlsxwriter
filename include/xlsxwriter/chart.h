@@ -787,10 +787,23 @@ typedef struct lxw_chart_point {
 
 } lxw_chart_point;
 
+/**
+ * @brief Struct to represent an Excel chart data label.
+ *
+ * The lxw_chart_data_label struct is used to represent a data label in a
+ * chart series so that custom properties can be set for it.
+ */
 typedef struct lxw_chart_data_label {
 
+        /** The string or formula value for the data label. See
+	 *  @ref chart_custom_labels. */
     char *value;
+
+        /** Option to delete/hide the data label from the chart series.
+	 *  See @ref chart_custom_labels. */
     uint8_t delete;
+
+    /** The font properties for the chart data label. @ref chart_fonts. */
     lxw_chart_font *font;
 
 } lxw_chart_data_label;
@@ -1647,11 +1660,11 @@ void chart_series_set_smooth(lxw_chart_series *series, uint8_t smooth);
  *     chart_series_set_labels(series);
  * @endcode
  *
- * @image html chart_labels1.png
+ * @image html chart_data_labels1.png
  *
  * By default data labels are displayed in Excel with only the values shown:
  *
- * @image html chart_labels2.png
+ * @image html chart_data_labels2.png
  *
  * However, it is possible to configure other display options, as shown
  * in the functions below.
@@ -1676,7 +1689,7 @@ void chart_series_set_labels(lxw_chart_series *series);
  *     chart_series_set_labels_options(series, LXW_TRUE, LXW_TRUE, LXW_TRUE);
  * @endcode
  *
- * @image html chart_labels3.png
+ * @image html chart_data_labels3.png
  *
  * For more information see @ref chart_labels.
  */
@@ -1684,6 +1697,60 @@ void chart_series_set_labels_options(lxw_chart_series *series,
                                      uint8_t show_name, uint8_t show_category,
                                      uint8_t show_value);
 
+/** @brief Set the properties for data labels in a series.
+*
+* @param series      A series object created via `chart_add_series()`.
+* @param data_labels An NULL terminated array of #lxw_chart_data_label pointers.
+*
+* @return A #lxw_error.
+*
+* The `%chart_series_set_labels_custom()` function is used to set the properties
+* for data labels in a series. It can also be used to delete individual data
+* labels in a series.
+*
+* In general properties are set for all the data labels in a chart
+* series. However, it is also possible to set properties for individual data
+* labels in a series using `%chart_series_set_labels_custom()`.
+*
+* The `%chart_series_set_labels_custom()` function takes a pointer to an array
+* of #lxw_chart_data_label pointers. The list should be `NULL` terminated:
+*
+* @code
+*     // Add the series data labels.
+*     chart_series_set_labels(series);
+*
+*     // Create some custom labels.
+*     lxw_chart_data_label data_label1 = {.value = "Jan"};
+*     lxw_chart_data_label data_label2 = {.value = "Feb"};
+*     lxw_chart_data_label data_label3 = {.value = "Mar"};
+*     lxw_chart_data_label data_label4 = {.value = "Apr"};
+*     lxw_chart_data_label data_label5 = {.value = "May"};
+*     lxw_chart_data_label data_label6 = {.value = "Jun"};
+*
+*     // Create an array of label pointers. NULL indicates the end of the array.
+*     lxw_chart_data_label *data_labels[] = {
+*         &data_label1,
+*         &data_label2,
+*         &data_label3,
+*         &data_label4,
+*         &data_label5,
+*         &data_label6,
+*         NULL
+*     };
+*
+*     // Set the custom labels.
+*     chart_series_set_labels_custom(series, data_labels);
+* @endcode
+*
+* @image html chart_data_labels18.png
+*
+* @note The array of #lxw_chart_point pointers should be NULL terminated as
+* shown in the example. Any #lxw_chart_data_label items set to a default
+* initialization or omitted from the list will be assigned the default data
+* label value.
+*
+* For more details see @ref chart_custom_labels.
+*/
 lxw_error chart_series_set_labels_custom(lxw_chart_series *series, lxw_chart_data_label
                                          *data_labels[]);
 
@@ -1713,7 +1780,7 @@ lxw_error chart_series_set_labels_custom(lxw_chart_series *series, lxw_chart_dat
  *     chart_series_set_labels_separator(series, LXW_CHART_LABEL_SEPARATOR_NEWLINE);
  * @endcode
  *
- * @image html chart_labels4.png
+ * @image html chart_data_labels4.png
  *
  * For more information see @ref chart_labels.
  */
@@ -1734,7 +1801,7 @@ void chart_series_set_labels_separator(lxw_chart_series *series,
  *     chart_series_set_labels_position(series, LXW_CHART_LABEL_POSITION_ABOVE);
  * @endcode
  *
- * @image html chart_labels5.png
+ * @image html chart_data_labels5.png
  *
  * In Excel the allowable data label positions vary for different chart
  * types. The allowable, and default, positions are:
@@ -1794,7 +1861,7 @@ void chart_series_set_labels_leader_line(lxw_chart_series *series);
  *     chart_series_set_labels_legend(series);
  * @endcode
  *
- * @image html chart_labels6.png
+ * @image html chart_data_labels6.png
  *
  * For more information see @ref chart_labels.
  */
@@ -1815,7 +1882,7 @@ void chart_series_set_labels_legend(lxw_chart_series *series);
  *     chart_series_set_labels_percentage(series);
  * @endcode
  *
- * @image html chart_labels7.png
+ * @image html chart_data_labels7.png
  *
  * For more information see @ref chart_labels.
  */
@@ -1835,7 +1902,7 @@ void chart_series_set_labels_percentage(lxw_chart_series *series);
  *     chart_series_set_labels_num_format(series, "$0.00");
  * @endcode
  *
- * @image html chart_labels8.png
+ * @image html chart_data_labels8.png
  *
  * The number format is similar to the Worksheet Cell Format num_format,
  * see `format_set_num_format()`.
@@ -1862,7 +1929,7 @@ void chart_series_set_labels_num_format(lxw_chart_series *series,
  *     chart_series_set_labels_font(series, &font);
  * @endcode
  *
- * @image html chart_labels9.png
+ * @image html chart_data_labels9.png
  *
  * For more information see @ref chart_fonts and @ref chart_labels.
  *

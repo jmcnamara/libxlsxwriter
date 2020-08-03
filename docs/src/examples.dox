@@ -859,7 +859,7 @@ Chart 2 is a column chart with default data table with legend keys:
 <table  width="600">
 <tr>
   <td>@ref chart_data_table.c "&lt;&lt; chart_data_table.c"</td>
-  <td align="right">@ref chart_fonts.c "chart_fonts.c &gt;&gt;"</td>
+  <td align="right">@ref chart_data_labels.c "chart_data_labels.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -892,11 +892,51 @@ Chart 7: chart with a trendline.
 
 
 
-@example chart_fonts.c
+@example chart_data_labels.c
 
 <table  width="600">
 <tr>
   <td>@ref chart_data_tools.c "&lt;&lt; chart_data_tools.c"</td>
+  <td align="right">@ref chart_fonts.c "chart_fonts.c &gt;&gt;"</td>
+</tr>
+</table>
+
+A demo of an various Excel chart data label features that are available via a
+libxlsxwriter chart, including custom data labels.
+
+Chart 1: chart with standard data labels.
+@image html chart_data_labels11.png
+
+Chart 2: chart with Category and Value data labels.
+@image html chart_data_labels12.png
+
+Chart 3: chart with data labels with a user defined font.
+@image html chart_data_labels13.png
+
+Chart 4: chart with custom string data labels.
+@image html chart_data_labels14.png
+
+Chart 5: chart with custom data labels referenced from worksheet cells.
+@image html chart_data_labels15.png
+
+Chart 6: chart with a mix of custom and default labels. The items inialised
+with '{0}' and items without a custom label (points 5 and 6 which come after
+NULL) will get the default value. We also set a font for the custom items as
+an extra example.
+@image html chart_data_labels16.png
+
+Chart 7: chart with some deleted custom labels and defaults.
+@image html chart_data_labels17.png
+
+
+
+
+
+@example chart_fonts.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_data_labels.c "&lt;&lt; chart_data_labels.c"</td>
   <td align="right">@ref chart_pattern.c "chart_pattern.c &gt;&gt;"</td>
 </tr>
 </table>

@@ -59,6 +59,7 @@ my @examples = (
     [ 'chart_clustered.c',      'Examples of clustered category chart' ],
     [ 'chart_data_table.c',     'Examples of charts with data tables' ],
     [ 'chart_data_tools.c',     'Examples of charts data tools' ],
+    [ 'chart_data_labels.c',    'Examples of charts data labels' ],
     [ 'chart_fonts.c',          'Examples of using charts fonts' ],
     [ 'chart_pattern.c',        'Examples of using charts patterns' ],
     [ 'chart_styles.c',         'Examples of built-in charts styles' ],
