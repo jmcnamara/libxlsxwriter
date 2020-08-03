@@ -2,6 +2,17 @@
 @page changes Changes
 
 
+## 0.9.6 August 3 2020
+
+- Added support for chart custom data labels. See @ref chart_custom_labels and
+  @ref chart_data_labels.c.
+
+- Fix for issue where array formulas weren't included in the output file for
+  certain ranges/conditions. Issue [#735][gh_735].
+
+  [gh_735]: https://github.com/jmcnamara/XlsxWriter/issues/735
+
+
 ## 0.9.5 May 31 2020
 
 - Fix for issue where hyperlinks urls and tips were ignored for
