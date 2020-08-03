@@ -4704,7 +4704,11 @@ worksheet_write_array_formula_num(lxw_worksheet *self,
     if (!formula)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
-    /* Check that column number is valid and store the max value */
+    /* Check that row and col are valid and store max and min values. */
+    err = _check_dimensions(self, first_row, first_col, LXW_FALSE, LXW_FALSE);
+    if (err)
+        return err;
+
     err = _check_dimensions(self, last_row, last_col, LXW_FALSE, LXW_FALSE);
     if (err)
         return err;
