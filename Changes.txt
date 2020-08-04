@@ -2,7 +2,7 @@
 @page changes Changes
 
 
-## 0.9.7 August 3 2020
+## 0.9.7 August 4 2020
 
 - Changed #lxw_chart_data_label field from `.delete` to `.hide` in order to
   avoid reserved word conflict with C++.
