@@ -258,7 +258,7 @@ int main() {
 
 
     /*
-     * Chart 7. Example with deleted custom data labels.
+     * Chart 7. Example with deleted/hidden custom data labels.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_COLUMN);
 
@@ -273,20 +273,20 @@ int main() {
     chart_series_set_labels(series);
 
     /* Create some custom labels. */
-    lxw_chart_data_label delete = {.delete = LXW_TRUE};
-    lxw_chart_data_label keep   = {.delete = LXW_FALSE};
+    lxw_chart_data_label hide = {.hide = LXW_TRUE};
+    lxw_chart_data_label keep = {.hide = LXW_FALSE};
 
     /* An initialized struct like this would also work: */
     /* lxw_chart_data_label keep = {0}; */
 
     /* Create an array of label pointers. NULL indicates the end of the array. */
     lxw_chart_data_label *data_labels7[] = {
-        &delete,
+        &hide,
         &keep,
-        &delete,
-        &delete,
+        &hide,
+        &hide,
         &keep,
-        &delete,
+        &hide,
         NULL
     };
 

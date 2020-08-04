@@ -478,7 +478,7 @@ Chart 4: chart with custom string data labels.
 Chart 5: chart with custom data labels referenced from worksheet cells.
 @image html chart_data_labels15.png
 
-Chart 6: chart with a mix of custom and default labels. The items inialised
+Chart 6: chart with a mix of custom and default labels. The items initialized
 with '{0}' and items without a custom label (points 5 and 6 which come after
 NULL) will get the default value. We also set a font for the custom items as
 an extra example.

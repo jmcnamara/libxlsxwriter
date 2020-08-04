@@ -2350,7 +2350,7 @@ _chart_write_custom_labels(lxw_chart *self, lxw_chart_series *series)
     for (index = 0; index < series->data_label_count; index++) {
         lxw_chart_custom_label *data_label = &series->data_labels[index];
 
-        if (!data_label->value && !data_label->range && !data_label->delete
+        if (!data_label->value && !data_label->range && !data_label->hide
             && !data_label->font) {
 
             continue;
@@ -2361,7 +2361,7 @@ _chart_write_custom_labels(lxw_chart *self, lxw_chart_series *series)
         /* Write the c:idx element. */
         _chart_write_idx(self, index);
 
-        if (data_label->delete) {
+        if (data_label->hide) {
             /* Write the c:delete element. */
             _chart_write_delete(self);
         }
@@ -5544,7 +5544,7 @@ chart_series_set_labels_custom(lxw_chart_series *series,
 
         char *src_value = user_data_label->value;
 
-        data_label->delete = user_data_label->delete;
+        data_label->hide = user_data_label->hide;
 
         data_label->font = _chart_convert_font_args(user_data_label->font);
 

@@ -776,26 +776,26 @@ font for the label in the data series (see @ref chart_fonts):
 
 @image html chart_data_labels20.png
 
-The `delete` element in the #lxw_chart_data_label struct can be used to delete
-labels in a series. This can be useful if you want to highlight one or more
-cells in the series, for example the maximum and the minimum:
+The `hide` element in the #lxw_chart_data_label struct can be used to
+hide/delete labels in a series. This can be useful if you want to highlight
+one or more cells in the series, for example the maximum and the minimum:
 
 @code
     // Add the series data labels.
     chart_series_set_labels(series);
 
     // Create some custom labels.
-    lxw_chart_data_label delete = {.delete = LXW_TRUE};
-    lxw_chart_data_label keep   = {.delete = LXW_FALSE};
+    lxw_chart_data_label hide = {.hide = LXW_TRUE};
+    lxw_chart_data_label keep = {.hide = LXW_FALSE};
 
     // Create an array of label pointers. NULL indicates the end of the array.
     lxw_chart_data_label *data_labels[] = {
-        &delete,
+        &hide,
         &keep,
-        &delete,
-        &delete,
+        &hide,
+        &hide,
         &keep,
-        &delete,
+        &hide,
         NULL
     };
 

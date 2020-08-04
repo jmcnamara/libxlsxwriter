@@ -799,9 +799,9 @@ typedef struct lxw_chart_data_label {
 	 *  @ref chart_custom_labels. */
     char *value;
 
-        /** Option to delete/hide the data label from the chart series.
+        /** Option to hide/delete the data label from the chart series.
 	 *  See @ref chart_custom_labels. */
-    uint8_t delete;
+    uint8_t hide;
 
     /** The font properties for the chart data label. @ref chart_fonts. */
     lxw_chart_font *font;
@@ -812,7 +812,7 @@ typedef struct lxw_chart_data_label {
 typedef struct lxw_chart_custom_label {
 
     char *value;
-    uint8_t delete;
+    uint8_t hide;
     lxw_chart_font *font;
 
     /* We use a range to hold the label formula properties even though it

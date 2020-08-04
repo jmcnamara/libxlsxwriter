@@ -182,6 +182,7 @@ spellcheck:
 	$(Q)for f in examples/*.c;           do aspell --lang=en_US --check $$f; done
 	$(Q)aspell --lang=en_US --check Changes.txt
 	$(Q)aspell --lang=en_US --check Readme.md
+	$(Q)aspell --lang=en_US --check docs/src/examples.txt
 
 releasecheck:
 	$(Q)dev/release/release_check.sh

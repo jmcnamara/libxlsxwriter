@@ -35,7 +35,7 @@ int main() {
 
     lxw_chart_series *series = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
 
-    lxw_chart_data_label data_label1 = {.delete = LXW_TRUE};
+    lxw_chart_data_label data_label1 = {.hide = LXW_TRUE};
     lxw_chart_data_label *data_labels[] = {&data_label1, NULL};
 
     chart_series_set_labels_custom(series, data_labels);
