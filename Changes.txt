@@ -2,6 +2,15 @@
 @page changes Changes
 
 
+## 0.9.7 August 3 2020
+
+- Changed #lxw_chart_data_label field from `.delete` to `.hide` in order to
+  avoid reserved word conflict with C++.
+  Issue [#300][gh_300].
+
+  [gh_300]: https://github.com/jmcnamara/libxlsxwriter/issues/300
+
+
 ## 0.9.6 August 3 2020
 
 - Added support for chart custom data labels. See @ref chart_custom_labels and
