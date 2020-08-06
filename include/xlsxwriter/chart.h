@@ -972,6 +972,9 @@ typedef struct lxw_chart_series {
     uint8_t default_label_position;
     char *label_num_format;
     lxw_chart_font *label_font;
+    lxw_chart_line *label_line;
+    lxw_chart_fill *label_fill;
+    lxw_chart_pattern *label_pattern;
 
     lxw_series_error_bars *x_error_bars;
     lxw_series_error_bars *y_error_bars;
@@ -1936,6 +1939,15 @@ void chart_series_set_labels_num_format(lxw_chart_series *series,
  */
 void chart_series_set_labels_font(lxw_chart_series *series,
                                   lxw_chart_font *font);
+
+void chart_series_set_labels_line(lxw_chart_series *series,
+                                  lxw_chart_line *line);
+
+void chart_series_set_labels_fill(lxw_chart_series *series,
+                                  lxw_chart_fill *fill);
+
+void chart_series_set_labels_pattern(lxw_chart_series *series,
+                                     lxw_chart_pattern *line);
 
 /**
  * @brief Turn on a trendline for a chart data series.

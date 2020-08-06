@@ -113,3 +113,15 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chart_data_labels34(self):
         self.run_exe_test('test_chart_data_labels34')
+
+    def test_chart_data_labels35(self):
+        self.run_exe_test('test_chart_data_labels35')
+
+    def test_chart_data_labels36(self):
+        self.run_exe_test('test_chart_data_labels36')
+
+    def test_chart_data_labels37(self):
+        self.run_exe_test('test_chart_data_labels37')
+
+    def test_chart_data_labels38(self):
+        self.run_exe_test('test_chart_data_labels38')

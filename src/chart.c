@@ -113,6 +113,10 @@ _chart_series_free(lxw_chart_series *series)
     free(series->fill);
     free(series->pattern);
     free(series->label_num_format);
+    free(series->label_line);
+    free(series->label_fill);
+    free(series->label_pattern);
+
     _chart_free_font(series->label_font);
 
     if (series->marker) {
@@ -2397,6 +2401,10 @@ _chart_write_d_lbls(lxw_chart *self, lxw_chart_series *series)
     /* Write the c:numFmt element. */
     if (series->label_num_format)
         _chart_write_label_num_fmt(self, series->label_num_format);
+
+    /* Write the c:spPr element. */
+    _chart_write_sp_pr(self, series->label_line, series->label_fill,
+                       series->label_pattern);
 
     if (series->label_font)
         _chart_write_tx_pr(self, LXW_FALSE, series->label_font);
@@ -5659,6 +5667,52 @@ chart_series_set_labels_font(lxw_chart_series *series, lxw_chart_font *font)
     _chart_free_font(series->label_font);
 
     series->label_font = _chart_convert_font_args(font);
+}
+
+/*
+ * Set a line type for a series data labels.
+ */
+void
+chart_series_set_labels_line(lxw_chart_series *series, lxw_chart_line *line)
+{
+    if (!line)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(series->label_line);
+
+    series->label_line = _chart_convert_line_args(line);
+}
+
+/*
+ * Set a fill type for a series data labels.
+ */
+void
+chart_series_set_labels_fill(lxw_chart_series *series, lxw_chart_fill *fill)
+{
+    if (!fill)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(series->label_fill);
+
+    series->label_fill = _chart_convert_fill_args(fill);
+}
+
+/*
+ * Set a pattern type for a series data labels.
+ */
+void
+chart_series_set_labels_pattern(lxw_chart_series *series,
+                                lxw_chart_pattern *pattern)
+{
+    if (!pattern)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(series->label_pattern);
+
+    series->label_pattern = _chart_convert_pattern_args(pattern);
 }
 
 /*
