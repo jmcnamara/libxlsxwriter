@@ -122,7 +122,36 @@ int main() {
 
 
     /*
-     * Chart 4.Example with custom string data labels.
+     * Chart 4. Example with standard data labels and formatting.
+     */
+    chart = workbook_add_chart(workbook, LXW_CHART_COLUMN);
+
+    /* Add a chart title. */
+    chart_title_set_name(chart, "Data labels with formatting");
+
+    /* Add a data series to the chart. */
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7",
+                                     "=Sheet1!$B$2:$B$7");
+
+    /* Add the series data labels. */
+    chart_series_set_labels(series);
+
+    /* Set the border/line and fill for the data labels. */
+    lxw_chart_line line1 = {.color = LXW_COLOR_RED};
+    lxw_chart_fill fill1 = {.color = LXW_COLOR_YELLOW};
+
+    chart_series_set_labels_line(series, &line1);
+    chart_series_set_labels_fill(series, &fill1);
+
+    /* Turn off the legend. */
+    chart_legend_set_position(chart, LXW_CHART_LEGEND_NONE);
+
+    /* Insert the chart into the worksheet. */
+    worksheet_insert_chart_opt(worksheet, CELL("D50"), chart, &options);
+
+
+    /*
+     * Chart 5.Example with custom string data labels.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_COLUMN);
 
@@ -137,56 +166,12 @@ int main() {
     chart_series_set_labels(series);
 
     /* Create some custom labels. */
-    lxw_chart_data_label data_label41 = {.value = "Amy"};
-    lxw_chart_data_label data_label42 = {.value = "Bea"};
-    lxw_chart_data_label data_label43 = {.value = "Eva"};
-    lxw_chart_data_label data_label44 = {.value = "Fay"};
-    lxw_chart_data_label data_label45 = {.value = "Liv"};
-    lxw_chart_data_label data_label46 = {.value = "Una"};
-
-    /* Create an array of label pointers. NULL indicates the end of the array. */
-    lxw_chart_data_label *data_labels4[] = {
-        &data_label41,
-        &data_label42,
-        &data_label43,
-        &data_label44,
-        &data_label45,
-        &data_label46,
-        NULL
-    };
-
-    /* Set the custom labels. */
-    chart_series_set_labels_custom(series, data_labels4);
-
-    /* Turn off the legend. */
-    chart_legend_set_position(chart, LXW_CHART_LEGEND_NONE);
-
-    /* Insert the chart into the worksheet. */
-    worksheet_insert_chart_opt(worksheet, CELL("D50"), chart, &options);
-
-
-    /*
-     * Chart 5. Example with custom data labels from cells.
-     */
-    chart = workbook_add_chart(workbook, LXW_CHART_COLUMN);
-
-    /* Add a chart title. */
-    chart_title_set_name(chart, "Chart with custom data labels from cells");
-
-    /* Add a data series to the chart. */
-    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7",
-                                     "=Sheet1!$B$2:$B$7");
-
-    /* Add the series data labels. */
-    chart_series_set_labels(series);
-
-    /* Create some custom labels. */
-    lxw_chart_data_label data_label51 = {.value = "=Sheet1!$C$2"};
-    lxw_chart_data_label data_label52 = {.value = "=Sheet1!$C$3"};
-    lxw_chart_data_label data_label53 = {.value = "=Sheet1!$C$4"};
-    lxw_chart_data_label data_label54 = {.value = "=Sheet1!$C$5"};
-    lxw_chart_data_label data_label55 = {.value = "=Sheet1!$C$6"};
-    lxw_chart_data_label data_label56 = {.value = "=Sheet1!$C$7"};
+    lxw_chart_data_label data_label51 = {.value = "Amy"};
+    lxw_chart_data_label data_label52 = {.value = "Bea"};
+    lxw_chart_data_label data_label53 = {.value = "Eva"};
+    lxw_chart_data_label data_label54 = {.value = "Fay"};
+    lxw_chart_data_label data_label55 = {.value = "Liv"};
+    lxw_chart_data_label data_label56 = {.value = "Una"};
 
     /* Create an array of label pointers. NULL indicates the end of the array. */
     lxw_chart_data_label *data_labels5[] = {
@@ -210,7 +195,51 @@ int main() {
 
 
     /*
-     * Chart 6. Example with custom and default data labels.
+     * Chart 6. Example with custom data labels from cells.
+     */
+    chart = workbook_add_chart(workbook, LXW_CHART_COLUMN);
+
+    /* Add a chart title. */
+    chart_title_set_name(chart, "Chart with custom data labels from cells");
+
+    /* Add a data series to the chart. */
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7",
+                                     "=Sheet1!$B$2:$B$7");
+
+    /* Add the series data labels. */
+    chart_series_set_labels(series);
+
+    /* Create some custom labels. */
+    lxw_chart_data_label data_label61 = {.value = "=Sheet1!$C$2"};
+    lxw_chart_data_label data_label62 = {.value = "=Sheet1!$C$3"};
+    lxw_chart_data_label data_label63 = {.value = "=Sheet1!$C$4"};
+    lxw_chart_data_label data_label64 = {.value = "=Sheet1!$C$5"};
+    lxw_chart_data_label data_label65 = {.value = "=Sheet1!$C$6"};
+    lxw_chart_data_label data_label66 = {.value = "=Sheet1!$C$7"};
+
+    /* Create an array of label pointers. NULL indicates the end of the array. */
+    lxw_chart_data_label *data_labels6[] = {
+        &data_label61,
+        &data_label62,
+        &data_label63,
+        &data_label64,
+        &data_label65,
+        &data_label66,
+        NULL
+    };
+
+    /* Set the custom labels. */
+    chart_series_set_labels_custom(series, data_labels6);
+
+    /* Turn off the legend. */
+    chart_legend_set_position(chart, LXW_CHART_LEGEND_NONE);
+
+    /* Insert the chart into the worksheet. */
+    worksheet_insert_chart_opt(worksheet, CELL("D82"), chart, &options);
+
+
+    /*
+     * Chart 7. Example with custom and default data labels.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_COLUMN);
 
@@ -233,32 +262,32 @@ int main() {
      * and 6 which come after NULL) will get the default value. We also set a
      * font for the custom items as an extra example.
      */
-    lxw_chart_data_label data_label61 = {.value = "=Sheet1!$C$2", .font = &font2};
-    lxw_chart_data_label data_label62 = {0};
-    lxw_chart_data_label data_label63 = {.value = "=Sheet1!$C$4", .font = &font2};
-    lxw_chart_data_label data_label64 = {.value = "=Sheet1!$C$5", .font = &font2};
+    lxw_chart_data_label data_label71 = {.value = "=Sheet1!$C$2", .font = &font2};
+    lxw_chart_data_label data_label72 = {0};
+    lxw_chart_data_label data_label73 = {.value = "=Sheet1!$C$4", .font = &font2};
+    lxw_chart_data_label data_label74 = {.value = "=Sheet1!$C$5", .font = &font2};
 
     /* Create an array of label pointers. NULL indicates the end of the array. */
-    lxw_chart_data_label *data_labels6[] = {
-        &data_label61,
-        &data_label62,
-        &data_label63,
-        &data_label64,
+    lxw_chart_data_label *data_labels7[] = {
+        &data_label71,
+        &data_label72,
+        &data_label73,
+        &data_label74,
         NULL
     };
 
     /* Set the custom labels. */
-    chart_series_set_labels_custom(series, data_labels6);
+    chart_series_set_labels_custom(series, data_labels7);
 
     /* Turn off the legend. */
     chart_legend_set_position(chart, LXW_CHART_LEGEND_NONE);
 
     /* Insert the chart into the worksheet. */
-    worksheet_insert_chart_opt(worksheet, CELL("D82"), chart, &options);
+    worksheet_insert_chart_opt(worksheet, CELL("D98"), chart, &options);
 
 
     /*
-     * Chart 7. Example with deleted/hidden custom data labels.
+     * Chart 8. Example with deleted/hidden custom data labels.
      */
     chart = workbook_add_chart(workbook, LXW_CHART_COLUMN);
 
@@ -280,7 +309,7 @@ int main() {
     /* lxw_chart_data_label keep = {0}; */
 
     /* Create an array of label pointers. NULL indicates the end of the array. */
-    lxw_chart_data_label *data_labels7[] = {
+    lxw_chart_data_label *data_labels8[] = {
         &hide,
         &keep,
         &hide,
@@ -291,14 +320,66 @@ int main() {
     };
 
     /* Set the custom labels. */
-    chart_series_set_labels_custom(series, data_labels7);
+    chart_series_set_labels_custom(series, data_labels8);
 
     /* Turn off the legend. */
     chart_legend_set_position(chart, LXW_CHART_LEGEND_NONE);
 
     /* Insert the chart into the worksheet. */
-    worksheet_insert_chart_opt(worksheet, CELL("D98"), chart, &options);
+    worksheet_insert_chart_opt(worksheet, CELL("D114"), chart, &options);
 
+
+    /*
+     * Chart 9.Example with custom string data labels and formatting.
+     */
+    chart = workbook_add_chart(workbook, LXW_CHART_COLUMN);
+
+    /* Add a chart title. */
+    chart_title_set_name(chart, "Chart with custom labels and formatting");
+
+    /* Add a data series to the chart. */
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7",
+                                     "=Sheet1!$B$2:$B$7");
+
+    /* Add the series data labels. */
+    chart_series_set_labels(series);
+
+    /* Set the border/line and fill for the data labels. */
+    lxw_chart_line line2 = {.color = LXW_COLOR_RED};
+    lxw_chart_fill fill2 = {.color = LXW_COLOR_YELLOW};
+    lxw_chart_line line3 = {.color = LXW_COLOR_BLUE};
+    lxw_chart_fill fill3 = {.color = LXW_COLOR_GREEN};
+
+    chart_series_set_labels_line(series, &line2);
+    chart_series_set_labels_fill(series, &fill2);
+
+    /* Create some custom labels. */
+    lxw_chart_data_label data_label91 = {.value = "Amy", .line = &line3};
+    lxw_chart_data_label data_label92 = {.value = "Bea"};
+    lxw_chart_data_label data_label93 = {.value = "Eva"};
+    lxw_chart_data_label data_label94 = {.value = "Fay"};
+    lxw_chart_data_label data_label95 = {.value = "Liv"};
+    lxw_chart_data_label data_label96 = {.value = "Una", .fill = &fill3};
+
+    /* Create an array of label pointers. NULL indicates the end of the array. */
+    lxw_chart_data_label *data_labels9[] = {
+        &data_label91,
+        &data_label92,
+        &data_label93,
+        &data_label94,
+        &data_label95,
+        &data_label96,
+        NULL
+    };
+
+    /* Set the custom labels. */
+    chart_series_set_labels_custom(series, data_labels9);
+
+    /* Turn off the legend. */
+    chart_legend_set_position(chart, LXW_CHART_LEGEND_NONE);
+
+    /* Insert the chart into the worksheet. */
+    worksheet_insert_chart_opt(worksheet, CELL("D130"), chart, &options);
 
     return workbook_close(workbook);
 }
