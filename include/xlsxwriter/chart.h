@@ -795,16 +795,25 @@ typedef struct lxw_chart_point {
  */
 typedef struct lxw_chart_data_label {
 
-        /** The string or formula value for the data label. See
+    /** The string or formula value for the data label. See
 	 *  @ref chart_custom_labels. */
     char *value;
 
-        /** Option to hide/delete the data label from the chart series.
+    /** Option to hide/delete the data label from the chart series.
 	 *  See @ref chart_custom_labels. */
     uint8_t hide;
 
     /** The font properties for the chart data label. @ref chart_fonts. */
     lxw_chart_font *font;
+
+    /** The line/border for the chart data label. See @ref chart_lines. */
+    lxw_chart_line *line;
+
+    /** The fill for the chart data label. See @ref chart_fills. */
+    lxw_chart_fill *fill;
+
+    /** The pattern for the chart data label. See @ref chart_patterns.*/
+    lxw_chart_pattern *pattern;
 
 } lxw_chart_data_label;
 
@@ -814,6 +823,9 @@ typedef struct lxw_chart_custom_label {
     char *value;
     uint8_t hide;
     lxw_chart_font *font;
+    lxw_chart_line *line;
+    lxw_chart_fill *fill;
+    lxw_chart_pattern *pattern;
 
     /* We use a range to hold the label formula properties even though it
      * will only have 1 point in order to re-use similar functions.*/
