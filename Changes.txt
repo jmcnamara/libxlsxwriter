@@ -2,6 +2,12 @@
 @page changes Changes
 
 
+## 0.9.8 August 11 2020
+
+- Added formatting for chart data labels and chart custom data labels. See
+  @ref chart_custom_labels and @ref chart_data_labels.c.
+
+
 ## 0.9.7 August 4 2020
 
 - Changed #lxw_chart_data_label field from `.delete` to `.hide` in order to
