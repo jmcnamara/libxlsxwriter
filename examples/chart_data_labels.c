@@ -166,21 +166,21 @@ int main() {
     chart_series_set_labels(series);
 
     /* Create some custom labels. */
-    lxw_chart_data_label data_label51 = {.value = "Amy"};
-    lxw_chart_data_label data_label52 = {.value = "Bea"};
-    lxw_chart_data_label data_label53 = {.value = "Eva"};
-    lxw_chart_data_label data_label54 = {.value = "Fay"};
-    lxw_chart_data_label data_label55 = {.value = "Liv"};
-    lxw_chart_data_label data_label56 = {.value = "Una"};
+    lxw_chart_data_label data_label5_1 = {.value = "Amy"};
+    lxw_chart_data_label data_label5_2 = {.value = "Bea"};
+    lxw_chart_data_label data_label5_3 = {.value = "Eva"};
+    lxw_chart_data_label data_label5_4 = {.value = "Fay"};
+    lxw_chart_data_label data_label5_5 = {.value = "Liv"};
+    lxw_chart_data_label data_label5_6 = {.value = "Una"};
 
     /* Create an array of label pointers. NULL indicates the end of the array. */
     lxw_chart_data_label *data_labels5[] = {
-        &data_label51,
-        &data_label52,
-        &data_label53,
-        &data_label54,
-        &data_label55,
-        &data_label56,
+        &data_label5_1,
+        &data_label5_2,
+        &data_label5_3,
+        &data_label5_4,
+        &data_label5_5,
+        &data_label5_6,
         NULL
     };
 
@@ -210,21 +210,21 @@ int main() {
     chart_series_set_labels(series);
 
     /* Create some custom labels. */
-    lxw_chart_data_label data_label61 = {.value = "=Sheet1!$C$2"};
-    lxw_chart_data_label data_label62 = {.value = "=Sheet1!$C$3"};
-    lxw_chart_data_label data_label63 = {.value = "=Sheet1!$C$4"};
-    lxw_chart_data_label data_label64 = {.value = "=Sheet1!$C$5"};
-    lxw_chart_data_label data_label65 = {.value = "=Sheet1!$C$6"};
-    lxw_chart_data_label data_label66 = {.value = "=Sheet1!$C$7"};
+    lxw_chart_data_label data_label6_1 = {.value = "=Sheet1!$C$2"};
+    lxw_chart_data_label data_label6_2 = {.value = "=Sheet1!$C$3"};
+    lxw_chart_data_label data_label6_3 = {.value = "=Sheet1!$C$4"};
+    lxw_chart_data_label data_label6_4 = {.value = "=Sheet1!$C$5"};
+    lxw_chart_data_label data_label6_5 = {.value = "=Sheet1!$C$6"};
+    lxw_chart_data_label data_label6_6 = {.value = "=Sheet1!$C$7"};
 
     /* Create an array of label pointers. NULL indicates the end of the array. */
     lxw_chart_data_label *data_labels6[] = {
-        &data_label61,
-        &data_label62,
-        &data_label63,
-        &data_label64,
-        &data_label65,
-        &data_label66,
+        &data_label6_1,
+        &data_label6_2,
+        &data_label6_3,
+        &data_label6_4,
+        &data_label6_5,
+        &data_label6_6,
         NULL
     };
 
@@ -262,17 +262,17 @@ int main() {
      * and 6 which come after NULL) will get the default value. We also set a
      * font for the custom items as an extra example.
      */
-    lxw_chart_data_label data_label71 = {.value = "=Sheet1!$C$2", .font = &font2};
-    lxw_chart_data_label data_label72 = {0};
-    lxw_chart_data_label data_label73 = {.value = "=Sheet1!$C$4", .font = &font2};
-    lxw_chart_data_label data_label74 = {.value = "=Sheet1!$C$5", .font = &font2};
+    lxw_chart_data_label data_label7_1 = {.value = "=Sheet1!$C$2", .font = &font2};
+    lxw_chart_data_label data_label7_2 = {0};
+    lxw_chart_data_label data_label7_3 = {.value = "=Sheet1!$C$4", .font = &font2};
+    lxw_chart_data_label data_label7_4 = {.value = "=Sheet1!$C$5", .font = &font2};
 
     /* Create an array of label pointers. NULL indicates the end of the array. */
     lxw_chart_data_label *data_labels7[] = {
-        &data_label71,
-        &data_label72,
-        &data_label73,
-        &data_label74,
+        &data_label7_1,
+        &data_label7_2,
+        &data_label7_3,
+        &data_label7_4,
         NULL
     };
 
@@ -350,25 +350,26 @@ int main() {
     lxw_chart_line line3 = {.color = LXW_COLOR_BLUE};
     lxw_chart_fill fill3 = {.color = LXW_COLOR_GREEN};
 
+    /* Create some custom labels. */
+    lxw_chart_data_label data_label9_1 = {.value = "Amy", .line = &line3};
+    lxw_chart_data_label data_label9_2 = {.value = "Bea"};
+    lxw_chart_data_label data_label9_3 = {.value = "Eva"};
+    lxw_chart_data_label data_label9_4 = {.value = "Fay"};
+    lxw_chart_data_label data_label9_5 = {.value = "Liv"};
+    lxw_chart_data_label data_label9_6 = {.value = "Una", .fill = &fill3};
+
+    /* Set the default formatting for the data labels in the series. */
     chart_series_set_labels_line(series, &line2);
     chart_series_set_labels_fill(series, &fill2);
 
-    /* Create some custom labels. */
-    lxw_chart_data_label data_label91 = {.value = "Amy", .line = &line3};
-    lxw_chart_data_label data_label92 = {.value = "Bea"};
-    lxw_chart_data_label data_label93 = {.value = "Eva"};
-    lxw_chart_data_label data_label94 = {.value = "Fay"};
-    lxw_chart_data_label data_label95 = {.value = "Liv"};
-    lxw_chart_data_label data_label96 = {.value = "Una", .fill = &fill3};
-
     /* Create an array of label pointers. NULL indicates the end of the array. */
     lxw_chart_data_label *data_labels9[] = {
-        &data_label91,
-        &data_label92,
-        &data_label93,
-        &data_label94,
-        &data_label95,
-        &data_label96,
+        &data_label9_1,
+        &data_label9_2,
+        &data_label9_3,
+        &data_label9_4,
+        &data_label9_5,
+        &data_label9_6,
         NULL
     };
 

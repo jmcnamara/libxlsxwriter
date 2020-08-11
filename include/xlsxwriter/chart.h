@@ -1091,8 +1091,8 @@ typedef struct lxw_chart {
     uint8_t subtype;
     uint16_t series_index;
 
-    void (*write_chart_type) (struct lxw_chart *);
-    void (*write_plot_area) (struct lxw_chart *);
+    void (*write_chart_type)(struct lxw_chart *);
+    void (*write_plot_area)(struct lxw_chart *);
 
     /**
      * A pointer to the chart x_axis object which can be used in functions
@@ -1952,14 +1952,66 @@ void chart_series_set_labels_num_format(lxw_chart_series *series,
 void chart_series_set_labels_font(lxw_chart_series *series,
                                   lxw_chart_font *font);
 
+/**
+ * @brief Set the line properties for the data labels in a chart series.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ * @param line   A #lxw_chart_line struct.
+ *
+ * Set the line/border properties of the data labels in a chart series:
+ *
+ * @code
+ *     lxw_chart_line line = {.color = LXW_COLOR_RED};
+ *     lxw_chart_fill fill = {.color = LXW_COLOR_YELLOW};
+ *
+ *     chart_series_set_labels_line(series, &line);
+ *     chart_series_set_labels_fill(series, &fill);
+ *
+ * @endcode
+ *
+ * @image html chart_data_labels24.png
+ *
+ * For more information see @ref chart_lines and @ref chart_labels.
+ */
 void chart_series_set_labels_line(lxw_chart_series *series,
                                   lxw_chart_line *line);
 
+/**
+ * @brief Set the fill properties for the data labels in a chart series.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ * @param fill   A #lxw_chart_fill struct.
+ *
+ * Set the fill properties of the data labels in a chart series:
+ *
+ * @code
+ *     lxw_chart_fill fill = {.color = LXW_COLOR_YELLOW};
+ *
+ *     chart_series_set_labels_fill(series, &fill);
+ * @endcode
+ *
+ * See the example and image above and also see @ref chart_fills and
+ * @ref chart_labels.
+ */
 void chart_series_set_labels_fill(lxw_chart_series *series,
                                   lxw_chart_fill *fill);
 
+/**
+ * @brief Set the pattern properties for the data labels in a chart series.
+ *
+ * @param series  A series object created via `chart_add_series()`.
+ * @param pattern A #lxw_chart_pattern struct.
+ *
+ * Set the pattern properties of the data labels in a chart series:
+ *
+ * @code
+ *     chart_series_set_labels_pattern(series, &pattern);
+ * @endcode
+ *
+ * For more information see #lxw_chart_pattern_type and @ref chart_patterns.
+ */
 void chart_series_set_labels_pattern(lxw_chart_series *series,
-                                     lxw_chart_pattern *line);
+                                     lxw_chart_pattern *pattern);
 
 /**
  * @brief Turn on a trendline for a chart data series.

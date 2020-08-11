@@ -644,6 +644,21 @@ for data labels:
 
 For more information see @ref chart_fonts below.
 
+The `chart_series_set_labels_line()`, `chart_series_set_labels_fill()` and
+`chart_series_set_labels_pattern()` functions can be used to set the
+formatting for a data series using standard chart formatting structs:
+
+@code
+    lxw_chart_line line = {.color = LXW_COLOR_RED};
+    lxw_chart_fill fill = {.color = LXW_COLOR_YELLOW};
+
+    chart_series_set_labels_line(series, &line);
+    chart_series_set_labels_fill(series, &fill);
+@endcode
+
+@image html chart_data_labels24.png
+
+
 @subsection chart_custom_labels Custom Chart Data Labels
 
 The `chart_series_set_labels_custom()` function is used to set the properties
@@ -804,6 +819,47 @@ one or more cells in the series, for example the maximum and the minimum:
 @endcode
 
 @image html chart_data_labels21.png
+
+
+Standard chart formatting such as #lxw_chart_line, #lxw_chart_fill and
+#lxw_chart_pattern can also be applied to custom data labels via
+#lxw_chart_data_label:
+
+@code
+    // Set the border/line and fill for the data labels.
+    lxw_chart_line line2 = {.color = LXW_COLOR_RED};
+    lxw_chart_fill fill2 = {.color = LXW_COLOR_YELLOW};
+    lxw_chart_line line3 = {.color = LXW_COLOR_BLUE};
+    lxw_chart_fill fill3 = {.color = LXW_COLOR_GREEN};
+
+    // Create some custom labels.
+    lxw_chart_data_label data_label9_1 = {.value = "Amy", .line = &line3};
+    lxw_chart_data_label data_label9_2 = {.value = "Bea"};
+    lxw_chart_data_label data_label9_3 = {.value = "Eva"};
+    lxw_chart_data_label data_label9_4 = {.value = "Fay"};
+    lxw_chart_data_label data_label9_5 = {.value = "Liv"};
+    lxw_chart_data_label data_label9_6 = {.value = "Una", .fill = &fill3};
+
+    // Set the default formatting for the data labels in the series.
+    chart_series_set_labels_line(series, &line2);
+    chart_series_set_labels_fill(series, &fill2);
+
+    // Create an array of label pointers. NULL indicates the end of the array.
+    lxw_chart_data_label *data_labels9[] = {
+        &data_label9_1,
+        &data_label9_2,
+        &data_label9_3,
+        &data_label9_4,
+        &data_label9_5,
+        &data_label9_6,
+        NULL
+    };
+
+    /* Set the custom labels. */
+    chart_series_set_labels_custom(series, data_labels9);
+@endcode
+
+@image html chart_data_labels25.png
 
 
 @section chart_formatting Chart Formatting

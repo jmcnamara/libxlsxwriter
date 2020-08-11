@@ -913,20 +913,26 @@ Chart 2: chart with Category and Value data labels.
 Chart 3: chart with data labels with a user defined font.
 @image html chart_data_labels13.png
 
-Chart 4: chart with custom string data labels.
+Chart 4: chart with data labels and formatting.
+@image html chart_data_labels22.png
+
+Chart 5: chart with custom string data labels.
 @image html chart_data_labels14.png
 
-Chart 5: chart with custom data labels referenced from worksheet cells.
+Chart 6: chart with custom data labels referenced from worksheet cells.
 @image html chart_data_labels15.png
 
-Chart 6: chart with a mix of custom and default labels. The items initialized
+Chart 7: chart with a mix of custom and default labels. The items initialized
 with '{0}' and items without a custom label (points 5 and 6 which come after
 NULL) will get the default value. We also set a font for the custom items as
 an extra example.
 @image html chart_data_labels16.png
 
-Chart 7: chart with some deleted custom labels and defaults.
+Chart 8: chart with some deleted custom labels and defaults.
 @image html chart_data_labels17.png
+
+Chart 9: chart with custom string data labels and formatting.
+@image html chart_data_labels23.png
 
 
 
