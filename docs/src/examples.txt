@@ -267,6 +267,13 @@ An example of how to create panes in a worksheet, both "freeze" panes and
 @image html panes.png
 
 ##############################################################
+@example ignore_errors.c
+
+Example of hiding worksheet errors and warnings.
+
+@image html ignore_errors2.png
+
+##############################################################
 @example chart.c
 
 An example of creating a simple column chart with 3 data series.

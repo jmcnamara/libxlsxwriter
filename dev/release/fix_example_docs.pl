@@ -47,6 +47,7 @@ my @examples = (
     [ 'comments2.c',            'Example of adding cell comments with options' ],
     [ 'macro.c',                'Example of adding a VBA macro to a workbook' ],
     [ 'panes.c',                'Example of how to create worksheet panes' ],
+    [ 'ignore_errors.c',        'Example of ignoring worksheet errors/warnings' ],
     [ 'chart.c',                'Example of a simple column chart' ],
     [ 'chart_area.c',           'Examples of area charts' ],
     [ 'chart_bar.c',            'Examples of bar charts' ],

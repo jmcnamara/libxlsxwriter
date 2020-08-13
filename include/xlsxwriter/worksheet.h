@@ -239,6 +239,44 @@ enum lxw_object_position {
     LXW_OBJECT_MOVE_AND_SIZE_AFTER
 };
 
+/** Options for ignoring worksheet errors/warnings. See worksheet_ignore_errors(). */
+enum lxw_ignore_errors {
+
+    /** Turn off errors/warnings for numbers stores as text. */
+    LXW_IGNORE_NUMBER_STORED_AS_TEXT = 1,
+
+    /** Turn off errors/warnings for formula errors (such as divide by
+     *  zero). */
+    LXW_IGNORE_EVAL_ERROR,
+
+    /** Turn off errors/warnings for formulas that differ from surrounding
+     *  formulas. */
+    LXW_IGNORE_FORMULA_DIFFERS,
+
+    /** Turn off errors/warnings for formulas that omit cells in a range. */
+    LXW_IGNORE_FORMULA_RANGE,
+
+    /** Turn off errors/warnings for unlocked cells that contain formulas. */
+    LXW_IGNORE_FORMULA_UNLOCKED,
+
+    /** Turn off errors/warnings for formulas that refer to empty cells. */
+    LXW_IGNORE_EMPTY_CELL_REFERENCE,
+
+    /** Turn off errors/warnings for cells in a table that do not comply with
+     *  applicable data validation rules. */
+    LXW_IGNORE_LIST_DATA_VALIDATION,
+
+    /** Turn off errors/warnings for cell formulas that differ from the column
+     *  formula. */
+    LXW_IGNORE_CALCULATED_COLUMN,
+
+    /** Turn off errors/warnings for formulas that contain a two digit text
+     *  representation of a year. */
+    LXW_IGNORE_TWO_DIGIT_TEXT_YEAR,
+
+    LXW_IGNORE_LAST_OPTION
+};
+
 enum cell_types {
     NUMBER_CELL = 1,
     STRING_CELL,
@@ -1061,6 +1099,17 @@ typedef struct lxw_worksheet {
     char *vml_data_id_str;
     uint32_t vml_shape_id;
     uint8_t comment_display_default;
+
+    uint8_t has_ignore_errors;
+    char *ignore_number_stored_as_text;
+    char *ignore_eval_error;
+    char *ignore_formula_differs;
+    char *ignore_formula_range;
+    char *ignore_formula_unlocked;
+    char *ignore_empty_cell_reference;
+    char *ignore_list_data_validation;
+    char *ignore_calculated_column;
+    char *ignore_two_digit_text_year;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -3687,6 +3736,8 @@ void worksheet_set_default_row(lxw_worksheet *worksheet, double height,
  * @param worksheet Pointer to a lxw_worksheet instance.
  * @param name      Name of the worksheet used by VBA.
  *
+ * @return A #lxw_error.
+ *
  * The `worksheet_set_vba_name()` function can be used to set the VBA name for
  * the worksheet. This is sometimes required when a vbaProject macro included
  * via `workbook_add_vba_project()` refers to the worksheet by a name other
@@ -3702,8 +3753,6 @@ void worksheet_set_default_row(lxw_worksheet *worksheet, double height,
  * extracted from a foreign language version of Excel.
  *
  * See also @ref working_with_macros
- *
- * @return A #lxw_error.
  */
 lxw_error worksheet_set_vba_name(lxw_worksheet *worksheet, const char *name);
 
@@ -3745,6 +3794,107 @@ void worksheet_show_comments(lxw_worksheet *worksheet);
 void worksheet_set_comments_author(lxw_worksheet *worksheet,
                                    const char *author);
 
+/**
+ * @brief Ignore various Excel errors/warnings in a worksheet for user
+ *        defined ranges.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance.
+ * @param type      The type of error/warning to ignore. See #lxw_ignore_errors.
+ * @param range     The range(s) for which the error/warning should be ignored.
+ *
+ * @return A #lxw_error.
+ *
+ *
+ * The `%worksheet_ignore_errors()` function can be used to ignore various
+ * worksheet cell errors/warnings. For example the following code writes a string
+ * that looks like a number:
+ *
+ * @code
+ *     worksheet_write_string(worksheet, CELL("D2"), "123", NULL);
+ * @endcode
+ *
+ * This causes Excel to display a small green triangle in the top left hand
+ * corner of the cell to indicate an error/warning:
+ *
+ * @image html ignore_errors1.png
+ *
+ * Sometimes these warnings are useful indicators that there is an issue in
+ * the spreadsheet but sometimes it is preferable to turn them off. Warnings
+ * can be turned off at the Excel level for all workbooks and worksheets by
+ * using the using "Excel options -> Formulas -> Error checking
+ * rules". Alternatively you can turn them off for individual cells in a
+ * worksheet, or ranges of cells, using the `%worksheet_ignore_errors()`
+ * function with different #lxw_ignore_errors options and ranges like this:
+ *
+ * @code
+ *     worksheet_ignore_errors(worksheet, LXW_IGNORE_NUMBER_STORED_AS_TEXT, "C3");
+ *     worksheet_ignore_errors(worksheet, LXW_IGNORE_EVAL_ERROR,            "C6");
+ * @endcode
+ *
+ * The range can be a single cell, a range of cells, or multiple cells and ranges
+ * separated by spaces:
+ *
+ * @code
+ *     // Single cell.
+ *     worksheet_ignore_errors(worksheet, LXW_IGNORE_NUMBER_STORED_AS_TEXT, "C6");
+ *
+ *     // Or a single range:
+ *     worksheet_ignore_errors(worksheet, LXW_IGNORE_NUMBER_STORED_AS_TEXT, "C6:G8");
+ *
+ *     // Or multiple cells and ranges:
+ *     worksheet_ignore_errors(worksheet, LXW_IGNORE_NUMBER_STORED_AS_TEXT, "C6 E6 G1:G20 J2:J6");
+ * @endcode
+ *
+ * @note Calling `%worksheet_ignore_errors()` more than once for the same
+ * #lxw_ignore_errors type will overwrite the previous range.
+ *
+ * You can turn off warnings for an entire column by specifying the range from
+ * the first cell in the column to the last cell in the column:
+ *
+ * @code
+ *     worksheet_ignore_errors(worksheet, LXW_IGNORE_NUMBER_STORED_AS_TEXT, "A1:A1048576");
+ * @endcode
+ *
+ * Or for the entire worksheet by specifying the range from the first cell in
+ * the worksheet to the last cell in the worksheet:
+ *
+ * @code
+ *     worksheet_ignore_errors(worksheet, LXW_IGNORE_NUMBER_STORED_AS_TEXT, "A1:XFD1048576");
+ * @endcode
+ *
+ * The worksheet errors/warnings that can be ignored are:
+ *
+ * - #LXW_IGNORE_NUMBER_STORED_AS_TEXT: Turn off errors/warnings for numbers
+ *    stores as text.
+ *
+ * - #LXW_IGNORE_EVAL_ERROR: Turn off errors/warnings for formula errors (such
+ *    as divide by zero).
+ *
+ * - #LXW_IGNORE_FORMULA_DIFFERS: Turn off errors/warnings for formulas that
+ *    differ from surrounding formulas.
+ *
+ * - #LXW_IGNORE_FORMULA_RANGE: Turn off errors/warnings for formulas that
+ *    omit cells in a range.
+ *
+ * - #LXW_IGNORE_FORMULA_UNLOCKED: Turn off errors/warnings for unlocked cells
+ *    that contain formulas.
+ *
+ * - #LXW_IGNORE_EMPTY_CELL_REFERENCE: Turn off errors/warnings for formulas
+ *    that refer to empty cells.
+ *
+ * - #LXW_IGNORE_LIST_DATA_VALIDATION: Turn off errors/warnings for cells in a
+ *    table that do not comply with applicable data validation rules.
+ *
+ * - #LXW_IGNORE_CALCULATED_COLUMN: Turn off errors/warnings for cell formulas
+ *    that differ from the column formula.
+ *
+ * - #LXW_IGNORE_TWO_DIGIT_TEXT_YEAR: Turn off errors/warnings for formulas
+ *    that contain a two digit text representation of a year.
+ *
+ */
+lxw_error worksheet_ignore_errors(lxw_worksheet *worksheet, uint8_t type,
+                                  const char *range);
+
 lxw_worksheet *lxw_worksheet_new(lxw_worksheet_init_data *init_data);
 void lxw_worksheet_free(lxw_worksheet *worksheet);
 void lxw_worksheet_assemble_xml_file(lxw_worksheet *worksheet);
@@ -3768,7 +3918,7 @@ uint32_t lxw_worksheet_prepare_vml_objects(lxw_worksheet *worksheet,
 lxw_row *lxw_worksheet_find_row(lxw_worksheet *worksheet, lxw_row_t row_num);
 lxw_cell *lxw_worksheet_find_cell_in_row(lxw_row *row, lxw_col_t col_num);
 /*
- * External functions to call intern XML methods shared with chartsheet.
+ * External functions to call intern XML functions shared with chartsheet.
  */
 void lxw_worksheet_write_sheet_views(lxw_worksheet *worksheet);
 void lxw_worksheet_write_page_margins(lxw_worksheet *worksheet);

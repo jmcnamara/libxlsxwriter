@@ -581,7 +581,7 @@ Example of hiding rows and columns in an Excel worksheet.
 <table  width="600">
 <tr>
   <td>@ref hide_row_col.c "&lt;&lt; hide_row_col.c"</td>
-  <td align="right">@ref chart.c "chart.c &gt;&gt;"</td>
+  <td align="right">@ref ignore_errors.c "ignore_errors.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -593,11 +593,27 @@ An example of how to create panes in a worksheet, both "freeze" panes and
 
 
 
-@example chart.c
+@example ignore_errors.c
 
 <table  width="600">
 <tr>
   <td>@ref panes.c "&lt;&lt; panes.c"</td>
+  <td align="right">@ref chart.c "chart.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of hiding worksheet errors and warnings.
+
+@image html ignore_errors2.png
+
+
+
+
+@example chart.c
+
+<table  width="600">
+<tr>
+  <td>@ref ignore_errors.c "&lt;&lt; ignore_errors.c"</td>
   <td align="right">@ref chart_area.c "chart_area.c &gt;&gt;"</td>
 </tr>
 </table>

@@ -537,6 +537,15 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     free(worksheet->vba_codename);
     free(worksheet->vml_data_id_str);
     free(worksheet->comment_author);
+    free(worksheet->ignore_number_stored_as_text);
+    free(worksheet->ignore_eval_error);
+    free(worksheet->ignore_formula_differs);
+    free(worksheet->ignore_formula_range);
+    free(worksheet->ignore_formula_unlocked);
+    free(worksheet->ignore_empty_cell_reference);
+    free(worksheet->ignore_list_data_validation);
+    free(worksheet->ignore_calculated_column);
+    free(worksheet->ignore_two_digit_text_year);
 
     free(worksheet);
     worksheet = NULL;
@@ -4378,6 +4387,84 @@ _worksheet_write_data_validations(lxw_worksheet *self)
 }
 
 /*
+ * Write the <ignoredError> element.
+ */
+STATIC void
+_worksheet_write_ignored_error(lxw_worksheet *self, char *ignore_error,
+                               char *range)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("sqref", range);
+    LXW_PUSH_ATTRIBUTES_STR(ignore_error, "1");
+
+    lxw_xml_empty_tag(self->file, "ignoredError", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <ignoredErrors> element.
+ */
+STATIC void
+_worksheet_write_ignored_errors(lxw_worksheet *self)
+{
+    if (!self->has_ignore_errors)
+        return;
+
+    lxw_xml_start_tag(self->file, "ignoredErrors", NULL);
+
+    if (self->ignore_number_stored_as_text) {
+        _worksheet_write_ignored_error(self, "numberStoredAsText",
+                                       self->ignore_number_stored_as_text);
+    }
+
+    if (self->ignore_eval_error) {
+        _worksheet_write_ignored_error(self, "evalError",
+                                       self->ignore_eval_error);
+    }
+
+    if (self->ignore_formula_differs) {
+        _worksheet_write_ignored_error(self, "formula",
+                                       self->ignore_formula_differs);
+    }
+
+    if (self->ignore_formula_range) {
+        _worksheet_write_ignored_error(self, "formulaRange",
+                                       self->ignore_formula_range);
+    }
+
+    if (self->ignore_formula_unlocked) {
+        _worksheet_write_ignored_error(self, "unlockedFormula",
+                                       self->ignore_formula_unlocked);
+    }
+
+    if (self->ignore_empty_cell_reference) {
+        _worksheet_write_ignored_error(self, "emptyCellReference",
+                                       self->ignore_empty_cell_reference);
+    }
+
+    if (self->ignore_list_data_validation) {
+        _worksheet_write_ignored_error(self, "listDataValidation",
+                                       self->ignore_list_data_validation);
+    }
+
+    if (self->ignore_calculated_column) {
+        _worksheet_write_ignored_error(self, "calculatedColumn",
+                                       self->ignore_calculated_column);
+    }
+
+    if (self->ignore_two_digit_text_year) {
+        _worksheet_write_ignored_error(self, "twoDigitTextYear",
+                                       self->ignore_two_digit_text_year);
+    }
+
+    lxw_xml_end_tag(self->file, "ignoredErrors");
+}
+
+/*
  * External functions to call intern XML methods shared with chartsheet.
  */
 void
@@ -4488,6 +4575,9 @@ lxw_worksheet_assemble_xml_file(lxw_worksheet *self)
 
     /* Write the colBreaks element. */
     _worksheet_write_col_breaks(self);
+
+    /* Write the ignoredErrors element. */
+    _worksheet_write_ignored_errors(self);
 
     /* Write the drawing element. */
     _worksheet_write_drawings(self);
@@ -6850,4 +6940,63 @@ void
 worksheet_show_comments(lxw_worksheet *self)
 {
     self->comment_display_default = LXW_COMMENT_DISPLAY_VISIBLE;
+}
+
+/*
+ * Ignore various Excel errors/warnings in a worksheet for user defined ranges.
+ */
+lxw_error
+worksheet_ignore_errors(lxw_worksheet *self, uint8_t type, const char *range)
+{
+    if (!range) {
+        LXW_WARN("worksheet_ignore_errors(): " "'range' must be specified.");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (type <= 0 || type >= LXW_IGNORE_LAST_OPTION) {
+        LXW_WARN("worksheet_ignore_errors(): " "unknown option in 'type'.");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    /* Set the ranges to be ignored. */
+    if (type == LXW_IGNORE_NUMBER_STORED_AS_TEXT) {
+        free(self->ignore_number_stored_as_text);
+        self->ignore_number_stored_as_text = lxw_strdup(range);
+    }
+    else if (type == LXW_IGNORE_EVAL_ERROR) {
+        free(self->ignore_eval_error);
+        self->ignore_eval_error = lxw_strdup(range);
+    }
+    else if (type == LXW_IGNORE_FORMULA_DIFFERS) {
+        free(self->ignore_formula_differs);
+        self->ignore_formula_differs = lxw_strdup(range);
+    }
+    else if (type == LXW_IGNORE_FORMULA_RANGE) {
+        free(self->ignore_formula_range);
+        self->ignore_formula_range = lxw_strdup(range);
+    }
+    else if (type == LXW_IGNORE_FORMULA_UNLOCKED) {
+        free(self->ignore_formula_unlocked);
+        self->ignore_formula_unlocked = lxw_strdup(range);
+    }
+    else if (type == LXW_IGNORE_EMPTY_CELL_REFERENCE) {
+        free(self->ignore_empty_cell_reference);
+        self->ignore_empty_cell_reference = lxw_strdup(range);
+    }
+    else if (type == LXW_IGNORE_LIST_DATA_VALIDATION) {
+        free(self->ignore_list_data_validation);
+        self->ignore_list_data_validation = lxw_strdup(range);
+    }
+    else if (type == LXW_IGNORE_CALCULATED_COLUMN) {
+        free(self->ignore_calculated_column);
+        self->ignore_calculated_column = lxw_strdup(range);
+    }
+    else if (type == LXW_IGNORE_TWO_DIGIT_TEXT_YEAR) {
+        free(self->ignore_two_digit_text_year);
+        self->ignore_two_digit_text_year = lxw_strdup(range);
+    }
+
+    self->has_ignore_errors = LXW_TRUE;
+
+    return LXW_NO_ERROR;
 }
