@@ -330,15 +330,17 @@ _vml_write_font(lxw_vml *self)
  * Write the <v:imagedata> element.
  */
 STATIC void
-_vml_write_imagedata(lxw_vml *self)
+_vml_write_imagedata(lxw_vml *self, uint32_t rel_index, char *name)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char rel_id[] = "rId1";
+    char rel_id[LXW_ATTR_32];
+
+    lxw_snprintf(rel_id, LXW_ATTR_32, "rId%d", rel_index);
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("o:relid", rel_id);
-    LXW_PUSH_ATTRIBUTES_STR("o:title", "red");
+    LXW_PUSH_ATTRIBUTES_STR("o:title", name);
 
     lxw_xml_empty_tag(self->file, "v:imagedata", &attributes);
 
@@ -368,18 +370,42 @@ _vml_write_image_path(lxw_vml *self)
  * Write the <v:shape> element.
  */
 STATIC void
-_vml_write_image_shape(lxw_vml *self)
+_vml_write_image_shape(lxw_vml *self, uint32_t vml_shape_id, uint32_t z_index,
+                       lxw_vml_obj *image_obj)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char id[] = "CH";
-    char o_spid[] = "_x0000_s1025";
+    char width_str[LXW_ATTR_32];
+    char height_str[LXW_ATTR_32];
+    char style[LXW_MAX_ATTRIBUTE_LENGTH];
+    char o_spid[LXW_ATTR_32];
     char type[] = "#_x0000_t75";
-    char style[] = "position:absolute;margin-left:0;margin-top:0;width:24pt;"
-        "height:24pt;z-index:1";
+    double width;
+    double height;
+
+    /* Scale the height/width by the resolution, relative to 72dpi. */
+    width = image_obj->width * (72.0 / image_obj->x_dpi);
+    height = image_obj->height * (72.0 / image_obj->y_dpi);
+
+    /* Excel uses a rounding based around 72 and 96 dpi. */
+    width = 72.0 / 96.0 * (uint32_t) (width * 96.0 / 72 + 0.25);
+    height = 72.0 / 96.0 * (uint32_t) (height * 96.0 / 72 + 0.25);
+
+    lxw_sprintf_dbl(width_str, width);
+    lxw_sprintf_dbl(height_str, height);
+
+    lxw_snprintf(o_spid, LXW_ATTR_32, "_x0000_s%d", vml_shape_id);
+
+    lxw_snprintf(style,
+                 LXW_MAX_ATTRIBUTE_LENGTH,
+                 "position:absolute;"
+                 "margin-left:0;"
+                 "margin-top:0;"
+                 "width:%spt;"
+                 "height:%spt;" "z-index:%d", width_str, height_str, z_index);
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("id", id);
+    LXW_PUSH_ATTRIBUTES_STR("id", image_obj->image_position);
     LXW_PUSH_ATTRIBUTES_STR("o:spid", o_spid);
     LXW_PUSH_ATTRIBUTES_STR("type", type);
     LXW_PUSH_ATTRIBUTES_STR("style", style);
@@ -387,7 +413,7 @@ _vml_write_image_shape(lxw_vml *self)
     lxw_xml_start_tag(self->file, "v:shape", &attributes);
 
     /* Write the v:imagedata element. */
-    _vml_write_imagedata(self);
+    _vml_write_imagedata(self, image_obj->rel_index, image_obj->name);
 
     /* Write the o:lock element. */
     _vml_write_rotation_lock(self);
@@ -398,7 +424,7 @@ _vml_write_image_shape(lxw_vml *self)
 }
 
 /*
- * Write the <v:shapetype> element for images..
+ * Write the <v:shapetype> element for images.
  */
 STATIC void
 _vml_write_image_shapetype(lxw_vml *self)
@@ -960,13 +986,13 @@ lxw_vml_assemble_xml_file(lxw_vml *self)
         _vml_write_comment_shapetype(self);
 
         STAILQ_FOREACH(comment_obj, self->comment_objs, list_pointers) {
-            self->vml_shape_id += 1;
+            self->vml_shape_id++;
 
             /* Write the <v:shape> element. */
             _vml_write_comment_shape(self, self->vml_shape_id, z_index,
                                      comment_obj);
 
-            z_index += 1;
+            z_index++;
         }
     }
 
@@ -986,8 +1012,13 @@ lxw_vml_assemble_xml_file(lxw_vml *self)
         _vml_write_image_shapetype(self);
 
         STAILQ_FOREACH(image_obj, self->image_objs, list_pointers) {
+            self->vml_shape_id++;
+
             /* Write the <v:shape> element. */
-            _vml_write_image_shape(self);
+            _vml_write_image_shape(self, self->vml_shape_id, z_index,
+                                   image_obj);
+
+            z_index++;
         }
     }
 

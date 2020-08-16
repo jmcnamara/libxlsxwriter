@@ -57,13 +57,14 @@
 #include "utility.h"
 #include "relationships.h"
 
-#define LXW_ROW_MAX           1048576
-#define LXW_COL_MAX           16384
-#define LXW_COL_META_MAX      128
-#define LXW_HEADER_FOOTER_MAX 255
-#define LXW_MAX_NUMBER_URLS   65530
-#define LXW_PANE_NAME_LENGTH  12        /* bottomRight + 1 */
-#define LXW_IMAGE_BUFFER_SIZE 1024
+#define LXW_ROW_MAX           		1048576
+#define LXW_COL_MAX           		16384
+#define LXW_COL_META_MAX      		128
+#define LXW_HEADER_FOOTER_MAX 		255
+#define LXW_MAX_NUMBER_URLS   		65530
+#define LXW_PANE_NAME_LENGTH  		12      /* bottomRight + 1 */
+#define LXW_IMAGE_BUFFER_SIZE      	1024
+#define LXW_HEADER_FOOTER_OBJS_MAX 	6       /* Header/footer image objs. */
 
 /* The Excel 2007 specification says that the maximum number of page
  * breaks is 1026. However, in practice it is actually 1023. */
@@ -299,9 +300,19 @@ enum pane_types {
     FREEZE_SPLIT_PANES
 };
 
+enum lxw_image_position {
+    HEADER_LEFT = 0,
+    HEADER_CENTER,
+    HEADER_RIGHT,
+    FOOTER_LEFT,
+    FOOTER_CENTER,
+    FOOTER_RIGHT
+};
+
 /* Define the tree.h RB structs for the red-black head types. */
 RB_HEAD(lxw_table_cells, lxw_cell);
 RB_HEAD(lxw_drawing_rel_ids, lxw_drawing_rel_id);
+RB_HEAD(lxw_vml_drawing_rel_ids, lxw_drawing_rel_id);
 
 /* Define a RB_TREE struct manually to add extra members. */
 struct lxw_table_rows {
@@ -344,6 +355,17 @@ struct lxw_table_rows {
     RB_GENERATE_MINMAX(name, type, field, static)               \
     /* Add unused struct to allow adding a semicolon */         \
     struct lxw_rb_generate_drawing_rel_ids{int unused;}
+
+#define LXW_RB_GENERATE_VML_DRAWING_REL_IDS(name, type, field, cmp) \
+    RB_GENERATE_INSERT_COLOR(name, type, field, static)         \
+    RB_GENERATE_REMOVE_COLOR(name, type, field, static)         \
+    RB_GENERATE_INSERT(name, type, field, cmp, static)          \
+    RB_GENERATE_REMOVE(name, type, field, static)               \
+    RB_GENERATE_FIND(name, type, field, cmp, static)            \
+    RB_GENERATE_NEXT(name, type, field, static)                 \
+    RB_GENERATE_MINMAX(name, type, field, static)               \
+    /* Add unused struct to allow adding a semicolon */         \
+    struct lxw_rb_generate_vml_drawing_rel_ids{int unused;}
 
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
 STAILQ_HEAD(lxw_selections, lxw_selection);
@@ -732,6 +754,7 @@ typedef struct lxw_object_properties {
     lxw_chart *chart;
     uint8_t is_duplicate;
     char *md5;
+    char *image_position;
 
     STAILQ_ENTRY (lxw_object_properties) list_pointers;
 } lxw_object_properties;
@@ -830,16 +853,21 @@ typedef struct lxw_vml_obj {
     uint32_t row_absolute;
     uint32_t width;
     uint32_t height;
+    double x_dpi;
+    double y_dpi;
     lxw_color_t color;
     uint8_t font_family;
     uint8_t visible;
     uint32_t author_id;
+    uint32_t rel_index;
     double font_size;
     struct lxw_drawing_coords from;
     struct lxw_drawing_coords to;
     char *author;
     char *font_name;
     char *text;
+    char *image_position;
+    char *name;
     STAILQ_ENTRY (lxw_vml_obj) list_pointers;
 
 } lxw_vml_obj;
@@ -854,6 +882,11 @@ typedef struct lxw_vml_obj {
 typedef struct lxw_header_footer_options {
     /** Header or footer margin in inches. Excel default is 0.3. */
     double margin;
+
+    char *image_left;
+    char *image_center;
+    char *image_right;
+
 } lxw_header_footer_options;
 
 /**
@@ -977,7 +1010,9 @@ typedef struct lxw_worksheet {
     struct lxw_image_props *image_props;
     struct lxw_chart_props *chart_data;
     struct lxw_drawing_rel_ids *drawing_rel_ids;
+    struct lxw_vml_drawing_rel_ids *vml_drawing_rel_ids;
     struct lxw_comment_objs *comment_objs;
+    struct lxw_comment_objs *header_image_objs;
 
     lxw_row_t dim_rowmin;
     lxw_row_t dim_rowmax;
@@ -1079,9 +1114,11 @@ typedef struct lxw_worksheet {
     uint16_t vbreaks_count;
 
     uint32_t drawing_rel_id;
+    uint32_t vml_drawing_rel_id;
     struct lxw_rel_tuples *external_hyperlinks;
     struct lxw_rel_tuples *external_drawing_links;
     struct lxw_rel_tuples *drawing_links;
+    struct lxw_rel_tuples *vml_drawing_links;
 
     struct lxw_panes panes;
 
@@ -1095,9 +1132,12 @@ typedef struct lxw_worksheet {
     uint8_t has_header_vml;
     lxw_rel_tuple *external_vml_comment_link;
     lxw_rel_tuple *external_comment_link;
+    lxw_rel_tuple *external_vml_header_link;
     char *comment_author;
     char *vml_data_id_str;
+    char *vml_header_id_str;
     uint32_t vml_shape_id;
+    uint32_t vml_header_id;
     uint8_t comment_display_default;
 
     uint8_t has_ignore_errors;
@@ -1110,6 +1150,14 @@ typedef struct lxw_worksheet {
     char *ignore_list_data_validation;
     char *ignore_calculated_column;
     char *ignore_two_digit_text_year;
+
+    lxw_object_properties **header_footer_objs[LXW_HEADER_FOOTER_OBJS_MAX];
+    lxw_object_properties *header_left_object_props;
+    lxw_object_properties *header_center_object_props;
+    lxw_object_properties *header_right_object_props;
+    lxw_object_properties *footer_left_object_props;
+    lxw_object_properties *footer_center_object_props;
+    lxw_object_properties *footer_right_object_props;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -3904,6 +3952,10 @@ void lxw_worksheet_prepare_image(lxw_worksheet *worksheet,
                                  uint32_t image_ref_id, uint32_t drawing_id,
                                  lxw_object_properties *object_props);
 
+void lxw_worksheet_prepare_header_image(lxw_worksheet *worksheet,
+                                        uint32_t image_ref_id,
+                                        lxw_object_properties *object_props);
+
 void lxw_worksheet_prepare_chart(lxw_worksheet *worksheet,
                                  uint32_t chart_ref_id, uint32_t drawing_id,
                                  lxw_object_properties *object_props,
@@ -3914,6 +3966,10 @@ uint32_t lxw_worksheet_prepare_vml_objects(lxw_worksheet *worksheet,
                                            uint32_t vml_shape_id,
                                            uint32_t vml_drawing_id,
                                            uint32_t comment_id);
+
+void lxw_worksheet_prepare_header_vml_objects(lxw_worksheet *self,
+                                              uint32_t vml_header_id,
+                                              uint32_t vml_drawing_id);
 
 lxw_row *lxw_worksheet_find_row(lxw_worksheet *worksheet, lxw_row_t row_num);
 lxw_cell *lxw_worksheet_find_cell_in_row(lxw_row *row, lxw_col_t col_num);

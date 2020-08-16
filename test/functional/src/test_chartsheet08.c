@@ -47,7 +47,7 @@ int main() {
     chartsheet_set_paper(chartsheet, 9);
     chartsheet_set_portrait(chartsheet);
 
-    lxw_header_footer_options header_options = { 0.118110236220472 };
+    lxw_header_footer_options header_options = {.margin = 0.118110236220472 };
     chartsheet_set_header_opt(chartsheet, "&CPage &P", &header_options);
     chartsheet_set_footer_opt(chartsheet, "&C&A",      &header_options);
 

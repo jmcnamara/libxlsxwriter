@@ -123,8 +123,8 @@ CTEST(worksheet, write_page_margin07) {
     char exp[] = "<pageMargins left=\"0.7\" right=\"0.7\" top=\"0.75\" "
                  "bottom=\"0.75\" header=\"0.2\" footer=\"0.4\"/>";
     FILE* testfile = lxw_tmpfile(NULL);
-    lxw_header_footer_options header_options = {0.2};
-    lxw_header_footer_options footer_options = {0.4};
+    lxw_header_footer_options header_options = {.margin = 0.2};
+    lxw_header_footer_options footer_options = {.margin = 0.4};
 
     lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
     worksheet->file = testfile;

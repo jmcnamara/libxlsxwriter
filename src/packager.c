@@ -18,6 +18,10 @@ STATIC lxw_error _add_file_to_zip(lxw_packager *self, FILE * file,
 STATIC lxw_error _add_buffer_to_zip(lxw_packager *self, unsigned char *buffer,
                                     size_t buffer_size, const char *filename);
 
+STATIC lxw_error _write_vml_drawing_rels_file(lxw_packager *self,
+                                              lxw_worksheet *worksheet,
+                                              uint32_t index);
+
 /*
  * Forward declarations.
  */
@@ -465,43 +469,87 @@ _write_vml_files(lxw_packager *self)
         else
             worksheet = sheet->u.worksheet;
 
-        if (!worksheet->has_vml)
+        if (!worksheet->has_vml && !worksheet->has_header_vml)
             continue;
 
-        vml = lxw_vml_new();
-        if (!vml)
-            return LXW_ERROR_MEMORY_MALLOC_FAILED;
+        if (worksheet->has_vml) {
 
-        lxw_snprintf(filename, LXW_FILENAME_LENGTH,
-                     "xl/drawings/vmlDrawing%d.vml", index++);
+            vml = lxw_vml_new();
+            if (!vml)
+                return LXW_ERROR_MEMORY_MALLOC_FAILED;
 
-        vml->file = lxw_tmpfile(self->tmpdir);
-        if (!vml->file) {
-            lxw_vml_free(vml);
-            return LXW_ERROR_CREATING_TMPFILE;
-        }
+            lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+                         "xl/drawings/vmlDrawing%d.vml", index++);
 
-        vml->comment_objs = worksheet->comment_objs;
-        vml->vml_shape_id = worksheet->vml_shape_id;
-        vml->comment_display_default = worksheet->comment_display_default;
+            vml->file = lxw_tmpfile(self->tmpdir);
+            if (!vml->file) {
+                lxw_vml_free(vml);
+                return LXW_ERROR_CREATING_TMPFILE;
+            }
 
-        if (worksheet->vml_data_id_str) {
-            vml->vml_data_id_str = worksheet->vml_data_id_str;
-        }
-        else {
+            vml->comment_objs = worksheet->comment_objs;
+            vml->vml_shape_id = worksheet->vml_shape_id;
+            vml->comment_display_default = worksheet->comment_display_default;
+
+            if (worksheet->vml_data_id_str) {
+                vml->vml_data_id_str = worksheet->vml_data_id_str;
+            }
+            else {
+                fclose(vml->file);
+                lxw_vml_free(vml);
+                return LXW_ERROR_MEMORY_MALLOC_FAILED;
+            }
+
+            lxw_vml_assemble_xml_file(vml);
+
+            err = _add_file_to_zip(self, vml->file, filename);
+
             fclose(vml->file);
             lxw_vml_free(vml);
-            return LXW_ERROR_MEMORY_MALLOC_FAILED;
+
+            RETURN_ON_ERROR(err);
         }
 
-        lxw_vml_assemble_xml_file(vml);
+        if (worksheet->has_header_vml) {
 
-        err = _add_file_to_zip(self, vml->file, filename);
+            err = _write_vml_drawing_rels_file(self, worksheet, index);
+            RETURN_ON_ERROR(err);
 
-        fclose(vml->file);
-        lxw_vml_free(vml);
+            vml = lxw_vml_new();
+            if (!vml)
+                return LXW_ERROR_MEMORY_MALLOC_FAILED;
 
-        RETURN_ON_ERROR(err);
+            lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+                         "xl/drawings/vmlDrawing%d.vml", index++);
+
+            vml->file = lxw_tmpfile(self->tmpdir);
+            if (!vml->file) {
+                lxw_vml_free(vml);
+                return LXW_ERROR_CREATING_TMPFILE;
+            }
+
+            vml->image_objs = worksheet->header_image_objs;
+            vml->vml_shape_id = worksheet->vml_header_id * 1024;
+
+            if (worksheet->vml_header_id_str) {
+                vml->vml_data_id_str = worksheet->vml_header_id_str;
+            }
+            else {
+                fclose(vml->file);
+                lxw_vml_free(vml);
+                return LXW_ERROR_MEMORY_MALLOC_FAILED;
+            }
+
+            lxw_vml_assemble_xml_file(vml);
+
+            err = _add_file_to_zip(self, vml->file, filename);
+
+            fclose(vml->file);
+            lxw_vml_free(vml);
+
+            RETURN_ON_ERROR(err);
+        }
+
     }
 
     return LXW_NO_ERROR;
@@ -1023,6 +1071,7 @@ _write_worksheet_rels_file(lxw_packager *self)
 
         if (STAILQ_EMPTY(worksheet->external_hyperlinks) &&
             STAILQ_EMPTY(worksheet->external_drawing_links) &&
+            !worksheet->external_vml_header_link &&
             !worksheet->external_vml_comment_link &&
             !worksheet->external_comment_link)
             continue;
@@ -1046,6 +1095,11 @@ _write_worksheet_rels_file(lxw_packager *self)
         }
 
         rel = worksheet->external_vml_comment_link;
+        if (rel)
+            lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+                                           rel->target_mode);
+
+        rel = worksheet->external_vml_header_link;
         if (rel)
             lxw_add_worksheet_relationship(rels, rel->type, rel->target,
                                            rel->target_mode);
@@ -1186,6 +1240,46 @@ _write_drawing_rels_file(lxw_packager *self)
     }
 
     return LXW_NO_ERROR;
+}
+
+/*
+ * Write the vmlDrawing .rels files for worksheets that contain images in
+ * headers or footers.
+ */
+STATIC lxw_error
+_write_vml_drawing_rels_file(lxw_packager *self, lxw_worksheet *worksheet,
+                             uint32_t index)
+{
+    lxw_relationships *rels;
+    lxw_rel_tuple *rel;
+    char sheetname[LXW_FILENAME_LENGTH] = { 0 };
+    lxw_error err = LXW_NO_ERROR;
+
+    rels = lxw_relationships_new();
+
+    rels->file = lxw_tmpfile(self->tmpdir);
+    if (!rels->file) {
+        lxw_free_relationships(rels);
+        return LXW_ERROR_CREATING_TMPFILE;
+    }
+
+    STAILQ_FOREACH(rel, worksheet->vml_drawing_links, list_pointers) {
+        lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+                                       rel->target_mode);
+
+    }
+
+    lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
+                 "xl/drawings/_rels/vmlDrawing%d.vml.rels", index);
+
+    lxw_relationships_assemble_xml_file(rels);
+
+    err = _add_file_to_zip(self, rels->file, sheetname);
+
+    fclose(rels->file);
+    lxw_free_relationships(rels);
+
+    return err;
 }
 
 /*

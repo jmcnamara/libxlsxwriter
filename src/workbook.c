@@ -230,6 +230,20 @@ lxw_workbook_free(lxw_workbook *workbook)
         free(workbook->image_md5s);
     }
 
+    if (workbook->header_image_md5s) {
+        for (image_md5 = RB_MIN(lxw_image_md5s, workbook->header_image_md5s);
+             image_md5; image_md5 = next_image_md5) {
+
+            next_image_md5 =
+                RB_NEXT(lxw_image_md5s, workbook->image_md5, image_md5);
+            RB_REMOVE(lxw_image_md5s, workbook->header_image_md5s, image_md5);
+            free(image_md5->md5);
+            free(image_md5);
+        }
+
+        free(workbook->header_image_md5s);
+    }
+
     lxw_hash_free(workbook->used_xf_formats);
     lxw_sst_free(workbook->sst);
     free(workbook->options.tmpdir);
@@ -936,6 +950,7 @@ _prepare_drawings(lxw_workbook *self)
     lxw_image_md5 tmp_image_md5;
     lxw_image_md5 *new_image_md5 = NULL;
     lxw_image_md5 *found_duplicate_image = NULL;
+    uint8_t i;
 
     STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
         if (sheet->is_chartsheet) {
@@ -948,11 +963,14 @@ _prepare_drawings(lxw_workbook *self)
         }
 
         if (STAILQ_EMPTY(worksheet->image_props)
-            && STAILQ_EMPTY(worksheet->chart_data))
+            && STAILQ_EMPTY(worksheet->chart_data)
+            && !worksheet->has_header_vml) {
             continue;
+        }
 
         drawing_id++;
 
+        /* Prepare worksheet images. */
         STAILQ_FOREACH(object_props, worksheet->image_props, list_pointers) {
 
             if (object_props->image_type == LXW_IMAGE_PNG)
@@ -996,6 +1014,7 @@ _prepare_drawings(lxw_workbook *self)
                                         object_props);
         }
 
+        /* Prepare worksheet charts. */
         STAILQ_FOREACH(object_props, worksheet->chart_data, list_pointers) {
             chart_ref_id++;
             lxw_worksheet_prepare_chart(worksheet, chart_ref_id, drawing_id,
@@ -1004,6 +1023,55 @@ _prepare_drawings(lxw_workbook *self)
                 STAILQ_INSERT_TAIL(self->ordered_charts, object_props->chart,
                                    ordered_list_pointers);
         }
+
+        /* Prepare worksheet header/footer images. */
+        for (i = 0; i < LXW_HEADER_FOOTER_OBJS_MAX; i++) {
+
+            object_props = *worksheet->header_footer_objs[i];
+            if (!object_props)
+                continue;
+
+            if (object_props->image_type == LXW_IMAGE_PNG)
+                self->has_png = LXW_TRUE;
+
+            if (object_props->image_type == LXW_IMAGE_JPEG)
+                self->has_jpeg = LXW_TRUE;
+
+            if (object_props->image_type == LXW_IMAGE_BMP)
+                self->has_bmp = LXW_TRUE;
+
+            /* Check for duplicate images and only store the first instance. */
+            if (object_props->md5) {
+                tmp_image_md5.md5 = object_props->md5;
+                found_duplicate_image = RB_FIND(lxw_image_md5s,
+                                                self->header_image_md5s,
+                                                &tmp_image_md5);
+            }
+
+            if (found_duplicate_image) {
+                ref_id = found_duplicate_image->id;
+                object_props->is_duplicate = LXW_TRUE;
+            }
+            else {
+                image_ref_id++;
+                ref_id = image_ref_id;
+
+#ifndef USE_NO_MD5
+                new_image_md5 = calloc(1, sizeof(lxw_image_md5));
+#endif
+                if (new_image_md5 && object_props->md5) {
+                    new_image_md5->id = ref_id;
+                    new_image_md5->md5 = lxw_strdup(object_props->md5);
+
+                    RB_INSERT(lxw_image_md5s, self->header_image_md5s,
+                              new_image_md5);
+                }
+            }
+
+            lxw_worksheet_prepare_header_image(worksheet, ref_id,
+                                               object_props);
+        }
+
     }
 
     self->drawing_count = drawing_id;
@@ -1021,6 +1089,7 @@ _prepare_vml(lxw_workbook *self)
     uint32_t comment_id = 0;
     uint32_t vml_drawing_id = 0;
     uint32_t vml_data_id = 1;
+    uint32_t vml_header_id = 0;
     uint32_t vml_shape_id = 1024;
     uint32_t comment_count = 0;
 
@@ -1036,12 +1105,12 @@ _prepare_vml(lxw_workbook *self)
         if (worksheet->has_vml) {
             self->has_vml = LXW_TRUE;
             if (worksheet->has_comments) {
-                self->comment_count += 1;
-                comment_id += 1;
+                self->comment_count++;
+                comment_id++;
                 self->has_comments = LXW_TRUE;
             }
 
-            vml_drawing_id += 1;
+            vml_drawing_id++;
 
             comment_count = lxw_worksheet_prepare_vml_objects(worksheet,
                                                               vml_data_id,
@@ -1052,7 +1121,15 @@ _prepare_vml(lxw_workbook *self)
             /* Each VML should start with a shape id incremented by 1024. */
             vml_data_id += 1 * ((1024 + comment_count) / 1024);
             vml_shape_id += 1024 * ((1024 + comment_count) / 1024);
+        }
 
+        if (worksheet->has_header_vml) {
+            self->has_vml = LXW_TRUE;
+            vml_drawing_id++;
+            vml_header_id++;
+            lxw_worksheet_prepare_header_vml_objects(worksheet,
+                                                     vml_header_id,
+                                                     vml_drawing_id);
         }
     }
 }
@@ -1555,6 +1632,11 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     workbook->image_md5s = calloc(1, sizeof(struct lxw_image_md5s));
     GOTO_LABEL_ON_MEM_ERROR(workbook->image_md5s, mem_error);
     RB_INIT(workbook->image_md5s);
+
+    /* Add the image MD5 tree. */
+    workbook->header_image_md5s = calloc(1, sizeof(struct lxw_image_md5s));
+    GOTO_LABEL_ON_MEM_ERROR(workbook->header_image_md5s, mem_error);
+    RB_INIT(workbook->header_image_md5s);
 
     /* Add the charts list. */
     workbook->charts = calloc(1, sizeof(struct lxw_charts));
