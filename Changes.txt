@@ -2,6 +2,14 @@
 @page changes Changes
 
 
+## 0.9.9 August 17 2020
+
+- Added support for images in headers and footers. See `worksheet_set_header_opt()`.
+
+- Added `worksheet_ignore_errors()` function to ignore Excel worksheet
+  errors/warnings in user defined ranges.
+
+
 ## 0.9.8 August 11 2020
 
 - Added formatting for chart data labels and chart custom data labels. See
