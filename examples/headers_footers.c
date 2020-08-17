@@ -9,12 +9,14 @@
  *     &L                  Justification       Left
  *     &C                                      Center
  *     &R                                      Right
+ *
  *     &P                  Information         Page number
  *     &N                                      Total number of pages
  *     &D                                      Date
  *     &T                                      Time
  *     &F                                      File name
  *     &A                                      Worksheet name
+ *
  *     &fontsize           Font                Font size
  *     &"font,style"                           Font name and style
  *     &U                                      Single underline
@@ -22,8 +24,10 @@
  *     &S                                      Strikethrough
  *     &X                                      Superscript
  *     &Y                                      Subscript
+ *
  *     &[Picture]          Images              Image placeholder
  *     &G                                      Same as &[Picture]
+ *
  *     &&                  Miscellaneous       Literal ampersand &
  *
  * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
@@ -54,29 +58,25 @@ int main() {
 
 
     /*
-     * This is an example of some of the header/footer variables.
+     * A simple example to start
      */
-    lxw_worksheet *worksheet2 = workbook_add_worksheet(workbook, "Variables");
-    char header2[] = "&LPage &P of &N" "&CFilename: &F" "&RSheetname: &A";
-    char footer2[] = "&LCurrent date: &D" "&RCurrent time: &T";
-    lxw_row_t breaks[] = {20, 0};
+    lxw_worksheet *worksheet2 = workbook_add_worksheet(workbook, "Image");
+    lxw_header_footer_options header_options = {.image_left = "logo_small.png"};
 
-    worksheet_set_header(worksheet2, header2);
-    worksheet_set_footer(worksheet2, footer2);
+    worksheet_set_header_opt(worksheet2, "&L&[Picture]", &header_options);
 
+    worksheet_set_margins(worksheet2, -1, -1, 1.3, -1);
     worksheet_set_column(worksheet2, 0, 0, 50, NULL);
     worksheet_write_string(worksheet2, 0, 0, preview, NULL);
 
-    worksheet_set_h_pagebreaks(worksheet2, breaks);
-    worksheet_write_string(worksheet2, 20, 0, "Next page", NULL);
-
 
     /*
-     * This example shows how to use more than one font.
+     * This is an example of some of the header/footer variables.
      */
-    lxw_worksheet *worksheet3 = workbook_add_worksheet(workbook, "Mixed fonts");
-    char header3[] = "&C&\"Courier New,Bold\"Hello &\"Arial,Italic\"World";
-    char footer3[] = "&C&\"Symbol\"e&\"Arial\" = mc&X2";
+    lxw_worksheet *worksheet3 = workbook_add_worksheet(workbook, "Variables");
+    char header3[] = "&LPage &P of &N" "&CFilename: &F" "&RSheetname: &A";
+    char footer3[] = "&LCurrent date: &D" "&RCurrent time: &T";
+    lxw_row_t breaks[] = {20, 0};
 
     worksheet_set_header(worksheet3, header3);
     worksheet_set_footer(worksheet3, footer3);
@@ -84,29 +84,46 @@ int main() {
     worksheet_set_column(worksheet3, 0, 0, 50, NULL);
     worksheet_write_string(worksheet3, 0, 0, preview, NULL);
 
+    worksheet_set_h_pagebreaks(worksheet3, breaks);
+    worksheet_write_string(worksheet3, 20, 0, "Next page", NULL);
+
 
     /*
-     * Example of line wrapping.
+     * This example shows how to use more than one font.
      */
-    lxw_worksheet *worksheet4 = workbook_add_worksheet(workbook, "Word wrap");
-    char header4[] = "&CHeading 1\nHeading 2";
+    lxw_worksheet *worksheet4 = workbook_add_worksheet(workbook, "Mixed fonts");
+    char header4[] = "&C&\"Courier New,Bold\"Hello &\"Arial,Italic\"World";
+    char footer4[] = "&C&\"Symbol\"e&\"Arial\" = mc&X2";
 
     worksheet_set_header(worksheet4, header4);
+    worksheet_set_footer(worksheet4, footer4);
 
     worksheet_set_column(worksheet4, 0, 0, 50, NULL);
     worksheet_write_string(worksheet4, 0, 0, preview, NULL);
 
 
     /*
-     * Example of inserting a literal ampersand &
+     * Example of line wrapping.
      */
-    lxw_worksheet *worksheet5 = workbook_add_worksheet(workbook, "Ampersand");
-    char header5[] = "&CCuriouser && Curiouser - Attorneys at Law";
+    lxw_worksheet *worksheet5 = workbook_add_worksheet(workbook, "Word wrap");
+    char header5[] = "&CHeading 1\nHeading 2";
 
     worksheet_set_header(worksheet5, header5);
 
     worksheet_set_column(worksheet5, 0, 0, 50, NULL);
     worksheet_write_string(worksheet5, 0, 0, preview, NULL);
+
+
+    /*
+     * Example of inserting a literal ampersand &
+     */
+    lxw_worksheet *worksheet6 = workbook_add_worksheet(workbook, "Ampersand");
+    char header6[] = "&CCuriouser && Curiouser - Attorneys at Law";
+
+    worksheet_set_header(worksheet6, header6);
+
+    worksheet_set_column(worksheet6, 0, 0, 50, NULL);
+    worksheet_write_string(worksheet6, 0, 0, preview, NULL);
 
 
     workbook_close(workbook);

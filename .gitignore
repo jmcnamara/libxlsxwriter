@@ -36,6 +36,7 @@ _temp.c
 examples/*
 !examples/*.c
 !examples/logo.png
+!examples/logo_small.png
 !examples/Makefile
 cov-int
 libxlsxwriter-coverity.tgz

@@ -875,16 +875,28 @@ typedef struct lxw_vml_obj {
 /**
  * @brief Header and footer options.
  *
- * Optional parameters used in the worksheet_set_header_opt() and
+ * Optional parameters used in the `worksheet_set_header_opt()` and
  * worksheet_set_footer_opt() functions.
  *
  */
 typedef struct lxw_header_footer_options {
-    /** Header or footer margin in inches. Excel default is 0.3. */
+    /** Header or footer margin in inches. Excel default is 0.3. Must by
+     *  larger than 0.0.  See `worksheet_set_header_opt()`. */
     double margin;
 
+    /** The left header image filename, with path if required. This should
+     * have a corresponding `&G/&[Picture]` placeholder in the `&L` section of
+     * the header/footer string. See `worksheet_set_header_opt()`. */
     char *image_left;
+
+    /** The center header image filename, with path if required. This should
+     * have a corresponding `&G/&[Picture]` placeholder in the `&C` section of
+     * the header/footer string. See `worksheet_set_header_opt()`. */
     char *image_center;
+
+    /** The right header image filename, with path if required. This should
+     * have a corresponding `&G/&[Picture]` placeholder in the `&R` section of
+     * the header/footer string. See `worksheet_set_header_opt()`. */
     char *image_right;
 
 } lxw_header_footer_options;
@@ -2989,7 +3001,11 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  *   | `&S`            |               | Strikethrough         |
  *   | `&X`            |               | Superscript           |
  *   | `&Y`            |               | Subscript             |
+ *   | `&[Picture]`    | Images        | Image placeholder     |
+ *   | `&G`            |               | Same as `&[Picture]`  |
+ *   | `&&`            | Miscellaneous | Literal ampersand &   |
  *
+ * Note: inserting images requires the `worksheet_set_header_opt()` function.
  *
  * Text in headers and footers can be justified (aligned) to the left, center
  * and right by prefixing the text with the control characters `&L`, `&C` and
@@ -3113,16 +3129,13 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  * @code
  *
  *    $ unzip myfile.xlsm -d myfile
- *    $ xmllint --format `find myfile -name "*.xml" | xargs` | egrep "Header|Footer"
+ *    $ xmllint --format `find myfile -name "*.xml" | xargs` | egrep "Header|Footer" | sed 's/&amp;/\&/g'
  *
  *      <headerFooter scaleWithDoc="0">
- *        <oddHeader>&amp;L&amp;P</oddHeader>
+ *        <oddHeader>&L&P</oddHeader>
  *      </headerFooter>
  *
  * @endcode
- *
- * Note that in this case you need to unescape the Html. In the above example
- * the header string would be `&L&P`.
  *
  * To include a single literal ampersand `&` in a header or footer you should
  * use a double ampersand `&&`:
@@ -3131,8 +3144,8 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  *     worksheet_set_header(worksheet, "&CCuriouser && Curiouser - Attorneys at Law");
  * @endcode
  *
- * Note, the header or footer string must be less than 255 characters. Strings
- * longer than this will not be written.
+ * Note, Excel requires that the header or footer string must be less than 255
+ * characters. Strings longer than this will not be written.
  *
  */
 lxw_error worksheet_set_header(lxw_worksheet *worksheet, const char *string);
@@ -3159,18 +3172,42 @@ lxw_error worksheet_set_footer(lxw_worksheet *worksheet, const char *string);
  *
  * @return A #lxw_error code.
  *
- * The syntax of this function is the same as worksheet_set_header() with an
+ * The syntax of this function is the same as `worksheet_set_header()` with an
  * additional parameter to specify options for the header.
  *
- * Currently, the only available option is the header margin:
+ * The #lxw_header_footer_options options are:
+ *
+ * - `margin`: Header or footer margin in inches. The value must by larger
+ *   than 0.0. The Excel default is 0.3.
+ *
+ * - `image_left`: The left header image filename, with path if required. This
+ *   should have a corresponding `&G/&[Picture]` placeholder in the `&L`
+ *   section of the header/footer string.
+ *
+ * - `image_center`: The center header image filename, with path if
+ *   required. This should have a corresponding `&G/&[Picture]` placeholder in
+ *   the `&C` section of the header/footer string.
+ *
+ * - `image_right`: The right header image filename, with path if
+ *   required. This should have a corresponding `&G/&[Picture]` placeholder in
+ *   the `&R` section of the header/footer string.
  *
  * @code
+ *     lxw_header_footer_options header_options = { .margin = 0.2 };
  *
- *    lxw_header_footer_options header_options = { 0.2 };
- *
- *    worksheet_set_header_opt(worksheet, "Some text", &header_options);
- *
+ *     worksheet_set_header_opt(worksheet, "Some text", &header_options);
  * @endcode
+ *
+ * Images can be inserted in the header by specifying the `&[Picture]`
+ * placeholder and a filename/path to the image:
+ *
+ * @code
+ *     lxw_header_footer_options header_options = {.image_left = "logo.png"};
+ *
+ *    worksheet_set_header_opt(worksheet, "&L&[Picture]", &header_options);
+ * @endcode
+ *
+ * @image html headers_footers.png
  *
  */
 lxw_error worksheet_set_header_opt(lxw_worksheet *worksheet,
@@ -3186,7 +3223,7 @@ lxw_error worksheet_set_header_opt(lxw_worksheet *worksheet,
  *
  * @return A #lxw_error code.
  *
- * The syntax of this function is the same as worksheet_set_header_opt().
+ * The syntax of this function is the same as `worksheet_set_header_opt()`.
  *
  */
 lxw_error worksheet_set_footer_opt(lxw_worksheet *worksheet,
