@@ -153,7 +153,7 @@ endif
 	$(Q)rm -f  lib/*
 	$(Q)rm -rf  cov-int
 	$(Q)rm -f libxlsxwriter-coverity.tgz
-	$(Q)../../cov-analysis-linux64-8.7.0/bin/cov-build --dir cov-int make -C src libxlsxwriter.a
+	$(Q)../../cov-analysis-linux64-2019.03/bin/cov-build --dir cov-int make -C src libxlsxwriter.a
 	$(Q)tar -czf libxlsxwriter-coverity.tgz cov-int
 	$(Q)$(MAKE) -C src clean
 	$(Q)rm -f  lib/*
