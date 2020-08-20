@@ -22,7 +22,7 @@ CTEST(styles, write_border) {
 
     styles->file = testfile;
 
-    _write_border(styles, format);
+    _write_border(styles, format, LXW_FALSE);
 
     RUN_XLSX_STREQ(exp, got);
 

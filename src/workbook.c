@@ -245,6 +245,7 @@ lxw_workbook_free(lxw_workbook *workbook)
     }
 
     lxw_hash_free(workbook->used_xf_formats);
+    lxw_hash_free(workbook->used_dxf_formats);
     lxw_sst_free(workbook->sst);
     free(workbook->options.tmpdir);
     free(workbook->ordered_charts);
@@ -304,7 +305,7 @@ _prepare_fonts(lxw_workbook *self)
                 uint16_t *font_index = calloc(1, sizeof(uint16_t));
                 *font_index = index;
                 format->font_index = index;
-                format->has_font = 1;
+                format->has_font = LXW_TRUE;
                 lxw_insert_hash_element(fonts, key, font_index,
                                         sizeof(lxw_font));
                 index++;
@@ -313,6 +314,18 @@ _prepare_fonts(lxw_workbook *self)
     }
 
     lxw_hash_free(fonts);
+
+    /* For DXF formats we only need to check if the properties have changed. */
+    LXW_FOREACH_ORDERED(used_format_element, self->used_dxf_formats) {
+        lxw_format *format = (lxw_format *) used_format_element->value;
+
+        /* The only font properties that can change for a DXF format are:
+         * color, bold, italic, underline and strikethrough. */
+        if (format->font_color || format->bold || format->italic
+            || format->underline || format->font_strikeout) {
+            format->has_dxf_font = LXW_TRUE;
+        }
+    }
 
     self->font_count = index;
 }
@@ -355,6 +368,15 @@ _prepare_borders(lxw_workbook *self)
                                         sizeof(lxw_border));
                 index++;
             }
+        }
+    }
+
+    /* For DXF formats we only need to check if the properties have changed. */
+    LXW_FOREACH_ORDERED(used_format_element, self->used_dxf_formats) {
+        lxw_format *format = (lxw_format *) used_format_element->value;
+
+        if (format->left || format->right || format->top || format->bottom) {
+            format->has_dxf_border = LXW_TRUE;
         }
     }
 
@@ -406,6 +428,17 @@ _prepare_fills(lxw_workbook *self)
     *fill_index2 = 1;
     lxw_insert_hash_element(fills, default_fill_2, fill_index2,
                             sizeof(lxw_fill));
+
+    /* For DXF formats we only need to check if the properties have changed. */
+    LXW_FOREACH_ORDERED(used_format_element, self->used_dxf_formats) {
+        lxw_format *format = (lxw_format *) used_format_element->value;
+
+        if (format->pattern || format->bg_color || format->fg_color) {
+            format->has_dxf_fill = LXW_TRUE;
+            format->dxf_bg_color = format->bg_color;
+            format->dxf_fg_color = format->fg_color;
+        }
+    }
 
     LXW_FOREACH_ORDERED(used_format_element, self->used_xf_formats) {
         lxw_format *format = (lxw_format *) used_format_element->value;
@@ -524,6 +557,41 @@ _prepare_num_formats(lxw_workbook *self)
                                         LXW_FORMAT_FIELD_LEN);
                 index++;
                 num_format_count++;
+            }
+        }
+    }
+
+    LXW_FOREACH_ORDERED(used_format_element, self->used_dxf_formats) {
+        lxw_format *format = (lxw_format *) used_format_element->value;
+
+        /* Format already has a number format index. */
+        if (format->num_format_index)
+            continue;
+
+        /* Check if there is a user defined number format string. */
+        if (*format->num_format) {
+            char num_format[LXW_FORMAT_FIELD_LEN] = { 0 };
+            lxw_snprintf(num_format, LXW_FORMAT_FIELD_LEN, "%s",
+                         format->num_format);
+
+            /* Look up the num_format in the hash table. */
+            hash_element = lxw_hash_key_exists(num_formats, num_format,
+                                               LXW_FORMAT_FIELD_LEN);
+
+            if (hash_element) {
+                /* Num_Format has already been used. */
+                format->num_format_index = *(uint16_t *) hash_element->value;
+            }
+            else {
+                /* This is a new num_format. */
+                num_format_index = calloc(1, sizeof(uint16_t));
+                *num_format_index = index;
+                format->num_format_index = index;
+                lxw_insert_hash_element(num_formats, format->num_format,
+                                        num_format_index,
+                                        LXW_FORMAT_FIELD_LEN);
+                index++;
+                /* Don't update num_format_count for DXF formats. */
             }
         }
     }
@@ -1670,6 +1738,10 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     workbook->used_xf_formats = lxw_hash_new(128, 1, 0);
     GOTO_LABEL_ON_MEM_ERROR(workbook->used_xf_formats, mem_error);
 
+    /* Add a hash table to track format indices. */
+    workbook->used_dxf_formats = lxw_hash_new(128, 1, 0);
+    GOTO_LABEL_ON_MEM_ERROR(workbook->used_dxf_formats, mem_error);
+
     /* Add the worksheets list. */
     workbook->custom_properties =
         calloc(1, sizeof(struct lxw_custom_properties));
@@ -1901,6 +1973,7 @@ workbook_add_format(lxw_workbook *self)
     RETURN_ON_MEM_ERROR(format, NULL);
 
     format->xf_format_indices = self->used_xf_formats;
+    format->dxf_format_indices = self->used_dxf_formats;
     format->num_xf_formats = &self->num_xf_formats;
 
     STAILQ_INSERT_TAIL(self->formats, format, list_pointers);

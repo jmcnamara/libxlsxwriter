@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "xlsxwriter.h"
+#include "xlsxwriter/common.h"
 #include "xlsxwriter/third_party/tmpfileplus.h"
 
 char *error_strings[LXW_MAX_ERRNO + 1] = {

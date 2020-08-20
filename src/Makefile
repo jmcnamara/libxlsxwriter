@@ -13,6 +13,7 @@ endif
 
 DESTDIR ?=
 PREFIX  ?= /usr/local
+OPT_LEVEL ?= -O3
 
 # Directory variables.
 OBJS_DIR    = .
@@ -66,7 +67,7 @@ CFLAGS += -DUSE_FMEMOPEN
 endif
 
 # Flags passed to compiler.
-CFLAGS   += -g -O3 -Wall -Wextra -Wstrict-prototypes -pedantic -ansi
+CFLAGS   += -g $(OPT_LEVEL) -Wall -Wextra -Wstrict-prototypes -pedantic -ansi
 
 # Fix for modified zconf.h on Gentoo.
 ifneq (,$(findstring gentoo, $(shell uname -sr)))

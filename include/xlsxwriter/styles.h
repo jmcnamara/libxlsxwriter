@@ -58,12 +58,13 @@ STATIC void _write_font_name(lxw_styles *self, const char *font_name,
                              uint8_t is_rich_string);
 STATIC void _write_font_family(lxw_styles *self, uint8_t font_family);
 STATIC void _write_font_scheme(lxw_styles *self, const char *font_scheme);
-STATIC void _write_font(lxw_styles *self, lxw_format *format,
+STATIC void _write_font(lxw_styles *self, lxw_format *format, uint8_t is_dxf,
                         uint8_t is_rich_string);
 STATIC void _write_fonts(lxw_styles *self);
 STATIC void _write_default_fill(lxw_styles *self, const char *pattern);
 STATIC void _write_fills(lxw_styles *self);
-STATIC void _write_border(lxw_styles *self, lxw_format *format);
+STATIC void _write_border(lxw_styles *self, lxw_format *format,
+                          uint8_t is_dxf);
 STATIC void _write_borders(lxw_styles *self);
 STATIC void _write_style_xf(lxw_styles *self, uint8_t has_hyperlink,
                             uint16_t font_id);

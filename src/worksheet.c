@@ -7503,3 +7503,23 @@ worksheet_ignore_errors(lxw_worksheet *self, uint8_t type, const char *range)
 
     return LXW_NO_ERROR;
 }
+
+/*
+ * Temp testing function.
+ */
+lxw_error
+worksheet_conditional_tmp(lxw_worksheet *self, lxw_row_t row,
+                          lxw_col_t col, lxw_format *format)
+{
+    (void) self;
+    (void) row;
+    (void) col;
+
+    if (!format)
+        return LXW_NO_ERROR;
+
+    lxw_format_get_dxf_index(format);
+
+    return LXW_NO_ERROR;
+
+}

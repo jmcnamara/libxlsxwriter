@@ -297,6 +297,7 @@ typedef struct lxw_workbook {
     uint16_t first_sheet;
     uint16_t active_sheet;
     uint16_t num_xf_formats;
+    uint16_t num_dxf_formats;
     uint16_t num_format_count;
     uint16_t drawing_count;
     uint16_t comment_count;
@@ -314,6 +315,7 @@ typedef struct lxw_workbook {
     uint8_t has_comments;
 
     lxw_hash_table *used_xf_formats;
+    lxw_hash_table *used_dxf_formats;
 
     char *vba_project;
     char *vba_codename;

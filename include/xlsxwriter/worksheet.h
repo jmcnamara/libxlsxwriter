@@ -2512,6 +2512,9 @@ lxw_error worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
                                 lxw_col_t last_col, const char *string,
                                 lxw_format *format);
 
+lxw_error worksheet_conditional_tmp(lxw_worksheet *self, lxw_row_t row,
+                                    lxw_col_t col, lxw_format *format);
+
 /**
  * @brief Set the autofilter area in the worksheet.
  *

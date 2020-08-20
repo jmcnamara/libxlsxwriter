@@ -27,6 +27,7 @@ lxw_format_new(void)
     GOTO_LABEL_ON_MEM_ERROR(format, mem_error);
 
     format->xf_format_indices = NULL;
+    format->dxf_format_indices = NULL;
 
     format->xf_index = LXW_PROPERTY_UNSET;
     format->dxf_index = LXW_PROPERTY_UNSET;
@@ -149,7 +150,9 @@ _get_format_key(lxw_format *self)
 
     /* Set pointer members to NULL since they aren't part of the comparison. */
     key->xf_format_indices = NULL;
+    key->dxf_format_indices = NULL;
     key->num_xf_formats = NULL;
+    key->num_dxf_formats = NULL;
     key->list_pointers.stqe_next = NULL;
 
     return key;
@@ -280,6 +283,57 @@ lxw_format_get_xf_index(lxw_format *self)
         /* New format requiring an index. */
         index = formats_hash_table->unique_count;
         self->xf_index = index;
+        lxw_insert_hash_element(formats_hash_table, format_key, self,
+                                sizeof(lxw_format));
+        return index;
+    }
+}
+
+/*
+ * Returns the DXF index number used by Excel to identify a format.
+ */
+int32_t
+lxw_format_get_dxf_index(lxw_format *self)
+{
+    lxw_format *format_key;
+    lxw_format *existing_format;
+    lxw_hash_element *hash_element;
+    lxw_hash_table *formats_hash_table = self->dxf_format_indices;
+    int32_t index;
+
+    /* Note: The formats_hash_table/dxf_format_indices contains the unique and
+     * more importantly the *used* formats in the workbook.
+     */
+
+    /* Format already has an index number so return it. */
+    if (self->dxf_index != LXW_PROPERTY_UNSET) {
+        return self->dxf_index;
+    }
+
+    /* Otherwise, the format doesn't have an index number so we assign one.
+     * First generate a unique key to identify the format in the hash table.
+     */
+    format_key = _get_format_key(self);
+
+    /* Return the default format index if the key generation failed. */
+    if (!format_key)
+        return 0;
+
+    /* Look up the format in the hash table. */
+    hash_element =
+        lxw_hash_key_exists(formats_hash_table, format_key,
+                            sizeof(lxw_format));
+
+    if (hash_element) {
+        /* Format matches existing format with an index. */
+        free(format_key);
+        existing_format = hash_element->value;
+        return existing_format->dxf_index;
+    }
+    else {
+        /* New format requiring an index. */
+        index = formats_hash_table->unique_count;
+        self->dxf_index = index;
         lxw_insert_hash_element(formats_hash_table, format_key, self,
                                 sizeof(lxw_format));
         return index;
