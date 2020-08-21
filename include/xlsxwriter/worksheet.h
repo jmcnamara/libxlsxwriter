@@ -1864,6 +1864,12 @@ lxw_error worksheet_write_rich_string(lxw_worksheet *worksheet,
                                       lxw_rich_string_tuple *rich_string[],
                                       lxw_format *format);
 
+lxw_error worksheet_write_rich_string_html(lxw_worksheet *worksheet,
+                                           lxw_row_t row_num,
+                                           lxw_col_t col_num,
+                                           char *rich_string,
+                                           lxw_format *format);
+
 /**
  * @brief Write a comment to a worksheet cell.
  *

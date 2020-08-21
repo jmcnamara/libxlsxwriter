@@ -5628,6 +5628,53 @@ mem_error:
 }
 
 /*
+ * Write a rich string to an Excel file using user created html.
+ *
+ * Optimized workaround to write raw html representing a rich string to avoid
+ * the overhead of opening a tmpfile to generate the html.
+ */
+lxw_error
+worksheet_write_rich_string_html(lxw_worksheet *self,
+                                 lxw_row_t row_num,
+                                 lxw_col_t col_num,
+                                 char *rich_string, lxw_format *format)
+{
+    lxw_cell *cell;
+    int32_t string_id;
+    struct sst_element *sst_element;
+    lxw_error err;
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
+    if (err)
+        return err;
+
+    if (lxw_utf8_strlen(rich_string) > LXW_STR_MAX) {
+        return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
+    }
+
+    if (!self->optimize) {
+        /* Get the SST element and string id. */
+        sst_element = lxw_get_sst_index(self->sst, rich_string, LXW_TRUE);
+
+        if (!sst_element)
+            return LXW_ERROR_SHARED_STRING_INDEX_NOT_FOUND;
+
+        string_id = sst_element->index;
+        cell = _new_string_cell(row_num, col_num, string_id,
+                                sst_element->string, format);
+    }
+    else {
+        cell = _new_inline_rich_string_cell(row_num,
+                                            col_num,
+                                            lxw_strdup(rich_string), format);
+    }
+
+    _insert_cell(self, row_num, col_num, cell);
+
+    return LXW_NO_ERROR;
+}
+
+/*
  * Write a comment to a worksheet cell in Excel.
  */
 lxw_error

@@ -56,3 +56,7 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_optimize26(self):
         self.run_exe_test('test_optimize26')
+
+    # Test the worksheet_rich_string_html() function.
+    def test_optimize54(self):
+        self.run_exe_test('test_optimize54', 'optimize04.xlsx')
