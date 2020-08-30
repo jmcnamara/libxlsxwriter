@@ -89,6 +89,9 @@
 -T lxw_color_t
 -T lxw_comment
 -T lxw_comment_options
+-T lxw_cond_format_hash_element
+-T lxw_cond_format_obj
+-T lxw_conditional_format
 -T lxw_content_types
 -T lxw_core
 -T lxw_custom

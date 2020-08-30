@@ -25,28 +25,22 @@ int main() {
     worksheet_write_number(worksheet, CELL("A3"), 30 , NULL);
     worksheet_write_number(worksheet, CELL("A4"), 40 , NULL);
 
-    worksheet_conditional_tmp(worksheet, CELL("A1"), format1);
-    worksheet_conditional_tmp(worksheet, CELL("A1"), format2);
+    lxw_conditional_format *conditional_format = calloc(1, sizeof(lxw_conditional_format));
 
-/*
-    worksheet_conditional_formatting(worksheet, "A1",
-      :
-            'type': "cell",
-            'format': format1,
-            'criteria': "less than",
-            'value': 5,
-            'stop_if_true': 1
-    );
+    conditional_format->type         = LXW_CONDITIONAL_TYPE_CELL;
+    conditional_format->criteria     = LXW_CONDITIONAL_CRITERIA_LESS_THAN;
+    conditional_format->value        = 5;
+    conditional_format->stop_if_true = LXW_TRUE;
+    conditional_format->format       = format1;
+    worksheet_conditional_format_cell(worksheet, CELL("A1"), conditional_format);
 
-    worksheet_conditional_formatting(worksheet, "A1",
-      :
-            'type': "cell",
-            'format': format2,
-            'criteria': "greater than",
-            'value': 20,
-            'stop_if_true': 1
-    );
-*/
+    conditional_format->type         = LXW_CONDITIONAL_TYPE_CELL;
+    conditional_format->criteria     = LXW_CONDITIONAL_CRITERIA_GREATER_THAN;
+    conditional_format->value        = 20;
+    conditional_format->stop_if_true = LXW_TRUE;
+    conditional_format->format       = format2;
+    worksheet_conditional_format_cell(worksheet, CELL("A1"), conditional_format);
 
+    free(conditional_format);
     return workbook_close(workbook);
 }

@@ -25,17 +25,14 @@ int main() {
     worksheet_write_number(worksheet, CELL("A3"), 30 , NULL);
     worksheet_write_number(worksheet, CELL("A4"), 40 , NULL);
 
-    worksheet_conditional_tmp(worksheet, CELL("A1"), format);
+    lxw_conditional_format *conditional_format = calloc(1, sizeof(lxw_conditional_format));
 
-/*
-    worksheet_conditional_formatting(worksheet, "A1",
-      :
-            'type': "cell",
-            'format': format,
-            'criteria': "greater than",
-            'value': 5
-    );
-*/
+    conditional_format->type     = LXW_CONDITIONAL_TYPE_CELL;
+    conditional_format->criteria = LXW_CONDITIONAL_CRITERIA_GREATER_THAN;
+    conditional_format->value    = 5;
+    conditional_format->format   = format;
+    worksheet_conditional_format_cell(worksheet, CELL("A1"), conditional_format);
 
+    free(conditional_format);
     return workbook_close(workbook);
 }

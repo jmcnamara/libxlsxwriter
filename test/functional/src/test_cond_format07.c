@@ -42,27 +42,20 @@ int main() {
     lxw_format_get_dxf_index(format2);
     lxw_format_get_dxf_index(format1);
 
+    lxw_conditional_format *conditional_format = calloc(1, sizeof(lxw_conditional_format));
 
-    worksheet_conditional_tmp(worksheet, CELL("A1"), format1);
-    worksheet_conditional_tmp(worksheet, CELL("A1"), format2);
+    conditional_format->type     = LXW_CONDITIONAL_TYPE_CELL;
+    conditional_format->criteria = LXW_CONDITIONAL_CRITERIA_GREATER_THAN_OR_EQUAL_TO;
+    conditional_format->value    = 50;
+    conditional_format->format   = format1;
+    worksheet_conditional_format_range(worksheet, RANGE("A1:J10"), conditional_format);
 
-/*
-    worksheet_conditional_formatting(worksheet, "A1:J10",
-      :
-            'type': "cell",
-            'format': format1,
-            'criteria': ">=",
-            'value': 50,
-    );
+    conditional_format->type     = LXW_CONDITIONAL_TYPE_CELL;
+    conditional_format->criteria = LXW_CONDITIONAL_CRITERIA_LESS_THAN;
+    conditional_format->value    = 50;
+    conditional_format->format   = format2;
+    worksheet_conditional_format_range(worksheet, RANGE("A1:J10"), conditional_format);
 
-    worksheet_conditional_formatting(worksheet, "A1:J10",
-      :
-            'type': "cell",
-            'format': format2,
-            'criteria': "<",
-            'value': 50,
-    );
-*/
-
+    free(conditional_format);
     return workbook_close(workbook);
 }

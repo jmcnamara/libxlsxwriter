@@ -219,6 +219,208 @@ enum lxw_comment_display_types {
     LXW_COMMENT_DISPLAY_VISIBLE
 };
 
+enum lxw_conditional_format_types {
+    LXW_CONDITIONAL_TYPE_NONE,
+
+    LXW_CONDITIONAL_TYPE_CELL,
+
+    LXW_CONDITIONAL_TYPE_TEXT,
+
+    LXW_CONDITIONAL_TYPE_TIME_PERIOD,
+
+    LXW_CONDITIONAL_TYPE_AVERAGE,
+
+    LXW_CONDITIONAL_TYPE_DUPLICATE,
+
+    LXW_CONDITIONAL_TYPE_UNIQUE,
+
+    LXW_CONDITIONAL_TYPE_TOP,
+
+    LXW_CONDITIONAL_TYPE_BOTTOM,
+
+    LXW_CONDITIONAL_TYPE_BLANKS,
+
+    LXW_CONDITIONAL_TYPE_NO_BLANKS,
+
+    LXW_CONDITIONAL_TYPE_ERRORS,
+
+    LXW_CONDITIONAL_TYPE_NO_ERRORS,
+
+    LXW_CONDITIONAL_TYPE_FORMULA,
+
+    LXW_CONDITIONAL_2_COLOR_SCALE,
+
+    LXW_CONDITIONAL_3_COLOR_SCALE,
+
+    LXW_CONDITIONAL_DATA_BAR,
+
+    LXW_CONDITIONAL_TYPE_ICON_SETS,
+
+    LXW_CONDITIONAL_TYPE_LAST
+};
+
+enum lxw_conditional_format_value_types {
+    LXW_CONDITIONAL_VALUE_TYPE_NUMBER,
+
+    LXW_CONDITIONAL_VALUE_TYPE_STRING,
+
+    LXW_CONDITIONAL_VALUE_TYPE_RANGE,
+
+    LXW_CONDITIONAL_VALUE_TYPE_LAST
+};
+
+enum lxw_conditional_format_bar_direction {
+    LXW_CONDITIONAL_BAR_DIRECTION_CONTEXT,
+
+    LXW_CONDITIONAL_BAR_DIRECTION_RIGHT_TO_LEFT,
+
+    LXW_CONDITIONAL_BAR_DIRECTION_LEFT_TO_RIGHT
+};
+
+enum lxw_conditional_bar_axis_position {
+    LXW_CONDITIONAL_BAR_AXIS_AUTOMATIC,
+
+    LXW_CONDITIONAL_BAR_AXIS_MIDPOINT,
+
+    LXW_CONDITIONAL_BAR_AXIS_NONE
+};
+
+/** The criteria used in a conditional format. */
+enum lxw_conditional_criteria {
+    LXW_CONDITIONAL_CRITERIA_NONE,
+
+    /** Select data between two values. */
+    LXW_CONDITIONAL_CRITERIA_BETWEEN,
+
+    /** Select data that is not between two values. */
+    LXW_CONDITIONAL_CRITERIA_NOT_BETWEEN,
+
+    /** Select data equal to a value. */
+    LXW_CONDITIONAL_CRITERIA_EQUAL_TO,
+
+    /** Select data not equal to a value. */
+    LXW_CONDITIONAL_CRITERIA_NOT_EQUAL_TO,
+
+    /** Select data greater than a value. */
+    LXW_CONDITIONAL_CRITERIA_GREATER_THAN,
+
+    /** Select data less than a value. */
+    LXW_CONDITIONAL_CRITERIA_LESS_THAN,
+
+    /** Select data greater than or equal to a value. */
+    LXW_CONDITIONAL_CRITERIA_GREATER_THAN_OR_EQUAL_TO,
+
+    /** Select data less than or equal to a value. */
+    LXW_CONDITIONAL_CRITERIA_LESS_THAN_OR_EQUAL_TO,
+
+    LXW_CONDITIONAL_CRITERIA_TEXT_CONTAINING,
+
+    LXW_CONDITIONAL_CRITERIA_TEXT_NOT_CONTAINING,
+
+    LXW_CONDITIONAL_CRITERIA_TEXT_BEGINS_WITH,
+
+    LXW_CONDITIONAL_CRITERIA_TEXT_ENDS_WITH,
+
+    LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_YESTERDAY,
+
+    LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_TODAY,
+
+    LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_TOMORROW,
+
+    LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_LAST_7_DAYS,
+
+    LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_LAST_WEEK,
+
+    LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_THIS_WEEK,
+
+    LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_NEXT_WEEK,
+
+    LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_LAST_MONTH,
+
+    LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_THIS_MONTH,
+
+    LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_NEXT_MONTH,
+
+    LXW_CONDITIONAL_CRITERIA_AVERAGE_ABOVE,
+
+    LXW_CONDITIONAL_CRITERIA_AVERAGE_BELOW,
+
+    LXW_CONDITIONAL_CRITERIA_AVERAGE_ABOVE_OR_EQUAL,
+
+    LXW_CONDITIONAL_CRITERIA_AVERAGE_BELOW_OR_EQUAL,
+
+    LXW_CONDITIONAL_CRITERIA_AVERAGE_1_STD_DEV_ABOVE,
+
+    LXW_CONDITIONAL_CRITERIA_AVERAGE_1_STD_DEV_BELOW,
+
+    LXW_CONDITIONAL_CRITERIA_AVERAGE_2_STD_DEV_ABOVE,
+
+    LXW_CONDITIONAL_CRITERIA_AVERAGE_2_STD_DEV_BELOW,
+
+    LXW_CONDITIONAL_CRITERIA_AVERAGE_3_STD_DEV_ABOVE,
+
+    LXW_CONDITIONAL_CRITERIA_AVERAGE_3_STD_DEV_BELOW,
+
+    LXW_CONDITIONAL_CRITERIA_TOP_OR_BOTTOM_PERCENT
+};
+
+enum lxw_conditional_format_rule_types {
+    LXW_CONDITIONAL_RULE_TYPE_NONE,
+
+    LXW_CONDITIONAL_RULE_TYPE_MINIMUM,
+
+    LXW_CONDITIONAL_RULE_TYPE_NUMBER,
+
+    LXW_CONDITIONAL_RULE_TYPE_PERCENT,
+
+    LXW_CONDITIONAL_RULE_TYPE_PERCENTILE,
+
+    LXW_CONDITIONAL_RULE_TYPE_FORMULA,
+
+    LXW_CONDITIONAL_RULE_TYPE_MAXIMUM,
+
+    LXW_CONDITIONAL_RULE_TYPE_AUTO_MIN,
+
+    LXW_CONDITIONAL_RULE_TYPE_AUTO_MAX
+};
+
+enum lxw_conditional_icon_types {
+
+    LXW_CONDITIONAL_ICONS_3_ARROWS,
+
+    LXW_CONDITIONAL_ICONS_3_FLAGS,
+
+    LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS_RIMMED,
+
+    LXW_CONDITIONAL_ICONS_3_SYMBOLS_CIRCLED,
+
+    LXW_CONDITIONAL_ICONS_3_ARROWS_GRAY,
+
+    LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS,
+
+    LXW_CONDITIONAL_ICONS_3_SIGNS,
+
+    LXW_CONDITIONAL_ICONS_3_SYMBOLS,
+
+    LXW_CONDITIONAL_ICONS_4_ARROWS,
+
+    LXW_CONDITIONAL_ICONS_4_RED_TO_BLACK,
+
+    LXW_CONDITIONAL_ICONS_4_TRAFFIC_LIGHTS,
+
+    LXW_CONDITIONAL_ICONS_4_ARROWS_GRAY,
+
+    LXW_CONDITIONAL_ICONS_4_RATINGS,
+
+    LXW_CONDITIONAL_ICONS_5_ARROWS,
+
+    LXW_CONDITIONAL_ICONS_5_ARROWS_GRAY,
+
+    LXW_CONDITIONAL_ICONS_5_QUARTERS,
+
+    LXW_CONDITIONAL_ICONS_5_RATINGS
+};
+
 /** Options to control the positioning of worksheet objects such as images
  *  or charts. See @ref working_with_object_positioning. */
 enum lxw_object_position {
@@ -313,6 +515,7 @@ enum lxw_image_position {
 RB_HEAD(lxw_table_cells, lxw_cell);
 RB_HEAD(lxw_drawing_rel_ids, lxw_drawing_rel_id);
 RB_HEAD(lxw_vml_drawing_rel_ids, lxw_drawing_rel_id);
+RB_HEAD(lxw_cond_format_hash, lxw_cond_format_hash_element);
 
 /* Define a RB_TREE struct manually to add extra members. */
 struct lxw_table_rows {
@@ -367,9 +570,21 @@ struct lxw_table_rows {
     /* Add unused struct to allow adding a semicolon */         \
     struct lxw_rb_generate_vml_drawing_rel_ids{int unused;}
 
+#define LXW_RB_GENERATE_COND_FORMAT_HASH(name, type, field, cmp) \
+    RB_GENERATE_INSERT_COLOR(name, type, field, static)         \
+    RB_GENERATE_REMOVE_COLOR(name, type, field, static)         \
+    RB_GENERATE_INSERT(name, type, field, cmp, static)          \
+    RB_GENERATE_REMOVE(name, type, field, static)               \
+    RB_GENERATE_FIND(name, type, field, cmp, static)            \
+    RB_GENERATE_NEXT(name, type, field, static)                 \
+    RB_GENERATE_MINMAX(name, type, field, static)               \
+    /* Add unused struct to allow adding a semicolon */         \
+    struct lxw_rb_generate_cond_format_hash{int unused;}
+
 STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
 STAILQ_HEAD(lxw_selections, lxw_selection);
 STAILQ_HEAD(lxw_data_validations, lxw_data_val_obj);
+STAILQ_HEAD(lxw_cond_format_list, lxw_cond_format_obj);
 STAILQ_HEAD(lxw_image_props, lxw_object_properties);
 STAILQ_HEAD(lxw_chart_props, lxw_object_properties);
 STAILQ_HEAD(lxw_comment_objs, lxw_vml_obj);
@@ -662,6 +877,120 @@ typedef struct lxw_data_val_obj {
 
     STAILQ_ENTRY (lxw_data_val_obj) list_pointers;
 } lxw_data_val_obj;
+
+/* Public */
+typedef struct lxw_conditional_format {
+    uint8_t type;
+    uint8_t criteria;
+
+    double value;
+    char *value_string;
+
+    double min_value;
+    char *min_value_string;
+    uint8_t min_value_type;
+    uint8_t min_rule_type;
+    lxw_color_t min_color;
+
+    double mid_value;
+    char *mid_value_string;
+    uint8_t mid_value_type;
+    uint8_t mid_rule_type;
+    lxw_color_t mid_color;
+
+    double max_value;
+    char *max_value_string;
+    uint8_t max_value_type;
+    uint8_t max_rule_type;
+    lxw_color_t max_color;
+
+    uint8_t data_bar_2010;
+    uint8_t bar_only;
+    uint8_t bar_solid;
+    uint8_t bar_negative_color_same;
+    uint8_t bar_negative_border_color_same;
+    uint8_t bar_no_border;
+    uint8_t bar_direction;
+    uint8_t bar_axis_position;
+    lxw_color_t bar_color;
+    lxw_color_t bar_negative_color;
+    lxw_color_t bar_border_color;
+    lxw_color_t bar_negative_border_color;
+    lxw_color_t bar_axis_color;
+
+    uint8_t icon_style;
+    uint8_t reverse_icons;
+    uint8_t icons_only;
+
+    uint8_t stop_if_true;
+    lxw_format *format;
+    char *multi_range;
+
+} lxw_conditional_format;
+
+/* Internal */
+typedef struct lxw_cond_format_obj {
+    uint8_t type;
+    uint8_t criteria;
+
+    double min_value;
+    char *min_value_string;
+    uint8_t min_rule_type;
+    lxw_color_t min_color;
+
+    double mid_value;
+    char *mid_value_string;
+    uint8_t mid_value_type;
+    uint8_t mid_rule_type;
+    lxw_color_t mid_color;
+
+    double max_value;
+    char *max_value_string;
+    uint8_t max_value_type;
+    uint8_t max_rule_type;
+    lxw_color_t max_color;
+
+    uint8_t data_bar_2010;
+    uint8_t auto_min;
+    uint8_t auto_max;
+    uint8_t bar_only;
+    uint8_t bar_solid;
+    uint8_t bar_negative_color_same;
+    uint8_t bar_negative_border_color_same;
+    uint8_t bar_no_border;
+    uint8_t bar_direction;
+    uint8_t bar_axis_position;
+    lxw_color_t bar_color;
+    lxw_color_t bar_negative_color;
+    lxw_color_t bar_border_color;
+    lxw_color_t bar_negative_border_color;
+    lxw_color_t bar_axis_color;
+
+    uint8_t icon_style;
+    uint8_t reverse_icons;
+    uint8_t icons_only;
+
+    uint8_t stop_if_true;
+    uint8_t has_max;
+    char *type_string;
+    char *guid;
+
+    int32_t dxf_index;
+    uint32_t dxf_priority;
+
+    char first_cell[LXW_MAX_CELL_NAME_LENGTH];
+    char sqref[LXW_MAX_ATTRIBUTE_LENGTH];
+
+    STAILQ_ENTRY (lxw_cond_format_obj) list_pointers;
+} lxw_cond_format_obj;
+
+typedef struct lxw_cond_format_hash_element {
+    char sqref[LXW_MAX_ATTRIBUTE_LENGTH];
+
+    struct lxw_cond_format_list *cond_formats;
+
+    RB_ENTRY (lxw_cond_format_hash_element) tree_pointers;
+} lxw_cond_format_hash_element;
 
 /**
  * @brief Options for inserted images.
@@ -1019,6 +1348,7 @@ typedef struct lxw_worksheet {
     struct lxw_merged_ranges *merged_ranges;
     struct lxw_selections *selections;
     struct lxw_data_validations *data_validations;
+    struct lxw_cond_format_hash *conditional_formats;
     struct lxw_image_props *image_props;
     struct lxw_chart_props *chart_data;
     struct lxw_drawing_rel_ids *drawing_rel_ids;
@@ -1150,7 +1480,9 @@ typedef struct lxw_worksheet {
     char *vml_header_id_str;
     uint32_t vml_shape_id;
     uint32_t vml_header_id;
+    uint32_t dxf_priority;
     uint8_t comment_display_default;
+    uint32_t data_bar_2010_index;
 
     uint8_t has_ignore_errors;
     char *ignore_number_stored_as_text;
@@ -1162,6 +1494,8 @@ typedef struct lxw_worksheet {
     char *ignore_list_data_validation;
     char *ignore_calculated_column;
     char *ignore_two_digit_text_year;
+
+    uint16_t excel_version;
 
     lxw_object_properties **header_footer_objs[LXW_HEADER_FOOTER_OBJS_MAX];
     lxw_object_properties *header_left_object_props;
@@ -1241,6 +1575,8 @@ typedef struct lxw_drawing_rel_id {
 
     RB_ENTRY (lxw_drawing_rel_id) tree_pointers;
 } lxw_drawing_rel_id;
+
+
 
 /* *INDENT-OFF* */
 #ifdef __cplusplus
@@ -2512,9 +2848,6 @@ lxw_error worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
                                 lxw_col_t last_col, const char *string,
                                 lxw_format *format);
 
-lxw_error worksheet_conditional_tmp(lxw_worksheet *self, lxw_row_t row,
-                                    lxw_col_t col, lxw_format *format);
-
 /**
  * @brief Set the autofilter area in the worksheet.
  *
@@ -2631,6 +2964,20 @@ lxw_error worksheet_data_validation_range(lxw_worksheet *worksheet,
                                           lxw_row_t last_row,
                                           lxw_col_t last_col,
                                           lxw_data_validation *validation);
+
+lxw_error worksheet_conditional_format_cell(lxw_worksheet *worksheet,
+                                            lxw_row_t row,
+                                            lxw_col_t col,
+                                            lxw_conditional_format
+                                            *conditional_format);
+
+lxw_error worksheet_conditional_format_range(lxw_worksheet *worksheet,
+                                             lxw_row_t first_row,
+                                             lxw_col_t first_col,
+                                             lxw_row_t last_row,
+                                             lxw_col_t last_col,
+                                             lxw_conditional_format
+                                             *conditional_format);
 
  /**
   * @brief Make a worksheet the active, i.e., visible worksheet.
