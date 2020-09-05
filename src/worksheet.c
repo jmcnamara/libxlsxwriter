@@ -5014,30 +5014,31 @@ _worksheet_write_icon_set(lxw_worksheet *self,
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char *icon_set[] = { "3Arrows",
-        "3Flags",
-        "3TrafficLights2",
-        "3Symbols",
+    char *icon_set[] = {
+        "3Arrows",
         "3ArrowsGray",
+        "3Flags",
         "3TrafficLights",
+        "3TrafficLights2",
         "3Signs",
+        "3Symbols",
         "3Symbols2",
         "4Arrows",
-        "4RedToBlack",
-        "4TrafficLights",
         "4ArrowsGray",
+        "4RedToBlack",
         "4Rating",
+        "4TrafficLights",
         "5Arrows",
         "5ArrowsGray",
-        "5Quarters",
         "5Rating",
+        "5Quarters",
     };
     uint8_t percent = LXW_CONDITIONAL_RULE_TYPE_PERCENT;
     uint8_t style = cond_format->icon_style;
 
     LXW_INIT_ATTRIBUTES();
 
-    if (style != LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS)
+    if (style != LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS_UNRIMMED)
         LXW_PUSH_ATTRIBUTES_STR("iconSet", icon_set[style]);
 
     if (cond_format->reverse_icons == LXW_TRUE)
@@ -5048,22 +5049,22 @@ _worksheet_write_icon_set(lxw_worksheet *self,
 
     lxw_xml_start_tag(self->file, "iconSet", &attributes);
 
-    if (style < LXW_CONDITIONAL_ICONS_4_ARROWS) {
+    if (style < LXW_CONDITIONAL_ICONS_4_ARROWS_COLORED) {
         _worksheet_write_cfvo_num(self, percent, 0, LXW_FALSE);
         _worksheet_write_cfvo_num(self, percent, 33, LXW_FALSE);
         _worksheet_write_cfvo_num(self, percent, 67, LXW_FALSE);
     }
 
-    if (style >= LXW_CONDITIONAL_ICONS_4_ARROWS
-        && style < LXW_CONDITIONAL_ICONS_5_ARROWS) {
+    if (style >= LXW_CONDITIONAL_ICONS_4_ARROWS_COLORED
+        && style < LXW_CONDITIONAL_ICONS_5_ARROWS_COLORED) {
         _worksheet_write_cfvo_num(self, percent, 0, LXW_FALSE);
         _worksheet_write_cfvo_num(self, percent, 25, LXW_FALSE);
         _worksheet_write_cfvo_num(self, percent, 50, LXW_FALSE);
         _worksheet_write_cfvo_num(self, percent, 75, LXW_FALSE);
     }
 
-    if (style >= LXW_CONDITIONAL_ICONS_5_ARROWS
-        && style <= LXW_CONDITIONAL_ICONS_5_RATINGS) {
+    if (style >= LXW_CONDITIONAL_ICONS_5_ARROWS_COLORED
+        && style <= LXW_CONDITIONAL_ICONS_5_QUARTERS) {
         _worksheet_write_cfvo_num(self, percent, 0, LXW_FALSE);
         _worksheet_write_cfvo_num(self, percent, 20, LXW_FALSE);
         _worksheet_write_cfvo_num(self, percent, 40, LXW_FALSE);
@@ -5631,14 +5632,14 @@ _worksheet_write_cf_rule_cell(lxw_worksheet *self,
     struct xml_attribute *attribute;
     char *operators[] = {
         "none",
-        "between",
-        "notBetween",
         "equal",
         "notEqual",
         "greaterThan",
         "lessThan",
         "greaterThanOrEqual",
         "lessThanOrEqual",
+        "between",
+        "notBetween",
     };
 
     LXW_INIT_ATTRIBUTES();
@@ -6072,7 +6073,7 @@ _worksheet_write_ignored_error(lxw_worksheet *self, char *ignore_error,
 lxw_error
 _validate_conditional_icons(lxw_conditional_format *user)
 {
-    if (user->icon_style > LXW_CONDITIONAL_ICONS_5_RATINGS) {
+    if (user->icon_style > LXW_CONDITIONAL_ICONS_5_QUARTERS) {
 
         LXW_WARN_FORMAT1("worksheet_conditional_format_cell()/_range(): "
                          "For type = LXW_CONDITIONAL_TYPE_ICON_SETS, "

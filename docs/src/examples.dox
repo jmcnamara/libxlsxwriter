@@ -319,7 +319,7 @@ Example of adding an autofilter to a worksheet.
 <table  width="600">
 <tr>
   <td>@ref autofilter.c "&lt;&lt; autofilter.c"</td>
-  <td align="right">@ref images.c "images.c &gt;&gt;"</td>
+  <td align="right">@ref conditional_format1.c "conditional_format1.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -330,11 +330,49 @@ Example of adding data validations to a worksheet.
 
 
 
-@example images.c
+@example conditional_format1.c
 
 <table  width="600">
 <tr>
   <td>@ref data_validate.c "&lt;&lt; data_validate.c"</td>
+  <td align="right">@ref conditional_format2.c "conditional_format2.c &gt;&gt;"</td>
+</tr>
+</table>
+
+A simple example of how to add a conditional format a 
+libxlsxwriter file. Conditional formatting allows you to apply
+a format to a cell or a range of cells based on certain criteria.
+
+@image html conditional_format12.png
+
+
+
+
+
+@example conditional_format2.c
+
+<table  width="600">
+<tr>
+  <td>@ref conditional_format1.c "&lt;&lt; conditional_format1.c"</td>
+  <td align="right">@ref images.c "images.c &gt;&gt;"</td>
+</tr>
+</table>
+
+A more comprehensive example of how to add conditional formatting
+to an libxlsxwriter file. Conditional formatting allows you to
+apply a format to a cell or a range of cells based on certain
+criteria.
+
+@image html conditional_format1.png
+
+
+
+
+@example images.c
+
+<table  width="600">
+<tr>
+  <td>@ref conditional_format2.c "&lt;&lt; conditional_format2.c"</td>
   <td align="right">@ref image_buffer.c "image_buffer.c &gt;&gt;"</td>
 </tr>
 </table>

@@ -24,3 +24,5 @@ docs:
 	$(Q)doxygen
 	$(Q)../dev/release/fix_dox.sh
 
+docs_doxygen_only:
+	$(Q)doxygen

@@ -31,6 +31,8 @@ my @examples = (
     [ 'merge_rich_string.c',    'Create a merged range with a rich string' ],
     [ 'autofilter.c',           'An example of a worksheet autofilter' ],
     [ 'data_validate.c',        'Examples of worksheet data validation and drop down lists' ],
+    [ 'conditional_format1.c',  'A simple conditional formatting example' ],
+    [ 'conditional_format2.c',  'An advanced conditional formatting example' ],
     [ 'images.c',               'Example of adding images to a worksheet.' ],
     [ 'image_buffer.c',         'Example of adding an image from a memory buffer.' ],
     [ 'headers_footers.c',      'Example of adding worksheet headers/footers' ],

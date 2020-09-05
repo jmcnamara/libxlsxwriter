@@ -122,6 +122,9 @@ doc: docs
 docs:
 	$(Q)$(MAKE) -C docs
 
+docs_doxygen_only:
+	$(Q)$(MAKE) -C docs docs_doxygen_only
+
 # Simple minded install.
 install: all
 	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/include

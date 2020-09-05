@@ -219,206 +219,316 @@ enum lxw_comment_display_types {
     LXW_COMMENT_DISPLAY_VISIBLE
 };
 
+/** @brief Type definitions for conditional formats.
+ *
+ * Values used to set the "type" field of conditional format.
+ */
 enum lxw_conditional_format_types {
     LXW_CONDITIONAL_TYPE_NONE,
 
+    /** The Cell type is the most common conditional formatting type. It is
+     *  used when a format is applied to a cell based on a simple
+     *  criterion.  */
     LXW_CONDITIONAL_TYPE_CELL,
 
+    /** The Text type is used to specify Excel's "Specific Text" style
+     *  conditional format. */
     LXW_CONDITIONAL_TYPE_TEXT,
 
+    /** The Time Period type is used to specify Excel's "Dates Occurring"
+     *  style conditional format. */
     LXW_CONDITIONAL_TYPE_TIME_PERIOD,
 
+    /** The Average type is used to specify Excel's "Average" style
+     *  conditional format. */
     LXW_CONDITIONAL_TYPE_AVERAGE,
 
+    /** The Duplicate type is used to highlight duplicate cells in a range. */
     LXW_CONDITIONAL_TYPE_DUPLICATE,
 
+    /** The Unique type is used to highlight unique cells in a range. */
     LXW_CONDITIONAL_TYPE_UNIQUE,
 
+    /** The Top type is used to specify the top n values by number or
+     *  percentage in a range. */
     LXW_CONDITIONAL_TYPE_TOP,
 
+    /** The Bottom type is used to specify the bottom n values by number or
+     *  percentage in a range. */
     LXW_CONDITIONAL_TYPE_BOTTOM,
 
+    /** The Blanks type is used to highlight blank cells in a range. */
     LXW_CONDITIONAL_TYPE_BLANKS,
 
+    /** The No Blanks type is used to highlight non blank cells in a range. */
     LXW_CONDITIONAL_TYPE_NO_BLANKS,
 
+    /** The Errors type is used to highlight error cells in a range. */
     LXW_CONDITIONAL_TYPE_ERRORS,
 
+    /** The No Errors type is used to highlight non error cells in a range. */
     LXW_CONDITIONAL_TYPE_NO_ERRORS,
 
+    /** The Formula type is used to specify a conditional format based on a
+     *  user defined formula. */
     LXW_CONDITIONAL_TYPE_FORMULA,
 
+    /** The 2 Color Scale type is used to specify Excel's "2 Color Scale"
+     *  style conditional format. */
     LXW_CONDITIONAL_2_COLOR_SCALE,
 
+    /** The 3 Color Scale type is used to specify Excel's "3 Color Scale"
+     *  style conditional format. */
     LXW_CONDITIONAL_3_COLOR_SCALE,
 
+    /** The Data Bar type is used to specify Excel's "Data Bar" style
+     *  conditional format. */
     LXW_CONDITIONAL_DATA_BAR,
 
+    /** The Icon Set type is used to specify a conditional format with a set
+     *  of icons such as traffic lights or arrows. */
     LXW_CONDITIONAL_TYPE_ICON_SETS,
 
     LXW_CONDITIONAL_TYPE_LAST
 };
 
-enum lxw_conditional_format_value_types {
-    LXW_CONDITIONAL_VALUE_TYPE_NUMBER,
-
-    LXW_CONDITIONAL_VALUE_TYPE_STRING,
-
-    LXW_CONDITIONAL_VALUE_TYPE_RANGE,
-
-    LXW_CONDITIONAL_VALUE_TYPE_LAST
-};
-
-enum lxw_conditional_format_bar_direction {
-    LXW_CONDITIONAL_BAR_DIRECTION_CONTEXT,
-
-    LXW_CONDITIONAL_BAR_DIRECTION_RIGHT_TO_LEFT,
-
-    LXW_CONDITIONAL_BAR_DIRECTION_LEFT_TO_RIGHT
-};
-
-enum lxw_conditional_bar_axis_position {
-    LXW_CONDITIONAL_BAR_AXIS_AUTOMATIC,
-
-    LXW_CONDITIONAL_BAR_AXIS_MIDPOINT,
-
-    LXW_CONDITIONAL_BAR_AXIS_NONE
-};
-
-/** The criteria used in a conditional format. */
+/** @brief The criteria used in a conditional format.
+ *
+ * Criteria used to define how a conditional format works.
+ */
 enum lxw_conditional_criteria {
     LXW_CONDITIONAL_CRITERIA_NONE,
 
-    /** Select data between two values. */
-    LXW_CONDITIONAL_CRITERIA_BETWEEN,
-
-    /** Select data that is not between two values. */
-    LXW_CONDITIONAL_CRITERIA_NOT_BETWEEN,
-
-    /** Select data equal to a value. */
+    /** Format cells equal to a value. */
     LXW_CONDITIONAL_CRITERIA_EQUAL_TO,
 
-    /** Select data not equal to a value. */
+    /** Format cells not equal to a value. */
     LXW_CONDITIONAL_CRITERIA_NOT_EQUAL_TO,
 
-    /** Select data greater than a value. */
+    /** Format cells greater than a value. */
     LXW_CONDITIONAL_CRITERIA_GREATER_THAN,
 
-    /** Select data less than a value. */
+    /** Format cells less than a value. */
     LXW_CONDITIONAL_CRITERIA_LESS_THAN,
 
-    /** Select data greater than or equal to a value. */
+    /** Format cells greater than or equal to a value. */
     LXW_CONDITIONAL_CRITERIA_GREATER_THAN_OR_EQUAL_TO,
 
-    /** Select data less than or equal to a value. */
+    /** Format cells less than or equal to a value. */
     LXW_CONDITIONAL_CRITERIA_LESS_THAN_OR_EQUAL_TO,
 
+    /** Format cells between two values. */
+    LXW_CONDITIONAL_CRITERIA_BETWEEN,
+
+    /** Format cells that is not between two values. */
+    LXW_CONDITIONAL_CRITERIA_NOT_BETWEEN,
+
+    /** Format cells that contain the specified text. */
     LXW_CONDITIONAL_CRITERIA_TEXT_CONTAINING,
 
+    /** Format cells that don't contain the specified text. */
     LXW_CONDITIONAL_CRITERIA_TEXT_NOT_CONTAINING,
 
+    /** Format cells that begin with the specified text. */
     LXW_CONDITIONAL_CRITERIA_TEXT_BEGINS_WITH,
 
+    /** Format cells that end with the specified text. */
     LXW_CONDITIONAL_CRITERIA_TEXT_ENDS_WITH,
 
+    /** Format cells with a date of yesterday. */
     LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_YESTERDAY,
 
+    /** Format cells with a date of today. */
     LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_TODAY,
 
+    /** Format cells with a date of tomorrow. */
     LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_TOMORROW,
 
+    /** Format cells with a date in the last 7 days. */
     LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_LAST_7_DAYS,
 
+    /** Format cells with a date in the last week. */
     LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_LAST_WEEK,
 
+    /** Format cells with a date in the current week. */
     LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_THIS_WEEK,
 
+    /** Format cells with a date in the next week. */
     LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_NEXT_WEEK,
 
+    /** Format cells with a date in the last month. */
     LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_LAST_MONTH,
 
+    /** Format cells with a date in the current month. */
     LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_THIS_MONTH,
 
+    /** Format cells with a date in the next month. */
     LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_NEXT_MONTH,
 
+    /** Format cells above the average for the range. */
     LXW_CONDITIONAL_CRITERIA_AVERAGE_ABOVE,
 
+    /** Format cells below the average for the range. */
     LXW_CONDITIONAL_CRITERIA_AVERAGE_BELOW,
 
+    /** Format cells above or equal to the average for the range. */
     LXW_CONDITIONAL_CRITERIA_AVERAGE_ABOVE_OR_EQUAL,
 
+    /** Format cells below or equal to the average for the range. */
     LXW_CONDITIONAL_CRITERIA_AVERAGE_BELOW_OR_EQUAL,
 
+    /** Format cells 1 standard deviation above the average for the range. */
     LXW_CONDITIONAL_CRITERIA_AVERAGE_1_STD_DEV_ABOVE,
 
+    /** Format cells 1 standard deviation below the average for the range. */
     LXW_CONDITIONAL_CRITERIA_AVERAGE_1_STD_DEV_BELOW,
 
+    /** Format cells 2 standard deviation above the average for the range. */
     LXW_CONDITIONAL_CRITERIA_AVERAGE_2_STD_DEV_ABOVE,
 
+    /** Format cells 2 standard deviation below the average for the range. */
     LXW_CONDITIONAL_CRITERIA_AVERAGE_2_STD_DEV_BELOW,
 
+    /** Format cells 3 standard deviation above the average for the range. */
     LXW_CONDITIONAL_CRITERIA_AVERAGE_3_STD_DEV_ABOVE,
 
+    /** Format cells 3 standard deviation below the average for the range. */
     LXW_CONDITIONAL_CRITERIA_AVERAGE_3_STD_DEV_BELOW,
 
+    /** Format cells in the top of bottom percentage. */
     LXW_CONDITIONAL_CRITERIA_TOP_OR_BOTTOM_PERCENT
 };
 
+/** @brief Conditional format rule types.
+ *
+ * Conditional format rule types that apply to Color Scale and Data Bars.
+ */
 enum lxw_conditional_format_rule_types {
     LXW_CONDITIONAL_RULE_TYPE_NONE,
 
+    /** Conditional format rule type: matches the minimum values in the
+     *  range. Can only be applied to min_rule_type.*/
     LXW_CONDITIONAL_RULE_TYPE_MINIMUM,
 
+    /** Conditional format rule type: use a number to set the bound.*/
     LXW_CONDITIONAL_RULE_TYPE_NUMBER,
 
+    /** Conditional format rule type: use a percentage to set the bound.*/
     LXW_CONDITIONAL_RULE_TYPE_PERCENT,
 
+    /** Conditional format rule type: use a percentile to set the bound.*/
     LXW_CONDITIONAL_RULE_TYPE_PERCENTILE,
 
+    /** Conditional format rule type: use a formula to set the bound.*/
     LXW_CONDITIONAL_RULE_TYPE_FORMULA,
 
+    /** Conditional format rule type: matches the maximum values in the
+     *  range. Can only be applied to max_rule_type.*/
     LXW_CONDITIONAL_RULE_TYPE_MAXIMUM,
 
+    /* Used internally for Excel2010 bars. Not documented. */
     LXW_CONDITIONAL_RULE_TYPE_AUTO_MIN,
 
+    /* Used internally for Excel2010 bars. Not documented. */
     LXW_CONDITIONAL_RULE_TYPE_AUTO_MAX
 };
 
+/** @brief Conditional format data bar directions.
+ *
+ * Values used to set the bar direction of a conditional format data bar.
+ */
+enum lxw_conditional_format_bar_direction {
+
+    /** Data bar direction is set by Excel based on the context of the data
+     *  displayed. */
+    LXW_CONDITIONAL_BAR_DIRECTION_CONTEXT,
+
+    /** Data bar direction is from right to left. */
+    LXW_CONDITIONAL_BAR_DIRECTION_RIGHT_TO_LEFT,
+
+    /** Data bar direction is from left to right. */
+    LXW_CONDITIONAL_BAR_DIRECTION_LEFT_TO_RIGHT
+};
+
+/** @brief Conditional format data bar axis options.
+ *
+ * Values used to set the position of the axis in a conditional format data
+ * bar.
+ */
+enum lxw_conditional_bar_axis_position {
+
+    /** Data bar axis position is set by Excel based on the context of the
+     *  data displayed. */
+    LXW_CONDITIONAL_BAR_AXIS_AUTOMATIC,
+
+    /** Data bar axis position is set at the midpoint. */
+    LXW_CONDITIONAL_BAR_AXIS_MIDPOINT,
+
+    /** Data bar axis is turned off. */
+    LXW_CONDITIONAL_BAR_AXIS_NONE
+};
+
+/** @brief Icon types used in the #lxw_conditional_format icon_style field.
+ *
+ * Definitions of icon styles used with Icon Set conditional formats.
+ */
 enum lxw_conditional_icon_types {
 
-    LXW_CONDITIONAL_ICONS_3_ARROWS,
+    /** Icon style: 3 colored arrows showing up, sideways and down. */
+    LXW_CONDITIONAL_ICONS_3_ARROWS_COLORED,
 
-    LXW_CONDITIONAL_ICONS_3_FLAGS,
-
-    LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS_RIMMED,
-
-    LXW_CONDITIONAL_ICONS_3_SYMBOLS_CIRCLED,
-
+    /** Icon style: 3 gray arrows showing up, sideways and down. */
     LXW_CONDITIONAL_ICONS_3_ARROWS_GRAY,
 
-    LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS,
+    /** Icon style: 3 colored flags in red, yellow and green. */
+    LXW_CONDITIONAL_ICONS_3_FLAGS,
 
+    /** Icon style: 3 traffic lights - rounded. */
+    LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS_UNRIMMED,
+
+    /** Icon style: 3 traffic lights with a rim - squarish. */
+    LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS_RIMMED,
+
+    /** Icon style: 3 colored shapes - a circle, triangle and diamond. */
     LXW_CONDITIONAL_ICONS_3_SIGNS,
 
-    LXW_CONDITIONAL_ICONS_3_SYMBOLS,
+    /** Icon style: 3 circled symbols with tick mark, exclamation and
+     *  cross. */
+    LXW_CONDITIONAL_ICONS_3_SYMBOLS_CIRCLED,
 
-    LXW_CONDITIONAL_ICONS_4_ARROWS,
+    /** Icon style: 3 symbols with tick mark, exclamation and cross. */
+    LXW_CONDITIONAL_ICONS_3_SYMBOLS_UNCIRCLED,
 
-    LXW_CONDITIONAL_ICONS_4_RED_TO_BLACK,
+    /** Icon style: 3 colored arrows showing up, diagonal up, diagonal down
+     *  and down. */
+    LXW_CONDITIONAL_ICONS_4_ARROWS_COLORED,
 
-    LXW_CONDITIONAL_ICONS_4_TRAFFIC_LIGHTS,
-
+    /** Icon style: 3 gray arrows showing up, diagonal up, diagonal down and
+     * down. */
     LXW_CONDITIONAL_ICONS_4_ARROWS_GRAY,
 
+    /** Icon style: 4 circles in 4 colors going from red to black. */
+    LXW_CONDITIONAL_ICONS_4_RED_TO_BLACK,
+
+    /** Icon style: 4 histogram ratings. */
     LXW_CONDITIONAL_ICONS_4_RATINGS,
 
-    LXW_CONDITIONAL_ICONS_5_ARROWS,
+    /** Icon style: 4 traffic lights. */
+    LXW_CONDITIONAL_ICONS_4_TRAFFIC_LIGHTS,
 
+    /** Icon style: 5 colored arrows showing up, diagonal up, sideways,
+     * diagonal down and down. */
+    LXW_CONDITIONAL_ICONS_5_ARROWS_COLORED,
+
+    /** Icon style: 5 gray arrows showing up, diagonal up, sideways, diagonal
+     *  down and down. */
     LXW_CONDITIONAL_ICONS_5_ARROWS_GRAY,
 
-    LXW_CONDITIONAL_ICONS_5_QUARTERS,
+    /** Icon style: 5 histogram ratings. */
+    LXW_CONDITIONAL_ICONS_5_RATINGS,
 
-    LXW_CONDITIONAL_ICONS_5_RATINGS
+    /** Icon style: 5 quarters, from 0 to 4 quadrants filled. */
+    LXW_CONDITIONAL_ICONS_5_QUARTERS
 };
 
 /** Options to control the positioning of worksheet objects such as images
@@ -878,53 +988,207 @@ typedef struct lxw_data_val_obj {
     STAILQ_ENTRY (lxw_data_val_obj) list_pointers;
 } lxw_data_val_obj;
 
-/* Public */
+/**
+ * @brief Worksheet conditional formatting options.
+ *
+ * The fields/options in the the lxw_conditional_format are used to define a
+ * worksheet conditional format. It is used in conjunction with
+ * `worksheet_conditional_format()`.
+ *
+ */
 typedef struct lxw_conditional_format {
+
+    /** The type of conditional format such as #LXW_CONDITIONAL_TYPE_CELL or
+     *  #LXW_CONDITIONAL_DATA_BAR. Should be a #lxw_conditional_format_types
+     *  value.*/
     uint8_t type;
+
+    /** The criteria parameter is used to set the criteria by which the cell
+     *  data will be evaluated. For example in the expression `a > 5 the
+     *  criteria is `>` or, in libxlsxwriter terms,
+     *  #LXW_CONDITIONAL_CRITERIA_GREATER_THAN. The criteria that are
+     *  applicable depend on the conditional format type.  The criteria
+     *  options are defined in #lxw_conditional_criteria. */
     uint8_t criteria;
 
+    /** The number value to which the condition refers. For example in the
+     * expression `a > 5`, the value is 5.*/
     double value;
+
+    /** The string value to which the condition refers, such as `"=A1"`. If a
+     *  value_string exists in the struct then the number value is
+     *  ignored. Note, if the condition refers to a text string then it must
+     *  be double quoted like this `"foo"`. */
     char *value_string;
 
+    /** The format field is used to specify the #lxw_format format that will
+     *  be applied to the cell when the conditional formatting criterion is
+     *  met. The #lxw_format is created using the `workbook_add_format()`
+     *  method in the same way as cell formats.
+     *
+     *  @note In Excel, a conditional format is superimposed over the existing
+     *  cell format and not all cell format properties can be
+     *  modified. Properties that @b cannot be modified, in Excel, by a
+     *  conditional format are: font name, font size, superscript and
+     *  subscript, diagonal borders, all alignment properties and all
+     *  protection properties. */
+    lxw_format *format;
+
+    /** The minimum value used for Cell, Color Scale and Data Bar conditional
+     *  formats. For Cell types this is usually used with a "Between" style criteria. */
     double min_value;
+
+    /** The minimum string value used for Cell, Color Scale and Data Bar conditional
+     *  formats. Usually used to set ranges like `=A1`. */
     char *min_value_string;
-    uint8_t min_value_type;
+
+    /** The rule used for the minimum condition in Color Scale and Data Bar
+     *  conditional formats. The rule types are defined in
+     *  #lxw_conditional_format_rule_types. */
     uint8_t min_rule_type;
+
+    /** The color used for the minimum Color Scale conditional format.
+     *  See @ref working_with_colors. */
     lxw_color_t min_color;
 
+    /** The middle value used for Color Scale and Data Bar conditional
+     *  formats.  */
     double mid_value;
+
+    /** The middle string value used for Color Scale and Data Bar conditional
+     *  formats. Usually used to set ranges like `=A1`. */
     char *mid_value_string;
-    uint8_t mid_value_type;
+
+    /** The rule used for the middle condition in Color Scale and Data Bar
+     *  conditional formats. The rule types are defined in
+     *  #lxw_conditional_format_rule_types. */
     uint8_t mid_rule_type;
+
+    /** The color used for the middle Color Scale conditional format.
+     *  See @ref working_with_colors. */
     lxw_color_t mid_color;
 
+    /** The maximum value used for Cell, Color Scale and Data Bar conditional
+     *  formats. For Cell types this is usually used with a "Between" style
+     *  criteria. */
     double max_value;
+
+    /** The maximum string value used for Cell, Color Scale and Data Bar conditional
+     *  formats. Usually used to set ranges like `=A1`. */
     char *max_value_string;
-    uint8_t max_value_type;
+
+    /** The rule used for the maximum condition in Color Scale and Data Bar
+     *  conditional formats. The rule types are defined in
+     *  #lxw_conditional_format_rule_types. */
     uint8_t max_rule_type;
+
+    /** The color used for the maximum Color Scale conditional format.
+     *  See @ref working_with_colors. */
     lxw_color_t max_color;
 
-    uint8_t data_bar_2010;
-    uint8_t bar_only;
-    uint8_t bar_solid;
-    uint8_t bar_negative_color_same;
-    uint8_t bar_negative_border_color_same;
-    uint8_t bar_no_border;
-    uint8_t bar_direction;
-    uint8_t bar_axis_position;
+    /** The bar_color field sets the fill color for data bars. See @ref
+     *  working_with_colors. */
     lxw_color_t bar_color;
+
+    /** The bar_only field sets The bar_only field displays a bar data but
+     *  not the data in the cells. */
+    uint8_t bar_only;
+
+    /** In Excel 2010 additional data bar properties were added such as solid
+     *  (non-gradient) bars and control over how negative values are
+     *  displayed. These properties can shown below.
+     *
+     *  The data_bar_2010 field sets Excel 2010 style data bars even when
+     *  Excel 2010 specific properties aren't used. */
+    uint8_t data_bar_2010;
+
+    /** The bar_solid field turns on a solid (non-gradient) fill for data
+     *  bars. Set to LXW_TRUE to turn on. Excel 2010 only. */
+    uint8_t bar_solid;
+
+    /** The bar_negative_color field sets the color fill for the negative
+     *  portion of a data bar. See @ref working_with_colors. Excel 2010 only. */
     lxw_color_t bar_negative_color;
+
+    /** The bar_border_color field sets the color for the border line of a
+     *  data bar. See @ref working_with_colors. Excel 2010 only. */
     lxw_color_t bar_border_color;
+
+    /** The bar_negative_border_color field sets the color for the border of
+     *  the negative portion of a data bar. See @ref
+     *  working_with_colors. Excel 2010 only. */
     lxw_color_t bar_negative_border_color;
+
+    /** The bar_negative_color_same field sets the fill color for the negative
+     *  portion of a data bar to be the same as the fill color for the
+     *  positive portion of the data bar. Set to LXW_TRUE to turn on. Excel
+     *  2010 only. */
+    uint8_t bar_negative_color_same;
+
+    /** The bar_negative_border_color_same field sets the border color for the
+     *  negative portion of a data bar to be the same as the border color for
+     *  the positive portion of the data bar. Set to LXW_TRUE to turn
+     *  on. Excel 2010 only. */
+    uint8_t bar_negative_border_color_same;
+
+    /** The bar_no_border field turns off the border for data bars. Set to
+     *  LXW_TRUE to enable. Excel 2010 only. */
+    uint8_t bar_no_border;
+
+    /** The bar_direction field sets the direction for data bars. This
+     *  property can be either left for left-to-right or right for
+     *  right-to-left. If the property isn't set then Excel will adjust the
+     *  position automatically based on the context. Should be a
+     *  #lxw_conditional_format_bar_direction value. Excel 2010 only. */
+    uint8_t bar_direction;
+
+    /** The bar_axis_position field sets the position within the cells for the
+     *  axis that is shown in data bars when there are negative values to
+     *  display. The property can be either middle or none. If the property
+     *  isn't set then Excel will position the axis based on the range of
+     *  positive and negative values. Should be a
+     *  lxw_conditional_bar_axis_position value. Excel 2010 only. */
+    uint8_t bar_axis_position;
+
+    /** The bar_axis_color field sets the color for the axis that is shown
+     *  in data bars when there are negative values to display. See @ref
+     *  working_with_colors. Excel 2010 only. */
     lxw_color_t bar_axis_color;
 
+    /** The Icons Sets style is specified by the icon_style parameter. Should
+     *  be a #lxw_conditional_icon_types. */
     uint8_t icon_style;
+
+    /** The order of Icon Sets icons can be reversed by setting reverse_icons
+     *  to LXW_TRUE.  */
     uint8_t reverse_icons;
+
+    /** The icons can be displayed without the cell value by settings the
+     *  icons_only parameter to LXW_TRUE.  */
     uint8_t icons_only;
 
-    uint8_t stop_if_true;
-    lxw_format *format;
+    /** The multi_range field is used to extend a conditional format over
+     *  non-contiguous ranges.
+     *
+     *  It is possible to apply the conditional format to different cell
+     *  ranges in a worksheet using multiple calls to
+     *  `worksheet_conditional_format()`. However, as a minor optimization it
+     *  is also possible in Excel to apply the same conditional format to
+     *  different non-contiguous cell ranges.
+     *
+     *  This is replicated in `worksheet_conditional_format()` using the
+     *  multi_range option. The range must contain the primary range for the
+     *  conditional format and any others separated by spaces. For example
+     *  `"A1 C1:C5 E2 G1:G100"`.
+     */
     char *multi_range;
+
+    /** The stop_if_true parameter can be used to set the "stop if true"
+     *  feature of a conditional formatting rule when more than one rule is
+     *  applied to a cell or a range of cells. When this parameter is set then
+     *  subsequent rules are not evaluated if the current rule is true. Set to
+     *  LXW_TRUE to turn on. */
+    uint8_t stop_if_true;
 
 } lxw_conditional_format;
 
@@ -2840,7 +3104,7 @@ lxw_error worksheet_insert_chart_opt(lxw_worksheet *worksheet,
  *    worksheet_write_number(worksheet, 1, 1, 123, format);
  * @endcode
  *
- * @note Merged ranges generally don’t work in libxlsxwriter when the Workbook
+ * @note Merged ranges generally don't work in libxlsxwriter when the Workbook
  * #lxw_workbook_options `constant_memory` mode is enabled.
  */
 lxw_error worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
@@ -2924,7 +3188,7 @@ lxw_error worksheet_data_validation_cell(lxw_worksheet *worksheet,
                                          lxw_data_validation *validation);
 
 /**
- * @brief Add a data validation to a range cell.
+ * @brief Add a data validation to a range.
  *
  * @param worksheet  Pointer to a lxw_worksheet instance to be updated.
  * @param first_row  The first row of the range. (All zero indexed.)
@@ -2965,12 +3229,77 @@ lxw_error worksheet_data_validation_range(lxw_worksheet *worksheet,
                                           lxw_col_t last_col,
                                           lxw_data_validation *validation);
 
+/**
+ * @brief Add a conditional format to a worksheet cell.
+ *
+ * @param worksheet           Pointer to a lxw_worksheet instance to be updated.
+ * @param row                 The zero indexed row number.
+ * @param col                 The zero indexed column number.
+ * @param conditional_format  A #lxw_conditional_format object to control the
+ *                            conditional format.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_conditional_format_cell()` function is used to set a
+ * conditional format for a cell in a worksheet:
+ *
+ * @code
+ *     conditional_format->type     = LXW_CONDITIONAL_TYPE_CELL;
+ *     conditional_format->criteria = LXW_CONDITIONAL_CRITERIA_GREATER_THAN_OR_EQUAL_TO;
+ *     conditional_format->value    = 50;
+ *     conditional_format->format   = format1;
+ *     worksheet_conditional_format_cell(worksheet, CELL("A1"), conditional_format);
+ * @endcode
+ *
+ * The conditional format parameters is specified in #lxw_conditional_format.
+ *
+ * See @ref working_with_conditional_formatting for full details.
+ */
 lxw_error worksheet_conditional_format_cell(lxw_worksheet *worksheet,
                                             lxw_row_t row,
                                             lxw_col_t col,
                                             lxw_conditional_format
                                             *conditional_format);
 
+/**
+ * @brief Add a conditional format to a worksheet range.
+ *
+ * @param worksheet  Pointer to a lxw_worksheet instance to be updated.
+ * @param first_row  The first row of the range. (All zero indexed.)
+ * @param first_col  The first column of the range.
+ * @param last_row   The last row of the range.
+ * @param last_col   The last col of the range.
+ * @param conditional_format  A #lxw_conditional_format object to control the
+ *                            conditional format.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_conditional_format_cell()` function is used to set a
+ * conditional format for a range of cells in a worksheet:
+ *
+ * @code
+ *     conditional_format->type     = LXW_CONDITIONAL_TYPE_CELL;
+ *     conditional_format->criteria = LXW_CONDITIONAL_CRITERIA_GREATER_THAN_OR_EQUAL_TO;
+ *     conditional_format->value    = 50;
+ *     conditional_format->format   = format1;
+ *     worksheet_conditional_format_range(worksheet1, RANGE("B3:K12"), conditional_format);
+ *
+ *     conditional_format->type     = LXW_CONDITIONAL_TYPE_CELL;
+ *     conditional_format->criteria = LXW_CONDITIONAL_CRITERIA_LESS_THAN;
+ *     conditional_format->value    = 50;
+ *     conditional_format->format   = format2;
+ *     worksheet_conditional_format_range(worksheet1, RANGE("B3:K12"), conditional_format);
+ * @endcode
+ *
+ * Output:
+ *
+ * @image html conditional_format1.png
+ *
+ *
+ * The conditional format parameters is specified in #lxw_conditional_format.
+ *
+ * See @ref working_with_conditional_formatting for full details.
+ */
 lxw_error worksheet_conditional_format_range(lxw_worksheet *worksheet,
                                              lxw_row_t first_row,
                                              lxw_col_t first_col,

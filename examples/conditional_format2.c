@@ -1,5 +1,5 @@
 /*
- * An example how to add conditional formatting to an XlsxWriter file.
+ * An example of how to add conditional formatting to an libxlsxwriter file.
  *
  * Conditional formatting allows you to apply a format to a cell or a
  * range of cells based on certain criteria.
@@ -358,34 +358,34 @@ int main() {
 
 
     conditional_format->type          = LXW_CONDITIONAL_TYPE_ICON_SETS;
-    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS;
+    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS_UNRIMMED;
     worksheet_conditional_format_range(worksheet9, RANGE("B3:D3"), conditional_format);
     reset_conditional_format(conditional_format);
 
     conditional_format->type          = LXW_CONDITIONAL_TYPE_ICON_SETS;
-    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS;
+    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS_UNRIMMED;
     conditional_format->reverse_icons = LXW_TRUE;
     worksheet_conditional_format_range(worksheet9, RANGE("B4:D4"), conditional_format);
     reset_conditional_format(conditional_format);
 
     conditional_format->type          = LXW_CONDITIONAL_TYPE_ICON_SETS;
-    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS;
+    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS_UNRIMMED;
     conditional_format->icons_only    = LXW_TRUE;
     worksheet_conditional_format_range(worksheet9, RANGE("B5:D5"), conditional_format);
     reset_conditional_format(conditional_format);
 
     conditional_format->type          = LXW_CONDITIONAL_TYPE_ICON_SETS;
-    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_3_ARROWS;
+    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_3_ARROWS_COLORED;
     worksheet_conditional_format_range(worksheet9, RANGE("B6:D6"), conditional_format);
     reset_conditional_format(conditional_format);
 
     conditional_format->type          = LXW_CONDITIONAL_TYPE_ICON_SETS;
-    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_4_ARROWS;
+    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_4_ARROWS_COLORED;
     worksheet_conditional_format_range(worksheet9, RANGE("B7:E7"), conditional_format);
     reset_conditional_format(conditional_format);
 
     conditional_format->type          = LXW_CONDITIONAL_TYPE_ICON_SETS;
-    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_5_ARROWS;
+    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_5_ARROWS_COLORED;
     worksheet_conditional_format_range(worksheet9, RANGE("B8:F8"), conditional_format);
     reset_conditional_format(conditional_format);
 

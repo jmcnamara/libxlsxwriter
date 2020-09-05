@@ -17,6 +17,7 @@ Pod::Spec.new do |s|
                             * Autofilters.
                             * Charts.
                             * Data validation and drop down lists.
+                            * Conditional formatting.
                             * Worksheet PNG/JPEG images.
                             * Cell comments.
                             * Support for adding Macros.

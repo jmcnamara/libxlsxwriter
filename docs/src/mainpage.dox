@@ -20,6 +20,7 @@ features such as:
 - Autofilters.
 - Charts.
 - Data validation and drop down lists.
+- Conditional formatting.
 - Worksheet PNG/JPEG images.
 - Cell comments.
 - Support for adding Macros.
@@ -58,6 +59,7 @@ following sections for more information:
 - @ref working_with_charts
 - @ref working_with_object_positioning
 - @ref working_with_data_validation
+- @ref working_with_conditional_formatting
 - @ref working_with_comments
 - @ref working_with_outlines
 - @ref working_with_memory

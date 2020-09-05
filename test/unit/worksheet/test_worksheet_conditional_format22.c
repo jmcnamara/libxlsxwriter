@@ -180,7 +180,7 @@ CTEST(worksheet, worksheet_condtional_format22) {
     lxw_conditional_format *conditional_format = calloc(1, sizeof(lxw_conditional_format));
 
     conditional_format->type       = LXW_CONDITIONAL_TYPE_ICON_SETS;
-    conditional_format->icon_style = LXW_CONDITIONAL_ICONS_3_ARROWS;
+    conditional_format->icon_style = LXW_CONDITIONAL_ICONS_3_ARROWS_COLORED;
     worksheet_conditional_format_cell(worksheet, CELL("A1"), conditional_format);
 
     conditional_format->type       = LXW_CONDITIONAL_TYPE_ICON_SETS;
@@ -196,7 +196,7 @@ CTEST(worksheet, worksheet_condtional_format22) {
     worksheet_conditional_format_cell(worksheet, CELL("A4"), conditional_format);
 
     conditional_format->type       = LXW_CONDITIONAL_TYPE_ICON_SETS;
-    conditional_format->icon_style = LXW_CONDITIONAL_ICONS_4_ARROWS;
+    conditional_format->icon_style = LXW_CONDITIONAL_ICONS_4_ARROWS_COLORED;
     worksheet_conditional_format_cell(worksheet, CELL("A5"), conditional_format);
 
     conditional_format->type       = LXW_CONDITIONAL_TYPE_ICON_SETS;

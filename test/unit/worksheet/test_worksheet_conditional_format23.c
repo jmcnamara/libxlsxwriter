@@ -168,7 +168,7 @@ CTEST(worksheet, worksheet_condtional_format23) {
     worksheet_conditional_format_cell(worksheet, CELL("A1"), conditional_format);
 
     conditional_format->type       = LXW_CONDITIONAL_TYPE_ICON_SETS;
-    conditional_format->icon_style = LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS;
+    conditional_format->icon_style = LXW_CONDITIONAL_ICONS_3_TRAFFIC_LIGHTS_UNRIMMED;
     worksheet_conditional_format_cell(worksheet, CELL("A2"), conditional_format);
 
     conditional_format->type       = LXW_CONDITIONAL_TYPE_ICON_SETS;
@@ -176,7 +176,7 @@ CTEST(worksheet, worksheet_condtional_format23) {
     worksheet_conditional_format_cell(worksheet, CELL("A3"), conditional_format);
 
     conditional_format->type       = LXW_CONDITIONAL_TYPE_ICON_SETS;
-    conditional_format->icon_style = LXW_CONDITIONAL_ICONS_3_SYMBOLS;
+    conditional_format->icon_style = LXW_CONDITIONAL_ICONS_3_SYMBOLS_UNCIRCLED;
     worksheet_conditional_format_cell(worksheet, CELL("A4"), conditional_format);
 
     conditional_format->type       = LXW_CONDITIONAL_TYPE_ICON_SETS;
@@ -188,7 +188,7 @@ CTEST(worksheet, worksheet_condtional_format23) {
     worksheet_conditional_format_cell(worksheet, CELL("A6"), conditional_format);
 
     conditional_format->type       = LXW_CONDITIONAL_TYPE_ICON_SETS;
-    conditional_format->icon_style = LXW_CONDITIONAL_ICONS_5_ARROWS;
+    conditional_format->icon_style = LXW_CONDITIONAL_ICONS_5_ARROWS_COLORED;
     worksheet_conditional_format_cell(worksheet, CELL("A7"), conditional_format);
 
     conditional_format->type       = LXW_CONDITIONAL_TYPE_ICON_SETS;

@@ -22,7 +22,7 @@ int main() {
     lxw_conditional_format *conditional_format = calloc(1, sizeof(lxw_conditional_format));
 
     conditional_format->type          = LXW_CONDITIONAL_TYPE_ICON_SETS;
-    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_3_ARROWS;
+    conditional_format->icon_style    = LXW_CONDITIONAL_ICONS_3_ARROWS_COLORED;
     worksheet_conditional_format_range(worksheet, RANGE("A1:A4"), conditional_format);
 
     free(conditional_format);
