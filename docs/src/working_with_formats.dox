@@ -47,35 +47,35 @@ The following table shows the Excel format categories and the equivalent
   | Category        | Description          |  Method Name                   |
   | :-------------- | :------------------- |  :---------------------------  |
   | **Font**        | Font type            |  format_set_font_name()        |
-  |                 | Font size            |  format_set_font_size()        |
-  |                 | Font color           |  format_set_font_color()       |
-  |                 | Bold                 |  format_set_bold()             |
-  |                 | Italic               |  format_set_italic()           |
-  |                 | Underline            |  format_set_underline()        |
-  |                 | Strikeout            |  format_set_font_strikeout()   |
-  |                 | Super/Subscript      |  format_set_font_script()      |
+  | ^               | Font size            |  format_set_font_size()        |
+  | ^               | Font color           |  format_set_font_color()       |
+  | ^               | Bold                 |  format_set_bold()             |
+  | ^               | Italic               |  format_set_italic()           |
+  | ^               | Underline            |  format_set_underline()        |
+  | ^               | Strikeout            |  format_set_font_strikeout()   |
+  | ^               | Super/Subscript      |  format_set_font_script()      |
   | **Number**      | Numeric format       |  format_set_num_format()       |
   | **Protection**  | Unlock cells         |  format_set_unlocked()         |
-  |                 | Hide formulas        |  format_set_hidden()           |
+  | ^               | Hide formulas        |  format_set_hidden()           |
   | **Alignment**   | Horizontal align     |  format_set_align()            |
-  |                 | Vertical align       |  format_set_align()            |
-  |                 | Rotation             |  format_set_rotation()         |
-  |                 | Text wrap            |  format_set_text_wrap()        |
-  |                 | Indentation          |  format_set_indent()           |
-  |                 | Shrink to fit        |  format_set_shrink()           |
+  | ^               | Vertical align       |  format_set_align()            |
+  | ^               | Rotation             |  format_set_rotation()         |
+  | ^               | Text wrap            |  format_set_text_wrap()        |
+  | ^               | Indentation          |  format_set_indent()           |
+  | ^               | Shrink to fit        |  format_set_shrink()           |
   | **Pattern**     | Cell pattern         |  format_set_pattern()          |
-  |                 | Background color     |  format_set_bg_color()         |
-  |                 | Foreground color     |  format_set_fg_color()         |
+  | ^               | Background color     |  format_set_bg_color()         |
+  | ^               | Foreground color     |  format_set_fg_color()         |
   | **Border**      | Cell border          |  format_set_border()           |
-  |                 | Bottom border        |  format_set_bottom()           |
-  |                 | Top border           |  format_set_top()              |
-  |                 | Left border          |  format_set_left()             |
-  |                 | Right border         |  format_set_right()            |
-  |                 | Border color         |  format_set_border_color()     |
-  |                 | Bottom color         |  format_set_bottom_color()     |
-  |                 | Top color            |  format_set_top_color()        |
-  |                 | Left color           |  format_set_left_color()       |
-  |                 | Right color          |  format_set_right_color()      |
+  | ^               | Bottom border        |  format_set_bottom()           |
+  | ^               | Top border           |  format_set_top()              |
+  | ^               | Left border          |  format_set_left()             |
+  | ^               | Right border         |  format_set_right()            |
+  | ^               | Border color         |  format_set_border_color()     |
+  | ^               | Bottom color         |  format_set_bottom_color()     |
+  | ^               | Top color            |  format_set_top_color()        |
+  | ^               | Left color           |  format_set_left_color()       |
+  | ^               | Right color          |  format_set_right_color()      |
 
 
 @section ww_formats_colors Format Colors

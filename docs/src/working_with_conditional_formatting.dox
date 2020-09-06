@@ -145,80 +145,80 @@ in the following table along with their associated parameters.
 | Type          |  Enum value                       | Parameters
 | :------------ | :-------------------------------- | :------------------------------
 | cell          | #LXW_CONDITIONAL_TYPE_CELL        | criteria
-|               |                                   | value
-|               |                                   | value_string
-|               |                                   | min_value
-|               |                                   | max_value
-|               |                                   | min_value_string
-|               |                                   | max_value_string
-|               |                                   | format
+| ^             | ^                                 | value
+| ^             | ^                                 | value_string
+| ^             | ^                                 | min_value
+| ^             | ^                                 | max_value
+| ^             | ^                                 | min_value_string
+| ^             | ^                                 | max_value_string
+| ^             | ^                                 | format
 | text          | #LXW_CONDITIONAL_TYPE_TEXT        | criteria
-|               |                                   | value
-|               |                                   | value_string
-|               |                                   | format
+| ^             | ^                                 | value
+| ^             | ^                                 | value_string
+| ^             | ^                                 | format
 | time_period   | #LXW_CONDITIONAL_TYPE_TIME_PERIOD | criteria
-|               |                                   | format
+| ^             | ^                                 | format
 | average       | #LXW_CONDITIONAL_TYPE_AVERAGE     | criteria
-|               |                                   | format
+| ^             | ^                                 | format
 | duplicate     | #LXW_CONDITIONAL_TYPE_DUPLICATE   | format
 | unique        | #LXW_CONDITIONAL_TYPE_UNIQUE      | format
 | top           | #LXW_CONDITIONAL_TYPE_TOP         | criteria
-|               |                                   | value
-|               |                                   | value_string
-|               |                                   | format
+| ^             | ^                                 | value
+| ^             | ^                                 | value_string
+| ^             | ^                                 | format
 | bottom        | #LXW_CONDITIONAL_TYPE_BOTTOM      | criteria
-|               |                                   | value
-|               |                                   | value_string
-|               |                                   | format
+| ^             | ^                                 | value
+| ^             | ^                                 | value_string
+| ^             | ^                                 | format
 | blanks        | #LXW_CONDITIONAL_TYPE_BLANKS      | format
 | no_blanks     | #LXW_CONDITIONAL_TYPE_NO_BLANKS   | format
 | errors        | #LXW_CONDITIONAL_TYPE_ERRORS      | format
 | no_errors     | #LXW_CONDITIONAL_TYPE_NO_ERRORS   | format
-| formula       | #LXW_CONDITIONAL_TYPE_FORMULA     | criteria
-|               |                                   | format
+| formula       | #LXW_CONDITIONAL_TYPE_FORMULA     | value
+| ^             | ^                                 | value_string
+| ^             | ^                                 | format
 | 2_color_scale | #LXW_CONDITIONAL_2_COLOR_SCALE    | min_rule_type
-|               |                                   | max_rule_type
-|               |                                   | min_value
-|               |                                   | max_value
-|               |                                   | min_value_string
-|               |                                   | max_value_string
-|               |                                   | min_color
-|               |                                   | max_color
+| ^             | ^                                 | max_rule_type
+| ^             | ^                                 | min_value
+| ^             | ^                                 | max_value
+| ^             | ^                                 | min_value_string
+| ^             | ^                                 | max_value_string
+| ^             | ^                                 | min_color
+| ^             | ^                                 | max_color
 | 3_color_scale | #LXW_CONDITIONAL_3_COLOR_SCALE    | min_rule_type
-|               |                                   | mid_rule_type
-|               |                                   | max_rule_type
-|               |                                   | min_value
-|               |                                   | mid_value
-|               |                                   | max_value
-|               |                                   | min_value_string
-|               |                                   | mid_value_string
-|               |                                   | max_value_string
-|               |                                   | min_color
-|               |                                   | mid_color
-|               |                                   | max_color
+| ^             | ^                                 | mid_rule_type
+| ^             | ^                                 | max_rule_type
+| ^             | ^                                 | min_value
+| ^             | ^                                 | mid_value
+| ^             | ^                                 | max_value
+| ^             | ^                                 | min_value_string
+| ^             | ^                                 | mid_value_string
+| ^             | ^                                 | max_value_string
+| ^             | ^                                 | min_color
+| ^             | ^                                 | mid_color
+| ^             | ^                                 | max_color
 | data_bar      | #LXW_CONDITIONAL_DATA_BAR         | min_rule_type
-|               |                                   | max_rule_type
-|               |                                   | min_value
-|               |                                   | max_value
-|               |                                   | min_value_string
-|               |                                   | max_value_string
-|               |                                   | bar_only
-|               |                                   | bar_color
-|               |                                   | bar_solid*
-|               |                                   | bar_negative_color*
-|               |                                   | bar_border_color*
-|               |                                   | bar_negative_border_color*
-|               |                                   | bar_negative_color_same*
-|               |                                   | bar_negative_border_color_same*
-|               |                                   | bar_no_border*
-|               |                                   | bar_direction*
-|               |                                   | bar_axis_position*
-|               |                                   | bar_axis_color*
-|               |                                   | data_bar_2010*
+| ^             | ^                                 | max_rule_type
+| ^             | ^                                 | min_value
+| ^             | ^                                 | max_value
+| ^             | ^                                 | min_value_string
+| ^             | ^                                 | max_value_string
+| ^             | ^                                 | bar_only
+| ^             | ^                                 | bar_color
+| ^             | ^                                 | bar_solid*
+| ^             | ^                                 | bar_negative_color*
+| ^             | ^                                 | bar_border_color*
+| ^             | ^                                 | bar_negative_border_color*
+| ^             | ^                                 | bar_negative_color_same*
+| ^             | ^                                 | bar_negative_border_color_same*
+| ^             | ^                                 | bar_no_border*
+| ^             | ^                                 | bar_direction*
+| ^             | ^                                 | bar_axis_position*
+| ^             | ^                                 | bar_axis_color*
+| ^             | ^                                 | data_bar_2010*
 | icon_set      | #LXW_CONDITIONAL_TYPE_ICON_SETS   | icon_style
-|               |                                   | reverse_icons
-|               |                                   | icons
-|               |                                   | icons_only
+| ^             | ^                                 | reverse_icons
+| ^             | ^                                 | icons_only
 
 @note
 Data bar parameters marked with `*` are only available in Excel 2010 and
