@@ -167,6 +167,7 @@ void lxw_xml_data_element(FILE * xmlfile,
 
 void lxw_xml_rich_si_element(FILE * xmlfile, const char *string);
 
+uint8_t lxw_has_control_characters(const char *string);
 char *lxw_escape_control_characters(const char *string);
 char *lxw_escape_url_characters(const char *string, uint8_t escape_hash);
 
