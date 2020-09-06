@@ -1480,3 +1480,23 @@ tr.heading h2 {
   }
 }
 
+
+.sm-dox a, .sm-dox a:focus, .sm-dox a:hover, .sm-dox a:active {
+    padding: 0 12px;
+    padding-right: 43px;
+    font-family: "Lucida Grande", "Geneva", "Helvetica", Arial, sans-serif;
+    font-size: 13px;
+    font-weight: bold;
+    line-height: 36px;
+    text-decoration: none;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.9);
+    color: #808C53;
+    outline:0
+}
+
+.sm-dox a:hover {
+    background-image: url("tab_a.png");
+    background-repeat: repeat-x;
+    color: white;
+    text-shadow:0 1px 1px black
+}
