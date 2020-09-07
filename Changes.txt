@@ -1,6 +1,31 @@
 /**
 @page changes Changes
 
+## 1.0.0 September 7 2020
+
+- Added support for worksheet conditional formatting. See
+  `worksheet_conditional_format_range()` and @ref
+  working_with_conditional_formatting.
+
+  Feature request [#32][gh_32] and [#302][gh_302].
+
+  [gh_302]: https://github.com/jmcnamara/libxlsxwriter/issues/302
+  [gh_32]:  https://github.com/jmcnamara/libxlsxwriter/issues/32
+
+- Added performance optimization for search for control characters in strings
+  in `worksheet_write_string()`.
+
+  Issue [#298][gh_298].
+
+  [gh_298]: https://github.com/jmcnamara/libxlsxwriter/issues/298
+
+- Made `lxw_datetime_to_excel_datetime()` a function public.
+  </p>
+
+- There are now over 1000 test cases, including 650 tests that compare the
+  output from libxlsxwriter, byte for byte, against test files created in
+  Excel. This is also the 100th release of libxlsxwriter.
+
 
 ## 0.9.9 August 17 2020
 
