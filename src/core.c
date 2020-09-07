@@ -50,7 +50,7 @@ lxw_core_free(lxw_core *core)
 }
 
 /*
- * Convert a time_t struct to a ISO 8601 style "2010-01-01T00:00:00Z" date.
+ * Convert a time_t to a ISO 8601 style "2010-01-01T00:00:00Z" date.
  */
 static void
 _datetime_to_iso8601_date(time_t *timer, char *str, size_t size)

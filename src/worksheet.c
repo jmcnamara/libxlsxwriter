@@ -6935,7 +6935,7 @@ worksheet_write_datetime(lxw_worksheet *self,
     if (err)
         return err;
 
-    excel_date = lxw_datetime_to_excel_date(datetime, LXW_EPOCH_1900);
+    excel_date = lxw_datetime_to_excel_date_epoch(datetime, LXW_EPOCH_1900);
 
     cell = _new_number_cell(row_num, col_num, excel_date, format);
 
@@ -9042,16 +9042,18 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
         || validation->validate == LXW_VALIDATION_TYPE_TIME) {
         if (is_between) {
             copy->value_number =
-                lxw_datetime_to_excel_date(&validation->minimum_datetime,
-                                           LXW_EPOCH_1900);
+                lxw_datetime_to_excel_date_epoch(&validation->
+                                                 minimum_datetime,
+                                                 LXW_EPOCH_1900);
             copy->maximum_number =
-                lxw_datetime_to_excel_date(&validation->maximum_datetime,
-                                           LXW_EPOCH_1900);
+                lxw_datetime_to_excel_date_epoch(&validation->
+                                                 maximum_datetime,
+                                                 LXW_EPOCH_1900);
         }
         else {
             copy->value_number =
-                lxw_datetime_to_excel_date(&validation->value_datetime,
-                                           LXW_EPOCH_1900);
+                lxw_datetime_to_excel_date_epoch(&validation->value_datetime,
+                                                 LXW_EPOCH_1900);
         }
     }
 

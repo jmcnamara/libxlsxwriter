@@ -70,7 +70,7 @@ CTEST(worksheet, worksheet_condtional_format10) {
 
     conditional_format->type     = LXW_CONDITIONAL_TYPE_CELL;
     conditional_format->criteria = LXW_CONDITIONAL_CRITERIA_GREATER_THAN;
-    conditional_format->value    = lxw_datetime_to_excel_date(&datetime1, LXW_FALSE);
+    conditional_format->value    = lxw_datetime_to_excel_datetime(&datetime1);
     conditional_format->format   = NULL;
     worksheet_conditional_format_range(worksheet, RANGE("A1:A4"), conditional_format);
 

@@ -72,8 +72,8 @@ CTEST(worksheet, worksheet_condtional_format11) {
 
     conditional_format->type      = LXW_CONDITIONAL_TYPE_CELL;
     conditional_format->criteria  = LXW_CONDITIONAL_CRITERIA_BETWEEN;
-    conditional_format->min_value = lxw_datetime_to_excel_date(&datetime1, LXW_FALSE);;
-    conditional_format->max_value = lxw_datetime_to_excel_date(&datetime2, LXW_FALSE);;
+    conditional_format->min_value = lxw_datetime_to_excel_datetime(&datetime1);
+    conditional_format->max_value = lxw_datetime_to_excel_datetime(&datetime2);
     worksheet_conditional_format_range(worksheet, RANGE("A1:A4"), conditional_format);
 
 

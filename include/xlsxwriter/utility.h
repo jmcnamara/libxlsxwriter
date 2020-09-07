@@ -171,10 +171,32 @@ void lxw_rowcol_to_formula_abs(char *formula, const char *sheetname,
 
 uint32_t lxw_name_to_row(const char *row_str);
 uint16_t lxw_name_to_col(const char *col_str);
+
 uint32_t lxw_name_to_row_2(const char *row_str);
 uint16_t lxw_name_to_col_2(const char *col_str);
 
-double lxw_datetime_to_excel_date(lxw_datetime *datetime, uint8_t date_1904);
+/**
+ * @brief Converts a #lxw_datetime to an Excel datetime number.
+ *
+ * @param datetime A pointer to a #lxw_datetime struct.
+ *
+ * @return A double representing an Excel datetime.
+ *
+ * The `%lxw_datetime_to_excel_datetime()` function converts a datetime in
+ * #lxw_datetime to and Excel datetime number:
+ *
+ * @code
+ *     lxw_datetime datetime = {2013, 2, 28, 12, 0, 0.0};
+ *
+ *     double excel_datetime = lxw_datetime_to_excel_date(&datetime);
+ * @endcode
+ *
+ * See @ref working_with_dates for more details on the Excel datetime format.
+ */
+double lxw_datetime_to_excel_datetime(lxw_datetime *datetime);
+
+double lxw_datetime_to_excel_date_epoch(lxw_datetime *datetime,
+                                        uint8_t date_1904);
 
 char *lxw_strdup(const char *str);
 char *lxw_strdup_formula(const char *formula);

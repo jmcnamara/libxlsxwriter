@@ -76,7 +76,7 @@
 
 
 #define TEST_ROWCOL_TO_FORMULA_ABS(sheet, row1, col1, row2, col2, exp) \
-    lxw_rowcol_to_formula_abs(got, sheet, row1, col1, row2, col2);  \
+    lxw_rowcol_to_formula_abs(got, sheet, row1, col1, row2, col2);     \
     ASSERT_STR(exp, got);
 
 
@@ -86,7 +86,7 @@
     datetime->min   = _min;                                         \
     datetime->sec   = _sec;                                         \
                                                                     \
-    got = lxw_datetime_to_excel_date(datetime, 0);                  \
+    got = lxw_datetime_to_excel_datetime(datetime);                 \
                                                                     \
     ASSERT_DOUBLE(exp, got);                                        \
     free(datetime);
@@ -97,7 +97,7 @@
     datetime->month = _month;                                       \
     datetime->day   = _day;                                         \
                                                                     \
-    got = lxw_datetime_to_excel_date(datetime, 0);                  \
+    got = lxw_datetime_to_excel_datetime(datetime);                 \
                                                                     \
     ASSERT_DOUBLE(exp, got);                                        \
     free(datetime);
@@ -108,7 +108,7 @@
     datetime->month = _month;                                       \
     datetime->day   = _day;                                         \
                                                                     \
-    got = lxw_datetime_to_excel_date(datetime, 1);                  \
+    got = lxw_datetime_to_excel_date_epoch(datetime, 1);            \
                                                                     \
     ASSERT_DOUBLE(exp, got);                                        \
     free(datetime);
@@ -122,7 +122,7 @@
     datetime->min   = _min;                                         \
     datetime->sec   = _sec;                                         \
                                                                     \
-    got = lxw_datetime_to_excel_date(datetime, 0);                  \
+    got = lxw_datetime_to_excel_datetime(datetime);                 \
                                                                     \
     ASSERT_DOUBLE(exp, got);                                        \
     free(datetime);
