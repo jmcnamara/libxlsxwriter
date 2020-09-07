@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/worksheet.h"
+#include "../../../include/xlsxwriter/worksheet.h"
 
 
 //Test the _write_data_validations() function.

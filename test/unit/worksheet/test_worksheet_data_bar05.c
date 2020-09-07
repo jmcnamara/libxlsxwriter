@@ -8,8 +8,8 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/worksheet.h"
-#include "xlsxwriter/shared_strings.h"
+#include "../../../include/xlsxwriter/worksheet.h"
+#include "../../../include/xlsxwriter/shared_strings.h"
 
 // Test assembling a complete Worksheet file.
 CTEST(worksheet, worksheet_data_bar05) {

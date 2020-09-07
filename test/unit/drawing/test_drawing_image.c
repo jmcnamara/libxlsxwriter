@@ -9,8 +9,8 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/drawing.h"
-#include "xlsxwriter/worksheet.h"
+#include "../../../include/xlsxwriter/drawing.h"
+#include "../../../include/xlsxwriter/worksheet.h"
 
 // Test assembling a complete Drawing file.
 CTEST(drawing, drawing_image01) {

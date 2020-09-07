@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/app.h"
+#include "../../../include/xlsxwriter/app.h"
 
 // Test assembling a complete App file.
 CTEST(app, app01) {

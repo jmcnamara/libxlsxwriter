@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/chartsheet.h"
+#include "../../../include/xlsxwriter/chartsheet.h"
 
 
 /* 1. Test the _write_sheet_protection() method. */

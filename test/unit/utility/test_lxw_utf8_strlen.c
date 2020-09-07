@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/utility.h"
+#include "../../../include/xlsxwriter/utility.h"
 
 // Test lxw_utf8_strlen().
 CTEST(utility, lxw_utf8_strlen) {

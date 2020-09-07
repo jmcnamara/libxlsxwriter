@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/content_types.h"
+#include "../../../include/xlsxwriter/content_types.h"
 
 // Test assembling a complete ContentTypes file.
 CTEST(content_types, content_types01) {

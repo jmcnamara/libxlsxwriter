@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/utility.h"
+#include "../../../include/xlsxwriter/utility.h"
 
 // Test _xl_col_to_name().
 CTEST(utility, lxw_col_to_name) {

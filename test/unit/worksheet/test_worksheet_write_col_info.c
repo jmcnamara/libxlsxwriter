@@ -8,8 +8,8 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/worksheet.h"
-#include "xlsxwriter/format.h"
+#include "../../../include/xlsxwriter/worksheet.h"
+#include "../../../include/xlsxwriter/format.h"
 
 // Test the _write_col_info() function.
 CTEST(worksheet, write_col_info01) {

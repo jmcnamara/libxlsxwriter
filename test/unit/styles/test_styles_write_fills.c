@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/styles.h"
+#include "../../../include/xlsxwriter/styles.h"
 
 // Test the _write_fills() function.
 CTEST(styles, write_fills) {

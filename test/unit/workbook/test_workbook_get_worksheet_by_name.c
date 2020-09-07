@@ -8,8 +8,8 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/workbook.h"
-#include "xlsxwriter/shared_strings.h"
+#include "../../../include/xlsxwriter/workbook.h"
+#include "../../../include/xlsxwriter/shared_strings.h"
 
 /* Test finding a worksheet that does exist (implicit naming). */
 CTEST(workbook, get_worksheet_by_name01) {

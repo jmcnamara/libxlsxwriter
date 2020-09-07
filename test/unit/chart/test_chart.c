@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/chart.h"
+#include "../../../include/xlsxwriter/chart.h"
 
 // Test assembling a complete Chart file.
 CTEST(chart, chart01) {

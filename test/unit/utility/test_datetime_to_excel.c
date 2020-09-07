@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/utility.h"
+#include "../../../include/xlsxwriter/utility.h"
 
 
 // Test _datetime_to_excel_date().

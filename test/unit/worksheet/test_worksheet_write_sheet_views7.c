@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/worksheet.h"
+#include "../../../include/xlsxwriter/worksheet.h"
 
 
 /* 1. Test the _write_sheet_views() method with freeze panes. */

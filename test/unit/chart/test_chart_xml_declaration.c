@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/chart.h"
+#include "../../../include/xlsxwriter/chart.h"
 
 // Test _xml_declaration().
 CTEST(chart, xml_declaration) {

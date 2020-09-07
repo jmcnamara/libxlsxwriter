@@ -8,8 +8,8 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/worksheet.h"
-#include "xlsxwriter/shared_strings.h"
+#include "../../../include/xlsxwriter/worksheet.h"
+#include "../../../include/xlsxwriter/shared_strings.h"
 
 // Test assembling a complete Worksheet file.
 CTEST(worksheet, worksheet_condtional_format12) {
@@ -260,8 +260,8 @@ CTEST(worksheet, worksheet_condtional_format12b) {
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/worksheet.h"
-#include "xlsxwriter/shared_strings.h"
+#include "../../../include/xlsxwriter/worksheet.h"
+#include "../../../include/xlsxwriter/shared_strings.h"
 
 // Test with number values.
 CTEST(worksheet, worksheet_condtional_format12c) {

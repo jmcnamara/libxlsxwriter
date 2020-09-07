@@ -8,8 +8,8 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/styles.h"
-#include "xlsxwriter/format.h"
+#include "../../../include/xlsxwriter/styles.h"
+#include "../../../include/xlsxwriter/format.h"
 
 // Test the _write_xf() method. Default properties.
 CTEST(styles, write_xf01) {

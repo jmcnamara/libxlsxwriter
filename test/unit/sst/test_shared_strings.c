@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/shared_strings.h"
+#include "../../../include/xlsxwriter/shared_strings.h"
 
 // Test assembling a complete SharedStrings file.
 CTEST(sst, sst01) {

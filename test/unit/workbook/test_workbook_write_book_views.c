@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/workbook.h"
+#include "../../../include/xlsxwriter/workbook.h"
 
 // Test the _write_book_views() function.
 CTEST(workbook, write_book_views) {

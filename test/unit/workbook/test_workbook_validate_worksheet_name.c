@@ -8,8 +8,8 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/workbook.h"
-#include "xlsxwriter/shared_strings.h"
+#include "../../../include/xlsxwriter/workbook.h"
+#include "../../../include/xlsxwriter/shared_strings.h"
 
 /* Test a valid sheet name. */
 CTEST(workbook, validate_worksheet_name01) {

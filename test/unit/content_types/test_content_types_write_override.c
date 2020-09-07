@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/content_types.h"
+#include "../../../include/xlsxwriter/content_types.h"
 
 // Test the _write_override() function.
 CTEST(content_types, write_override) {

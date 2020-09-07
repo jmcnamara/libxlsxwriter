@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/relationships.h"
+#include "../../../include/xlsxwriter/relationships.h"
 
 // Test _xml_declaration().
 CTEST(relationships, xml_declaration) {

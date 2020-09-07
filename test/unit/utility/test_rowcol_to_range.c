@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/utility.h"
+#include "../../../include/xlsxwriter/utility.h"
 
 // Test lxw_rowcol_to_range().
 CTEST(utility, lxw_rowcol_to_range) {

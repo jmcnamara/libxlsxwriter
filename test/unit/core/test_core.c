@@ -8,8 +8,8 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/core.h"
-#include "xlsxwriter/workbook.h"
+#include "../../../include/xlsxwriter/core.h"
+#include "../../../include/xlsxwriter/workbook.h"
 
 #ifdef _WIN32
 #define timegm _mkgmtime

@@ -8,7 +8,7 @@
 #include "../ctest.h"
 #include "../helper.h"
 
-#include "xlsxwriter/styles.h"
+#include "../../../include/xlsxwriter/styles.h"
 
 // Test assembling a complete Styles file.
 CTEST(styles, styles01) {
