@@ -50,22 +50,25 @@ row order when `constant_memory` mode is on:
         for (row = 0; row < max_row; row++) {
             worksheet_write_number(worksheet, row, col, 123.45, NULL);
         }
-   -*- mode:  }
+    }
  @endcode
 
 @section ww_mem_inline_strings Inline strings
 
 Another optimization that is used to reduce memory usage in `constant_memory`
 mode is that cell strings aren't stored in an Excel structure call "shared
-strings" and instead are written "in-line". This is a documented Excel feature
-that is supported by most spreadsheet applications. One known exception is
-Apple Numbers for Mac where the string data isn't displayed.
+strings" and instead are written "in-line".
+
+This is a documented Excel feature that is supported by most spreadsheet
+applications. However, it isn't supported by some some spreadsheet viewer
+applications. Also, the size of the output file can increase by 20%-100%
+depending on the amount of repeated string data.
+
 
 @section ww_mem_performance Performance
 
-Currently the library isn't highly optimized. Also, the library is currently
-single threaded.
-
+Currently the library is optimized but not highly optimized. Also, the library
+is currently single threaded.
 
 Next: @ref working_with_macros
 
