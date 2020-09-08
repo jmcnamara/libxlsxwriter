@@ -61,9 +61,9 @@
 #define LXW_COL_META_MAX            128
 #define LXW_HEADER_FOOTER_MAX       255
 #define LXW_MAX_NUMBER_URLS         65530
-#define LXW_PANE_NAME_LENGTH        12      /* bottomRight + 1 */
+#define LXW_PANE_NAME_LENGTH        12  /* bottomRight + 1 */
 #define LXW_IMAGE_BUFFER_SIZE       1024
-#define LXW_HEADER_FOOTER_OBJS_MAX  6       /* Header/footer image objs. */
+#define LXW_HEADER_FOOTER_OBJS_MAX  6   /* Header/footer image objs. */
 
 /* The Excel 2007 specification says that the maximum number of page
  * breaks is 1026. However, in practice it is actually 1023. */
@@ -1702,8 +1702,8 @@ typedef struct lxw_worksheet {
     uint8_t outline_col_level;
 
     uint8_t header_footer_changed;
-    char header[LXW_HEADER_FOOTER_MAX];
-    char footer[LXW_HEADER_FOOTER_MAX];
+    char *header;
+    char *footer;
 
     struct lxw_repeat_rows repeat_rows;
     struct lxw_repeat_cols repeat_cols;
@@ -3822,8 +3822,10 @@ void worksheet_set_margins(lxw_worksheet *worksheet, double left,
  *     worksheet_set_header(worksheet, "&CCuriouser && Curiouser - Attorneys at Law");
  * @endcode
  *
- * Note, Excel requires that the header or footer string must be less than 255
- * characters. Strings longer than this will not be written.
+ * @note
+ * Excel requires that the header or footer string cannot be longer than 255
+ * characters, including the control characters. Strings longer than this will
+ * not be written.
  *
  */
 lxw_error worksheet_set_header(lxw_worksheet *worksheet, const char *string);

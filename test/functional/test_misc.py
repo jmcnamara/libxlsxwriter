@@ -37,3 +37,7 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chart_legend01(self):
         self.run_exe_test('test_chart_legend01')
+
+    def test_header04(self):
+        self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageSetup']}
+        self.run_exe_test('test_header04')

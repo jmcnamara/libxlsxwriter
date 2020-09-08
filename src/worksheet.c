@@ -665,6 +665,8 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     free(worksheet->ignore_list_data_validation);
     free(worksheet->ignore_calculated_column);
     free(worksheet->ignore_two_digit_text_year);
+    free(worksheet->header);
+    free(worksheet->footer);
 
     free(worksheet);
     worksheet = NULL;
@@ -4112,10 +4114,10 @@ _worksheet_write_header_footer(lxw_worksheet *self)
 
     lxw_xml_start_tag(self->file, "headerFooter", NULL);
 
-    if (*self->header)
+    if (self->header)
         _worksheet_write_odd_header(self);
 
-    if (*self->footer)
+    if (self->footer)
         _worksheet_write_odd_footer(self);
 
     lxw_xml_end_tag(self->file, "headerFooter");
@@ -7937,10 +7939,14 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
     if (!string)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
-    if (lxw_utf8_strlen(string) >= LXW_HEADER_FOOTER_MAX)
+    if (lxw_utf8_strlen(string) > LXW_HEADER_FOOTER_MAX)
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
 
-    lxw_strcpy(self->header, string);
+    /* Clear existing header. */
+    free(self->header);
+
+    self->header = lxw_strdup(string);
+    RETURN_ON_MEM_ERROR(self->header, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     /* Replace &[Picture] with &G which is used internally by Excel. */
     while ((found_string = strstr(self->header, "&[Picture]"))) {
@@ -7969,7 +7975,7 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
                          "images.", string);
 
         /* Reset the header string. */
-        self->header[0] = '\0';
+        free(self->header);
 
         return LXW_ERROR_PARAMETER_VALIDATION;
     }
@@ -7992,7 +7998,7 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
                              "images.", string);
 
             /* Reset the header string. */
-            self->header[0] = '\0';
+            free(self->header);
 
             return LXW_ERROR_PARAMETER_VALIDATION;
         }
@@ -8008,20 +8014,26 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
         err = _worksheet_set_header_footer_image(self,
                                                  options->image_left,
                                                  HEADER_LEFT);
-        if (err)
+        if (err) {
+            free(self->header);
             return err;
+        }
 
         err = _worksheet_set_header_footer_image(self,
                                                  options->image_center,
                                                  HEADER_CENTER);
-        if (err)
+        if (err) {
+            free(self->header);
             return err;
+        }
 
         err = _worksheet_set_header_footer_image(self,
                                                  options->image_right,
                                                  HEADER_RIGHT);
-        if (err)
+        if (err) {
+            free(self->header);
             return err;
+        }
     }
 
     self->header_footer_changed = 1;
@@ -8045,10 +8057,14 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
     if (!string)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
-    if (lxw_utf8_strlen(string) >= LXW_HEADER_FOOTER_MAX)
+    if (lxw_utf8_strlen(string) > LXW_HEADER_FOOTER_MAX)
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
 
-    lxw_strcpy(self->footer, string);
+    /* Clear existing header. */
+    free(self->footer);
+
+    self->footer = lxw_strdup(string);
+    RETURN_ON_MEM_ERROR(self->footer, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     /* Replace &[Picture] with &G which is used internally by Excel. */
     while ((found_string = strstr(self->footer, "&[Picture]"))) {
@@ -8077,7 +8093,7 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
                          "images.", string);
 
         /* Reset the footer string. */
-        self->footer[0] = '\0';
+        free(self->footer);
 
         return LXW_ERROR_PARAMETER_VALIDATION;
     }
@@ -8100,7 +8116,7 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
                              "images.", string);
 
             /* Reset the header string. */
-            self->footer[0] = '\0';
+            free(self->footer);
 
             return LXW_ERROR_PARAMETER_VALIDATION;
         }
@@ -8116,21 +8132,25 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
         err = _worksheet_set_header_footer_image(self,
                                                  options->image_left,
                                                  FOOTER_LEFT);
-        if (err)
+        if (err) {
+            free(self->footer);
             return err;
+        }
 
         err = _worksheet_set_header_footer_image(self,
                                                  options->image_center,
                                                  FOOTER_CENTER);
-        if (err)
+        if (err) {
+            free(self->footer);
             return err;
+        }
 
-        if (options->image_right) {
-            err = _worksheet_set_header_footer_image(self,
-                                                     options->image_right,
-                                                     FOOTER_RIGHT);
-            if (err)
-                return err;
+        err = _worksheet_set_header_footer_image(self,
+                                                 options->image_right,
+                                                 FOOTER_RIGHT);
+        if (err) {
+            free(self->footer);
+            return err;
         }
     }
 
@@ -9042,13 +9062,11 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
         || validation->validate == LXW_VALIDATION_TYPE_TIME) {
         if (is_between) {
             copy->value_number =
-                lxw_datetime_to_excel_date_epoch(&validation->
-                                                 minimum_datetime,
-                                                 LXW_EPOCH_1900);
+                lxw_datetime_to_excel_date_epoch
+                (&validation->minimum_datetime, LXW_EPOCH_1900);
             copy->maximum_number =
-                lxw_datetime_to_excel_date_epoch(&validation->
-                                                 maximum_datetime,
-                                                 LXW_EPOCH_1900);
+                lxw_datetime_to_excel_date_epoch
+                (&validation->maximum_datetime, LXW_EPOCH_1900);
         }
         else {
             copy->value_number =
