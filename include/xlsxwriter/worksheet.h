@@ -56,14 +56,14 @@
 #include "utility.h"
 #include "relationships.h"
 
-#define LXW_ROW_MAX           		1048576
-#define LXW_COL_MAX           		16384
-#define LXW_COL_META_MAX      		128
-#define LXW_HEADER_FOOTER_MAX 		255
-#define LXW_MAX_NUMBER_URLS   		65530
-#define LXW_PANE_NAME_LENGTH  		12      /* bottomRight + 1 */
-#define LXW_IMAGE_BUFFER_SIZE      	1024
-#define LXW_HEADER_FOOTER_OBJS_MAX 	6       /* Header/footer image objs. */
+#define LXW_ROW_MAX                 1048576
+#define LXW_COL_MAX                 16384
+#define LXW_COL_META_MAX            128
+#define LXW_HEADER_FOOTER_MAX       255
+#define LXW_MAX_NUMBER_URLS         65530
+#define LXW_PANE_NAME_LENGTH        12      /* bottomRight + 1 */
+#define LXW_IMAGE_BUFFER_SIZE       1024
+#define LXW_HEADER_FOOTER_OBJS_MAX  6       /* Header/footer image objs. */
 
 /* The Excel 2007 specification says that the maximum number of page
  * breaks is 1026. However, in practice it is actually 1023. */

@@ -796,11 +796,11 @@ typedef struct lxw_chart_point {
 typedef struct lxw_chart_data_label {
 
     /** The string or formula value for the data label. See
-	 *  @ref chart_custom_labels. */
+     *  @ref chart_custom_labels. */
     char *value;
 
     /** Option to hide/delete the data label from the chart series.
-	 *  See @ref chart_custom_labels. */
+     *  See @ref chart_custom_labels. */
     uint8_t hide;
 
     /** The font properties for the chart data label. @ref chart_fonts. */
