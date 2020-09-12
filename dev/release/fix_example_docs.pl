@@ -40,6 +40,7 @@ my @examples = (
     [ 'outline.c',              'Example of grouping and outlines' ],
     [ 'outline_collapsed.c',    'Example of grouping and collapsed outlines' ],
     [ 'tab_colors.c',           'Example of how to set worksheet tab colors' ],
+    [ 'diagonal_border.c',      'Example of how to set a worksheet cell diagonal border.' ],
     [ 'hide_sheet.c',           'Example of hiding a worksheet' ],
     [ 'doc_properties.c',       'Example of setting workbook doc properties' ],
     [ 'doc_custom_properties.c','Example of setting custom doc properties' ],

@@ -339,7 +339,7 @@ Example of adding data validations to a worksheet.
 </tr>
 </table>
 
-A simple example of how to add a conditional format a 
+A simple example of how to add a conditional format a
 libxlsxwriter file. Conditional formatting allows you to apply
 a format to a cell or a range of cells based on certain criteria.
 
@@ -473,7 +473,7 @@ mainly on collapsed outlines.
 <table  width="600">
 <tr>
   <td>@ref outline_collapsed.c "&lt;&lt; outline_collapsed.c"</td>
-  <td align="right">@ref hide_sheet.c "hide_sheet.c &gt;&gt;"</td>
+  <td align="right">@ref diagonal_border.c "diagonal_border.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -484,11 +484,27 @@ Example of how to set Excel worksheet tab colors.
 
 
 
-@example hide_sheet.c
+@example diagonal_border.c
 
 <table  width="600">
 <tr>
   <td>@ref tab_colors.c "&lt;&lt; tab_colors.c"</td>
+  <td align="right">@ref hide_sheet.c "hide_sheet.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of how to set a worksheet cell diagonal border.
+
+@image html diagonal_border.png
+
+
+
+
+@example hide_sheet.c
+
+<table  width="600">
+<tr>
+  <td>@ref diagonal_border.c "&lt;&lt; diagonal_border.c"</td>
   <td align="right">@ref doc_properties.c "doc_properties.c &gt;&gt;"</td>
 </tr>
 </table>

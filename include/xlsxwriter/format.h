@@ -159,9 +159,19 @@ enum lxw_format_alignments {
     LXW_ALIGN_VERTICAL_DISTRIBUTED
 };
 
+/**
+ * Diagonal border types.
+ *
+ */
 enum lxw_format_diagonal_types {
+
+    /** Cell diagonal border from bottom left to top right. */
     LXW_DIAGONAL_BORDER_UP = 1,
+
+    /** Cell diagonal border from top left to bottom right. */
     LXW_DIAGONAL_BORDER_DOWN,
+
+    /** Cell diagonal border in both directions. */
     LXW_DIAGONAL_BORDER_UP_DOWN
 };
 
@@ -1198,9 +1208,76 @@ void format_set_left_color(lxw_format *format, lxw_color_t color);
  */
 void format_set_right_color(lxw_format *format, lxw_color_t color);
 
-void format_set_diag_type(lxw_format *format, uint8_t value);
+/**
+ * @brief Set the diagonal cell border type.
+ *
+ * @param format Pointer to a Format instance.
+ * @param type   The #lxw_format_diagonal_types diagonal border type.
+ *
+ * Set the diagonal cell border type:
+ *
+ * @code
+ *     lxw_format *format1 = workbook_add_format(workbook);
+ *     format_set_diag_type(  format1, LXW_DIAGONAL_BORDER_UP);
+ *
+ *     lxw_format *format2 = workbook_add_format(workbook);
+ *     format_set_diag_type(  format2, LXW_DIAGONAL_BORDER_DOWN);
+ *
+ *     lxw_format *format3 = workbook_add_format(workbook);
+ *     format_set_diag_type(  format3, LXW_DIAGONAL_BORDER_UP_DOWN);
+ *
+ *     lxw_format *format4 = workbook_add_format(workbook);
+ *     format_set_diag_type(  format4, LXW_DIAGONAL_BORDER_UP_DOWN);
+ *     format_set_diag_border(format4, LXW_BORDER_HAIR);
+ *     format_set_diag_color( format4, LXW_COLOR_RED);
+ *
+ *     worksheet_write_string(worksheet, CELL("B3"),  "Text", format1);
+ *     worksheet_write_string(worksheet, CELL("B6"),  "Text", format2);
+ *     worksheet_write_string(worksheet, CELL("B9"),  "Text", format3);
+ *     worksheet_write_string(worksheet, CELL("B12"), "Text", format4);
+ * @endcode
+ *
+ * @image html diagonal_border.png
+ *
+ * The allowable border types are defined in #lxw_format_diagonal_types:
+ *
+ * - #LXW_DIAGONAL_BORDER_UP: Cell diagonal border from bottom left to top
+ *   right.
+ *
+ * - #LXW_DIAGONAL_BORDER_DOWN: Cell diagonal border from top left to bottom
+ *   right.
+ *
+ * - #LXW_DIAGONAL_BORDER_UP_DOWN: Cell diagonal border from top left to
+ *   bottom right. A combination of the 2 previous types.
+ *
+ * If the border style isn't specified with `format_set_diag_border()` then it
+ * will default to #LXW_BORDER_THIN.
+ */
+void format_set_diag_type(lxw_format *format, uint8_t type);
+
+/**
+ * @brief Set the diagonal cell border style.
+ *
+ * @param format Pointer to a Format instance.
+ * @param style  The #lxw_format_borders style.
+ *
+ * Set the diagonal border style. This should be a #lxw_format_borders value.
+ * See the example above.
+ *
+ */
+void format_set_diag_border(lxw_format *format, uint8_t style);
+
+/**
+ * @brief Set the diagonal cell border color.
+ *
+ * @param format Pointer to a Format instance.
+ * @param color  The cell diagonal border color.
+ *
+ * Set the diagonal border color. The color should be an RGB integer value,
+ * see @ref working_with_colors and the above example.
+ */
 void format_set_diag_color(lxw_format *format, lxw_color_t color);
-void format_set_diag_border(lxw_format *format, uint8_t value);
+
 void format_set_font_outline(lxw_format *format);
 void format_set_font_shadow(lxw_format *format);
 void format_set_font_family(lxw_format *format, uint8_t value);

@@ -846,7 +846,7 @@ _write_border(lxw_styles *self, lxw_format *format, uint8_t is_dxf)
 
     /* Ensure that a default diag border is set if the diag type is set. */
     if (format->diag_type && !format->diag_border) {
-        format->diag_border = 1;
+        format->diag_border = LXW_BORDER_THIN;
     }
 
     /* Write the start border tag. */

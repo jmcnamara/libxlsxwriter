@@ -150,7 +150,7 @@ Example of adding data validations to a worksheet.
 ##############################################################
 @example conditional_format1.c
 
-A simple example of how to add a conditional format a 
+A simple example of how to add a conditional format a
 libxlsxwriter file. Conditional formatting allows you to apply
 a format to a cell or a range of cells based on certain criteria.
 
@@ -219,6 +219,13 @@ mainly on collapsed outlines.
 Example of how to set Excel worksheet tab colors.
 
 @image html tab_colors.png
+
+##############################################################
+@example diagonal_border.c
+
+Example of how to set a worksheet cell diagonal border.
+
+@image html diagonal_border.png
 
 ##############################################################
 @example hide_sheet.c
