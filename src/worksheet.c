@@ -2580,6 +2580,8 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
     double width;
     double height;
     char *url;
+    char *found_string;
+    size_t i;
     char filename[LXW_FILENAME_LENGTH];
     enum cell_types link_type = HYPERLINK_URL;
 
@@ -2666,10 +2668,35 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
             relationship->target_mode = lxw_strdup("External");
             GOTO_LABEL_ON_MEM_ERROR(relationship->target_mode, mem_error);
 
-            relationship->target =
-                lxw_escape_url_characters(url + 1, LXW_TRUE);
-            GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
-            memcpy(relationship->target, "file:///", sizeof("file:///") - 1);
+            /* Look for Windows style "C:/" link or Windows share "\\" link. */
+            found_string = strchr(url + sizeof("external:") - 1, ':');
+            if (!found_string)
+                found_string = strstr(url, "\\\\");
+
+            if (found_string) {
+                /* Copy the url with some space at the start to overwrite
+                 * "external:" with "file:///". */
+                relationship->target = lxw_escape_url_characters(url + 1,
+                                                                 LXW_TRUE);
+                GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+
+                /* Add the file:/// URI to the url if absolute path. */
+                memcpy(relationship->target, "file:///",
+                       sizeof("file:///") - 1);
+            }
+            else {
+                /* Copy the relative url without "external:". */
+                relationship->target =
+                    lxw_escape_url_characters(url + sizeof("external:") - 1,
+                                              LXW_TRUE);
+                GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+
+                /* Switch backslash to forward slash. */
+                for (i = 0; i <= strlen(relationship->target); i++)
+                    if (relationship->target[i] == '\\')
+                        relationship->target[i] = '/';
+            }
+
         }
         else {
             relationship->target_mode = lxw_strdup("External");
