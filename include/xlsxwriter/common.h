@@ -251,6 +251,12 @@ enum lxw_custom_property_types {
     if (error)                                  \
         return error;
 
+#define RETURN_AND_ZIPCLOSE_ON_ERROR(error)     \
+    if (error) {                                \
+        zipClose(self->zipfile, NULL);          \
+        return error;                           \
+}
+
 #define LXW_WARN(message)                       \
     fprintf(stderr, "[WARNING]: " message "\n")
 

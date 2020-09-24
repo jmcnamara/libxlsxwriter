@@ -158,9 +158,8 @@ _write_workbook_file(lxw_packager *self)
     lxw_workbook_assemble_xml_file(workbook);
 
     err = _add_file_to_zip(self, workbook->file, "xl/workbook.xml");
-    RETURN_ON_ERROR(err);
-
     fclose(workbook->file);
+    RETURN_ON_ERROR(err);
 
     return LXW_NO_ERROR;
 }
@@ -197,9 +196,8 @@ _write_worksheet_files(lxw_packager *self)
         lxw_worksheet_assemble_xml_file(worksheet);
 
         err = _add_file_to_zip(self, worksheet->file, sheetname);
-        RETURN_ON_ERROR(err);
-
         fclose(worksheet->file);
+        RETURN_ON_ERROR(err);
     }
 
     return LXW_NO_ERROR;
@@ -234,9 +232,8 @@ _write_chartsheet_files(lxw_packager *self)
         lxw_chartsheet_assemble_xml_file(chartsheet);
 
         err = _add_file_to_zip(self, chartsheet->file, sheetname);
-        RETURN_ON_ERROR(err);
-
         fclose(chartsheet->file);
+        RETURN_ON_ERROR(err);
     }
 
     return LXW_NO_ERROR;
@@ -356,9 +353,8 @@ _write_chart_files(lxw_packager *self)
         lxw_chart_assemble_xml_file(chart);
 
         err = _add_file_to_zip(self, chart->file, sheetname);
-        RETURN_ON_ERROR(err);
-
         fclose(chart->file);
+        RETURN_ON_ERROR(err);
     }
 
     return LXW_NO_ERROR;
@@ -412,10 +408,10 @@ _write_drawing_files(lxw_packager *self)
                 return LXW_ERROR_CREATING_TMPFILE;
 
             lxw_drawing_assemble_xml_file(drawing);
-            err = _add_file_to_zip(self, drawing->file, filename);
-            RETURN_ON_ERROR(err);
 
+            err = _add_file_to_zip(self, drawing->file, filename);
             fclose(drawing->file);
+            RETURN_ON_ERROR(err);
         }
     }
 
@@ -549,7 +545,6 @@ _write_vml_files(lxw_packager *self)
 
             RETURN_ON_ERROR(err);
         }
-
     }
 
     return LXW_NO_ERROR;
@@ -627,9 +622,8 @@ _write_shared_strings_file(lxw_packager *self)
     lxw_sst_assemble_xml_file(sst);
 
     err = _add_file_to_zip(self, sst->file, "xl/sharedStrings.xml");
-    RETURN_ON_ERROR(err);
-
     fclose(sst->file);
+    RETURN_ON_ERROR(err);
 
     return LXW_NO_ERROR;
 }
@@ -1451,67 +1445,67 @@ lxw_create_package(lxw_packager *self)
     int8_t zip_error;
 
     error = _write_content_types_file(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_root_rels_file(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_workbook_rels_file(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_worksheet_files(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_chartsheet_files(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_workbook_file(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_chart_files(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_drawing_files(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_vml_files(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_comment_files(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_shared_strings_file(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_custom_file(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_theme_file(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_styles_file(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_worksheet_rels_file(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_chartsheet_rels_file(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_drawing_rels_file(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_image_files(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _add_vba_project(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_core_file(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_app_file(self);
-    RETURN_ON_ERROR(error);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     zip_error = zipClose(self->zipfile, NULL);
     if (zip_error) {
