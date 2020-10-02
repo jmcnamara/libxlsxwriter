@@ -2317,6 +2317,10 @@ _chart_write_custom_label_formula(lxw_chart *self, lxw_chart_series *series,
 
     _chart_write_custom_label_format_only(self, data_label);
 
+    /* Write the c:dLblPos element. */
+    if (series->label_position)
+        _chart_write_d_lbl_pos(self, series->label_position);
+
     /* Write the c:showVal element. */
     if (series->show_labels_value)
         _chart_write_show_val(self);
@@ -2355,6 +2359,10 @@ _chart_write_custom_label_str(lxw_chart *self, lxw_chart_series *series,
     /* Write the c:spPr element. */
     _chart_write_sp_pr(self, data_label->line, data_label->fill,
                        data_label->pattern);
+
+    /* Write the c:dLblPos element. */
+    if (series->label_position)
+        _chart_write_d_lbl_pos(self, series->label_position);
 
     /* Write the c:showVal element. */
     if (series->show_labels_value)
