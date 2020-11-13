@@ -11,6 +11,7 @@
 #include "xlsxwriter/packager.h"
 #include "xlsxwriter/hash_table.h"
 #include "xlsxwriter/utility.h"
+#include <zlib.h>
 
 STATIC lxw_error _add_file_to_zip(lxw_packager *self, FILE * file,
                                   const char *filename);
