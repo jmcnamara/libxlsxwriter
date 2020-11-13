@@ -95,6 +95,13 @@ else()
 endif()
 
 SET(PROJECT_NAME "xlsxwriter" CACHE STRING "Optional project and binary name")
+
+# Soname
+# MAJOR is incremented when symbols are removed or changed in an incompatible way
+# MINOR is incremented when new symbols are added
+SET(LIB_VERSION_MAJOR 1)
+SET(LIB_VERSION_MINOR 0)
+
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 project(${PROJECT_NAME} C)
 enable_testing()
@@ -233,6 +240,7 @@ endif()
 set(LXW_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(LXW_LIB_DIR "${LXW_PROJECT_DIR}/lib")
 add_library(${PROJECT_NAME} "")
+set_target_properties(${PROJECT_NAME} PROPERTIES VERSION ${LIB_VERSION_MAJOR}.${LIB_VERSION_MINOR}.0 SOVERSION ${LIB_VERSION_MAJOR})
 target_sources(${PROJECT_NAME}
     PRIVATE ${LXW_SOURCES}
     PUBLIC ${LXW_HEADERS}
