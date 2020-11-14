@@ -33,10 +33,10 @@ endif
 all: tmpfileplus.o tmpfileplus.so
 
 %.o  : %.c
-	$(Q)$(CC)         -c $(CFLAGS) $<
+	$(Q)$(CC)         -c $(CFLAGS) $(TARGET_ARCH) $<
 
 %.so : %.c
-	$(Q)$(CC) $(FPIC) -c $(CFLAGS) $< -o $@
+	$(Q)$(CC) $(FPIC) -c $(CFLAGS) $(TARGET_ARCH) $< -o $@
 
 clean:
 	$(Q)/bin/rm -f *.o *.so

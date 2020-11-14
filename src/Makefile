@@ -148,7 +148,7 @@ ARCH = -m32
 endif
 
 $(LIBXLSXWRITER_SO) : $(SOBJS)
-	$(Q)$(CC) $(LDFLAGS) $(SOFLAGS) $(ARCH) -o $@ $(MINIZIP_SO) $(TMPFILEPLUS_SO) $(MD5_SO) $^ $(LIBS)
+	$(Q)$(CC) $(LDFLAGS) $(SOFLAGS) $(ARCH) $(TARGET_ARCH) -o $@ $(MINIZIP_SO) $(TMPFILEPLUS_SO) $(MD5_SO) $^ $(LIBS)
 
 # The test library.
 $(LIBXLSXWRITER_TO) : $(TOBJS)
@@ -159,10 +159,10 @@ test_compile : $(OBJS)
 
 # Targets for the object files.
 %.o  : %.c $(HDRS)
-	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $<
+	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) $(TARGET_ARCH) -c $<
 
 %.so : %.c $(HDRS)
-	$(Q)$(CC) $(FPIC) -I$(INC_DIR) $(LDFLAGS) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(Q)$(CC) $(FPIC) -I$(INC_DIR) $(LDFLAGS) $(CFLAGS) $(CXXFLAGS) $(TARGET_ARCH) -c $< -o $@
 
 %.to : %.c $(HDRS)
 	$(Q)$(CC) -g -O3 -DTESTING -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@

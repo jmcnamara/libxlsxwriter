@@ -32,6 +32,21 @@ ifndef USE_NO_MD5
 endif
 	$(Q)$(MAKE) -C src
 
+universal_binary :
+	$(Q)$(MAKE) clean
+	$(Q)TARGET_ARCH="-target x86_64-apple-macos10.12" $(MAKE) all
+	$(Q)mv lib/libxlsxwriter.a     libxlsxwriter_x86_64.a
+	$(Q)mv lib/libxlsxwriter.dylib libxlsxwriter_x86_64.dylib
+
+	$(Q)$(MAKE) clean
+	$(Q)TARGET_ARCH="-target arm64-apple-macos11" $(MAKE) all
+	$(Q)mv lib/libxlsxwriter.a     lib/libxlsxwriter_arm64.a
+	$(Q)mv lib/libxlsxwriter.dylib lib/libxlsxwriter_arm64.dylib
+	$(Q)mv libxlsxwriter_x86_64.a libxlsxwriter_x86_64.dylib lib
+
+	$(Q)lipo -create -output lib/libxlsxwriter.a     lib/libxlsxwriter_x86_64.a     lib/libxlsxwriter_arm64.a
+	$(Q)lipo -create -output lib/libxlsxwriter.dylib lib/libxlsxwriter_x86_64.dylib lib/libxlsxwriter_arm64.dylib
+
 # Build the example programs.
 examples :
 	$(Q)$(MAKE) -C examples
