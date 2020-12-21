@@ -94,9 +94,9 @@ else()
     cmake_minimum_required(VERSION 3.1)
 endif()
 
-SET(PROJECT_NAME "xlsxwriter" CACHE STRING "Optional project and binary name")
+SET(XLSX_PROJECT_NAME "xlsxwriter" CACHE STRING "Optional project and binary name")
 set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-project(${PROJECT_NAME} C)
+project(${XLSX_PROJECT_NAME} C)
 enable_testing()
 
 # POLICY
