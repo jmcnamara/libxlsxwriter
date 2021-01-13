@@ -45,7 +45,7 @@ lxw_styles *lxw_styles_new(void);
 void lxw_styles_free(lxw_styles *styles);
 void lxw_styles_assemble_xml_file(lxw_styles *self);
 void lxw_styles_write_string_fragment(lxw_styles *self, char *string);
-void lxw_styles_write_rich_font(lxw_styles *lxw_styles, lxw_format *format);
+void lxw_styles_write_rich_font(lxw_styles *styles, lxw_format *format);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING
