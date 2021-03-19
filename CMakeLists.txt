@@ -177,6 +177,15 @@ if(MSVC AND USE_STATIC_MSVC_RUNTIME)
     endforeach()
 endif()
 
+# Configure pkg-config
+file(READ "include/xlsxwriter.h" ver)
+
+string(REGEX MATCH "VERSION .*\"\(.*\)\".*" _ ${ver})
+set(VERSION ${CMAKE_MATCH_1})
+set(PREFIX ${CMAKE_INSTALL_PREFIX})
+
+configure_file(dev/release/pkg-config.txt xlsxwriter.pc @ONLY)
+
 # INCLUDES
 # --------
 enable_language(CXX)
@@ -352,3 +361,4 @@ install(DIRECTORY include/xlsxwriter
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
     FILES_MATCHING PATTERN "*.h"
 )
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/xlsxwriter.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)

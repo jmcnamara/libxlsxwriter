@@ -17,6 +17,8 @@ PREFIX  ?= /usr/local
 PYTEST ?= py.test
 PYTESTFILES ?= test
 
+VERSION = $(shell sed -n -e '/VERSION "/s/.*"\(.*\)".*/\1/p' < include/xlsxwriter.h)
+
 .PHONY: docs tags examples
 
 # Build the libs.
@@ -61,6 +63,7 @@ clean :
 	$(Q)rm -rf test/functional/__pycache__
 	$(Q)rm -f  test/functional/*.pyc
 	$(Q)rm -f  lib/*
+	$(Q)rm -f  xlsxwriter.pc
 ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) clean -C third_party/minizip
 endif
@@ -149,11 +152,14 @@ install: all
 	$(Q)cp -R include/* $(DESTDIR)$(PREFIX)/include
 	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/lib
 	$(Q)cp lib/*        $(DESTDIR)$(PREFIX)/lib
+	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/lib/pkgconfig
+	$(Q)sed -e          's|@PREFIX@|$(PREFIX)|g'  -e 's|@VERSION@|$(VERSION)|g' dev/release/pkg-config.txt > $(DESTDIR)$(PREFIX)/lib/pkgconfig/xlsxwriter.pc
 
 # Simpler minded uninstall.
 uninstall:
 	$(Q)rm -rf $(DESTDIR)$(PREFIX)/include/xlsxwriter*
 	$(Q)rm     $(DESTDIR)$(PREFIX)/lib/libxlsxwriter.*
+	$(Q)rm     $(DESTDIR)$(PREFIX)/lib/pkgconfig/xlsxwriter.pc
 
 # Strip the lib files.
 strip:
