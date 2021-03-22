@@ -1,0 +1,25 @@
+From c1ab1d9e7018dcdc7eb81082647ac85a490ddcfb Mon Sep 17 00:00:00 2001
+From: Andreas Naumann <andreas.naumann@mathematik.tu-chemnitz.de>
+Date: Mon, 21 Dec 2020 18:50:14 +0100
+Subject: [PATCH] resolve issue 318
+
+---
+ CMakeLists.txt | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 23599338..b408fc67 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -94,9 +94,9 @@ else()
+     cmake_minimum_required(VERSION 3.1)
+ endif()
+ 
+-SET(PROJECT_NAME "xlsxwriter" CACHE STRING "Optional project and binary name")
++SET(XLSX_PROJECT_NAME "xlsxwriter" CACHE STRING "Optional project and binary name")
+ set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+-project(${PROJECT_NAME} C)
++project(${XLSX_PROJECT_NAME} C)
+ enable_testing()
+ 
+ # POLICY

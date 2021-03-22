@@ -63,7 +63,6 @@ clean :
 	$(Q)rm -rf test/functional/__pycache__
 	$(Q)rm -f  test/functional/*.pyc
 	$(Q)rm -f  lib/*
-	$(Q)rm -f  xlsxwriter.pc
 ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) clean -C third_party/minizip
 endif
@@ -146,7 +145,7 @@ docs_doxygen_only:
 docs_external:
 	$(Q)make -C ../libxlsxwriter.github.io release
 
-# Simple minded install.
+# Simple install.
 install: all
 	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/include
 	$(Q)cp -R include/* $(DESTDIR)$(PREFIX)/include
@@ -155,7 +154,7 @@ install: all
 	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/lib/pkgconfig
 	$(Q)sed -e          's|@PREFIX@|$(PREFIX)|g'  -e 's|@VERSION@|$(VERSION)|g' dev/release/pkg-config.txt > $(DESTDIR)$(PREFIX)/lib/pkgconfig/xlsxwriter.pc
 
-# Simpler minded uninstall.
+# Simpler uninstall.
 uninstall:
 	$(Q)rm -rf $(DESTDIR)$(PREFIX)/include/xlsxwriter*
 	$(Q)rm     $(DESTDIR)$(PREFIX)/lib/libxlsxwriter.*
