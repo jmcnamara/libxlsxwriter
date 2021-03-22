@@ -216,7 +216,7 @@ And call its C functions like this:
 
     let documentDirectory = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor:nil, create:false)
     let fileURL = documentDirectory.appendingPathComponent("hello_world.xlsx")
-    
+
     let workbook = workbook_new((fileURL.absoluteString.dropFirst(6) as NSString).fileSystemRepresentation)
     let worksheet = workbook_add_worksheet(workbook, nil)
     worksheet_write_string(worksheet, 0, 0, "Hello", nil)
@@ -228,6 +228,29 @@ macOS with Objective-C and Swift see [libxlsxwriter Cocoa
 Examples](https://github.com/lrossi/libxlsxwriterCocoaExamples) or
 [LibXlsxWriterSwiftSample](https://github.com/FrankenApps/LibXlsxWriterSwiftSample)
 for an updated example for Swift 5.
+
+@subsection gsg_universal Compiling a universal binary on macOS
+
+With Xcode 12.2 and later you can compile libxlsxwriter as a "universal
+binary" for both Apple silicon and Intel-based Macs, i.e., arm64 and x86_64.
+
+You can compile a universal binary with standard make as follows:
+
+    $ make universal_binary
+
+    # Which gives:
+    $ lipo -archs lib/libxlsxwriter.a
+    x86_64 arm64
+
+    $ lipo -archs lib/libxlsxwriter.dylib
+    x86_64 arm64
+
+Or with Cmake (see also @ref gsg_cmake):
+
+    cd cmake
+    cmake -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" ..
+    make
+
 
 @subsection gsg_brew Installation on macOS with homebrew
 
