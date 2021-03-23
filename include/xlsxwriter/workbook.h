@@ -229,7 +229,7 @@ typedef struct lxw_doc_properties {
  *
  * - `constant_memory`: This option reduces the amount of data stored in
  *   memory so that large files can be written efficiently. This option is off
- *   by default. See the note below for limitations when this mode is on.
+ *   by default. See the notes below for limitations when this mode is on.
  *
  * - `tmpdir`: libxlsxwriter stores workbook data in temporary files prior to
  *   assembling the final XLSX file. The temporary files are created in the
@@ -244,12 +244,19 @@ typedef struct lxw_doc_properties {
  *
  *   [zip64_wiki]: https://en.wikipedia.org/wiki/Zip_(file_format)#ZIP64
  *
- * @note In `constant_memory` mode a row of data is written and then discarded
- * when a cell in a new row is added via one of the `worksheet_write_*()`
- * functions. Therefore, once this option is active, data should be written in
- * sequential row order. For this reason the `worksheet_merge_range()` doesn't
- * work in this mode. See also @ref ww_mem_constant.
+ * @note In `constant_memory` mode each row of in-memory data is written to
+ * disk and then freed when a new row is started via one of the
+ * `worksheet_write_*()` functions. Therefore, once this option is active data
+ * should be written in sequential row by row order. For this reason
+ * `worksheet_merge_range()` and some other row based functionality doesn't
+ * work in this mode. See @ref ww_mem_constant for more details.
  *
+ * @note Also, in `constant_memory` mode the library uses temp file storage
+ * for worksheet data. This can lead to an issue on OSes that map the `/tmp`
+ * directory into memory since it is possible to consume the "system" memory
+ * even though the "process" memory remains constant. In these cases you
+ * should use an alternative temp file location by using the `tmpdir` option
+ * shown above. See @ref ww_mem_temp for more details.
  */
 typedef struct lxw_workbook_options {
     /** Optimize the workbook to use constant memory for worksheets. */
@@ -389,12 +396,19 @@ lxw_workbook *workbook_new(const char *filename);
  *
  *   [zip64_wiki]: https://en.wikipedia.org/wiki/Zip_(file_format)#ZIP64
  *
- * @note In `constant_memory` mode a row of data is written and then discarded
- * when a cell in a new row is added via one of the `worksheet_write_*()`
- * functions. Therefore, once this option is active, data should be written in
- * sequential row order. For this reason the `worksheet_merge_range()` doesn't
- * work in this mode. See also @ref ww_mem_constant.
+ * @note In `constant_memory` mode each row of in-memory data is written to
+ * disk and then freed when a new row is started via one of the
+ * `worksheet_write_*()` functions. Therefore, once this option is active data
+ * should be written in sequential row by row order. For this reason
+ * `worksheet_merge_range()` and some other row based functionality doesn't
+ * work in this mode. See @ref ww_mem_constant for more details.
  *
+ * @note Also, in `constant_memory` mode the library uses temp file storage
+ * for worksheet data. This can lead to an issue on OSes that map the `/tmp`
+ * directory into memory since it is possible to consume the "system" memory
+ * even though the "process" memory remains constant. In these cases you
+ * should use an alternative temp file location by using the `tmpdir` option
+ * shown above. See @ref ww_mem_temp for more details.
  */
 lxw_workbook *workbook_new_opt(const char *filename,
                                lxw_workbook_options *options);

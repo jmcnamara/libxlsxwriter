@@ -30,12 +30,17 @@ maximum column that is likely to be encountered.
 
 The trade-off when using `constant_memory` mode is that data must be added
 sequentially in row order and you won't be able to take advantage of any
-functions that manipulate cell data after it is written. One such feature is
-worksheet_set_row() which in `constant_memory` mode can only be used when
-writing data to the current row. Another is worksheet_merge_range() which can
-only be applied to a merged range in the current row.
+functions that manipulate cell data after it is written. For example:
 
-@section ww_mem_row_order Row Column Order
+- In `constant_memory` mode `worksheet_set_row()` can only be used when
+  writing data to the current row. This has an additional knock on effect that
+  images won't scale properly over row heights adjusted with
+  `%worksheet_set_row()`.
+
+- A merged range set with `worksheet_merge_range()` can only be applied to the
+  current row (which in general isn't very useful).
+
+@subsection ww_mem_row_order Row Column Order
 
 Since each new row flushes the previous row, data must be written in sequential
 row order when `constant_memory` mode is on:
@@ -53,7 +58,23 @@ row order when `constant_memory` mode is on:
     }
  @endcode
 
-@section ww_mem_inline_strings Inline strings
+
+@subsection ww_mem_temp Constant memory mode and the /tmp directory
+
+The libxlsxwriter library uses temporary files stored in the system `/tmp`
+directory prior to creating the final xlsx file. In `constant_memory` mode the
+library uses additional temporary file storage for worksheet data. This can
+lead to an issue on OSes that map the `/tmp` directory into memory since it is
+possible for a libxlsxwriter application to consume the "system" memory via
+disk usage even though the "process" memory remains constant.
+
+This is generally only an issue with embedded Linux systems with limited
+amounts of system memory. In these cases you should use an alternative
+temporary file location by using the `tmpdir` option of #lxw_workbook_options
+and workbook_new_opt().
+
+
+@subsection ww_mem_inline_strings Inline strings
 
 Another optimization that is used to reduce memory usage in `constant_memory`
 mode is that cell strings aren't stored in an Excel structure call "shared
