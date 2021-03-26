@@ -24,3 +24,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chart_crossing04(self):
         self.run_exe_test('test_chart_crossing04')
+
+    def test_chart_crossing05(self):
+        self.run_exe_test('test_chart_crossing05')
+
+    def test_chart_crossing06(self):
+        self.run_exe_test('test_chart_crossing06')

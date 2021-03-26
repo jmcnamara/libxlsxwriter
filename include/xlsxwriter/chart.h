@@ -1072,6 +1072,7 @@ typedef struct lxw_chart_axis {
     uint8_t display_units_visible;
 
     uint8_t has_crossing;
+    uint8_t crossing_min;
     uint8_t crossing_max;
     double crossing;
 
@@ -2699,6 +2700,26 @@ void chart_axis_set_crossing(lxw_chart_axis *axis, double value);
  *                 See @ref ww_charts_axes.
  */
 void chart_axis_set_crossing_max(lxw_chart_axis *axis);
+
+/**
+ * @brief Set the opposite axis crossing position as the axis minimum.
+ *
+ * @param axis  A pointer to a chart #lxw_chart_axis object.
+ *
+ * Set the position that the opposite axis will cross as the axis minimum.
+ * The default axis crossing position is generally the axis minimum so this
+ * function can be used to reverse the location of the axes without reversing
+ * the number sequence:
+ *
+ * @code
+ *     chart_axis_set_crossing_min(chart->x_axis);
+ *     chart_axis_set_crossing_min(chart->y_axis);
+ * @endcode
+ *
+ * **Axis types**: This function is applicable to to all axes types.
+ *                 See @ref ww_charts_axes.
+ */
+void chart_axis_set_crossing_min(lxw_chart_axis *axis);
 
 /**
  * @brief Turn off/hide an axis.

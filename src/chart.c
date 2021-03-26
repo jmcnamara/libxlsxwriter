@@ -3318,7 +3318,9 @@ _chart_write_crosses(lxw_chart *self, lxw_chart_axis *axis)
 
     LXW_INIT_ATTRIBUTES();
 
-    if (axis->crossing_max)
+    if (axis->crossing_min)
+        LXW_PUSH_ATTRIBUTES_STR("val", "min");
+    else if (axis->crossing_max)
         LXW_PUSH_ATTRIBUTES_STR("val", "max");
     else
         LXW_PUSH_ATTRIBUTES_STR("val", "autoZero");
@@ -4261,7 +4263,8 @@ _chart_write_cat_axis(lxw_chart *self)
     _chart_write_cross_axis(self, self->axis_id_2);
 
     /* Write the c:crosses element. */
-    if (!self->y_axis->has_crossing || self->y_axis->crossing_max)
+    if (!self->y_axis->has_crossing || self->y_axis->crossing_min
+        || self->y_axis->crossing_max)
         _chart_write_crosses(self, self->y_axis);
     else
         _chart_write_crosses_at(self, self->y_axis);
@@ -4342,7 +4345,8 @@ _chart_write_val_axis(lxw_chart *self)
     _chart_write_cross_axis(self, self->axis_id_1);
 
     /* Write the c:crosses element. */
-    if (!self->x_axis->has_crossing || self->x_axis->crossing_max)
+    if (!self->x_axis->has_crossing || self->x_axis->crossing_min
+        || self->x_axis->crossing_max)
         _chart_write_crosses(self, self->x_axis);
     else
         _chart_write_crosses_at(self, self->x_axis);
@@ -4420,7 +4424,8 @@ _chart_write_cat_val_axis(lxw_chart *self)
     _chart_write_cross_axis(self, self->axis_id_2);
 
     /* Write the c:crosses element. */
-    if (!self->y_axis->has_crossing || self->y_axis->crossing_max)
+    if (!self->y_axis->has_crossing || self->y_axis->crossing_min
+        || self->y_axis->crossing_max)
         _chart_write_crosses(self, self->y_axis);
     else
         _chart_write_crosses_at(self, self->y_axis);
@@ -6139,7 +6144,17 @@ chart_axis_set_crossing(lxw_chart_axis *axis, double value)
 }
 
 /*
- * Set the axis crossing position as the max possible value.
+ * Set the axis crossing position as the minimum possible value.
+ */
+void
+chart_axis_set_crossing_min(lxw_chart_axis *axis)
+{
+    axis->has_crossing = LXW_TRUE;
+    axis->crossing_min = LXW_TRUE;
+}
+
+/*
+ * Set the axis crossing position as the maximum possible value.
  */
 void
 chart_axis_set_crossing_max(lxw_chart_axis *axis)
