@@ -641,7 +641,7 @@ _write_fg_color(lxw_styles *self, lxw_color_t color)
  * Write the <bgColor> element.
  */
 STATIC void
-_write_bg_color(lxw_styles *self, lxw_color_t color)
+_write_bg_color(lxw_styles *self, lxw_color_t color, uint8_t pattern)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -650,14 +650,16 @@ _write_bg_color(lxw_styles *self, lxw_color_t color)
     LXW_INIT_ATTRIBUTES();
 
     if (color == LXW_COLOR_UNSET) {
-        LXW_PUSH_ATTRIBUTES_STR("indexed", "64");
+        if (pattern <= LXW_PATTERN_SOLID) {
+            LXW_PUSH_ATTRIBUTES_STR("indexed", "64");
+            lxw_xml_empty_tag(self->file, "bgColor", &attributes);
+        }
     }
     else {
         lxw_snprintf(rgb_str, LXW_ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
         LXW_PUSH_ATTRIBUTES_STR("rgb", rgb_str);
+        lxw_xml_empty_tag(self->file, "bgColor", &attributes);
     }
-
-    lxw_xml_empty_tag(self->file, "bgColor", &attributes);
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -704,6 +706,13 @@ _write_fill(lxw_styles *self, lxw_format *format, uint8_t is_dxf)
 
     LXW_INIT_ATTRIBUTES();
 
+    /* Special handling for pattern only case. */
+    if (!bg_color && !fg_color && pattern) {
+        _write_default_fill(self, patterns[pattern]);
+        LXW_FREE_ATTRIBUTES();
+        return;
+    }
+
     lxw_xml_start_tag(self->file, "fill", NULL);
 
     /* None/Solid patterns are handled differently for dxf formats. */
@@ -715,7 +724,7 @@ _write_fill(lxw_styles *self, lxw_format *format, uint8_t is_dxf)
     if (fg_color != LXW_COLOR_UNSET)
         _write_fg_color(self, fg_color);
 
-    _write_bg_color(self, bg_color);
+    _write_bg_color(self, bg_color, pattern);
 
     lxw_xml_end_tag(self->file, "patternFill");
     lxw_xml_end_tag(self->file, "fill");
