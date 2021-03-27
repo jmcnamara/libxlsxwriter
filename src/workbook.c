@@ -1411,6 +1411,26 @@ _write_file_version(lxw_workbook *self)
 }
 
 /*
+ * Write the <fileSharing> element.
+ */
+STATIC void
+_workbook_write_file_sharing(lxw_workbook *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    if (self->read_only == 0)
+        return;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("readOnlyRecommended", "1");
+
+    lxw_xml_empty_tag(self->file, "fileSharing", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <workbookPr> element.
  */
 STATIC void
@@ -1607,6 +1627,9 @@ lxw_workbook_assemble_xml_file(lxw_workbook *self)
 
     /* Write the XLSX file version. */
     _write_file_version(self);
+
+    /* Write the fileSharing element. */
+    _workbook_write_file_sharing(self);
 
     /* Write the workbook properties. */
     _write_workbook_pr(self);
@@ -2542,4 +2565,13 @@ workbook_set_vba_name(lxw_workbook *self, const char *name)
     self->vba_codename = lxw_strdup(name);
 
     return LXW_NO_ERROR;
+}
+
+/*
+ * Set the Excel "Read-only recommended" save option.
+ */
+void
+workbook_read_only_recommended(lxw_workbook *self)
+{
+    self->read_only = 2;
 }

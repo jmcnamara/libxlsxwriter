@@ -46,6 +46,7 @@ typedef struct lxw_app {
 
     uint32_t num_heading_pairs;
     uint32_t num_part_names;
+    uint8_t doc_security;
 
 } lxw_app;
 

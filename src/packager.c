@@ -706,6 +706,8 @@ _write_app_file(lxw_packager *self)
     /* Set the app/doc properties. */
     app->properties = workbook->properties;
 
+    app->doc_security = workbook->read_only;
+
     lxw_app_assemble_xml_file(app);
 
     err = _add_file_to_zip(self, app->file, "docProps/app.xml");

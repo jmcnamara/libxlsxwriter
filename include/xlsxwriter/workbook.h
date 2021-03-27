@@ -314,6 +314,7 @@ typedef struct lxw_workbook {
     uint16_t fill_count;
     uint8_t optimize;
     uint16_t max_url_length;
+    uint8_t read_only;
 
     uint8_t has_png;
     uint8_t has_jpeg;
@@ -983,6 +984,27 @@ lxw_error workbook_add_vba_project(lxw_workbook *workbook,
  * @return A #lxw_error.
  */
 lxw_error workbook_set_vba_name(lxw_workbook *workbook, const char *name);
+
+/**
+ * @brief Add a recommendation to open the file in "read-only" mode.
+ *
+ * @param workbook
+ *
+ * This function can be used to set the Excel "Read-only Recommended" option
+ * that is available when saving a file. This presents the user of the file
+ * with an option to open it in "read-only" mode. This means that any changes
+ * to the file can't be saved back to the same file and must be saved to a new
+ * file. It can be set as follows:
+ *
+ * @code
+ *     workbook_read_only_recommended(workbook);
+ * @endcode
+ *
+ * Which will raise a dialog like the following when opening the file:
+ *
+ * @image html read_only.png
+ */
+void workbook_read_only_recommended(lxw_workbook *workbook);
 
 void lxw_workbook_free(lxw_workbook *workbook);
 void lxw_workbook_assemble_xml_file(lxw_workbook *workbook);

@@ -21,3 +21,6 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_protect03(self):
         self.run_exe_test('test_protect03')
+
+    def test_protect07(self):
+        self.run_exe_test('test_protect07')
