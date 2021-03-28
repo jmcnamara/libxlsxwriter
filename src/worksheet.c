@@ -2618,6 +2618,7 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
     drawing_object->tip = lxw_strdup(object_props->tip);
     drawing_object->rel_index = 0;
     drawing_object->url_rel_index = 0;
+    drawing_object->decorative = object_props->decorative;
 
     /* Scale to user scale. */
     width = object_props->width * object_props->x_scale;
@@ -8616,6 +8617,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
         object_props->object_position = user_options->object_position;
         object_props->url = lxw_strdup(user_options->url);
         object_props->tip = lxw_strdup(user_options->tip);
+        object_props->decorative = user_options->decorative;
 
         if (user_options->description)
             description = user_options->description;
@@ -8721,6 +8723,7 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
         object_props->tip = lxw_strdup(user_options->tip);
         object_props->object_position = user_options->object_position;
         object_props->description = lxw_strdup(user_options->description);
+        object_props->decorative = user_options->decorative;
     }
 
     /* Copy other options or set defaults. */

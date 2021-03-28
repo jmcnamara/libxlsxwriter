@@ -53,6 +53,7 @@ typedef struct lxw_drawing_object {
     uint32_t url_rel_index;
     char *description;
     char *tip;
+    uint8_t decorative;
 
     STAILQ_ENTRY (lxw_drawing_object) list_pointers;
 

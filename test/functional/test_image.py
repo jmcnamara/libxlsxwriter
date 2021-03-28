@@ -150,6 +150,12 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_image53(self):
         self.run_exe_test('test_image53')
 
+    def test_image54(self):
+        self.run_exe_test('test_image54')
+
+    def test_image55(self):
+        self.run_exe_test('test_image55')
+
     # Test in-memory image handling.
     def test_image81(self):
         self.run_exe_test('test_image81', 'image01.xlsx')
@@ -167,6 +173,10 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     @pytest.mark.skipif(os.environ.get('USE_NO_MD5'), reason="compiled without MD5 support")
     def test_image87(self):
         self.run_exe_test('test_image87', 'image50.xlsx')
+
+    @pytest.mark.skipif(os.environ.get('USE_NO_MD5'), reason="compiled without MD5 support")
+    def test_image88(self):
+        self.run_exe_test('test_image88', 'image54.xlsx')
 
     # Test image description fields.
     def test_image84(self):

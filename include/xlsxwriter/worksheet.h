@@ -1279,9 +1279,17 @@ typedef struct lxw_image_options {
      *  See @ref working_with_object_positioning.*/
     uint8_t object_position;
 
-    /** Optional description of the image. Defaults to the image filename
-     *  as in Excel. Set to "" to ignore the description field. */
+    /** Optional description or "Alt text" for the image. This field can be
+     *  used to provide a text description of the image to help
+     *  accessibility. Defaults to the image filename as in Excel. Set to ""
+     *  to ignore the description field. */
     char *description;
+
+    /** Optional parameter to help accessibility. It is used to mark the image
+     *  as decorative, and thus uninformative, for automated screen
+     *  readers. As in Excel, if this parameter is in use the `description`
+     *  field isn't written. */
+    uint8_t decorative;
 
     /** Add an optional hyperlink to the image. Follows the same URL rules
      *  and types as `worksheet_write_url()`. */
@@ -1347,6 +1355,7 @@ typedef struct lxw_object_properties {
     uint8_t is_duplicate;
     char *md5;
     char *image_position;
+    uint8_t decorative;
 
     STAILQ_ENTRY (lxw_object_properties) list_pointers;
 } lxw_object_properties;
@@ -2864,7 +2873,19 @@ lxw_error worksheet_insert_image(lxw_worksheet *worksheet,
  *
  * The `%worksheet_insert_image_opt()` function is like
  * `worksheet_insert_image()` function except that it takes an optional
- * #lxw_image_options struct to scale and position the image:
+ * #lxw_image_options struct with the following members/options:
+ *
+ * - `x_offset`: Offset from the left of the cell in pixels.
+ * - `y_offset`: Offset from the top of the cell in pixels.
+ * - `x_scale`: X scale of the image as a decimal.
+ * - `y_scale`: Y scale of the image as a decimal.
+ * - `object_position`: See @ref working_with_object_positioning.
+ * - `description`: Optional description or "Alt text" for the image.
+ * - `decorative`: Optional parameter to mark image as decorative.
+ * - `url`: Add an optional hyperlink to the image.
+ * - `tip`: Add an optional mouseover tip for a hyperlink to the image.
+ *
+ * For example, to scale and position the image:
  *
  * @code
  *     lxw_image_options options = {.x_offset = 30,  .y_offset = 10,
@@ -2952,7 +2973,19 @@ lxw_error worksheet_insert_image_buffer(lxw_worksheet *worksheet,
  *
  * The `%worksheet_insert_image_buffer_opt()` function is like
  * `worksheet_insert_image_buffer()` function except that it takes an optional
- * #lxw_image_options struct to scale and position the image:
+ * #lxw_image_options struct  * #lxw_image_options struct with the following members/options:
+ *
+ * - `x_offset`: Offset from the left of the cell in pixels.
+ * - `y_offset`: Offset from the top of the cell in pixels.
+ * - `x_scale`: X scale of the image as a decimal.
+ * - `y_scale`: Y scale of the image as a decimal.
+ * - `object_position`: See @ref working_with_object_positioning.
+ * - `description`: Optional description or "Alt text" for the image.
+ * - `decorative`: Optional parameter to mark image as decorative.
+ * - `url`: Add an optional hyperlink to the image.
+ * - `tip`: Add an optional mouseover tip for a hyperlink to the image.
+ *
+ * For example, to scale and position the image:
  *
  * @code
  *     lxw_image_options options = {.x_offset = 32, .y_offset = 4,

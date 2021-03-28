@@ -248,6 +248,81 @@ _drawing_write_a_hlink_click(lxw_drawing *self, uint32_t rel_index, char *tip)
 }
 
 /*
+ * Write the <a16:creationId> element.
+ */
+STATIC void
+_drawing_write_a16_creation_id(lxw_drawing *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char xmlns[] = "http://schemas.microsoft.com/office/drawing/2014/main";
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:a16", xmlns);
+    LXW_PUSH_ATTRIBUTES_STR("id", "{00000000-0008-0000-0000-000002000000}");
+
+    lxw_xml_empty_tag(self->file, "a16:creationId", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <adec:decorative> element.
+ */
+STATIC void
+_workbook_write_adec_decorative(lxw_drawing *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char xmlns[] =
+        "http://schemas.microsoft.com/office/drawing/2017/decorative";
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:adec", xmlns);
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "adec:decorative", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <a:ext> element.
+ */
+STATIC void
+_drawing_write_uri_ext(lxw_drawing *self, char *uri)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("uri", uri);
+
+    lxw_xml_start_tag(self->file, "a:ext", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the decorative elements.
+ */
+STATIC void
+_workbook_write_decorative(lxw_drawing *self)
+{
+    lxw_xml_start_tag(self->file, "a:extLst", NULL);
+
+    _drawing_write_uri_ext(self, "{FF2B5EF4-FFF2-40B4-BE49-F238E27FC236}");
+    _drawing_write_a16_creation_id(self);
+    lxw_xml_end_tag(self->file, "a:ext");
+
+    _drawing_write_uri_ext(self, "{C183D7F6-B498-43B3-948B-1728B52AA6E4}");
+    _workbook_write_adec_decorative(self);
+    lxw_xml_end_tag(self->file, "a:ext");
+
+    lxw_xml_end_tag(self->file, "a:extLst");
+}
+
+/*
  * Write the <xdr:cNvPr> element.
  */
 STATIC void
@@ -266,17 +341,26 @@ _drawing_write_c_nv_pr(lxw_drawing *self, char *object_name, uint32_t index,
     LXW_PUSH_ATTRIBUTES_STR("name", name);
 
     if (drawing_object && drawing_object->description
-        && strlen(drawing_object->description)) {
+        && strlen(drawing_object->description)
+        && !drawing_object->decorative) {
+
         LXW_PUSH_ATTRIBUTES_STR("descr", drawing_object->description);
     }
 
-    if (drawing_object && drawing_object->url_rel_index) {
+    if (drawing_object
+        && (drawing_object->url_rel_index || drawing_object->decorative)) {
         lxw_xml_start_tag(self->file, "xdr:cNvPr", &attributes);
 
-        /* Write the a:hlinkClick element. */
-        _drawing_write_a_hlink_click(self,
-                                     drawing_object->url_rel_index,
-                                     drawing_object->tip);
+        if (drawing_object->url_rel_index) {
+            /* Write the a:hlinkClick element. */
+            _drawing_write_a_hlink_click(self,
+                                         drawing_object->url_rel_index,
+                                         drawing_object->tip);
+        }
+
+        if (drawing_object->decorative) {
+            _workbook_write_decorative(self);
+        }
 
         lxw_xml_end_tag(self->file, "xdr:cNvPr");
     }
