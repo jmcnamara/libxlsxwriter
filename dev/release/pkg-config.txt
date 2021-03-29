@@ -7,4 +7,4 @@ Name: libxlsxwriter
 Description: A C library for creating Excel XLSX files
 Version: @VERSION@
 Cflags: -I${includedir}
-Libs: -L${libdir} -lxlsxwriter
+Libs: -L${libdir} -lxlsxwriter -lz

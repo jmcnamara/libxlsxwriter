@@ -154,6 +154,18 @@ have to provide explicit `include` and `lib` paths:
 
     cc myexcel.c -o myexcel -I/usr/local/include -L/usr/local/lib -lxlsxwriter
 
+You can also use
+[pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/) (after you
+use `"make install"`) to automatically determine the required arguments and
+paths:
+
+    $ pkg-config --cflags --libs xlsxwriter
+    -I/usr/local/include -L/usr/local/lib -lxlsxwriter -lz
+
+You can add this information to your compilation as follows:
+
+    cc myexcel.c -o myexcel `pkg-config --cflags --libs xlsxwriter`
+
 This will create an executable that you can run to generate an Excel
 spreadsheet:
 
