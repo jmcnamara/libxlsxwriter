@@ -12,7 +12,7 @@ library on different OSes.
 @subsection gsg_quick_start Quick-start on Linux
 
 If you prefer to assemble Ikea furniture first and only read the instructions
-when you have parts left over then the following minimal set of commands
+when you have parts left over, then the following minimal set of commands
 should get you up and running on a Debian like system:
 
     sudo apt-get install -y zlib1g-dev
@@ -179,7 +179,7 @@ any issues then follow the instructions
 
 
 @ref gsg_git or @ref gsg_tarball "get the source code as a tarball" as shown
-above then build the source code as follows using `gmake` (not make):
+above then build the source code as follows using **gmake** (not make):
 
     cd libxlsxwriter
     gmake
@@ -226,8 +226,7 @@ And call its C functions like this:
 For a sample Xcode project that uses the libxlsxwriter cocoapod for iOS and
 macOS with Objective-C and Swift see [libxlsxwriter Cocoa
 Examples](https://github.com/lrossi/libxlsxwriterCocoaExamples) or
-[LibXlsxWriterSwiftSample](https://github.com/FrankenApps/LibXlsxWriterSwiftSample)
-for an updated example for Swift 5.
+[LibXlsxWriterSwiftSample](https://github.com/FrankenApps/LibXlsxWriterSwiftSample).
 
 @subsection gsg_universal Compiling a universal binary on macOS
 
@@ -452,13 +451,15 @@ integrate it into your Visual Studio build environment is to use the
 tool. This uses the CMake build system shown in the previous section but with
 less user interaction. From the vcpkg docs:
 
-> "vcpkg" is a command-line package manager that greatly simplifies the
-> acquisition and installation of third-party libraries on Windows, Linux and
-> MacOS. If your project uses third-party libraries, we recommend that you use
-> vcpkg to install them. vcpkg supports both open-source and proprietary
-> libraries. All libraries in the vcpkg Windows catalog have been tested for
-> compatibility with Visual Studio 2015, Visual Studio 2017, and Visual
-> Studio 2019.
+> "vcpkg" is a cross-platform command-line package manager for C and C++
+> libraries. It simplifies the acquisition and installation of third-party
+> libraries on Windows, Linux, and macOS. If your project uses third-party
+> libraries, we recommend that you use vcpkg to install them. vcpkg supports
+> both open-source and proprietary libraries. All libraries in the vcpkg Windows
+> catalog have been tested for compatibility with Visual Studio 2015, Visual
+> Studio 2017, and Visual Studio 2019. Between the Windows and Linux/macOS
+> catalogs, vcpkg now supports thousands of libraries. The C++ community adds
+> more libraries to both catalogs on an ongoing basis.
 
 Install vcpkg and libxlsxwriter as follows in Windows CMD or Powershell:
 
@@ -580,9 +581,16 @@ MSYS2:
     cd libxlsxwriter/
     make
 
-After compilation you can follow the instructions in the @ref gsg_install and
-@ref gsg_using sections above. When using the library you may also need to
-link against the zlib library using `-lz`:
+By default the library is installed in `/usr/local` on MinGW/MSYS systems. If
+you know how to extend your build environments to use that directory then you
+can just run `make install`. However, it is generally easier to work with if
+you install them in the `/usr` directory like this:
+
+    make install PREFIX=/usr
+
+After compilation you can follow the instructions in the @ref gsg_using
+section above. When compiling with the library you may also need to link
+against the zlib library using `-lz`:
 
     gcc myexcel.c -o myexcel -lxlsxwriter -lz
 

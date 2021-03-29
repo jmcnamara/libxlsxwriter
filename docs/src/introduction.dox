@@ -23,7 +23,7 @@ However:
 Libxlsxwriter is a C port of the Perl
 [Excel::Writer::XLSX](http://search.cpan.org/~jmcnamara/Excel-Writer-XLSX/)
 module and the Python [XlsxWriter](https://xlsxwriter.readthedocs.io) module
-and is licensed under a FreeBSD @ref license.
+by the same author and is licensed under a FreeBSD @ref license.
 
 Next: @ref getting_started
 
