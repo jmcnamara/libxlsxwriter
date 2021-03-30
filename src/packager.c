@@ -7,6 +7,7 @@
  *
  */
 
+#include <zlib.h>
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/packager.h"
 #include "xlsxwriter/hash_table.h"
