@@ -988,7 +988,7 @@ lxw_error workbook_set_vba_name(lxw_workbook *workbook, const char *name);
 /**
  * @brief Add a recommendation to open the file in "read-only" mode.
  *
- * @param workbook
+ * @param workbook Pointer to a lxw_workbook instance.
  *
  * This function can be used to set the Excel "Read-only Recommended" option
  * that is available when saving a file. This presents the user of the file

@@ -1,6 +1,53 @@
 /**
 @page changes Changes
 
+## 1.0.1 March 30 2021
+
+- Added support for [pkg-config][pkg-config] to Make/Cmake installs. See the
+  @ref gsg_using section of the Getting Started guide.
+  </p>
+
+  [pkg-config]: https://www.freedesktop.org/wiki/Software/pkg-config/
+
+- Added ability to add accessibility options "description" and "decorative" to
+  images via `worksheet_insert_image_opt()` and #lxw_image_options.
+  </p>
+
+- Added the `workbook_read_only_recommended()` function to set the Excel
+  "Read-only Recommended" option that is available when saving a file.
+  </p>
+
+- Fixed issue where pattern formats without colors were given a default black
+  fill color.
+  </p>
+
+- Added option to set a chart crossing to 'min' via
+  `chart_axis_set_crossing_min()` as well as the existing 'max' option. The
+  'min' option isn't available in the Excel interface but can be enabled via
+  VBA.
+  </p>
+
+- Added some additional information on using constant_memory mode with memory
+  mounted /tmp directories. See @ref ww_mem_temp.
+
+  Issue [#306][gh_306].
+
+  [gh_306]: https://github.com/jmcnamara/libxlsxwriter/issues/306
+
+- Added build option to compile libxlsxwriter as a "universal binary" for both
+  Apple silicon and Intel-based Macs, i.e., arm64 and x86_64. See @ref
+  gsg_universal.
+  </p>
+
+- Fixed issue where the limit for header/footer strings was
+  255 bytes instead of 255 characters and as a result UTF8
+  strings were being truncated.
+
+  Issue [#305][gh_305].
+
+  [gh_305]: https://github.com/jmcnamara/libxlsxwriter/issues/305
+
+
 ## 1.0.0 September 7 2020
 
 - Added support for worksheet conditional formatting. See
