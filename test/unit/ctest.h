@@ -288,7 +288,7 @@ void assert_double(double exp, double real, const char* caller, int line) {
     double largest = (real > exp) ? real : exp;
 
     if (diff > largest * FLT_EPSILON) {
-        CTEST_ERR("%s:%d  DEXPECTED %g,\n\tgot      %g", caller, line, exp, real);
+        CTEST_ERR("%s:%d\n\texpected %g,\n\tgot      %g", caller, line, exp, real);
     }
 }
 
