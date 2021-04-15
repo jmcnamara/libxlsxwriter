@@ -1,6 +1,11 @@
 /**
 @page changes Changes
 
+## 1.0.2 April 15 2021
+
+- Added option to set row heights and column widths in pixels via the
+  `worksheet_set_row_pixels()` and `worksheet_set_column_pixels()` functions.
+
 ## 1.0.1 March 30 2021
 
 - Added support for [pkg-config][pkg-config] to Make/Cmake installs. See the

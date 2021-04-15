@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = "libxlsxwriter"
-  s.version               = "1.0.1"
+  s.version               = "1.0.2"
   s.summary               = "Libxlsxwriter: A C library for creating Excel XLSX files."
   s.ios.deployment_target = "8.0"
   s.osx.deployment_target = "10.8"
