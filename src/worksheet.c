@@ -1365,6 +1365,32 @@ _validation_list_to_csv(char **list)
     return str;
 }
 
+STATIC double
+_pixels_to_width(double pixels)
+{
+    double max_digit_width = 7.0;
+    double padding = 5.0;
+    double width;
+
+    if (pixels == LXW_DEF_COL_WIDTH_PIXELS)
+        width = LXW_DEF_COL_WIDTH;
+    else if (pixels <= 12.0)
+        width = pixels / (max_digit_width + padding);
+    else
+        width = (pixels - padding) / max_digit_width;
+
+    return width;
+}
+
+STATIC double
+_pixels_to_height(double pixels)
+{
+    if (pixels == LXW_DEF_ROW_HEIGHT_PIXELS)
+        return LXW_DEF_ROW_HEIGHT;
+    else
+        return pixels * 0.75;
+}
+
 /*****************************************************************************
  *
  * XML functions.
@@ -7528,6 +7554,40 @@ worksheet_set_column(lxw_worksheet *self,
 }
 
 /*
+ * Set the properties of a single column or a range of columns, with the
+ * width in pixels.
+ */
+lxw_error
+worksheet_set_column_pixels(lxw_worksheet *self,
+                            lxw_col_t firstcol,
+                            lxw_col_t lastcol,
+                            uint32_t pixels, lxw_format *format)
+{
+    double width = _pixels_to_width(pixels);
+
+    return worksheet_set_column_opt(self, firstcol, lastcol, width, format,
+                                    NULL);
+}
+
+/*
+ * Set the properties of a single column or a range of columns with options,
+ * with the width in pixels.
+ */
+lxw_error
+worksheet_set_column_pixels_opt(lxw_worksheet *self,
+                                lxw_col_t firstcol,
+                                lxw_col_t lastcol,
+                                uint32_t pixels,
+                                lxw_format *format,
+                                lxw_row_col_options *user_options)
+{
+    double width = _pixels_to_width(pixels);
+
+    return worksheet_set_column_opt(self, firstcol, lastcol, width, format,
+                                    user_options);
+}
+
+/*
  * Set the properties of a row with options.
  */
 lxw_error
@@ -7597,6 +7657,34 @@ worksheet_set_row(lxw_worksheet *self,
                   lxw_row_t row_num, double height, lxw_format *format)
 {
     return worksheet_set_row_opt(self, row_num, height, format, NULL);
+}
+
+/*
+ * Set the properties of a row, with the height in pixels.
+ */
+lxw_error
+worksheet_set_row_pixels(lxw_worksheet *self,
+                         lxw_row_t row_num, uint32_t pixels,
+                         lxw_format *format)
+{
+    double height = _pixels_to_height(pixels);
+
+    return worksheet_set_row_opt(self, row_num, height, format, NULL);
+}
+
+/*
+ * Set the properties of a row with options, with the height in pixels.
+ */
+lxw_error
+worksheet_set_row_pixels_opt(lxw_worksheet *self,
+                             lxw_row_t row_num,
+                             uint32_t pixels,
+                             lxw_format *format,
+                             lxw_row_col_options *user_options)
+{
+    double height = _pixels_to_height(pixels);
+
+    return worksheet_set_row_opt(self, row_num, height, format, user_options);
 }
 
 /*

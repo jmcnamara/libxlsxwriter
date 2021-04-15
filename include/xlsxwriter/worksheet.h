@@ -69,11 +69,17 @@
  * breaks is 1026. However, in practice it is actually 1023. */
 #define LXW_BREAKS_MAX        1023
 
-/** Default column width in Excel */
+/** Default Excel column width in character units. */
 #define LXW_DEF_COL_WIDTH (double)8.43
 
-/** Default row height in Excel */
+/** Default Excel column height in character units. */
 #define LXW_DEF_ROW_HEIGHT (double)15.0
+
+/** Default Excel column width in pixels. */
+#define LXW_DEF_COL_WIDTH_PIXELS 64
+
+/** Default Excel column height in pixels. */
+#define LXW_DEF_ROW_HEIGHT_PIXELS 20
 
 /** Gridline options using in `worksheet_gridlines()`. */
 enum lxw_gridlines {
@@ -2559,8 +2565,10 @@ lxw_error worksheet_write_comment_opt(lxw_worksheet *worksheet,
  *
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param row       The zero indexed row number.
- * @param height    The row height.
+ * @param height    The row height, in character units.
  * @param format    A pointer to a Format instance or NULL.
+ *
+ * @return A #lxw_error code.
  *
  * The `%worksheet_set_row()` function is used to change the default
  * properties of a row. The most common use for this function is to change the
@@ -2570,6 +2578,9 @@ lxw_error worksheet_write_comment_opt(lxw_worksheet *worksheet,
  *     // Set the height of Row 1 to 20.
  *     worksheet_set_row(worksheet, 0, 20, NULL);
  * @endcode
+ *
+ * The height is specified in character units. To specify the height in pixels
+ * use the `worksheet_set_row_pixels()` function.
  *
  * The other common use for `%worksheet_set_row()` is to set the a @ref
  * format.h "Format" for all cells in the row:
@@ -2617,6 +2628,8 @@ lxw_error worksheet_set_row(lxw_worksheet *worksheet,
  * @param height    The row height.
  * @param format    A pointer to a Format instance or NULL.
  * @param options   Optional row parameters: hidden, level, collapsed.
+ *
+ * @return A #lxw_error code.
  *
  * The `%worksheet_set_row_opt()` function  is the same as
  *  `worksheet_set_row()` with an additional `options` parameter.
@@ -2675,6 +2688,52 @@ lxw_error worksheet_set_row_opt(lxw_worksheet *worksheet,
                                 lxw_row_col_options *options);
 
 /**
+ * @brief Set the properties for a row of cells, with the height in pixels.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param pixels    The row height in pixels.
+ * @param format    A pointer to a Format instance or NULL.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_set_row_pixels()` function is the same as the
+ * `worksheet_set_row()` function except that the height can be set in pixels
+ *
+ * @code
+ *     // Set the height of Row 1 to 20 pixels.
+ *     worksheet_set_row_pixels(worksheet, 0, 20, NULL);
+ * @endcode
+ *
+ * If you wish to set the format of a row without changing the height you can
+ * pass the default row height in pixels: #LXW_DEF_ROW_HEIGHT_PIXELS.
+ */
+lxw_error worksheet_set_row_pixels(lxw_worksheet *worksheet,
+                                   lxw_row_t row, uint32_t pixels,
+                                   lxw_format *format);
+/**
+ * @brief Set the properties for a row of cells, with the height in pixels.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param pixels    The row height in pixels.
+ * @param format    A pointer to a Format instance or NULL.
+ * @param options   Optional row parameters: hidden, level, collapsed.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_set_row_pixels_opt()` function is the same as the
+ * `worksheet_set_row_opt()` function except that the height can be set in
+ * pixels.
+ *
+ */
+lxw_error worksheet_set_row_pixels_opt(lxw_worksheet *worksheet,
+                                       lxw_row_t row,
+                                       uint32_t pixels,
+                                       lxw_format *format,
+                                       lxw_row_col_options *options);
+
+/**
  * @brief Set the properties for one or more columns of cells.
  *
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
@@ -2682,6 +2741,8 @@ lxw_error worksheet_set_row_opt(lxw_worksheet *worksheet,
  * @param last_col  The zero indexed last column.
  * @param width     The width of the column(s).
  * @param format    A pointer to a Format instance or NULL.
+ *
+ * @return A #lxw_error code.
  *
  * The `%worksheet_set_column()` function can be used to change the default
  * properties of a single column or a range of columns:
@@ -2719,7 +2780,8 @@ lxw_error worksheet_set_row_opt(lxw_worksheet *worksheet,
  * is 8.43 in the default font of Calibri 11. The actual relationship between
  * a string width and a column width in Excel is complex. See the
  * [following explanation of column widths](https://support.microsoft.com/en-us/kb/214123)
- * from the Microsoft support documentation for more details.
+ * from the Microsoft support documentation for more details. To set the width
+ * in pixels use the `worksheet_set_column_pixels()` function.
  *
  * There is no way to specify "AutoFit" for a column in the Excel file
  * format. This feature is only available at runtime from within Excel. It is
@@ -2784,6 +2846,8 @@ lxw_error worksheet_set_column(lxw_worksheet *worksheet,
  * @param format    A pointer to a Format instance or NULL.
  * @param options   Optional row parameters: hidden, level, collapsed.
  *
+ * @return A #lxw_error code.
+ *
  * The `%worksheet_set_column_opt()` function  is the same as
  * `worksheet_set_column()` with an additional `options` parameter.
  *
@@ -2822,6 +2886,62 @@ lxw_error worksheet_set_column_opt(lxw_worksheet *worksheet,
                                    double width,
                                    lxw_format *format,
                                    lxw_row_col_options *options);
+
+/**
+ * @brief Set the properties for one or more columns of cells, with the width
+ *        in pixels.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param first_col The zero indexed first column.
+ * @param last_col  The zero indexed last column.
+ * @param pixels    The width of the column(s) in pixels.
+ * @param format    A pointer to a Format instance or NULL.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_set_column_pixels()` function is the same as
+ * `worksheet_set_column()` function except that the width can be set in
+ * pixels:
+ *
+ * @code
+ *     // Column width set to 75 pixels, the same as 10 character units.
+ *     worksheet_set_column(worksheet, 5, 5, 75, NULL);
+ * @endcode
+ *
+ * @image html set_column_pixels.png
+ *
+ * If you wish to set the format of a column without changing the width you can
+ * pass the default column width in pixels: #LXW_DEF_COL_WIDTH_PIXELS.
+ */
+lxw_error worksheet_set_column_pixels(lxw_worksheet *worksheet,
+                                      lxw_col_t first_col,
+                                      lxw_col_t last_col,
+                                      uint32_t pixels, lxw_format *format);
+
+/**
+ * @brief Set the properties for one or more columns of cells with options,
+ *        with the width in pixels.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param first_col The zero indexed first column.
+ * @param last_col  The zero indexed last column.
+ * @param pixels    The width of the column(s) in pixels.
+ * @param format    A pointer to a Format instance or NULL.
+ * @param options   Optional row parameters: hidden, level, collapsed.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_set_column_pixels_opt()` function is the same as the
+ * `worksheet_set_column_opt()` function except that the width can be set in
+ * pixels.
+ *
+ */
+lxw_error worksheet_set_column_pixels_opt(lxw_worksheet *worksheet,
+                                          lxw_col_t first_col,
+                                          lxw_col_t last_col,
+                                          uint32_t pixels,
+                                          lxw_format *format,
+                                          lxw_row_col_options *options);
 
 /**
  * @brief Insert an image in a worksheet cell.
@@ -4767,6 +4887,9 @@ STATIC void _worksheet_write_tab_color(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_protection(lxw_worksheet *worksheet,
                                               lxw_protection_obj *protect);
 STATIC void _worksheet_write_data_validations(lxw_worksheet *self);
+
+STATIC double _pixels_to_height(double pixels);
+STATIC double _pixels_to_width(double pixels);
 #endif /* TESTING */
 
 /* *INDENT-OFF* */
