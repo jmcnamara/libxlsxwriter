@@ -7528,6 +7528,7 @@ worksheet_set_column_opt(lxw_worksheet *self,
     copied_options->level = level;
     copied_options->collapsed = collapsed;
 
+    free(self->col_options[firstcol]);
     self->col_options[firstcol] = copied_options;
 
     /* Store the column formats for use when writing cell data. */
