@@ -206,11 +206,6 @@ endif()
 # -------
 list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS NOCRYPT NOUNCRYPT)
 
-# Fix for modified zconf.h on Gentoo.
-if(${CMAKE_HOST_SYSTEM} MATCHES gentoo)
-    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS OF=_Z_OF)
-endif()
-
 # Ensure CRT Secure warnings are disabled
 if(MSVC)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS _CRT_SECURE_NO_WARNINGS)

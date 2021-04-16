@@ -56,7 +56,7 @@
 #define ftello64 ftell
 #define fseeko64 fseek
 #else
-#ifdef __FreeBSD__
+#if defined(__FreeBSD__) || defined(__OpenBSD__)
 #define fopen64 fopen
 #define ftello64 ftello
 #define fseeko64 fseeko
@@ -137,6 +137,10 @@ extern "C" {
 
 
 
+/* Workaround for modified zconf.h on Gentoo system. */
+#if defined(_Z_OF)
+#define OF _Z_OF
+#endif
 
 typedef voidpf   (ZCALLBACK *open_file_func)      OF((voidpf opaque, const char* filename, int mode));
 typedef uLong    (ZCALLBACK *read_file_func)      OF((voidpf opaque, voidpf stream, void* buf, uLong size));

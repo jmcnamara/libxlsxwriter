@@ -69,12 +69,6 @@ endif
 # Flags passed to compiler.
 CFLAGS   += -g $(OPT_LEVEL) -Wall -Wextra -Wstrict-prototypes -pedantic -ansi
 
-# Fix for modified zconf.h on Gentoo.
-ifneq (,$(findstring gentoo, $(shell uname -sr)))
-CFLAGS += -DOF=_Z_OF
-endif
-
-
 # Ignore icc remarks about inlining limits.
 ifeq ($(CC),icc)
 CFLAGS   +=-diag-disable=11074,11076
