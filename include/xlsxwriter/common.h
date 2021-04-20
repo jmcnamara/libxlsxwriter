@@ -223,8 +223,18 @@ enum lxw_custom_property_types {
 #define LXW_SCHEMA_DOCUMENT  LXW_SCHEMA_ROOT "/officeDocument/2006/relationships"
 #define LXW_SCHEMA_CONTENT   LXW_SCHEMA_ROOT "/package/2006/content-types"
 
+/* Use REprintf() for error handling when compiled as an R library. */
+#ifdef USE_R_LANG
+#include <R.h>
+#define LXW_PRINTF REprintf
+#define LXW_STDERR
+#else
+#define LXW_PRINTF fprintf
+#define LXW_STDERR stderr,
+#endif
+
 #define LXW_ERROR(message)                      \
-    fprintf(stderr, "[ERROR][%s:%d]: " message "\n", __FILE__, __LINE__)
+    LXW_PRINTF(LXW_STDERR "[ERROR][%s:%d]: " message "\n", __FILE__, __LINE__)
 
 #define LXW_MEM_ERROR()                         \
     LXW_ERROR("Memory allocation failed.")
@@ -258,50 +268,50 @@ enum lxw_custom_property_types {
 }
 
 #define LXW_WARN(message)                       \
-    fprintf(stderr, "[WARNING]: " message "\n")
+    LXW_PRINTF(LXW_STDERR "[WARNING]: " message "\n")
 
 /* We can't use variadic macros here since we support ANSI C. */
 #define LXW_WARN_FORMAT(message)                \
-    fprintf(stderr, "[WARNING]: " message "\n")
+    LXW_PRINTF(LXW_STDERR "[WARNING]: " message "\n")
 
 #define LXW_WARN_FORMAT1(message, var)          \
-    fprintf(stderr, "[WARNING]: " message "\n", var)
+    LXW_PRINTF(LXW_STDERR "[WARNING]: " message "\n", var)
 
 #define LXW_WARN_FORMAT2(message, var1, var2)    \
-    fprintf(stderr, "[WARNING]: " message "\n", var1, var2)
+    LXW_PRINTF(LXW_STDERR "[WARNING]: " message "\n", var1, var2)
 
 /* Chart axis type checks. */
 #define LXW_WARN_CAT_AXIS_ONLY(function)                                   \
     if (!axis->is_category) {                                              \
-        fprintf(stderr, "[WARNING]: "                                      \
+        LXW_PRINTF(LXW_STDERR "[WARNING]: "                                \
                 function "() is only valid for category axes\n");          \
        return;                                                             \
     }
 
 #define LXW_WARN_VALUE_AXIS_ONLY(function)                                 \
     if (!axis->is_value) {                                                 \
-        fprintf(stderr, "[WARNING]: "                                      \
+        LXW_PRINTF(LXW_STDERR "[WARNING]: "                                \
                 function "() is only valid for value axes\n");             \
        return;                                                             \
     }
 
 #define LXW_WARN_DATE_AXIS_ONLY(function)                                  \
     if (!axis->is_date) {                                                  \
-        fprintf(stderr, "[WARNING]: "                                      \
+        LXW_PRINTF(LXW_STDERR "[WARNING]: "                                \
                 function "() is only valid for date axes\n");              \
        return;                                                             \
     }
 
 #define LXW_WARN_CAT_AND_DATE_AXIS_ONLY(function)                          \
     if (!axis->is_category && !axis->is_date) {                            \
-        fprintf(stderr, "[WARNING]: "                                      \
+        LXW_PRINTF(LXW_STDERR "[WARNING]: "                                \
                 function "() is only valid for category and date axes\n"); \
        return;                                                             \
     }
 
 #define LXW_WARN_VALUE_AND_DATE_AXIS_ONLY(function)                        \
     if (!axis->is_value && !axis->is_date) {                               \
-        fprintf(stderr, "[WARNING]: "                                      \
+        LXW_PRINTF(LXW_STDERR "[WARNING]: "                                \
                 function "() is only valid for value and date axes\n");    \
        return;                                                             \
     }
