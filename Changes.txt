@@ -1,6 +1,12 @@
 /**
 @page changes Changes
 
+
+## 1.0.3 April 20 2021
+
+- Added some fixes to make the library compile more cleanly as an R library.
+
+
 ## 1.0.2 April 15 2021
 
 - Added option to set row heights and column widths in pixels via the
