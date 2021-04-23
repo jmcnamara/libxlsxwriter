@@ -800,17 +800,21 @@ _new_formula_cell(lxw_row_t row_num,
  */
 STATIC lxw_cell *
 _new_array_formula_cell(lxw_row_t row_num, lxw_col_t col_num, char *formula,
-                        char *range, lxw_format *format)
+                        char *range, lxw_format *format, uint8_t is_dynamic)
 {
     lxw_cell *cell = calloc(1, sizeof(lxw_cell));
     RETURN_ON_MEM_ERROR(cell, cell);
 
     cell->row_num = row_num;
     cell->col_num = col_num;
-    cell->type = ARRAY_FORMULA_CELL;
     cell->format = format;
     cell->u.string = formula;
     cell->user_data1 = range;
+
+    if (is_dynamic)
+        cell->type = DYNAMIC_ARRAY_FORMULA_CELL;
+    else
+        cell->type = ARRAY_FORMULA_CELL;
 
     return cell;
 }
@@ -3845,6 +3849,12 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
         _write_array_formula_num_cell(self, cell);
         lxw_xml_end_tag(self->file, "c");
     }
+    else if (cell->type == DYNAMIC_ARRAY_FORMULA_CELL) {
+        LXW_PUSH_ATTRIBUTES_STR("cm", "1");
+        lxw_xml_start_tag(self->file, "c", &attributes);
+        _write_array_formula_num_cell(self, cell);
+        lxw_xml_end_tag(self->file, "c");
+    }
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -6823,16 +6833,16 @@ worksheet_write_formula(lxw_worksheet *self,
 }
 
 /*
- * Write a formula with a numerical result to a cell in Excel.
+ * Internal shared function for various array formula functions.
  */
 lxw_error
-worksheet_write_array_formula_num(lxw_worksheet *self,
-                                  lxw_row_t first_row,
-                                  lxw_col_t first_col,
-                                  lxw_row_t last_row,
-                                  lxw_col_t last_col,
-                                  const char *formula,
-                                  lxw_format *format, double result)
+_store_array_formula(lxw_worksheet *self,
+                     lxw_row_t first_row,
+                     lxw_col_t first_col,
+                     lxw_row_t last_row,
+                     lxw_col_t last_col,
+                     const char *formula, lxw_format *format, double result,
+                     uint8_t is_dynamic)
 {
     lxw_cell *cell;
     lxw_row_t tmp_row;
@@ -6881,7 +6891,7 @@ worksheet_write_array_formula_num(lxw_worksheet *self,
         else
             formula_copy = lxw_strdup(formula + 1);
     else
-        formula_copy = lxw_strdup(formula);
+        formula_copy = lxw_strdup_formula(formula);
 
     /* Strip trailing "}" from formula. */
     if (formula_copy[strlen(formula_copy) - 1] == '}')
@@ -6889,11 +6899,14 @@ worksheet_write_array_formula_num(lxw_worksheet *self,
 
     /* Create a new array formula cell object. */
     cell = _new_array_formula_cell(first_row, first_col,
-                                   formula_copy, range, format);
+                                   formula_copy, range, format, is_dynamic);
 
     cell->formula_result = result;
 
     _insert_cell(self, first_row, first_col, cell);
+
+    if (is_dynamic)
+        self->has_dynamic_arrays = LXW_TRUE;
 
     /* Pad out the rest of the area with formatted zeroes. */
     if (!self->optimize) {
@@ -6911,7 +6924,24 @@ worksheet_write_array_formula_num(lxw_worksheet *self,
 }
 
 /*
- * Write an array formula with a default result to a cell in Excel .
+ * Write an array formula with a numerical result to a cell in Excel.
+ */
+lxw_error
+worksheet_write_array_formula_num(lxw_worksheet *self,
+                                  lxw_row_t first_row,
+                                  lxw_col_t first_col,
+                                  lxw_row_t last_row,
+                                  lxw_col_t last_col,
+                                  const char *formula,
+                                  lxw_format *format, double result)
+{
+    return _store_array_formula(self, first_row, first_col,
+                                last_row, last_col, formula, format, result,
+                                LXW_FALSE);
+}
+
+/*
+ * Write an array formula with a default result to a cell in Excel.
  */
 lxw_error
 worksheet_write_array_formula(lxw_worksheet *self,
@@ -6921,9 +6951,42 @@ worksheet_write_array_formula(lxw_worksheet *self,
                               lxw_col_t last_col,
                               const char *formula, lxw_format *format)
 {
-    return worksheet_write_array_formula_num(self, first_row, first_col,
-                                             last_row, last_col, formula,
-                                             format, 0);
+    return _store_array_formula(self, first_row, first_col,
+                                last_row, last_col, formula, format, 0,
+                                LXW_FALSE);
+}
+
+/*
+ * Write a dynamic array formula with a numerical result to a cell in Excel.
+ */
+lxw_error
+worksheet_write_dynamic_array_formula_num(lxw_worksheet *self,
+                                          lxw_row_t first_row,
+                                          lxw_col_t first_col,
+                                          lxw_row_t last_row,
+                                          lxw_col_t last_col,
+                                          const char *formula,
+                                          lxw_format *format, double result)
+{
+    return _store_array_formula(self, first_row, first_col,
+                                last_row, last_col, formula, format, result,
+                                LXW_TRUE);
+}
+
+/*
+ * Write a dynamic array formula with a default result to a cell in Excel.
+ */
+lxw_error
+worksheet_write_dynamic_array_formula(lxw_worksheet *self,
+                                      lxw_row_t first_row,
+                                      lxw_col_t first_col,
+                                      lxw_row_t last_row,
+                                      lxw_col_t last_col,
+                                      const char *formula, lxw_format *format)
+{
+    return _store_array_formula(self, first_row, first_col,
+                                last_row, last_col, formula, format, 0,
+                                LXW_TRUE);
 }
 
 /*

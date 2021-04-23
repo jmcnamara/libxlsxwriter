@@ -370,3 +370,13 @@ lxw_ct_add_custom_properties(lxw_content_types *self)
     lxw_ct_add_override(self, "/docProps/custom.xml",
                         LXW_APP_DOCUMENT "custom-properties+xml");
 }
+
+/*
+ * Add the metadata file to the ContentTypes overrides.
+ */
+void
+lxw_ct_add_metadata(lxw_content_types *self)
+{
+    lxw_ct_add_override(self, "/xl/metadata.xml",
+                        LXW_APP_DOCUMENT "spreadsheetml.sheetMetadata+xml");
+}

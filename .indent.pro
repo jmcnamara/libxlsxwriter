@@ -116,6 +116,7 @@
 -T lxw_image_md5
 -T lxw_image_options
 -T lxw_merged_range
+-T lxw_metadata
 -T lxw_object_properties
 -T lxw_packager
 -T lxw_panes

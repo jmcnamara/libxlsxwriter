@@ -31,6 +31,7 @@
 #include "relationships.h"
 #include "vml.h"
 #include "comment.h"
+#include "metadata.h"
 
 #define LXW_ZIP_BUFFER_SIZE (16384)
 

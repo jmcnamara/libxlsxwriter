@@ -756,6 +756,43 @@ mem_error:
 }
 
 /*
+ * Write the metadata.xml file.
+ */
+STATIC lxw_error
+_write_metadata_file(lxw_packager *self)
+{
+    lxw_error err = LXW_NO_ERROR;
+    lxw_metadata *metadata;
+
+    if (!self->workbook->has_metadata)
+        return LXW_NO_ERROR;
+
+    metadata = lxw_metadata_new();
+
+    if (!metadata) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
+
+    metadata->file = lxw_tmpfile(self->tmpdir);
+    if (!metadata->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
+
+    lxw_metadata_assemble_xml_file(metadata);
+
+    err = _add_file_to_zip(self, metadata->file, "xl/metadata.xml");
+
+    fclose(metadata->file);
+
+mem_error:
+    lxw_metadata_free(metadata);
+
+    return err;
+}
+
+/*
  * Write the custom.xml file.
  */
 STATIC lxw_error
@@ -983,6 +1020,9 @@ _write_content_types_file(lxw_packager *self)
     if (!STAILQ_EMPTY(self->workbook->custom_properties))
         lxw_ct_add_custom_properties(content_types);
 
+    if (workbook->has_metadata)
+        lxw_ct_add_metadata(content_types);
+
     lxw_content_types_assemble_xml_file(content_types);
 
     err = _add_file_to_zip(self, content_types->file, "[Content_Types].xml");
@@ -1045,6 +1085,9 @@ _write_workbook_rels_file(lxw_packager *self)
     if (workbook->vba_project)
         lxw_add_ms_package_relationship(rels, "/vbaProject",
                                         "vbaProject.bin");
+
+    if (workbook->has_metadata)
+        lxw_add_document_relationship(rels, "/sheetMetadata", "metadata.xml");
 
     lxw_relationships_assemble_xml_file(rels);
 
@@ -1505,6 +1548,9 @@ lxw_create_package(lxw_packager *self)
     RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_core_file(self);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
+
+    error = _write_metadata_file(self);
     RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_app_file(self);

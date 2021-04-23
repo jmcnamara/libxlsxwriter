@@ -602,6 +602,7 @@ enum cell_types {
     INLINE_RICH_STRING_CELL,
     FORMULA_CELL,
     ARRAY_FORMULA_CELL,
+    DYNAMIC_ARRAY_FORMULA_CELL,
     BLANK_CELL,
     BOOLEAN_CELL,
     COMMENT,
@@ -1697,6 +1698,7 @@ typedef struct lxw_worksheet {
     uint8_t vcenter;
     uint8_t zoom_scale_normal;
     uint8_t num_validations;
+    uint8_t has_dynamic_arrays;
     char *vba_codename;
 
     lxw_color_t tab_color;
@@ -2068,6 +2070,23 @@ lxw_error worksheet_write_array_formula_num(lxw_worksheet *worksheet,
                                             const char *formula,
                                             lxw_format *format,
                                             double result);
+
+lxw_error worksheet_write_dynamic_array_formula(lxw_worksheet *worksheet,
+                                                lxw_row_t first_row,
+                                                lxw_col_t first_col,
+                                                lxw_row_t last_row,
+                                                lxw_col_t last_col,
+                                                const char *formula,
+                                                lxw_format *format);
+
+lxw_error worksheet_write_dynamic_array_formula_num(lxw_worksheet *worksheet,
+                                                    lxw_row_t first_row,
+                                                    lxw_col_t first_col,
+                                                    lxw_row_t last_row,
+                                                    lxw_col_t last_col,
+                                                    const char *formula,
+                                                    lxw_format *format,
+                                                    double result);
 
 /**
  * @brief Write a date or time to a worksheet cell.

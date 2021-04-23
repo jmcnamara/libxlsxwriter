@@ -2030,7 +2030,7 @@ workbook_close(lxw_workbook *self)
         }
     }
 
-    /* Set the active sheet. */
+    /* Set the active sheet and check if a metadata file is needed. */
     STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
         if (sheet->is_chartsheet)
             continue;
@@ -2039,6 +2039,9 @@ workbook_close(lxw_workbook *self)
 
         if (worksheet->index == self->active_sheet)
             worksheet->active = 1;
+
+        if (worksheet->has_dynamic_arrays)
+            self->has_metadata = LXW_TRUE;
     }
 
     /* Set workbook and worksheet VBA codenames if a macro has been added. */
