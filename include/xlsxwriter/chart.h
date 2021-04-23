@@ -713,9 +713,12 @@ typedef struct lxw_chart_font {
     /** The chart font underline property. Set to 0 or 1. */
     uint8_t underline;
 
-    /** The chart font rotation property. Range: -90 to 90, and 270-271.
-     *  The angle 270 gives a stacked (top to bottom) alignment.
-     *  The angle 271 gives a stacked alignment for East Asian fonts.
+    /** The chart font rotation property. Range: -90 to 90, and 270, 271 and 360:
+     *
+     *  - The angles -90 to 90 are the normal range shown in the Excel user interface.
+     *  - The angle 270 gives a stacked (top to bottom) alignment.
+     *  - The angle 271 gives a stacked alignment for East Asian fonts.
+     *  - The angle 360 gives an explicit angle of 0 to override the y axis default.
      * */
     int32_t rotation;
 
