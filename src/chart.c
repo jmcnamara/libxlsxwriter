@@ -79,7 +79,9 @@ _chart_free_font(lxw_chart_font *font)
         return;
 
     free(font->name);
+    font->name=NULL;
     free(font);
+    font=NULL;
 }
 
 STATIC void
