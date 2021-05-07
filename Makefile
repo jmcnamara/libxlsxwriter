@@ -215,8 +215,8 @@ releasecheck:
 
 release: releasecheck
 	@echo
-	@echo "Pushing to git master ..."
-	$(Q)git push origin master
+	@echo "Pushing to git main ..."
+	$(Q)git push origin main
 	$(Q)git push --tags
 
 	@echo
