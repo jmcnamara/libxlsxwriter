@@ -12,6 +12,7 @@
 #import "drawing.h"
 #import "format.h"
 #import "hash_table.h"
+#import "metadata.h"
 #import "packager.h"
 #import "relationships.h"
 #import "shared_strings.h"
