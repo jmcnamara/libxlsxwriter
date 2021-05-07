@@ -27,7 +27,8 @@ enum image_types {
     LXW_IMAGE_UNKNOWN = 0,
     LXW_IMAGE_PNG,
     LXW_IMAGE_JPEG,
-    LXW_IMAGE_BMP
+    LXW_IMAGE_BMP,
+    LXW_IMAGE_GIF
 };
 
 /* Coordinates used in a drawing object. */

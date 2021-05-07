@@ -2973,7 +2973,7 @@ lxw_error worksheet_set_column_pixels_opt(lxw_worksheet *worksheet,
  * @return A #lxw_error code.
  *
  * This function can be used to insert a image into a worksheet. The image can
- * be in PNG, JPEG or BMP format:
+ * be in PNG, JPEG, GIF or BMP format:
  *
  * @code
  *     worksheet_insert_image(worksheet, 2, 1, "logo.png");

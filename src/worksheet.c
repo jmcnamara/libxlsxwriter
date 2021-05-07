@@ -3404,6 +3404,55 @@ file_error:
 }
 
 /*
+ * Extract width and height information from a GIF file.
+ */
+STATIC lxw_error
+_process_gif(lxw_object_properties *image_props)
+{
+    uint16_t width = 0;
+    uint16_t height = 0;
+    double x_dpi = 96;
+    double y_dpi = 96;
+    int fseek_err;
+
+    FILE *stream = image_props->stream;
+
+    /* Skip another 2 bytes to the start of the GIF height/width. */
+    fseek_err = fseek(stream, 2, SEEK_CUR);
+    if (fseek_err)
+        goto file_error;
+
+    if (fread(&width, sizeof(width), 1, stream) < 1)
+        width = 0;
+
+    if (fread(&height, sizeof(height), 1, stream) < 1)
+        height = 0;
+
+    /* Ensure that we read some valid data from the file. */
+    if (width == 0)
+        goto file_error;
+
+    height = LXW_UINT16_HOST(height);
+    width = LXW_UINT16_HOST(width);
+
+    /* Set the image metadata. */
+    image_props->image_type = LXW_IMAGE_GIF;
+    image_props->width = width;
+    image_props->height = height;
+    image_props->x_dpi = x_dpi;
+    image_props->y_dpi = y_dpi;
+    image_props->extension = lxw_strdup("gif");
+
+    return LXW_NO_ERROR;
+
+file_error:
+    LXW_WARN_FORMAT1("worksheet image insertion: "
+                     "no size data found in: %s.", image_props->filename);
+
+    return LXW_ERROR_IMAGE_DIMENSIONS;
+}
+
+/*
  * Extract information from the image file such as dimension, type, filename,
  * and extension.
  */
@@ -3437,6 +3486,10 @@ _get_image_properties(lxw_object_properties *image_props)
     }
     else if (memcmp(signature, "BM", 2) == 0) {
         if (_process_bmp(image_props) != LXW_NO_ERROR)
+            return LXW_ERROR_IMAGE_DIMENSIONS;
+    }
+    else if (memcmp(signature, "GIF8", 4) == 0) {
+        if (_process_gif(image_props) != LXW_NO_ERROR)
             return LXW_ERROR_IMAGE_DIMENSIONS;
     }
     else {

@@ -969,6 +969,9 @@ _write_content_types_file(lxw_packager *self)
     if (workbook->has_bmp)
         lxw_ct_add_default(content_types, "bmp", "image/bmp");
 
+    if (workbook->has_gif)
+        lxw_ct_add_default(content_types, "gif", "image/gif");
+
     if (workbook->vba_project)
         lxw_ct_add_default(content_types, "bin",
                            "application/vnd.ms-office.vbaProject");

@@ -319,6 +319,7 @@ typedef struct lxw_workbook {
     uint8_t has_png;
     uint8_t has_jpeg;
     uint8_t has_bmp;
+    uint8_t has_gif;
     uint8_t has_vml;
     uint8_t has_comments;
     uint8_t has_metadata;

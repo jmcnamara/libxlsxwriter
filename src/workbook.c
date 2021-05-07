@@ -1050,6 +1050,9 @@ _prepare_drawings(lxw_workbook *self)
             if (object_props->image_type == LXW_IMAGE_BMP)
                 self->has_bmp = LXW_TRUE;
 
+            if (object_props->image_type == LXW_IMAGE_GIF)
+                self->has_gif = LXW_TRUE;
+
             /* Check for duplicate images and only store the first instance. */
             if (object_props->md5) {
                 tmp_image_md5.md5 = object_props->md5;
@@ -1107,6 +1110,9 @@ _prepare_drawings(lxw_workbook *self)
 
             if (object_props->image_type == LXW_IMAGE_BMP)
                 self->has_bmp = LXW_TRUE;
+
+            if (object_props->image_type == LXW_IMAGE_GIF)
+                self->has_gif = LXW_TRUE;
 
             /* Check for duplicate images and only store the first instance. */
             if (object_props->md5) {
