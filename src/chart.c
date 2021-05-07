@@ -869,7 +869,7 @@ _chart_write_a_def_rpr(lxw_chart *self, lxw_chart_font *font)
         if (font->size > 0.0)
             LXW_PUSH_ATTRIBUTES_DBL("sz", font->size);
 
-        if (use_font_default || font )
+        if (use_font_default || !font->bold)
             LXW_PUSH_ATTRIBUTES_INT("b", font->bold & 0x1);
 
         if (use_font_default || font->italic)
