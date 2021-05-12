@@ -22,7 +22,7 @@ It supports features such as:
 - Charts.
 - Data validation and drop down lists.
 - Conditional formatting.
-- Worksheet PNG/JPEG images.
+- Worksheet PNG/JPEG/GIF images.
 - Cell comments.
 - Support for adding Macros.
 - Memory optimization mode for writing large files.
