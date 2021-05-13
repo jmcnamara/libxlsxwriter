@@ -2,6 +2,12 @@
 @page changes Changes
 
 
+## 1.0.5 May 13 2021
+
+- Added support for worksheet background images via
+  `worksheet_set_background()`.
+
+
 ## 1.0.4 May 8 2021
 
 - Added support for GIF image files (and in Excel 365, animated GIF files).

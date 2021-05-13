@@ -3176,7 +3176,7 @@ lxw_error worksheet_insert_image_buffer_opt(lxw_worksheet *worksheet,
  * document. However, Microsoft recommends using a header image [to set a
  * watermark][watermark]. The choice of method depends on whether you want the
  * watermark to be visible in normal viewing mode or just when the file is
- * printed. In XlsxWriter you can get the header watermark effect using
+ * printed. In libxlsxwriter you can get the header watermark effect using
  * `worksheet_set_header()`:
  *
  * @code
