@@ -214,6 +214,13 @@ mainly on collapsed outlines.
 @image html outline2.png
 
 ##############################################################
+@example background.c
+
+Example of how to set the background image for a worksheet.
+
+@image html background.png
+
+##############################################################
 @example tab_colors.c
 
 Example of how to set Excel worksheet tab colors.

@@ -456,7 +456,7 @@ Example of how to generate Excel outlines and grouping.
 <table  width="600">
 <tr>
   <td>@ref outline.c "&lt;&lt; outline.c"</td>
-  <td align="right">@ref tab_colors.c "tab_colors.c &gt;&gt;"</td>
+  <td align="right">@ref background.c "background.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -468,11 +468,27 @@ mainly on collapsed outlines.
 
 
 
-@example tab_colors.c
+@example background.c
 
 <table  width="600">
 <tr>
   <td>@ref outline_collapsed.c "&lt;&lt; outline_collapsed.c"</td>
+  <td align="right">@ref tab_colors.c "tab_colors.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of how to set the background image for a worksheet.
+
+@image html background.png
+
+
+
+
+@example tab_colors.c
+
+<table  width="600">
+<tr>
+  <td>@ref background.c "&lt;&lt; background.c"</td>
   <td align="right">@ref diagonal_border.c "diagonal_border.c &gt;&gt;"</td>
 </tr>
 </table>

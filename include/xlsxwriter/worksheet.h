@@ -1360,6 +1360,7 @@ typedef struct lxw_object_properties {
     double y_dpi;
     lxw_chart *chart;
     uint8_t is_duplicate;
+    uint8_t is_background;
     char *md5;
     char *image_position;
     uint8_t decorative;
@@ -1752,9 +1753,11 @@ typedef struct lxw_worksheet {
     uint8_t has_vml;
     uint8_t has_comments;
     uint8_t has_header_vml;
+    uint8_t has_background_image;
     lxw_rel_tuple *external_vml_comment_link;
     lxw_rel_tuple *external_comment_link;
     lxw_rel_tuple *external_vml_header_link;
+    lxw_rel_tuple *external_background_link;
     char *comment_author;
     char *vml_data_id_str;
     char *vml_header_id_str;
@@ -1784,6 +1787,7 @@ typedef struct lxw_worksheet {
     lxw_object_properties *footer_left_object_props;
     lxw_object_properties *footer_center_object_props;
     lxw_object_properties *footer_right_object_props;
+    lxw_object_properties *background_image;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -3147,6 +3151,70 @@ lxw_error worksheet_insert_image_buffer_opt(lxw_worksheet *worksheet,
                                             const unsigned char *image_buffer,
                                             size_t image_size,
                                             lxw_image_options *options);
+
+/**
+ * @brief Set the background image for a worksheet.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param filename  The image filename, with path if required.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_set_background()` function can be used to set the
+ * background image for a worksheet:
+ *
+ * @code
+ *      worksheet_set_background(worksheet, "logo.png");
+ * @endcode
+ *
+ * @image html background.png
+ *
+ * The ``set_background()`` method supports all the image formats supported by
+ * `worksheet_insert_image()`.
+ *
+ * Some people use this method to add a watermark background to their
+ * document. However, Microsoft recommends using a header image [to set a
+ * watermark][watermark]. The choice of method depends on whether you want the
+ * watermark to be visible in normal viewing mode or just when the file is
+ * printed. In XlsxWriter you can get the header watermark effect using
+ * `worksheet_set_header()`:
+ *
+ * @code
+ *     lxw_header_footer_options header_options = {.image_center = "watermark.png"};
+ *     worksheet_set_header_opt(worksheet, "&C&G", &header_options);
+ * @endcode
+ *
+ * [watermark]:https://support.microsoft.com/en-us/office/add-a-watermark-in-excel-a372182a-d733-484e-825c-18ddf3edf009
+ *
+ */
+lxw_error worksheet_set_background(lxw_worksheet *worksheet,
+                                   const char *filename);
+
+/**
+ * @brief Set the background image for a worksheet, from a buffer.
+ *
+ * @param worksheet    Pointer to a lxw_worksheet instance to be updated.
+ * @param image_buffer Pointer to an array of bytes that holds the image data.
+ * @param image_size   The size of the array of bytes.
+ *
+ * @return A #lxw_error code.
+ *
+ * This function can be used to insert a background image into a worksheet
+ * from a memory buffer:
+ *
+ * @code
+ *     worksheet_set_background_buffer(worksheet, image_buffer, image_size);
+ * @endcode
+ *
+ * The buffer should be a pointer to an array of unsigned char data with a
+ * specified size.
+ *
+ * See `worksheet_set_background()` for more details.
+ *
+ */
+lxw_error worksheet_set_background_buffer(lxw_worksheet *worksheet,
+                                          const unsigned char *image_buffer,
+                                          size_t image_size);
 
 /**
  * @brief Insert a chart object into a worksheet.
@@ -4844,6 +4912,10 @@ void lxw_worksheet_prepare_image(lxw_worksheet *worksheet,
 void lxw_worksheet_prepare_header_image(lxw_worksheet *worksheet,
                                         uint32_t image_ref_id,
                                         lxw_object_properties *object_props);
+
+void lxw_worksheet_prepare_background(lxw_worksheet *worksheet,
+                                      uint32_t image_ref_id,
+                                      lxw_object_properties *object_props);
 
 void lxw_worksheet_prepare_chart(lxw_worksheet *worksheet,
                                  uint32_t chart_ref_id, uint32_t drawing_id,

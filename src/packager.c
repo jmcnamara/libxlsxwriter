@@ -1132,6 +1132,7 @@ _write_worksheet_rels_file(lxw_packager *self)
             STAILQ_EMPTY(worksheet->external_drawing_links) &&
             !worksheet->external_vml_header_link &&
             !worksheet->external_vml_comment_link &&
+            !worksheet->external_background_link &&
             !worksheet->external_comment_link)
             continue;
 
@@ -1159,6 +1160,11 @@ _write_worksheet_rels_file(lxw_packager *self)
                                            rel->target_mode);
 
         rel = worksheet->external_vml_header_link;
+        if (rel)
+            lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+                                           rel->target_mode);
+
+        rel = worksheet->external_background_link;
         if (rel)
             lxw_add_worksheet_relationship(rels, rel->type, rel->target,
                                            rel->target_mode);

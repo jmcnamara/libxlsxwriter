@@ -287,6 +287,7 @@ typedef struct lxw_workbook {
     struct lxw_chartsheet_names *chartsheet_names;
     struct lxw_image_md5s *image_md5s;
     struct lxw_image_md5s *header_image_md5s;
+    struct lxw_image_md5s *background_md5s;
     struct lxw_charts *charts;
     struct lxw_charts *ordered_charts;
     struct lxw_formats *formats;

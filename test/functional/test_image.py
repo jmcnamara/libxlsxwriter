@@ -14,8 +14,6 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     Test file created with libxlsxwriter against a file created by Excel.
 
     """
-    # self.ignore_files = ['xl/drawings/drawing1.xml']
-
     def test_image01(self):
         self.run_exe_test('test_image01')
 

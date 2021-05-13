@@ -634,6 +634,7 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     _free_relationship(worksheet->external_vml_comment_link);
     _free_relationship(worksheet->external_comment_link);
     _free_relationship(worksheet->external_vml_header_link);
+    _free_relationship(worksheet->external_background_link);
 
     if (worksheet->array) {
         for (col = 0; col < LXW_COL_MAX; col++) {
@@ -2859,6 +2860,44 @@ mem_error:
 }
 
 /*
+ * Set up background image.
+ */
+void
+lxw_worksheet_prepare_background(lxw_worksheet *self,
+                                 uint32_t image_ref_id,
+                                 lxw_object_properties *object_props)
+{
+    lxw_rel_tuple *relationship = NULL;
+    char filename[LXW_FILENAME_LENGTH];
+
+    STAILQ_INSERT_TAIL(self->image_props, object_props, list_pointers);
+
+    relationship = calloc(1, sizeof(lxw_rel_tuple));
+    RETURN_VOID_ON_MEM_ERROR(relationship);
+
+    relationship->type = lxw_strdup("/image");
+    GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
+
+    lxw_snprintf(filename, 32, "../media/image%d.%s", image_ref_id,
+                 object_props->extension);
+
+    relationship->target = lxw_strdup(filename);
+    GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+
+    self->external_background_link = relationship;
+
+    return;
+
+mem_error:
+    if (relationship) {
+        free(relationship->type);
+        free(relationship->target);
+        free(relationship->target_mode);
+        free(relationship);
+    }
+}
+
+/*
  * Set up chart/drawings.
  */
 void
@@ -3329,7 +3368,7 @@ _process_jpeg(lxw_object_properties *image_props)
         if (!feof(stream)) {
             fseek_err = fseek(stream, offset, SEEK_CUR);
             if (fseek_err)
-                goto file_error;
+                break;
         }
     }
 
@@ -4718,6 +4757,30 @@ _worksheet_write_legacy_drawing_hf(lxw_worksheet *self)
 
     LXW_FREE_ATTRIBUTES();
 
+}
+
+/*
+ * Write the <picture> element.
+ */
+STATIC void
+_worksheet_write_picture(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char r_id[LXW_MAX_ATTRIBUTE_LENGTH];
+
+    if (!self->has_background_image)
+        return;
+    else
+        self->rel_count++;
+
+    lxw_snprintf(r_id, LXW_ATTR_32, "rId%d", self->rel_count);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("r:id", r_id);
+
+    lxw_xml_empty_tag(self->file, "picture", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
 }
 
 /*
@@ -6708,6 +6771,9 @@ lxw_worksheet_assemble_xml_file(lxw_worksheet *self)
 
     /* Write the legacyDrawingHF element. */
     _worksheet_write_legacy_drawing_hf(self);
+
+    /* Write the picture element. */
+    _worksheet_write_picture(self);
 
     /* Write the extLst element. */
     _worksheet_write_ext_list(self);
@@ -8771,7 +8837,7 @@ worksheet_set_default_row(lxw_worksheet *self, double height,
 }
 
 /*
- * Insert an image into the worksheet.
+ * Insert an image with options into the worksheet.
  */
 lxw_error
 worksheet_insert_image_opt(lxw_worksheet *self,
@@ -8864,6 +8930,9 @@ worksheet_insert_image(lxw_worksheet *self,
     return worksheet_insert_image_opt(self, row_num, col_num, filename, NULL);
 }
 
+/*
+ * Insert an image buffer, with options, into the worksheet.
+ */
 lxw_error
 worksheet_insert_image_buffer_opt(lxw_worksheet *self,
                                   lxw_row_t row_num,
@@ -8955,6 +9024,9 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
     }
 }
 
+/*
+ * Insert an image buffer into the worksheet.
+ */
 lxw_error
 worksheet_insert_image_buffer(lxw_worksheet *self,
                               lxw_row_t row_num,
@@ -8964,6 +9036,129 @@ worksheet_insert_image_buffer(lxw_worksheet *self,
 {
     return worksheet_insert_image_buffer_opt(self, row_num, col_num,
                                              image_buffer, image_size, NULL);
+}
+
+/*
+ * Set an image as a worksheet background.
+ */
+lxw_error
+worksheet_set_background(lxw_worksheet *self, const char *filename)
+{
+    FILE *image_stream;
+    lxw_object_properties *object_props;
+
+    if (!filename) {
+        LXW_WARN("worksheet_set_background(): "
+                 "filename must be specified.");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    /* Check that the image file exists and can be opened. */
+    image_stream = lxw_fopen(filename, "rb");
+    if (!image_stream) {
+        LXW_WARN_FORMAT1("worksheet_set_background(): "
+                         "file doesn't exist or can't be opened: %s.",
+                         filename);
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+
+    /* Create a new object to hold the image properties. */
+    object_props = calloc(1, sizeof(lxw_object_properties));
+    if (!object_props) {
+        fclose(image_stream);
+        return LXW_ERROR_MEMORY_MALLOC_FAILED;
+    }
+
+    /* Copy other options or set defaults. */
+    object_props->filename = lxw_strdup(filename);
+    object_props->stream = image_stream;
+    object_props->is_background = LXW_TRUE;
+
+    if (_get_image_properties(object_props) == LXW_NO_ERROR) {
+        _free_object_properties(self->background_image);
+        self->background_image = object_props;
+        self->has_background_image = LXW_TRUE;
+        fclose(image_stream);
+        return LXW_NO_ERROR;
+    }
+    else {
+        _free_object_properties(object_props);
+        fclose(image_stream);
+        return LXW_ERROR_IMAGE_DIMENSIONS;
+    }
+}
+
+/*
+ * Set an image buffer as a worksheet background.
+ */
+lxw_error
+worksheet_set_background_buffer(lxw_worksheet *self,
+                                const unsigned char *image_buffer,
+                                size_t image_size)
+{
+    FILE *image_stream;
+    lxw_object_properties *object_props;
+
+    if (!image_size) {
+        LXW_WARN("worksheet_set_background(): " "size must be non-zero.");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    /* Write the image buffer to a file (preferably in memory) so we can read
+     * the dimensions like an ordinary file. */
+#ifdef USE_FMEMOPEN
+    image_stream = fmemopen(NULL, image_size, "w+b");
+#else
+    image_stream = lxw_tmpfile(self->tmpdir);
+#endif
+
+    if (!image_stream)
+        return LXW_ERROR_CREATING_TMPFILE;
+
+    if (fwrite(image_buffer, 1, image_size, image_stream) != image_size) {
+        fclose(image_stream);
+        return LXW_ERROR_CREATING_TMPFILE;
+    }
+
+    rewind(image_stream);
+
+    /* Create a new object to hold the image properties. */
+    object_props = calloc(1, sizeof(lxw_object_properties));
+    if (!object_props) {
+        fclose(image_stream);
+        return LXW_ERROR_MEMORY_MALLOC_FAILED;
+    }
+
+    /* Store the image data in the properties structure. */
+    object_props->image_buffer = calloc(1, image_size);
+    if (!object_props->image_buffer) {
+        _free_object_properties(object_props);
+        fclose(image_stream);
+        return LXW_ERROR_MEMORY_MALLOC_FAILED;
+    }
+    else {
+        memcpy(object_props->image_buffer, image_buffer, image_size);
+        object_props->image_buffer_size = image_size;
+        object_props->is_image_buffer = LXW_TRUE;
+    }
+
+    /* Copy other options or set defaults. */
+    object_props->filename = lxw_strdup("image_buffer");
+    object_props->stream = image_stream;
+    object_props->is_background = LXW_TRUE;
+
+    if (_get_image_properties(object_props) == LXW_NO_ERROR) {
+        _free_object_properties(self->background_image);
+        self->background_image = object_props;
+        self->has_background_image = LXW_TRUE;
+        fclose(image_stream);
+        return LXW_NO_ERROR;
+    }
+    else {
+        _free_object_properties(object_props);
+        fclose(image_stream);
+        return LXW_ERROR_IMAGE_DIMENSIONS;
+    }
 }
 
 /*

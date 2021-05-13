@@ -244,6 +244,20 @@ lxw_workbook_free(lxw_workbook *workbook)
         free(workbook->header_image_md5s);
     }
 
+    if (workbook->background_md5s) {
+        for (image_md5 = RB_MIN(lxw_image_md5s, workbook->background_md5s);
+             image_md5; image_md5 = next_image_md5) {
+
+            next_image_md5 =
+                RB_NEXT(lxw_image_md5s, workbook->image_md5, image_md5);
+            RB_REMOVE(lxw_image_md5s, workbook->background_md5s, image_md5);
+            free(image_md5->md5);
+            free(image_md5);
+        }
+
+        free(workbook->background_md5s);
+    }
+
     lxw_hash_free(workbook->used_xf_formats);
     lxw_hash_free(workbook->used_dxf_formats);
     lxw_sst_free(workbook->sst);
@@ -1002,6 +1016,25 @@ _add_chart_cache_data(lxw_workbook *self)
 }
 
 /*
+ * Store the image types used in the workbook to update the content types.
+ */
+STATIC void
+_store_image_type(lxw_workbook *self, uint8_t image_type)
+{
+    if (image_type == LXW_IMAGE_PNG)
+        self->has_png = LXW_TRUE;
+
+    if (image_type == LXW_IMAGE_JPEG)
+        self->has_jpeg = LXW_TRUE;
+
+    if (image_type == LXW_IMAGE_BMP)
+        self->has_bmp = LXW_TRUE;
+
+    if (image_type == LXW_IMAGE_GIF)
+        self->has_gif = LXW_TRUE;
+}
+
+/*
  * Iterate through the worksheets and set up any chart or image drawings.
  */
 STATIC void
@@ -1032,26 +1065,58 @@ _prepare_drawings(lxw_workbook *self)
 
         if (STAILQ_EMPTY(worksheet->image_props)
             && STAILQ_EMPTY(worksheet->chart_data)
-            && !worksheet->has_header_vml) {
+            && !worksheet->has_header_vml && !worksheet->has_background_image) {
             continue;
         }
 
         drawing_id++;
 
+        /* Prepare background images. */
+        if (worksheet->has_background_image) {
+
+            object_props = worksheet->background_image;
+
+            _store_image_type(self, object_props->image_type);
+
+            /* Check for duplicate images and only store the first instance. */
+            if (object_props->md5) {
+                tmp_image_md5.md5 = object_props->md5;
+                found_duplicate_image = RB_FIND(lxw_image_md5s,
+                                                self->background_md5s,
+                                                &tmp_image_md5);
+            }
+
+            if (found_duplicate_image) {
+                ref_id = found_duplicate_image->id;
+                object_props->is_duplicate = LXW_TRUE;
+            }
+            else {
+                image_ref_id++;
+                ref_id = image_ref_id;
+
+#ifndef USE_NO_MD5
+                new_image_md5 = calloc(1, sizeof(lxw_image_md5));
+#endif
+                if (new_image_md5 && object_props->md5) {
+                    new_image_md5->id = ref_id;
+                    new_image_md5->md5 = lxw_strdup(object_props->md5);
+
+                    RB_INSERT(lxw_image_md5s, self->background_md5s,
+                              new_image_md5);
+                }
+            }
+
+            lxw_worksheet_prepare_background(worksheet, ref_id, object_props);
+        }
+
         /* Prepare worksheet images. */
         STAILQ_FOREACH(object_props, worksheet->image_props, list_pointers) {
 
-            if (object_props->image_type == LXW_IMAGE_PNG)
-                self->has_png = LXW_TRUE;
+            /* Ignore background image added above. */
+            if (object_props->is_background)
+                continue;
 
-            if (object_props->image_type == LXW_IMAGE_JPEG)
-                self->has_jpeg = LXW_TRUE;
-
-            if (object_props->image_type == LXW_IMAGE_BMP)
-                self->has_bmp = LXW_TRUE;
-
-            if (object_props->image_type == LXW_IMAGE_GIF)
-                self->has_gif = LXW_TRUE;
+            _store_image_type(self, object_props->image_type);
 
             /* Check for duplicate images and only store the first instance. */
             if (object_props->md5) {
@@ -1102,17 +1167,7 @@ _prepare_drawings(lxw_workbook *self)
             if (!object_props)
                 continue;
 
-            if (object_props->image_type == LXW_IMAGE_PNG)
-                self->has_png = LXW_TRUE;
-
-            if (object_props->image_type == LXW_IMAGE_JPEG)
-                self->has_jpeg = LXW_TRUE;
-
-            if (object_props->image_type == LXW_IMAGE_BMP)
-                self->has_bmp = LXW_TRUE;
-
-            if (object_props->image_type == LXW_IMAGE_GIF)
-                self->has_gif = LXW_TRUE;
+            _store_image_type(self, object_props->image_type);
 
             /* Check for duplicate images and only store the first instance. */
             if (object_props->md5) {
@@ -1730,10 +1785,15 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     GOTO_LABEL_ON_MEM_ERROR(workbook->image_md5s, mem_error);
     RB_INIT(workbook->image_md5s);
 
-    /* Add the image MD5 tree. */
+    /* Add the header image MD5 tree. */
     workbook->header_image_md5s = calloc(1, sizeof(struct lxw_image_md5s));
     GOTO_LABEL_ON_MEM_ERROR(workbook->header_image_md5s, mem_error);
     RB_INIT(workbook->header_image_md5s);
+
+    /* Add the background image MD5 tree. */
+    workbook->background_md5s = calloc(1, sizeof(struct lxw_image_md5s));
+    GOTO_LABEL_ON_MEM_ERROR(workbook->background_md5s, mem_error);
+    RB_INIT(workbook->background_md5s);
 
     /* Add the charts list. */
     workbook->charts = calloc(1, sizeof(struct lxw_charts));
