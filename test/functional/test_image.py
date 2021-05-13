@@ -170,6 +170,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_image83(self):
         self.run_exe_test('test_image83', 'image02.xlsx')
 
+    def test_image89(self):
+        self.run_exe_test('test_image89', 'image03.xlsx')
+
     @pytest.mark.skipif(os.environ.get('USE_NO_MD5'), reason="compiled without MD5 support")
     def test_image86(self):
         self.run_exe_test('test_image86', 'image48.xlsx')
