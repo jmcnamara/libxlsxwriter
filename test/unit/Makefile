@@ -52,6 +52,10 @@ ifdef USE_SYSTEM_MINIZIP
 LIBS_O += -lminizip
 CFLAGS += -DUSE_SYSTEM_MINIZIP
 endif
+ifdef USE_OPENSSL_MD5
+LIBS_O += -lcrypto
+endif
+
 # End of LIBS
 
 # Use a user-defined double number formatting function.

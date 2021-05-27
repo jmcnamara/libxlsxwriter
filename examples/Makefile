@@ -27,6 +27,9 @@ LIBS = $(LIBXLSXWRITER) -lz
 ifdef USE_SYSTEM_MINIZIP
 LIBS += -lminizip
 endif
+ifdef USE_OPENSSL_MD5
+LIBS += -lcrypto
+endif
 
 all : $(LIBXLSXWRITER) $(EXES)
 

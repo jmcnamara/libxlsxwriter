@@ -23,21 +23,23 @@
  * See md5.c for more information.
  */
 
-#ifndef __LXW_MD5_H__
-#define __LXW_MD5_H__
+#ifdef HAVE_OPENSSL
+#include <openssl/md5.h>
+#elif !defined(_MD5_H)
+#define _MD5_H
 
 /* Any 32-bit or wider unsigned integer data type will do */
-typedef unsigned int uint32_t;
+typedef unsigned int MD5_u32plus;
 
 typedef struct {
-	uint32_t lo, hi;
-	uint32_t a, b, c, d;
+	MD5_u32plus lo, hi;
+	MD5_u32plus a, b, c, d;
 	unsigned char buffer[64];
-	uint32_t block[16];
-} lxw_md5_ctx;
+	MD5_u32plus block[16];
+} MD5_CTX;
 
-extern void lxw_md5_init(lxw_md5_ctx *ctx);
-extern void lxw_md5_update(lxw_md5_ctx *ctx, const void *data, unsigned long size);
-extern void lxw_md5_final(unsigned char *result, lxw_md5_ctx *ctx);
+extern void MD5_Init(MD5_CTX *ctx);
+extern void MD5_Update(MD5_CTX *ctx, const void *data, unsigned long size);
+extern void MD5_Final(unsigned char *result, MD5_CTX *ctx);
 
 #endif

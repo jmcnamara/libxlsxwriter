@@ -19,6 +19,7 @@ PYTESTFILES ?= test
 
 VERSION = $(shell sed -n -e '/VERSION "/s/.*"\(.*\)".*/\1/p' < include/xlsxwriter.h)
 
+
 .PHONY: docs tags examples
 
 # Build the libs.
@@ -29,9 +30,13 @@ endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
 endif
+
 ifndef USE_NO_MD5
+ifndef USE_OPENSSL_MD5
 	$(Q)$(MAKE) -C third_party/md5
 endif
+endif
+
 	$(Q)$(MAKE) -C src
 
 universal_binary :
@@ -63,15 +68,9 @@ clean :
 	$(Q)rm -rf test/functional/__pycache__
 	$(Q)rm -f  test/functional/*.pyc
 	$(Q)rm -f  lib/*
-ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) clean -C third_party/minizip
-endif
-ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) clean -C third_party/tmpfileplus
-endif
-ifndef USE_NO_MD5
 	$(Q)$(MAKE) clean -C third_party/md5
-endif
 
 # Run the unit tests.
 test : all test_unit test_functional
@@ -88,17 +87,7 @@ test_functional : all
 	$(Q)$(PYTEST) test/functional -v -k $(PYTESTFILES)
 
 # Run all tests.
-test_unit :
-	@echo "Compiling unit tests ..."
-ifndef USE_SYSTEM_MINIZIP
-	$(Q)$(MAKE) -C third_party/minizip
-endif
-ifndef USE_STANDARD_TMPFILE
-	$(Q)$(MAKE) -C third_party/tmpfileplus
-endif
-ifndef USE_NO_MD5
-	$(Q)$(MAKE) -C third_party/md5
-endif
+test_unit : all
 	$(Q)$(MAKE) -C src test_lib
 	$(Q)$(MAKE) -C test/unit test
 
@@ -165,16 +154,7 @@ strip:
 	$(Q)strip lib/*
 
 # Run a coverity static analysis.
-coverity:
-ifndef USE_SYSTEM_MINIZIP
-	$(Q)$(MAKE) -C third_party/minizip
-endif
-ifndef USE_STANDARD_TMPFILE
-	$(Q)$(MAKE) -C third_party/tmpfileplus
-endif
-ifndef USE_NO_MD5
-	$(Q)$(MAKE) -C third_party/md5
-endif
+coverity: all
 	$(Q)$(MAKE) -C src clean
 	$(Q)rm -f  lib/*
 	$(Q)rm -rf  cov-int
@@ -185,16 +165,7 @@ endif
 	$(Q)rm -f  lib/*
 
 # Run a scan-build static analysis.
-scan_build:
-ifndef USE_SYSTEM_MINIZIP
-	$(Q)$(MAKE) -C third_party/minizip
-endif
-ifndef USE_STANDARD_TMPFILE
-	$(Q)$(MAKE) -C third_party/tmpfileplus
-endif
-ifndef USE_NO_MD5
-	$(Q)$(MAKE) -C third_party/md5
-endif
+scan_build: all
 	$(Q)$(MAKE) -C src clean
 	$(Q)rm -f  lib/*
 	$(Q)scan-build make -C src libxlsxwriter.a

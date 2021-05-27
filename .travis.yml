@@ -12,6 +12,7 @@ env:
   - NO_VALGRIND=1 USE_SYSTEM_MINIZIP=1   CFLAGS='-Werror'
   - NO_VALGRIND=1 USE_DOUBLE_FUNCTION=1  CFLAGS='-Werror'
   - NO_VALGRIND=1 USE_NO_MD5=1           CFLAGS='-Werror'
+  - NO_VALGRIND=1 USE_OPENSSL_MD5=1      CFLAGS='-Werror'
   - NO_VALGRIND=1 USE_FMEMOPEN=1         CFLAGS='-Werror'
 
 addons:
@@ -20,6 +21,7 @@ addons:
     packages:
       - gcc-multilib
       - libminizip-dev
+      - libssl-dev
       - valgrind
       - zlib1g-dev
       - zlib1g-dev:i386

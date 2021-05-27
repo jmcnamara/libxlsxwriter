@@ -15,7 +15,14 @@
 #include "xlsxwriter/worksheet.h"
 #include "xlsxwriter/format.h"
 #include "xlsxwriter/utility.h"
+
+#ifdef USE_OPENSSL_MD5
+#include <openssl/md5.h>
+#else
+#ifndef USE_NO_MD5
 #include "xlsxwriter/third_party/md5.h"
+#endif
+#endif
 
 #define LXW_STR_MAX                      32767
 #define LXW_BUFFER_SIZE                  4096
@@ -3501,7 +3508,7 @@ _get_image_properties(lxw_object_properties *image_props)
     unsigned char signature[4];
 #ifndef USE_NO_MD5
     uint8_t i;
-    lxw_md5_ctx md5_context;
+    MD5_CTX md5_context;
     size_t size_read;
     char buffer[LXW_IMAGE_BUFFER_SIZE];
     unsigned char md5_checksum[LXW_MD5_SIZE];
@@ -3543,16 +3550,16 @@ _get_image_properties(lxw_object_properties *image_props)
      * images to reduce the xlsx file size.*/
     rewind(image_props->stream);
 
-    lxw_md5_init(&md5_context);
+    MD5_Init(&md5_context);
 
     size_read = fread(buffer, 1, LXW_IMAGE_BUFFER_SIZE, image_props->stream);
     while (size_read) {
-        lxw_md5_update(&md5_context, buffer, size_read);
+        MD5_Update(&md5_context, buffer, size_read);
         size_read =
             fread(buffer, 1, LXW_IMAGE_BUFFER_SIZE, image_props->stream);
     }
 
-    lxw_md5_final(md5_checksum, &md5_context);
+    MD5_Final(md5_checksum, &md5_context);
 
     /* Create a 32 char hex string buffer for the MD5 checksum. */
     image_props->md5 = calloc(1, LXW_MD5_SIZE * 2 + 1);

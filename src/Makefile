@@ -45,10 +45,15 @@ ifdef USE_NO_MD5
 # Don't use MD5 to avoid duplicate image files.
 CFLAGS += -DUSE_NO_MD5
 else
+ifdef USE_OPENSSL_MD5
+CFLAGS += -DUSE_OPENSSL_MD5
+LIBS   += -lcrypto
+else
 # Use md5 (the default).
 MD5_DIR = ../third_party/md5
 MD5_OBJ = $(MD5_DIR)/md5.o
 MD5_SO  = $(MD5_DIR)/md5.so
+endif
 endif
 
 # Set flag for big endian architecture.

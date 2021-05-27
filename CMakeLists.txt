@@ -53,6 +53,12 @@
 #           file. To enable this option pass `-DUSE_NO_MD5=ON` during
 #           configuration.
 #
+#       USE_OPENSSL_MD5 Compile with OpenSSL MD5 support. This will link
+#           against libcrypto for MD5 support rather than using the local MD5
+#           support. MD5 support is required to avoid duplicate image files in
+#           the output xlsx file. To enable this option pass
+#           `-DUSE_OPENSSL_MD5=ON` during configuration.
+#
 #       USE_STATIC_MSVC_RUNTIME
 #           Use the static msvc runtime library when compiling with msvc (default off)
 #           To enable, pass `-DUSE_STATIC_MSVC_RUNTIME` during configuration.
@@ -118,6 +124,7 @@ option(BUILD_EXAMPLES "Build libxlsxwriter examples" OFF)
 option(USE_SYSTEM_MINIZIP "Use system minizip installation" OFF)
 option(USE_STANDARD_TMPFILE "Use the C standard library's tmpfile()" OFF)
 option(USE_NO_MD5 "Build libxlsxwriter without third party MD5 lib" OFF)
+option(USE_OPENSSL_MD5 "Build libxlsxwriter with the OpenSSL MD5 lib" OFF)
 option(USE_FMEMOPEN "Use fmemopen() in place of some temporary files" OFF)
 option(IOAPI_NO_64 "Disable 64-bit filesystem support" OFF)
 
@@ -143,8 +150,12 @@ if(USE_STANDARD_TMPFILE)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_STANDARD_TMPFILE)
 endif()
 
-if(USE_NO_MD5)
+if(NOT USE_OPENSSL_MD5 AND USE_NO_MD5)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_NO_MD5)
+endif()
+
+if(USE_OPENSSL_MD5)
+    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_OPENSSL_MD5)
 endif()
 
 if(USE_FMEMOPEN)
@@ -230,8 +241,12 @@ if (NOT USE_STANDARD_TMPFILE)
     list(APPEND LXW_SOURCES third_party/tmpfileplus/tmpfileplus.c)
 endif()
 
-if (NOT USE_NO_MD5)
+if(NOT USE_OPENSSL_MD5 AND NOT USE_NO_MD5)
     list(APPEND LXW_SOURCES third_party/md5/md5.c)
+endif()
+
+if(USE_OPENSSL_MD5)
+	set(LIB_CRYPTO "crypto")
 endif()
 
 set(LXW_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -241,7 +256,7 @@ target_sources(${PROJECT_NAME}
     PRIVATE ${LXW_SOURCES}
     PUBLIC ${LXW_HEADERS}
 )
-target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LIBRARIES} ${MINIZIP_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LIBRARIES} ${MINIZIP_LIBRARIES} ${LIB_CRYPTO})
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LXW_PRIVATE_COMPILE_DEFINITIONS})
 
 # /utf-8 needs VS2015 Update 2 or above.
