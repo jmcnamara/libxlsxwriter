@@ -2,6 +2,12 @@
 @page changes Changes
 
 
+## 1.0.6 May 28 2021
+
+- Added support for using OpenSSL MD5 functions instead of built in third
+  party library. See @ref gsg_md5.
+
+
 ## 1.0.5 May 13 2021
 
 - Added support for worksheet background images via
