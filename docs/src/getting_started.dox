@@ -618,6 +618,29 @@ The following external guide shows how to [Build libxlsxwriter inside
 Qt-Creator for Windows](https://github.com/jmcnamara/libxlsxwriter/issues/270)
 with step by step instructions.
 
+@section gsg_md5 MD5 functionality for handling duplicate images
+
+Libxlsxwriter uses a an MD5 digest to avoid including duplicate image files in
+the xlsx file. By default it uses a third party library, [Openwall
+MD5](https://openwall.info/wiki/people/solar/software/public-domain-source-code/md5),
+which is a fast portable implementation of the MD5 Algorithm and which uses
+the same function prototypes as OpenSSL MD5 digest. See @ref license.
+
+The Openwall MD5 code is included in the libxlsxwriter repo and compiled in by
+default. If you don't want to use this code, and the additional license, you
+can use OpenSSL's MD5 functions dynamically by passing `USE_OPENSSL_MD5=1` to
+make.
+
+    make USE_OPENSSL_MD5=1
+
+This requires that you have the OpenSSL development libraries installed and on
+paths known to your compiler.
+
+If this MD5 functionality isn't required it is possible to compile
+libxlsxwriter without image de-duplication by passing `USE_NO_MD5=1` to make.
+
+    make USE_NO_MD5=1
+
 @section gsg_minizip Linking against system minizip
 
 Libxlsxwriter uses the `minizip` component of [Zlib](http://www.zlib.net) to

@@ -165,8 +165,12 @@ has the following licence:
     (This is a heavily cut-down "BSD license".)
 
 Note, the MD5 library is used to avoid including duplicate image files in the
-xlsx file. If this functionality isn't required it is possible to compile
-libxlsxwriter without this library by passing `USE_NO_MD5=1` to make.
+xlsx file. If you don't want to use this code, and the additional licence, you
+can use OpenSSL's MD5 functions instead by passing `USE_OPENSSL_MD5=1` to
+make. If this functionality isn't required it is possible to compile
+libxlsxwriter without image deduplication by passing `USE_NO_MD5=1` to make.
+
+See also @ref gsg_md5.
 
 Next: @ref changes
 */
