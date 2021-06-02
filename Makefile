@@ -164,6 +164,26 @@ coverity: all
 	$(Q)$(MAKE) -C src clean
 	$(Q)rm -f  lib/*
 
+
+# Run sonarcloud analysis.
+sonarcloud:
+ifndef SONAR_TOKEN
+	@echo "Please define SONAR_TOKEN to run this analysis."
+	@exit 1
+endif
+
+	$(Q)$(MAKE) clean
+	$(Q)../sonar-scanner-4.6.1.2450-macosx/bin/build-wrapper-macosx-x86 --out-dir .sonar_output make all
+	$(Q)../sonar-scanner-4.6.1.2450-macosx/bin/sonar-scanner \
+        -Dsonar.organization=jmcnamara-github \
+        -Dsonar.projectKey=jmcnamara_libxlsxwriter \
+        -Dsonar.sources=src \
+        -Dsonar.sourceEncoding=UTF-8 \
+        -Dsonar.cfamily.build-wrapper-output=.sonar_output \
+        -Dsonar.host.url=https://sonarcloud.io \
+        -Dsonar.cfamily.threads=4	\
+        -Dsonar.cfamily.cache.enabled=false
+
 # Run a scan-build static analysis.
 scan_build: all
 	$(Q)$(MAKE) -C src clean

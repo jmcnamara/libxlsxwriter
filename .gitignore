@@ -40,6 +40,8 @@ examples/*
 !examples/Makefile
 cov-int
 libxlsxwriter-coverity.tgz
+.scannerwork/
+.sonar_output/
 
 third_party/zlib-1.2.8/configure.log
 third_party/zlib-1.2.8/contrib/minizip/miniunz
