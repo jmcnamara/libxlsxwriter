@@ -20,10 +20,14 @@ PYTESTFILES ?= test
 VERSION = $(shell sed -n -e '/VERSION "/s/.*"\(.*\)".*/\1/p' < include/xlsxwriter.h)
 
 
-.PHONY: docs tags examples
+.PHONY: docs tags examples third_party
 
-# Build the libs.
-all :
+# Build libxlsxwriter.
+all : third_party
+	$(Q)$(MAKE) -C src
+
+# Build the third party libs.
+third_party :
 ifndef USE_SYSTEM_MINIZIP
 	$(Q)$(MAKE) -C third_party/minizip
 endif
@@ -37,8 +41,7 @@ ifndef USE_OPENSSL_MD5
 endif
 endif
 
-	$(Q)$(MAKE) -C src
-
+# Build a macOS universal binary.
 universal_binary :
 	$(Q)$(MAKE) clean
 	$(Q)TARGET_ARCH="-target x86_64-apple-macos10.12" $(MAKE) all
