@@ -37,17 +37,19 @@
 
 /* If zip returns a ZIP_XXX error then errno is set and we can trap that in
  * workbook.c. Otherwise return a default libxlsxwriter error. */
-#define RETURN_ON_ZIP_ERROR(err, default_err)   \
-    if (err == ZIP_ERRNO)                       \
-        return LXW_ERROR_ZIP_FILE_OPERATION;    \
-    else if (err == ZIP_PARAMERROR)             \
-        return LXW_ERROR_ZIP_PARAMETER_ERROR;   \
-    else if (err == ZIP_BADZIPFILE)             \
-        return LXW_ERROR_ZIP_BAD_ZIP_FILE;      \
-    else if (err == ZIP_INTERNALERROR)          \
-        return LXW_ERROR_ZIP_INTERNAL_ERROR;    \
-    else                                        \
-        return default_err;
+#define RETURN_ON_ZIP_ERROR(err, default_err)       \
+    do {                                            \
+        if (err == ZIP_ERRNO)                       \
+            return LXW_ERROR_ZIP_FILE_OPERATION;    \
+        else if (err == ZIP_PARAMERROR)             \
+            return LXW_ERROR_ZIP_PARAMETER_ERROR;   \
+        else if (err == ZIP_BADZIPFILE)             \
+            return LXW_ERROR_ZIP_BAD_ZIP_FILE;      \
+        else if (err == ZIP_INTERNALERROR)          \
+            return LXW_ERROR_ZIP_INTERNAL_ERROR;    \
+        else                                        \
+            return default_err;                     \
+    } while (0)
 
 /*
  * Struct to represent a packager.
