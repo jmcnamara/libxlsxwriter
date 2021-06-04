@@ -275,10 +275,10 @@ chartsheet_set_chart_opt(lxw_chartsheet *self,
     object_props->width = 480;
     object_props->height = 288;
 
-    if (!object_props->x_scale)
+    if (object_props->x_scale == 0.0)
         object_props->x_scale = 1;
 
-    if (!object_props->y_scale)
+    if (object_props->y_scale == 0.0)
         object_props->y_scale = 1;
 
     /* Store chart references so they can be ordered in the workbook. */

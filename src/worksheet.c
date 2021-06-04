@@ -3812,10 +3812,10 @@ _write_boolean_cell(lxw_worksheet *self, lxw_cell *cell)
 {
     char data[LXW_ATTR_32];
 
-    if (cell->u.number)
-        data[0] = '1';
-    else
+    if (cell->u.number == 0.0)
         data[0] = '0';
+    else
+        data[0] = '1';
 
     data[1] = '\0';
 
@@ -8906,10 +8906,10 @@ worksheet_insert_image_opt(lxw_worksheet *self,
     object_props->row = row_num;
     object_props->col = col_num;
 
-    if (!object_props->x_scale)
+    if (object_props->x_scale == 0.0)
         object_props->x_scale = 1;
 
-    if (!object_props->y_scale)
+    if (object_props->y_scale == 0.0)
         object_props->y_scale = 1;
 
     if (_get_image_properties(object_props) == LXW_NO_ERROR) {
@@ -9011,10 +9011,10 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
     object_props->row = row_num;
     object_props->col = col_num;
 
-    if (!object_props->x_scale)
+    if (object_props->x_scale == 0.0)
         object_props->x_scale = 1;
 
-    if (!object_props->y_scale)
+    if (object_props->y_scale == 0.0)
         object_props->y_scale = 1;
 
     if (_get_image_properties(object_props) == LXW_NO_ERROR) {
@@ -9227,10 +9227,10 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
     object_props->width = 480;
     object_props->height = 288;
 
-    if (!object_props->x_scale)
+    if (object_props->x_scale == 0.0)
         object_props->x_scale = 1;
 
-    if (!object_props->y_scale)
+    if (object_props->y_scale == 0.0)
         object_props->y_scale = 1;
 
     /* Store chart references so they can be ordered in the workbook. */
