@@ -316,20 +316,20 @@ lxw_escape_url_characters(const char *string, uint8_t escape_hash)
 
     while (*string) {
         switch (*string) {
-            case (' '):
-            case ('"'):
-            case ('<'):
-            case ('>'):
-            case ('['):
-            case (']'):
-            case ('`'):
-            case ('^'):
-            case ('{'):
-            case ('}'):
+            case ' ':
+            case '"':
+            case '<':
+            case '>':
+            case '[':
+            case ']':
+            case '`':
+            case '^':
+            case '{':
+            case '}':
                 lxw_snprintf(p_encoded, escape_len + 1, "%%%2x", *string);
                 p_encoded += escape_len;
                 break;
-            case ('#'):
+            case '#':
                 /* This is only escaped for "external:" style links. */
                 if (escape_hash) {
                     lxw_snprintf(p_encoded, escape_len + 1, "%%%2x", *string);
@@ -340,7 +340,7 @@ lxw_escape_url_characters(const char *string, uint8_t escape_hash)
                     p_encoded++;
                 }
                 break;
-            case ('%'):
+            case '%':
                 /* Only escape % if it isn't already an escape. */
                 if (!isxdigit(*(string + 1)) || !isxdigit(*(string + 2))) {
                     lxw_snprintf(p_encoded, escape_len + 1, "%%%2x", *string);
