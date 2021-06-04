@@ -42,8 +42,6 @@ examples/*
 !examples/Makefile
 cov-int
 libxlsxwriter-coverity.tgz
-.scannerwork/
-.sonar_output/
 build
 
 third_party/zlib-1.2.8/configure.log

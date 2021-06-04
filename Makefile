@@ -19,7 +19,6 @@ PYTESTFILES ?= test
 
 VERSION = $(shell sed -n -e '/VERSION "/s/.*"\(.*\)".*/\1/p' < include/xlsxwriter.h)
 
-
 .PHONY: docs tags examples third_party
 
 # Build libxlsxwriter.
@@ -179,22 +178,47 @@ gcov: third_party
 	$(Q)gcovr -r . -f src --sonarqube build/coverage.xml
 
 # Run sonarcloud analysis.
-sonarcloud:
+sonarcloud: gcov
 ifndef SONAR_TOKEN
 	@echo "Please define SONAR_TOKEN to run this analysis."
 	@exit 1
 endif
 	$(Q)$(MAKE) clean
-	$(Q)../sonar-scanner-4.6.1.2450-macosx/bin/build-wrapper-macosx-x86 --out-dir .sonar_output make all
+	$(Q)../sonar-scanner-4.6.1.2450-macosx/bin/build-wrapper-macosx-x86 --out-dir build make all
 	$(Q)../sonar-scanner-4.6.1.2450-macosx/bin/sonar-scanner \
         -Dsonar.organization=jmcnamara-github \
         -Dsonar.projectKey=jmcnamara_libxlsxwriter \
+        -Dsonar.projectName="A C library for creating Excel XLSX files" \
+        -Dsonar.projectVersion=$(VERSION) \
         -Dsonar.sources=src \
         -Dsonar.sourceEncoding=UTF-8 \
-        -Dsonar.cfamily.build-wrapper-output=.sonar_output \
+        -Dsonar.cfamily.build-wrapper-output=build \
+        -Dsonar.working.directory=build/scannerwork \
         -Dsonar.host.url=https://sonarcloud.io \
-        -Dsonar.cfamily.threads=4	\
+        -Dsonar.cfamily.threads=4 \
+        -Dsonar.coverageReportPaths=build/coverage.xml \
         -Dsonar.cfamily.cache.enabled=false
+
+sonarcloud_no_gcov:
+ifndef SONAR_TOKEN
+	@echo "Please define SONAR_TOKEN to run this analysis."
+	@exit 1
+endif
+	$(Q)$(MAKE) clean
+	$(Q)../sonar-scanner-4.6.1.2450-macosx/bin/build-wrapper-macosx-x86 --out-dir build make all
+	$(Q)../sonar-scanner-4.6.1.2450-macosx/bin/sonar-scanner \
+        -Dsonar.organization=jmcnamara-github \
+        -Dsonar.projectKey=jmcnamara_libxlsxwriter \
+        -Dsonar.projectName="A C library for creating Excel XLSX files" \
+        -Dsonar.projectVersion=$(VERSION) \
+        -Dsonar.sources=src \
+        -Dsonar.sourceEncoding=UTF-8 \
+        -Dsonar.cfamily.build-wrapper-output=build \
+        -Dsonar.working.directory=build/scannerwork \
+        -Dsonar.host.url=https://sonarcloud.io \
+        -Dsonar.cfamily.threads=4 \
+        -Dsonar.cfamily.cache.enabled=false
+
 
 # Run a scan-build static analysis.
 scan_build: all
