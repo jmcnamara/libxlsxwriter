@@ -188,7 +188,7 @@ endif
 	$(Q)../sonar-scanner-4.6.1.2450-macosx/bin/sonar-scanner \
         -Dsonar.organization=jmcnamara-github \
         -Dsonar.projectKey=jmcnamara_libxlsxwriter \
-        -Dsonar.projectName="A C library for creating Excel XLSX files" \
+        -Dsonar.projectName=libxlsxwriter \
         -Dsonar.projectVersion=$(VERSION) \
         -Dsonar.sources=src \
         -Dsonar.sourceEncoding=UTF-8 \
@@ -209,7 +209,7 @@ endif
 	$(Q)../sonar-scanner-4.6.1.2450-macosx/bin/sonar-scanner \
         -Dsonar.organization=jmcnamara-github \
         -Dsonar.projectKey=jmcnamara_libxlsxwriter \
-        -Dsonar.projectName="A C library for creating Excel XLSX files" \
+        -Dsonar.projectName=libxlsxwriter \
         -Dsonar.projectVersion=$(VERSION) \
         -Dsonar.sources=src \
         -Dsonar.sourceEncoding=UTF-8 \
