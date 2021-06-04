@@ -111,7 +111,7 @@ enable_testing()
 # The use of the word ZLIB_ROOT should still work prior to "3.12.0",
 # just it's been generalized for all packages now. Just set the policy
 # to new, so we use it, and it will be used prior to 3.12 anyway.
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.12")
+if(${CMAKE_VERSION} VERSION_GREATER "3.12" OR ${CMAKE_VERSION} VERSION_EQUAL "3.12")
     cmake_policy(SET CMP0074 NEW)
 endif()
 
