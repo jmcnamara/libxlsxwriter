@@ -1869,13 +1869,11 @@ _worksheet_write_sheet_view(lxw_worksheet *self)
         LXW_PUSH_ATTRIBUTES_STR("view", "pageLayout");
 
     /* Set the zoom level. */
-    if (self->zoom != 100) {
-        if (!self->page_view) {
-            LXW_PUSH_ATTRIBUTES_INT("zoomScale", self->zoom);
+    if (self->zoom != 100 && !self->page_view) {
+        LXW_PUSH_ATTRIBUTES_INT("zoomScale", self->zoom);
 
-            if (self->zoom_scale_normal)
-                LXW_PUSH_ATTRIBUTES_INT("zoomScaleNormal", self->zoom);
-        }
+        if (self->zoom_scale_normal)
+            LXW_PUSH_ATTRIBUTES_INT("zoomScaleNormal", self->zoom);
     }
 
     LXW_PUSH_ATTRIBUTES_STR("workbookViewId", "0");

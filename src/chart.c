@@ -466,7 +466,7 @@ _chart_set_default_marker_type(lxw_chart *self, uint8_t type)
 /*
  * Set an axis number format.
  */
-void
+STATIC void
 _chart_axis_set_default_num_format(lxw_chart_axis *axis, char *num_format)
 {
     if (!num_format)
@@ -4664,17 +4664,15 @@ _chart_write_scatter_chart(lxw_chart *self)
 
         /* Add default scatter chart formatting to the series data unless
          * it has already been specified by the user.*/
-        if (self->type == LXW_CHART_SCATTER) {
-            if (!series->line) {
-                lxw_chart_line line = {
-                    0x000000,
-                    LXW_TRUE,
-                    2.25,
-                    LXW_CHART_LINE_DASH_SOLID,
-                    0
-                };
-                series->line = _chart_convert_line_args(&line);
-            }
+        if (self->type == LXW_CHART_SCATTER && !series->line) {
+            lxw_chart_line line = {
+                0x000000,
+                LXW_TRUE,
+                2.25,
+                LXW_CHART_LINE_DASH_SOLID,
+                0
+            };
+            series->line = _chart_convert_line_args(&line);
         }
 
         /* Write the c:ser element. */
