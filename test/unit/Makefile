@@ -16,7 +16,7 @@ INC_DIR        = ../../include
 LIB_DIR        = ../../src
 
 # Flags passed to the C compiler.
-CFLAGS += -DTESTING -DCOLOR_OK -g -Wall -Wextra -Wno-unused-parameter
+CFLAGS += -DTESTING -DCOLOR_OK -g -Wall -Wextra -Wno-unused-parameter $(GCOV)
 
 
 # All tests produced by this Makefile.
@@ -85,7 +85,7 @@ all :
 # END make all
 
 clean :
-	$(Q)rm -f $(TESTS) test_all *.o
+	$(Q)rm -f $(TESTS) test_all *.o *.gcno *.gcda
 	$(Q)$(MAKE) clean -C utility
 	$(Q)$(MAKE) clean -C xmlwriter
 	$(Q)$(MAKE) clean -C worksheet

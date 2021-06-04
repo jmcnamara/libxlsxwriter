@@ -167,6 +167,16 @@ coverity: all
 	$(Q)$(MAKE) -C src clean
 	$(Q)rm -f  lib/*
 
+# Run gcov coverage analysis.
+gcov: third_party
+	$(Q)$(MAKE) -C src clean
+	$(Q)$(MAKE) -C src                 GCOV="--coverage" OPT_LEVEL="-O0"
+	$(Q)$(MAKE) -C src test_lib        GCOV="--coverage"
+	$(Q)$(MAKE) -C test/unit test      GCOV="--coverage"
+	$(Q)$(MAKE) -C test/functional/src GCOV="--coverage"
+	$(Q)$(PYTEST) test/functional -v -k $(PYTESTFILES)
+	$(Q)gcovr -r src --html-details -o build/libxlsxwriter_gcov.html
+	$(Q)gcovr -r . -f src --sonarqube build/coverage.xml
 
 # Run sonarcloud analysis.
 sonarcloud:
@@ -174,7 +184,6 @@ ifndef SONAR_TOKEN
 	@echo "Please define SONAR_TOKEN to run this analysis."
 	@exit 1
 endif
-
 	$(Q)$(MAKE) clean
 	$(Q)../sonar-scanner-4.6.1.2450-macosx/bin/build-wrapper-macosx-x86 --out-dir .sonar_output make all
 	$(Q)../sonar-scanner-4.6.1.2450-macosx/bin/sonar-scanner \

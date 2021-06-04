@@ -99,7 +99,7 @@ UNAME := $(shell uname)
 # Change make options on OS X.
 ifeq ($(UNAME), Darwin)
 LIBXLSXWRITER_SO = libxlsxwriter.dylib
-SOFLAGS = -dynamiclib $(FPIC) -install_name $(PREFIX)/lib/$(LIBXLSXWRITER_SO)
+SOFLAGS = -dynamiclib $(FPIC) -install_name $(PREFIX)/lib/$(LIBXLSXWRITER_SO) $(GCOV)
 endif
 
 # Check for MinGW/MinGW64/Cygwin environments.
@@ -158,15 +158,15 @@ test_compile : $(OBJS)
 
 # Targets for the object files.
 %.o  : %.c $(HDRS)
-	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) $(TARGET_ARCH) -c $<
+	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) $(TARGET_ARCH) $(GCOV) -c $<
 
 %.so : %.c $(HDRS)
-	$(Q)$(CC) $(FPIC) -I$(INC_DIR) $(LDFLAGS) $(CFLAGS) $(CXXFLAGS) $(TARGET_ARCH) -c $< -o $@
+	$(Q)$(CC) $(FPIC) -I$(INC_DIR) $(LDFLAGS) $(CFLAGS) $(CXXFLAGS) $(TARGET_ARCH) $(GCOV) -c $< -o $@
 
 %.to : %.c $(HDRS)
-	$(Q)$(CC) -g $(OPT_LEVEL) -DTESTING -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) -c $< -o $@
+	$(Q)$(CC) -g $(OPT_LEVEL) -DTESTING -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) $(GCOV) -c $< -o $@
 
 
 # Clean up any temp/build files.
 clean :
-	$(Q)rm -f *.o *.a *.so *.to *.dylib *.dll
+	$(Q)rm -f *.o *.a *.so *.to *.dylib *.dll *.gcno *.gcda

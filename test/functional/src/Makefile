@@ -23,7 +23,14 @@ SRCTESTFILES ?= *.c
 SRCS = $(wildcard $(SRCTESTFILES))
 EXES = $(patsubst %.c,%,$(SRCS))
 
+
+ifndef GCOV
 LIBXLSXWRITER = ../../../src/libxlsxwriter.a
+else
+# Link against the same lib used by the unit tests.
+LIBXLSXWRITER = ../../../src/libxlsxwriter_test.a
+endif
+
 
 LIBS = $(LIBXLSXWRITER) -lz
 ifdef USE_SYSTEM_MINIZIP
@@ -50,11 +57,11 @@ endif
 
 clean :
 	$(Q)rm -f $(EXES)
-	$(Q)rm -rf *.dSYM
+	$(Q)rm -rf *.dSYM *.gcno *.gcda
 
 # Executable targets.
 %: %.c $(LIBXLSXWRITER)
-	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) $< -o $@ $(LIBS)
+	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) $(GCOV) $< -o $@ $(LIBS)
 
 test_valgrind: all
 	$(Q)$(foreach exe,$(EXES),valgrind -q --error-exitcode=1 --leak-check=full ./$(exe) || exit;)

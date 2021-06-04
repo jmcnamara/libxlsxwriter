@@ -6,6 +6,8 @@
 *.la
 *.dylib
 *.dll
+*.gcno
+*.gcda
 test_*
 !test_*.c
 !test_*.cpp
@@ -42,6 +44,7 @@ cov-int
 libxlsxwriter-coverity.tgz
 .scannerwork/
 .sonar_output/
+build
 
 third_party/zlib-1.2.8/configure.log
 third_party/zlib-1.2.8/contrib/minizip/miniunz

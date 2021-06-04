@@ -16,7 +16,7 @@ INC_DIR        = ../../../include
 LIB_DIR        = ../../../src
 
 # Flags passed to the C compiler.
-CFLAGS += -DTESTING -DCOLOR_OK -g -Wall -Wextra -Wno-unused-parameter
+CFLAGS += -DTESTING -DCOLOR_OK -g -Wall -Wextra -Wno-unused-parameter $(GCOV)
 
 # Make targets and objects.
 SRCS  = $(wildcard test*.c)
@@ -47,7 +47,7 @@ all : $(TESTS)
 
 # Clean all the things!
 clean :
-	$(Q)rm -f $(TESTS) test_all *.o
+	$(Q)rm -f $(TESTS) test_all *.o *.gcno *.gcda
 
 # Build the testscases.
 %.o: %.c
