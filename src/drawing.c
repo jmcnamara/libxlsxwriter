@@ -168,14 +168,12 @@ _drawing_write_row_off(lxw_drawing *self, char *data)
 }
 
 /*
- * Write the <xdr:from> element.
+ * Write the main part of the <xdr:from> and <xdr:to> elements.
  */
 STATIC void
-_drawing_write_from(lxw_drawing *self, lxw_drawing_coords *coords)
+_drawing_write_coords(lxw_drawing *self, lxw_drawing_coords *coords)
 {
     char data[LXW_UINT32_T_LENGTH];
-
-    lxw_xml_start_tag(self->file, "xdr:from", NULL);
 
     lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u", coords->col);
     _drawing_write_col(self, data);
@@ -190,6 +188,17 @@ _drawing_write_from(lxw_drawing *self, lxw_drawing_coords *coords)
     lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u",
                  (uint32_t) coords->row_offset);
     _drawing_write_row_off(self, data);
+}
+
+/*
+ * Write the <xdr:from> element.
+ */
+STATIC void
+_drawing_write_from(lxw_drawing *self, lxw_drawing_coords *coords)
+{
+    lxw_xml_start_tag(self->file, "xdr:from", NULL);
+
+    _drawing_write_coords(self, coords);
 
     lxw_xml_end_tag(self->file, "xdr:from");
 }
@@ -200,23 +209,9 @@ _drawing_write_from(lxw_drawing *self, lxw_drawing_coords *coords)
 STATIC void
 _drawing_write_to(lxw_drawing *self, lxw_drawing_coords *coords)
 {
-    char data[LXW_UINT32_T_LENGTH];
-
     lxw_xml_start_tag(self->file, "xdr:to", NULL);
 
-    lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u", coords->col);
-    _drawing_write_col(self, data);
-
-    lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u",
-                 (uint32_t) coords->col_offset);
-    _drawing_write_col_off(self, data);
-
-    lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u", coords->row);
-    _drawing_write_row(self, data);
-
-    lxw_snprintf(data, LXW_UINT32_T_LENGTH, "%u",
-                 (uint32_t) coords->row_offset);
-    _drawing_write_row_off(self, data);
+    _drawing_write_coords(self, coords);
 
     lxw_xml_end_tag(self->file, "xdr:to");
 }
