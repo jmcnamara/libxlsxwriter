@@ -1416,8 +1416,6 @@ lxw_styles_assemble_xml_file(lxw_styles *self)
     /* Write the tableStyles element. */
     _write_table_styles(self);
 
-    /* Write the colors element. */
-    /* _write_colors(self); */
 
     /* Close the style sheet tag. */
     lxw_xml_end_tag(self->file, "styleSheet");
