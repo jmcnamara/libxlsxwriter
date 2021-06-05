@@ -1214,7 +1214,6 @@ _write_chartsheet_rels_file(lxw_packager *self)
 
         index++;
 
-        /* TODO. This should never be empty. Put check higher up. */
         if (STAILQ_EMPTY(worksheet->external_drawing_links))
             continue;
 

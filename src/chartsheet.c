@@ -271,7 +271,6 @@ chartsheet_set_chart_opt(lxw_chartsheet *self,
         object_props->y_scale = user_options->y_scale;
     }
 
-    /* TODO. Read defaults from chart. */
     object_props->width = 480;
     object_props->height = 288;
 

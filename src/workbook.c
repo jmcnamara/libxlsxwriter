@@ -924,7 +924,7 @@ _populate_range_dimensions(lxw_workbook *self, lxw_series_range *range)
     /* Create a copy of the formula to modify and parse into parts. */
     lxw_snprintf(formula, LXW_MAX_FORMULA_RANGE_LENGTH, "%s", range->formula);
 
-    /* Check for valid formula. TODO. This needs stronger validation. */
+    /* Check for valid formula. Note, This needs stronger validation. */
     tmp_str = strchr(formula, '!');
 
     if (tmp_str == NULL) {
