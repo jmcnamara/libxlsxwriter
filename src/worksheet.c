@@ -3734,29 +3734,14 @@ _write_inline_rich_string_cell(lxw_worksheet *self, char *range,
 {
     char *string = cell->u.string;
 
-    /* Add attribute to preserve leading or trailing whitespace. */
-    if (isspace((unsigned char) string[0])
-        || isspace((unsigned char) string[strlen(string) - 1])) {
-
-        if (style_index)
-            fprintf(self->file,
-                    "<c r=\"%s\" s=\"%d\" t=\"inlineStr\"><is>%s</is></c>",
-                    range, style_index, string);
-        else
-            fprintf(self->file,
-                    "<c r=\"%s\" t=\"inlineStr\"><is>%s</is></c>",
-                    range, string);
-    }
-    else {
-        if (style_index)
-            fprintf(self->file,
-                    "<c r=\"%s\" s=\"%d\" t=\"inlineStr\">"
-                    "<is>%s</is></c>", range, style_index, string);
-        else
-            fprintf(self->file,
-                    "<c r=\"%s\" t=\"inlineStr\">"
-                    "<is>%s</is></c>", range, string);
-    }
+    if (style_index)
+        fprintf(self->file,
+                "<c r=\"%s\" s=\"%d\" t=\"inlineStr\">"
+                "<is>%s</is></c>", range, style_index, string);
+    else
+        fprintf(self->file,
+                "<c r=\"%s\" t=\"inlineStr\">"
+                "<is>%s</is></c>", range, string);
 }
 
 /*
