@@ -4100,8 +4100,6 @@ _worksheet_set_header_footer_image(lxw_worksheet *self, char *filename,
         fclose(image_stream);
         return LXW_ERROR_IMAGE_DIMENSIONS;
     }
-
-    return LXW_NO_ERROR;
 }
 
 /*
