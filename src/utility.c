@@ -395,7 +395,7 @@ lxw_datetime_to_excel_date_epoch(lxw_datetime *datetime, uint8_t date_1904)
     /* Add days for all previous years.  */
     days += range * 365;
     /* Add 4 year leapdays. */
-    days += (range) / 4;
+    days += range / 4;
     /* Remove 100 year leapdays. */
     days -= (range + offset) / 100;
     /* Add 400 year leapdays. */
