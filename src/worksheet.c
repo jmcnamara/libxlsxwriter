@@ -7639,7 +7639,7 @@ worksheet_set_column_opt(lxw_worksheet *self,
 
     /* Resize the col_options array if required. */
     if (firstcol >= self->col_options_max) {
-        lxw_col_t col;
+        lxw_col_t col_tmp;
         lxw_col_t old_size = self->col_options_max;
         lxw_col_t new_size = _next_power_of_two(firstcol + 1);
         lxw_col_options **new_ptr = realloc(self->col_options,
@@ -7647,8 +7647,8 @@ worksheet_set_column_opt(lxw_worksheet *self,
                                             sizeof(lxw_col_options *));
 
         if (new_ptr) {
-            for (col = old_size; col < new_size; col++)
-                new_ptr[col] = NULL;
+            for (col_tmp = old_size; col_tmp < new_size; col_tmp++)
+                new_ptr[col_tmp] = NULL;
 
             self->col_options = new_ptr;
             self->col_options_max = new_size;
