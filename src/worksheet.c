@@ -1300,12 +1300,12 @@ _find_vml_drawing_rel_index(lxw_worksheet *self, char *target)
  * handles forward and back slashes. It doesn't copy exactly the return
  * format of basename().
  */
-char *
+const char *
 lxw_basename(const char *path)
 {
 
-    char *forward_slash;
-    char *back_slash;
+    const char *forward_slash;
+    const char *back_slash;
 
     if (!path)
         return NULL;
@@ -1314,7 +1314,7 @@ lxw_basename(const char *path)
     back_slash = strrchr(path, '\\');
 
     if (!forward_slash && !back_slash)
-        return (char *) path;
+        return path;
 
     if (forward_slash > back_slash)
         return forward_slash + 1;
@@ -4033,7 +4033,7 @@ _worksheet_set_header_footer_image(lxw_worksheet *self, char *filename,
                                    uint8_t image_position)
 {
     FILE *image_stream;
-    char *description;
+    const char *description;
     lxw_object_properties *object_props;
     char *image_strings[] = { "LH", "CH", "RH", "LF", "CF", "RF" };
 
@@ -8834,7 +8834,7 @@ worksheet_insert_image_opt(lxw_worksheet *self,
                            lxw_image_options *user_options)
 {
     FILE *image_stream;
-    char *description;
+    const char *description;
     lxw_object_properties *object_props;
 
     if (!filename) {

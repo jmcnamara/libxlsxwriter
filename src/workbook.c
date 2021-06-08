@@ -1882,7 +1882,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     if (sheetname) {
         /* Use the user supplied name. */
         init_data.name = lxw_strdup(sheetname);
-        init_data.quoted_name = lxw_quote_sheetname((char *) sheetname);
+        init_data.quoted_name = lxw_quote_sheetname(sheetname);
     }
     else {
         /* Use the default SheetN name. */
@@ -1966,7 +1966,7 @@ workbook_add_chartsheet(lxw_workbook *self, const char *sheetname)
     if (sheetname) {
         /* Use the user supplied name. */
         init_data.name = lxw_strdup(sheetname);
-        init_data.quoted_name = lxw_quote_sheetname((char *) sheetname);
+        init_data.quoted_name = lxw_quote_sheetname(sheetname);
     }
     else {
         /* Use the default SheetN name. */
