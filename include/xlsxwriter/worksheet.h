@@ -1797,7 +1797,7 @@ typedef struct lxw_worksheet {
  * Worksheet initialization data.
  */
 typedef struct lxw_worksheet_init_data {
-    uint32_t index;
+    uint16_t index;
     uint8_t hidden;
     uint8_t optimize;
     uint16_t *active_sheet;

@@ -83,7 +83,7 @@ typedef struct lxw_chartsheet {
     char *name;
     char *quoted_name;
     char *tmpdir;
-    uint32_t index;
+    uint16_t index;
     uint8_t active;
     uint8_t selected;
     uint8_t hidden;
