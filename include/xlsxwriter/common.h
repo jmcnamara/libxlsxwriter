@@ -203,7 +203,7 @@ enum lxw_custom_property_types {
 #define LXW_DATETIME_LENGTH       sizeof("2016-12-12T23:00:00Z")
 
 /* GUID string length. */
-#define LXW_GUID_LENGTH           sizeof("{12345678-1234-1234-1234-1234567890AB}")
+#define LXW_GUID_LENGTH           sizeof("{12345678-1234-1234-1234-1234567890AB}\0")
 
 #define LXW_EPOCH_1900            0
 #define LXW_EPOCH_1904            1
