@@ -9,8 +9,6 @@
 #ifndef __LXW_APP_H__
 #define __LXW_APP_H__
 
-#include <stdint.h>
-#include <string.h>
 #include "workbook.h"
 #include "common.h"
 

@@ -43,16 +43,9 @@
 #ifndef __LXW_WORKSHEET_H__
 #define __LXW_WORKSHEET_H__
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
-
 #include "shared_strings.h"
 #include "chart.h"
 #include "drawing.h"
-#include "common.h"
-#include "format.h"
-#include "styles.h"
 #include "utility.h"
 #include "relationships.h"
 

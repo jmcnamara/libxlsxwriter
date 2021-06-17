@@ -7,9 +7,14 @@
  *
  */
 
+#include <stdlib.h>
+
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/app.h"
 #include "xlsxwriter/utility.h"
+#include "xlsxwriter/common.h"
+#include "xlsxwriter/third_party/queue.h"
+#include "xlsxwriter/workbook.h"
 
 /*
  * Forward declarations.

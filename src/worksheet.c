@@ -11,10 +11,23 @@
 #define _POSIX_C_SOURCE 200809L
 #endif
 
+#include <_ctype.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/worksheet.h"
 #include "xlsxwriter/format.h"
-#include "xlsxwriter/utility.h"
+#include "xlsxwriter/chart.h"
+#include "xlsxwriter/common.h"
+#include "xlsxwriter/drawing.h"
+#include "xlsxwriter/relationships.h"
+#include "xlsxwriter/shared_strings.h"
+#include "xlsxwriter/styles.h"
+#include "xlsxwriter/third_party/queue.h"
+#include "xlsxwriter/third_party/tree.h"
 
 #ifdef USE_OPENSSL_MD5
 #include <openssl/md5.h>

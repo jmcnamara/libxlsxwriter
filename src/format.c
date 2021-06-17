@@ -7,9 +7,14 @@
  *
  */
 
-#include "xlsxwriter/xmlwriter.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "xlsxwriter/format.h"
-#include "xlsxwriter/utility.h"
+#include "xlsxwriter/common.h"
+#include "xlsxwriter/hash_table.h"
 
 /*****************************************************************************
  *

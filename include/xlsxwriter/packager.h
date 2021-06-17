@@ -9,29 +9,13 @@
 #ifndef __LXW_PACKAGER_H__
 #define __LXW_PACKAGER_H__
 
-#include <stdint.h>
-
 #ifdef USE_SYSTEM_MINIZIP
 #include "minizip/zip.h"
 #else
 #include "third_party/zip.h"
 #endif
 
-#include "common.h"
 #include "workbook.h"
-#include "worksheet.h"
-#include "shared_strings.h"
-#include "app.h"
-#include "core.h"
-#include "custom.h"
-#include "theme.h"
-#include "styles.h"
-#include "format.h"
-#include "content_types.h"
-#include "relationships.h"
-#include "vml.h"
-#include "comment.h"
-#include "metadata.h"
 
 #define LXW_ZIP_BUFFER_SIZE (16384)
 

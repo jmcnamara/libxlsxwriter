@@ -8,10 +8,36 @@
  */
 
 #include <zlib.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <zconf.h>
+
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/packager.h"
 #include "xlsxwriter/hash_table.h"
 #include "xlsxwriter/utility.h"
+#include "xlsxwriter/app.h"
+#include "xlsxwriter/chart.h"
+#include "xlsxwriter/chartsheet.h"
+#include "xlsxwriter/comment.h"
+#include "xlsxwriter/common.h"
+#include "xlsxwriter/content_types.h"
+#include "xlsxwriter/core.h"
+#include "xlsxwriter/custom.h"
+#include "xlsxwriter/drawing.h"
+#include "xlsxwriter/format.h"
+#include "xlsxwriter/metadata.h"
+#include "xlsxwriter/relationships.h"
+#include "xlsxwriter/shared_strings.h"
+#include "xlsxwriter/styles.h"
+#include "xlsxwriter/theme.h"
+#include "xlsxwriter/third_party/queue.h"
+#include "xlsxwriter/third_party/zip.h"
+#include "xlsxwriter/vml.h"
+#include "xlsxwriter/workbook.h"
+#include "xlsxwriter/worksheet.h"
 
 STATIC lxw_error _add_file_to_zip(lxw_packager *self, FILE * file,
                                   const char *filename);

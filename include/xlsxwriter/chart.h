@@ -71,10 +71,6 @@
 #ifndef __LXW_CHART_H__
 #define __LXW_CHART_H__
 
-#include <stdint.h>
-#include <string.h>
-
-#include "common.h"
 #include "format.h"
 
 STAILQ_HEAD(lxw_chart_series_list, lxw_chart_series);

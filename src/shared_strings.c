@@ -7,10 +7,17 @@
  *
  */
 
+#include <_ctype.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/shared_strings.h"
 #include "xlsxwriter/utility.h"
-#include <ctype.h>
+#include "xlsxwriter/common.h"
+#include "xlsxwriter/third_party/queue.h"
+#include "xlsxwriter/third_party/tree.h"
 
 /*
  * Forward declarations.

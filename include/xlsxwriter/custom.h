@@ -9,10 +9,6 @@
 #ifndef __LXW_CUSTOM_H__
 #define __LXW_CUSTOM_H__
 
-#include <stdint.h>
-
-#include "common.h"
-
 /*
  * Struct to represent a custom property file object.
  */

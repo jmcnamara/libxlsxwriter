@@ -9,11 +9,6 @@
 #ifndef __LXW_VML_H__
 #define __LXW_VML_H__
 
-#include <stdint.h>
-
-#include "common.h"
-#include "worksheet.h"
-
 /*
  * Struct to represent a vml object.
  */

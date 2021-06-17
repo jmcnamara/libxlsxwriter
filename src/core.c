@@ -7,9 +7,13 @@
  *
  */
 
+#include <stdlib.h>
+#include <time.h>
+
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/core.h"
-#include "xlsxwriter/utility.h"
+#include "xlsxwriter/common.h"
+#include "xlsxwriter/workbook.h"
 
 /*
  * Forward declarations.

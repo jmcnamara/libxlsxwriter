@@ -9,10 +9,6 @@
 #ifndef __LXW_THEME_H__
 #define __LXW_THEME_H__
 
-#include <stdint.h>
-
-#include "common.h"
-
 /*
  * Struct to represent a theme.
  */

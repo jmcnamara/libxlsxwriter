@@ -9,9 +9,6 @@
 #ifndef __LXW_STYLES_H__
 #define __LXW_STYLES_H__
 
-#include <stdint.h>
-#include <ctype.h>
-
 #include "format.h"
 
 /*

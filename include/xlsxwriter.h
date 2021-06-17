@@ -13,11 +13,6 @@
 #ifndef __LXW_XLSXWRITER_H__
 #define __LXW_XLSXWRITER_H__
 
-#include "xlsxwriter/workbook.h"
-#include "xlsxwriter/worksheet.h"
-#include "xlsxwriter/format.h"
-#include "xlsxwriter/utility.h"
-
 #define LXW_VERSION "1.0.6"
 #define LXW_VERSION_ID 106
 

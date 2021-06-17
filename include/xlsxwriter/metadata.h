@@ -9,10 +9,6 @@
 #ifndef __LXW_METADATA_H__
 #define __LXW_METADATA_H__
 
-#include <stdint.h>
-
-#include "common.h"
-
 /*
  * Struct to represent a metadata object.
  */

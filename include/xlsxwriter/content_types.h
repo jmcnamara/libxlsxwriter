@@ -10,11 +10,6 @@
 #ifndef __LXW_CONTENT_TYPES_H__
 #define __LXW_CONTENT_TYPES_H__
 
-#include <stdint.h>
-#include <string.h>
-
-#include "common.h"
-
 #define LXW_APP_PACKAGE  "application/vnd.openxmlformats-package."
 #define LXW_APP_DOCUMENT "application/vnd.openxmlformats-officedocument."
 #define LXW_APP_MSEXCEL  "application/vnd.ms-excel."

@@ -10,9 +10,6 @@
 #ifndef __LXW_SST_H__
 #define __LXW_SST_H__
 
-#include <string.h>
-#include <stdint.h>
-
 #include "common.h"
 
 /* Define a tree.h RB structure for storing shared strings. */

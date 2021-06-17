@@ -9,11 +9,6 @@
 #ifndef __LXW_DRAWING_H__
 #define __LXW_DRAWING_H__
 
-#include <stdint.h>
-#include <string.h>
-
-#include "common.h"
-
 STAILQ_HEAD(lxw_drawing_objects, lxw_drawing_object);
 
 enum lxw_drawing_types {

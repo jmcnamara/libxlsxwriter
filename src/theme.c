@@ -8,10 +8,11 @@
  */
 
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/theme.h"
-#include "xlsxwriter/utility.h"
+#include "xlsxwriter/common.h"
 
 const char *theme_strs[] = {
     "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n",

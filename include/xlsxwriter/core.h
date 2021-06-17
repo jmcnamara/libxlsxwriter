@@ -9,10 +9,7 @@
 #ifndef __LXW_CORE_H__
 #define __LXW_CORE_H__
 
-#include <stdint.h>
-
 #include "workbook.h"
-#include "common.h"
 
 /*
  * Struct to represent a core.

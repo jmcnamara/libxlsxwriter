@@ -10,8 +10,12 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include <_ctype.h>
+#include <stdint.h>
+
 #include "xlsxwriter/xmlwriter.h"
+#include "xlsxwriter/common.h"
+#include "xlsxwriter/third_party/queue.h"
 
 #define LXW_AMP  "&amp;"
 #define LXW_LT   "&lt;"

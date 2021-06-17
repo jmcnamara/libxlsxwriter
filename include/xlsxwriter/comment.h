@@ -9,11 +9,6 @@
 #ifndef __LXW_COMMENT_H__
 #define __LXW_COMMENT_H__
 
-#include <stdint.h>
-
-#include "common.h"
-#include "worksheet.h"
-
 /* Define the tree.h RB structs for the red-black head types. */
 RB_HEAD(lxw_author_ids, lxw_author_id);
 

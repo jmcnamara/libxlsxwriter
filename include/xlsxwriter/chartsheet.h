@@ -57,12 +57,7 @@
 #ifndef __LXW_CHARTSHEET_H__
 #define __LXW_CHARTSHEET_H__
 
-#include <stdint.h>
-
-#include "common.h"
 #include "worksheet.h"
-#include "drawing.h"
-#include "utility.h"
 
 /**
  * @brief Struct to represent an Excel chartsheet.

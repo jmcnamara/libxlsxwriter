@@ -41,16 +41,7 @@
 #ifndef __LXW_WORKBOOK_H__
 #define __LXW_WORKBOOK_H__
 
-#include <stdint.h>
-#include <stdio.h>
-#include <errno.h>
-
-#include "worksheet.h"
 #include "chartsheet.h"
-#include "chart.h"
-#include "shared_strings.h"
-#include "hash_table.h"
-#include "common.h"
 
 #define LXW_DEFINED_NAME_LENGTH 128
 

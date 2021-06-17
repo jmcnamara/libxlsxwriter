@@ -7,11 +7,26 @@
  *
  */
 
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/errno.h>
+
 #include "xlsxwriter/xmlwriter.h"
 #include "xlsxwriter/workbook.h"
 #include "xlsxwriter/utility.h"
 #include "xlsxwriter/packager.h"
 #include "xlsxwriter/hash_table.h"
+#include "xlsxwriter/chart.h"
+#include "xlsxwriter/chartsheet.h"
+#include "xlsxwriter/common.h"
+#include "xlsxwriter/drawing.h"
+#include "xlsxwriter/format.h"
+#include "xlsxwriter/shared_strings.h"
+#include "xlsxwriter/third_party/queue.h"
+#include "xlsxwriter/third_party/tree.h"
+#include "xlsxwriter/worksheet.h"
 
 STATIC int _worksheet_name_cmp(lxw_worksheet_name *name1,
                                lxw_worksheet_name *name2);

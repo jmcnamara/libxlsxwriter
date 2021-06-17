@@ -60,11 +60,7 @@
 #ifndef __LXW_FORMAT_H__
 #define __LXW_FORMAT_H__
 
-#include <stdint.h>
-#include <string.h>
 #include "hash_table.h"
-
-#include "common.h"
 
 /**
  * @brief The type for RGB colors in libxlsxwriter.

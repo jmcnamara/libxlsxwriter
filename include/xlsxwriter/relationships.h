@@ -10,10 +10,6 @@
 #ifndef __LXW_RELATIONSHIPS_H__
 #define __LXW_RELATIONSHIPS_H__
 
-#include <stdint.h>
-
-#include "common.h"
-
 /* Define the queue.h STAILQ structs for the generic data structs. */
 STAILQ_HEAD(lxw_rel_tuples, lxw_rel_tuple);
 
