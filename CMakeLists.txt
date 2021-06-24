@@ -191,8 +191,10 @@ endif()
 # Configure pkg-config
 file(READ "include/xlsxwriter.h" ver)
 
-string(REGEX MATCH "VERSION .*\"\(.*\)\".*" _ ${ver})
+string(REGEX MATCH "LXW_VERSION .*\"\(.*\)\".*" _ ${ver})
 set(VERSION ${CMAKE_MATCH_1})
+string(REGEX MATCH "LXW_SOVERSION .*\"\(.*\)\".*" _ ${ver})
+set(SOVERSION ${CMAKE_MATCH_1})
 set(PREFIX ${CMAKE_INSTALL_PREFIX})
 
 configure_file(dev/release/pkg-config.txt xlsxwriter.pc @ONLY)
@@ -252,6 +254,7 @@ endif()
 set(LXW_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(LXW_LIB_DIR "${LXW_PROJECT_DIR}/lib")
 add_library(${PROJECT_NAME} "")
+set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${SOVERSION})
 target_sources(${PROJECT_NAME}
     PRIVATE ${LXW_SOURCES}
     PUBLIC ${LXW_HEADERS}

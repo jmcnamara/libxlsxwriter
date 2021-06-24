@@ -81,7 +81,7 @@ endif
 
 # Library names.
 LIBXLSXWRITER_A  = libxlsxwriter.a
-LIBXLSXWRITER_SO = libxlsxwriter.so
+LIBXLSXWRITER_SO = libxlsxwriter.so.$(SOVERSION)
 
 # Library with additional non-static functions for testing.
 LIBXLSXWRITER_TO = libxlsxwriter_test.a
@@ -91,15 +91,15 @@ ARFLAGS = rc
 
 # Flags passed to dynamic linker.
 FPIC = -fPIC
-SOFLAGS = -shared $(FPIC)
+SOFLAGS = -shared $(FPIC) -Wl,-soname,LIBXLSXWRITER_SO
 
 # Get Env/OS name.
 UNAME := $(shell uname)
 
 # Change make options on OS X.
 ifeq ($(UNAME), Darwin)
-LIBXLSXWRITER_SO = libxlsxwriter.dylib
-SOFLAGS = -dynamiclib $(FPIC) -install_name $(PREFIX)/lib/$(LIBXLSXWRITER_SO) $(GCOV)
+LIBXLSXWRITER_SO = libxlsxwriter.$(SOVERSION).dylib
+SOFLAGS = -dynamiclib $(FPIC) -compatibility_version $(SOVERSION) -install_name $(PREFIX)/lib/$(LIBXLSXWRITER_SO) $(GCOV)
 endif
 
 # Check for MinGW/MinGW64/Cygwin environments.
@@ -135,6 +135,16 @@ TOBJS = $(patsubst %.c,%.to,$(SRCS))
 all : $(LIBXLSXWRITER_A) $(LIBXLSXWRITER_SO)
 	$(Q)cp $(LIBXLSXWRITER_A) $(LIBXLSXWRITER_SO) ../lib
 
+ifeq ($(UNAME), Darwin)
+	$(Q)rm -f ../lib/libxlsxwriter.dylib
+	$(Q)ln -s $(LIBXLSXWRITER_SO) ../lib/libxlsxwriter.dylib
+endif
+
+ifneq ($(UNAME), Darwin)
+	$(Q)rm -f ../lib/libxlsxwriter.so
+	$(Q)ln -s $(LIBXLSXWRITER_SO) ../lib/libxlsxwriter.so
+endif
+
 test_lib : libxlsxwriter_test.a
 
 # The static library.
@@ -169,4 +179,4 @@ test_compile : $(OBJS)
 
 # Clean up any temp/build files.
 clean :
-	$(Q)rm -f *.o *.a *.so *.to *.dylib *.dll *.gcno *.gcda
+	$(Q)rm -f *.o *.a *.so *.so.* *.to *.dylib *.dll *.gcno *.gcda

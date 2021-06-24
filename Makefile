@@ -17,13 +17,15 @@ PREFIX  ?= /usr/local
 PYTEST ?= py.test
 PYTESTFILES ?= test
 
-VERSION = $(shell sed -n -e '/VERSION "/s/.*"\(.*\)".*/\1/p' < include/xlsxwriter.h)
+VERSION   = $(shell sed -n -e 's/.*LXW_VERSION \"\(.*\)\"/\1/p'   include/xlsxwriter.h)
+SOVERSION = $(shell sed -n -e 's/.*LXW_SOVERSION \"\(.*\)\"/\1/p' include/xlsxwriter.h)
+
 
 .PHONY: docs tags examples third_party
 
 # Build libxlsxwriter.
 all : third_party
-	$(Q)$(MAKE) -C src
+	$(Q)$(MAKE) -C src SOVERSION=$(SOVERSION)
 
 # Build the third party libs.
 third_party :
@@ -57,7 +59,7 @@ universal_binary :
 	$(Q)lipo -create -output lib/libxlsxwriter.dylib lib/libxlsxwriter_x86_64.dylib lib/libxlsxwriter_arm64.dylib
 
 # Build the example programs.
-examples :
+examples : all
 	$(Q)$(MAKE) -C examples
 
 # Clean src and test directories.
@@ -141,7 +143,7 @@ install: all
 	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/include
 	$(Q)cp -R include/* $(DESTDIR)$(PREFIX)/include
 	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/lib
-	$(Q)cp lib/*        $(DESTDIR)$(PREFIX)/lib
+	$(Q)cp -R lib/*     $(DESTDIR)$(PREFIX)/lib
 	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/lib/pkgconfig
 	$(Q)sed -e          's|@PREFIX@|$(PREFIX)|g'  -e 's|@VERSION@|$(VERSION)|g' dev/release/pkg-config.txt > $(DESTDIR)$(PREFIX)/lib/pkgconfig/xlsxwriter.pc
 
