@@ -127,6 +127,7 @@ option(USE_NO_MD5 "Build libxlsxwriter without third party MD5 lib" OFF)
 option(USE_OPENSSL_MD5 "Build libxlsxwriter with the OpenSSL MD5 lib" OFF)
 option(USE_FMEMOPEN "Use fmemopen() in place of some temporary files" OFF)
 option(IOAPI_NO_64 "Disable 64-bit filesystem support" OFF)
+option(USE_DOUBLE_FUNCTION "Build libxlsxwriter with locale independent double" OFF)
 
 if(MSVC)
     option(USE_STATIC_MSVC_RUNTIME "Use the static runtime library" OFF)
@@ -160,6 +161,10 @@ endif()
 
 if(USE_FMEMOPEN)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_FMEMOPEN)
+endif()
+
+if(USE_DOUBLE_FUNCTION)
+    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_DOUBLE_FUNCTION)
 endif()
 
 if(NOT BUILD_SHARED_LIBS)
