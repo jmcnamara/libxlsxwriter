@@ -2,7 +2,7 @@
  * A simple formatting example that demonstrates how to add diagonal
  * cell borders using the libxlsxwriter library.
  *
- * Copyright 2014-2020, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
  *
  */
 

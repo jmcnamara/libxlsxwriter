@@ -6,7 +6,7 @@
  * The vba_extract.py utility from the libxlsxwriter examples directory can be
  * used to extract the vbaProject.bin file.
  *
- * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
  */
 
 #include "xlsxwriter.h"

@@ -2,7 +2,7 @@
  * A demo of an various Excel chart data label features that are available via
  * a libxlsxwriter chart.
  *
- * Copyright 2014-2020, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
  *
  */
 

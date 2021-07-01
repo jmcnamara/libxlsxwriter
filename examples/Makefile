@@ -2,7 +2,7 @@
 #
 # Makefile for libxlsxwriter examples.
 #
-# Copyright 2014, John McNamara, jmcnamara@cpan.org
+# Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
 #
 
 # Keep the output quiet by default.

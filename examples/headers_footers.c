@@ -30,7 +30,7 @@
  *
  *     &&                  Miscellaneous       Literal ampersand &
  *
- * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
  *
  */
 

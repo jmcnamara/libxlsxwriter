@@ -4,7 +4,7 @@
  *
  * See conditional_format.c for a more comprehensive example.
  *
- * Copyright 2014-2020, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
  *
  */
 

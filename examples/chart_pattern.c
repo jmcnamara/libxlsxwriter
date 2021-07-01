@@ -2,7 +2,7 @@
  * An example of a simple Excel chart with patterns using the libxlsxwriter
  * library.
  *
- * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
  *
  */
 

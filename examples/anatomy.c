@@ -1,7 +1,7 @@
 /*
  * Anatomy of a simple libxlsxwriter program.
  *
- * Copyright 2014-2018, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
  *
  */
 

@@ -3,7 +3,7 @@
  *
  * Each of the worksheets demonstrates different features of cell comments.
  *
- * Copyright 2014-2020, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
  *
  */
 
