@@ -174,13 +174,30 @@ date formatting.
 <table  width="600">
 <tr>
   <td>@ref dates_and_times02.c "&lt;&lt; dates_and_times02.c"</td>
+  <td align="right">@ref dates_and_times04.c "dates_and_times04.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of writing dates and times in Excel using Unix datetimes and
+formatting.
+
+@image html date_example03.png
+
+
+
+
+@example dates_and_times04.c
+
+<table  width="600">
+<tr>
+  <td>@ref dates_and_times03.c "&lt;&lt; dates_and_times03.c"</td>
   <td align="right">@ref hyperlinks.c "hyperlinks.c &gt;&gt;"</td>
 </tr>
 </table>
 
 Example of writing dates and times in Excel using different date formats.
 
-@image html date_example03.png
+@image html date_example04.png
 
 
 
@@ -189,7 +206,7 @@ Example of writing dates and times in Excel using different date formats.
 
 <table  width="600">
 <tr>
-  <td>@ref dates_and_times03.c "&lt;&lt; dates_and_times03.c"</td>
+  <td>@ref dates_and_times04.c "&lt;&lt; dates_and_times04.c"</td>
   <td align="right">@ref rich_strings.c "rich_strings.c &gt;&gt;"</td>
 </tr>
 </table>

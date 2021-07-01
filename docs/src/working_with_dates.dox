@@ -1,14 +1,15 @@
 /**
 @page working_with_dates Working with Dates and Times
 
+@tableofcontents
 
 Dates and times in Excel are represented by real numbers. For example a date
 that is displayed in Excel as "Jan 1 2013 12:00 PM" is stored as the number
 41275.5.
 
-The integer part of the number stores the number of days since the epoch,
-which is generally 1900, and the fractional part stores the percentage of the
-day.
+The integer part of the number stores the number of days since the
+epoch, which is generally 1900, and the fractional part stores the percentage
+of the day.
 
 A date or time in Excel is just like any other number. To display the number
 as a date you must apply an Excel number format to it. Here is an example:
@@ -20,8 +21,14 @@ as a date you must apply an Excel number format to it. Here is an example:
 
 @image html date_example01.png
 
+Some options for creating or converting dates to the correct format are shown
+below.
+
+
+@section ww_date_struct Writing datetimes with the lxw_datetime struct
+
 To make working with dates and times a little easier the `libxlsxwriter`
-library provides the lxw_datetime struct and the worksheet_write_datetime()
+library provides the lxw_datetime struct and the `worksheet_write_datetime()`
 function.
 
 The members of the lxw_datetime struct and the range of their values are:
@@ -64,16 +71,40 @@ The output from this program is the same as the previous example.
 
 @image html date_example02.png
 
-Dates can be formatted using any of the date formats supported by Excel.  Here
-is a longer example that shows the same date in a several different formats:
+
+@section ww_date_unix Writing Unix datetimes
+
+Another alternative when handling dates is [Unix
+Time](https://en.wikipedia.org/wiki/Unix_time) which is a common integer time
+format. It is defined as the number of seconds since the Unix epoch
+(1970-01-01 00:00 UTC).
+
+The `worksheet_write_unixtime()` function can be used to write dates and times
+in this format. Negative values can also be used for dates prior to 1970:
 
 @dontinclude dates_and_times03.c
+@skip include
+@until }
+
+The output from this program is:
+
+@image html date_example03.png
+
+
+@section ww_date_formats Date formatting
+
+Dates can be formatted using any of the date formats supported by Excel. Here
+is a longer example that shows the same date in a several different formats:
+
+@dontinclude dates_and_times04.c
 @skip include
 @until return
 @until }
 
-@image html date_example03.png
+@image html date_example04.png
 
+To get date formats that show up in Excel as a "Date" or "Time" number
+category see @ref ww_formats_categories.
 
 Next: @ref working_with_charts
 

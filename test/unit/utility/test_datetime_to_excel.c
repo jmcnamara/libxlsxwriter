@@ -12,7 +12,7 @@
 
 
 // Test _datetime_to_excel_date().
-CTEST(utility, _datetime_date_and_time) {
+CTEST(utility, test_datetime_date_and_time) {
 
     double got;
     lxw_datetime *datetime;
@@ -117,7 +117,7 @@ CTEST(utility, _datetime_date_and_time) {
     TEST_DATETIME(9999, 12, 31, 23, 59, 59.000, 2958465.999988426);
 }
 
-CTEST(utility, _datetime_date_only) {
+CTEST(utility, test_datetime_date_only) {
 
     double got;
     lxw_datetime *datetime;
@@ -324,7 +324,7 @@ CTEST(utility, _datetime_date_only) {
 }
 
 
-CTEST(utility, _datetime_date_only_1904) {
+CTEST(utility, test_datetime_date_only_1904) {
 
     double got;
     lxw_datetime *datetime;
@@ -532,7 +532,7 @@ CTEST(utility, _datetime_date_only_1904) {
     TEST_DATETIME_DATE_1904(9999, 12, 31, 2957003);
 }
 
-CTEST(utility, _datetime_time_only) {
+CTEST(utility, test_datetime_time_only) {
 
     double got;
     lxw_datetime *datetime;
@@ -636,3 +636,35 @@ CTEST(utility, _datetime_time_only) {
     TEST_DATETIME_TIME(23, 17, 12.632, 0.97028509259259266);
     TEST_DATETIME_TIME(23, 59, 59.999, 0.99999998842592586);
 }
+
+CTEST(utility, test_unixtime) {
+
+    double got;
+
+    TEST_UNIXTIME(-2209075200, 0);       // 1899-12-31 00:00
+    TEST_UNIXTIME(-2209032000, 0.5);     // 1899-12-31 12:00
+    TEST_UNIXTIME(-2208988800, 1);       // 1900-01-01 00:00
+    TEST_UNIXTIME(-2208945600, 1.5);     // 1900-01-01 12:00
+    TEST_UNIXTIME(-2203977600, 59);      // 1900-02-28 00:00
+    TEST_UNIXTIME(-2203934400, 59.5);    // 1900-02-28 12:00
+    TEST_UNIXTIME(-2203891200, 61);      // 1900-03-01 00:00
+    TEST_UNIXTIME(-2203848000, 61.5);    // 1900-03-01 12:00
+    TEST_UNIXTIME(0,           25569);   // 1970-01-01 00:00
+    TEST_UNIXTIME(43200,       25569.5); // 1970-01-01 12:00
+    TEST_UNIXTIME(946684800,   36526);   // 2000-01-01 00:00
+    TEST_UNIXTIME(946728000,   36526.5); // 2000-01-01 12:00
+}
+
+CTEST(utility, test_unixtime_1904) {
+
+    double got;
+
+    TEST_UNIXTIME_1904(-2082844800, 0);       // 1904-01-01 00:00
+    TEST_UNIXTIME_1904(-2082801600, 0.5);     // 1904-01-01 12:00
+    TEST_UNIXTIME_1904(0,           24107);   // 1970-01-01 00:00
+    TEST_UNIXTIME_1904(43200,       24107.5); // 1970-01-01 12:00
+    TEST_UNIXTIME_1904(946684800,   35064);   // 2000-01-01 00:00
+    TEST_UNIXTIME_1904(946728000,   35064.5); // 2000-01-01 12:00
+}
+
+

@@ -79,9 +79,17 @@ date formatting.
 ##############################################################
 @example dates_and_times03.c
 
-Example of writing dates and times in Excel using different date formats.
+Example of writing dates and times in Excel using Unix datetimes and
+formatting.
 
 @image html date_example03.png
+
+##############################################################
+@example dates_and_times04.c
+
+Example of writing dates and times in Excel using different date formats.
+
+@image html date_example04.png
 
 ##############################################################
 @example hyperlinks.c

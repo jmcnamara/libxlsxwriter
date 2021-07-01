@@ -419,6 +419,34 @@ lxw_datetime_to_excel_datetime(lxw_datetime *datetime)
     return lxw_datetime_to_excel_date_epoch(datetime, LXW_FALSE);
 }
 
+/*
+ * Convert a unix datetime (1970/01/01 epoch) to an Excel serial date, with a
+ * 1900 epoch.
+ */
+double
+lxw_unixtime_to_excel_date(time_t unixtime)
+{
+    return lxw_unixtime_to_excel_date_epoch(unixtime, LXW_FALSE);
+}
+
+/*
+ * Convert a unix datetime (1970/01/01 epoch) to an Excel serial date, with a
+ * 1900 or 1904 epoch.
+ */
+double
+lxw_unixtime_to_excel_date_epoch(time_t unixtime, uint8_t date_1904)
+{
+    double excel_datetime = 0.0;
+    int epoch = date_1904 ? 24107.0 : 25568.0;
+
+    excel_datetime = epoch + (unixtime / (24 * 60 * 60.0));
+
+    if (!date_1904 && excel_datetime >= 60.0)
+        excel_datetime = excel_datetime + 1.0;
+
+    return excel_datetime;
+}
+
 /* Simple strdup() implementation since it isn't ANSI C. */
 char *
 lxw_strdup(const char *str)

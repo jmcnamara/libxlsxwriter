@@ -2103,7 +2103,7 @@ lxw_error worksheet_write_dynamic_array_formula_num(lxw_worksheet *worksheet,
  *
  * @return A #lxw_error code.
  *
- * The `worksheet_write_datetime()` function can be used to write a date or
+ * The `%worksheet_write_datetime()` function can be used to write a date or
  * time to the cell specified by `row` and `column`:
  *
  * @dontinclude dates_and_times02.c
@@ -2122,6 +2122,44 @@ lxw_error worksheet_write_dynamic_array_formula_num(lxw_worksheet *worksheet,
 lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
                                    lxw_row_t row,
                                    lxw_col_t col, lxw_datetime *datetime,
+                                   lxw_format *format);
+
+/**
+ * @brief Write a Unix datetime to a worksheet cell.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param unixtime  The Unix datetime to write to the cell.
+ * @param format    A pointer to a Format instance or NULL.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_write_unixtime()` function can be used to write dates and
+ * times in Unix date format to the cell specified by `row` and
+ * `column`. [Unix Time](https://en.wikipedia.org/wiki/Unix_time) which is a
+ * common integer time format. It is defined as the number of seconds since
+ * the Unix epoch (1970-01-01 00:00 UTC). Negative values can also be used for
+ * dates prior to 1970:
+ *
+ * @dontinclude dates_and_times03.c
+ * @skip 1970
+ * @until 2208988800
+ *
+ * The `format` parameter should be used to apply formatting to the cell using
+ * a @ref format.h "Format" object as shown above. Without a date format the
+ * datetime will appear as a number only.
+ *
+ * The output from this code sample is:
+ *
+ * @image html date_example03.png
+ *
+ * See @ref working_with_dates for more information about handling dates and
+ * times in libxlsxwriter.
+ */
+lxw_error worksheet_write_unixtime(lxw_worksheet *worksheet,
+                                   lxw_row_t row,
+                                   lxw_col_t col, time_t unixtime,
                                    lxw_format *format);
 
 /**

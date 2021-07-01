@@ -2,7 +2,7 @@
 
 #
 # Simple program to arrange the example programs in a user defined order
-# instead or sorted order. Also add a caption.
+# instead of a sorted order. Also add a caption.
 #
 # Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
 #
@@ -21,7 +21,8 @@ my @examples = (
     [ 'format_num_format.c',    'Example of writing data with number formatting' ],
     [ 'dates_and_times01.c',    'Writing dates and times with numbers' ],
     [ 'dates_and_times02.c',    'Writing dates and times with datetime' ],
-    [ 'dates_and_times03.c',    'Dates and times with different formats' ],
+    [ 'dates_and_times03.c',    'Writing dates and times with Unix datetimes' ],
+    [ 'dates_and_times04.c',    'Dates and times with different formats' ],
     [ 'hyperlinks.c',           'A example of writing urls/hyperlinks' ],
     [ 'rich_strings.c',         'A example of writing "rich" multi-format strings' ],
     [ 'array_formula.c',        'A example of using array formulas' ],

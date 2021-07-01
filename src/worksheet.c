@@ -7171,6 +7171,32 @@ worksheet_write_datetime(lxw_worksheet *self,
 }
 
 /*
+ * Write a date and or time to a cell in Excel.
+ */
+lxw_error
+worksheet_write_unixtime(lxw_worksheet *self,
+                         lxw_row_t row_num,
+                         lxw_col_t col_num,
+                         time_t unixtime, lxw_format *format)
+{
+    lxw_cell *cell;
+    double excel_date;
+    lxw_error err;
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
+    if (err)
+        return err;
+
+    excel_date = lxw_unixtime_to_excel_date_epoch(unixtime, LXW_EPOCH_1900);
+
+    cell = _new_number_cell(row_num, col_num, excel_date, format);
+
+    _insert_cell(self, row_num, col_num, cell);
+
+    return LXW_NO_ERROR;
+}
+
+/*
  * Write a hyperlink/url to an Excel file.
  */
 lxw_error

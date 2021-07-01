@@ -126,3 +126,12 @@
                                                                     \
     ASSERT_DOUBLE(exp, got);                                        \
     free(datetime);
+
+#define TEST_UNIXTIME(_unixtime, exp)                               \
+    got = lxw_unixtime_to_excel_date(_unixtime);                    \
+    ASSERT_DOUBLE(exp, got);
+
+#define TEST_UNIXTIME_1904(_unixtime, exp)                          \
+    got = lxw_unixtime_to_excel_date_epoch(_unixtime, 1);           \
+    ASSERT_DOUBLE(exp, got);
+
