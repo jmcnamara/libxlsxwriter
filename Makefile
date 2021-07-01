@@ -257,7 +257,7 @@ release: releasecheck
 
 	@echo
 	@echo "Finished. Opening files."
-	$(Q)open http://libxlsxwriter.github.io/changes.html
-	$(Q)open http://cocoadocs.org/docsets/libxlsxwriter
+	$(Q)open https://libxlsxwriter.github.io/changes.html
+	$(Q)open https://cocoadocs.org/docsets/libxlsxwriter
 	$(Q)open https://github.com/jmcnamara/libxlsxwriter
 	$(Q)open https://github.com/jmcnamara/libxlsxwriter/releases
