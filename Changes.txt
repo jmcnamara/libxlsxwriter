@@ -1,6 +1,14 @@
 /**
 @page changes Changes
 
+## 1.0.7 July 1 2021
+
+- Added support for writing Unix date/times via the
+  `worksheet_write_unixtime()` function.
+
+- Added support for dynamic library soname version to help packagers and build
+  systems differentiate ABI versions.
+
 
 ## 1.0.6 May 28 2021
 
