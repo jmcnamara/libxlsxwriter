@@ -18,14 +18,12 @@ PYTEST ?= py.test
 PYTESTFILES ?= test
 
 VERSION   = $(shell sed -n -e 's/.*LXW_VERSION \"\(.*\)\"/\1/p'   include/xlsxwriter.h)
-SOVERSION = $(shell sed -n -e 's/.*LXW_SOVERSION \"\(.*\)\"/\1/p' include/xlsxwriter.h)
-
 
 .PHONY: docs tags examples third_party
 
 # Build libxlsxwriter.
 all : third_party
-	$(Q)$(MAKE) -C src SOVERSION=$(SOVERSION)
+	$(Q)$(MAKE) -C src
 
 # Build the third party libs.
 third_party :
@@ -176,6 +174,7 @@ gcov: third_party
 	$(Q)$(MAKE) -C test/unit test      GCOV="--coverage"
 	$(Q)$(MAKE) -C test/functional/src GCOV="--coverage"
 	$(Q)$(PYTEST) test/functional -v -k $(PYTESTFILES)
+	$(Q)mkdir -p build
 	$(Q)gcovr -r src --html-details -o build/libxlsxwriter_gcov.html
 	$(Q)gcovr -r . -f src --sonarqube build/coverage.xml
 

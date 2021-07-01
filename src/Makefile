@@ -15,6 +15,9 @@ DESTDIR ?=
 PREFIX  ?= /usr/local
 OPT_LEVEL ?= -O3
 
+SOVERSION = $(shell sed -n -e 's/.*LXW_SOVERSION \"\(.*\)\"/\1/p' ../include/xlsxwriter.h)
+
+
 # Directory variables.
 OBJS_DIR    = .
 INC_DIR     = ../include
