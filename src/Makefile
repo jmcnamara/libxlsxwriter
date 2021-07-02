@@ -94,7 +94,7 @@ ARFLAGS = rc
 
 # Flags passed to dynamic linker.
 FPIC = -fPIC
-SOFLAGS = -shared $(FPIC) -Wl,-soname,LIBXLSXWRITER_SO
+SOFLAGS = -shared $(FPIC) -Wl,-soname,$(LIBXLSXWRITER_SO)
 
 # Get Env/OS name.
 UNAME := $(shell uname)
