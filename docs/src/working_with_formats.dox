@@ -207,7 +207,7 @@ example and rerun it we will get a number format in the Currency category:
 
         return 0;
     }
-    @endcode
+@endcode
 
 Here is the output:
 
@@ -217,7 +217,58 @@ The same process can be used to find format strings for "Date" or
 "Accountancy" formats.
 
 
-Next: @ref working_with_colors
 
+@section ww_formats_locale Number Formats in different locales
+
+
+As shown in the previous section the `format_set_num_format()` method is used
+to set the number format for libxlsxwriter formats. A common use case is to
+set a number format with a "grouping/thousands" separator and a "decimal"
+point:
+
+@code
+    include "xlsxwriter.h"
+
+    int main() {
+
+        lxw_workbook  *workbook  = workbook_new("number_format.xlsx");
+        lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+
+        lxw_format *number_format = workbook_add_format(workbook);
+
+        format_set_num_format(number_format, "#,##0.00");
+
+        worksheet_write_number(worksheet, 0, 0, 1234.56, number_format);
+
+        workbook_close(workbook);
+
+        return 0;
+    }
+@endcode
+
+In the US locale (and some others) where the number "grouping/thousands"
+separator is "," and the "decimal" point is "." this would be shown in Excel
+as:
+
+@image html currency_format5.png
+
+In other locales these values may be reversed or different. They are generally
+set in the "Region" settings of Windows or Mac OS.  Excel handles this by
+storing the number format in the file format in the US locale, in this case
+`#,##0.00`, but renders it according to the regional settings of the host
+OS. For example, here is the same, unmodified, output file shown above in a
+German locale:
+
+@image html currency_format6.png
+
+And here is the same file in a Russian locale. Note the use of a space as the
+"grouping/thousands" separator:
+
+@image html currency_format7.png
+
+In order to replicate Excel's behavior all XlsxWriter programs should use US
+locale formatting which will then be rendered in the settings of your host OS.
+
+Next: @ref working_with_colors
 
 */
