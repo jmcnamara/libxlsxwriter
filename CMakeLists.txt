@@ -253,7 +253,11 @@ if(NOT USE_OPENSSL_MD5 AND NOT USE_NO_MD5)
 endif()
 
 if(USE_OPENSSL_MD5)
-	set(LIB_CRYPTO "crypto")
+	find_package(OpenSSL REQUIRED)
+	if(OpenSSL_FOUND)
+	    include_directories(${OPENSSL_INCLUDE_DIR})
+	    message(STATUS "OpenSSL version: ${OPENSSL_VERSION}")
+	endif()
 endif()
 
 set(LXW_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -264,7 +268,7 @@ target_sources(${PROJECT_NAME}
     PRIVATE ${LXW_SOURCES}
     PUBLIC ${LXW_HEADERS}
 )
-target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LIBRARIES} ${MINIZIP_LIBRARIES} ${LIB_CRYPTO})
+target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LIBRARIES} ${MINIZIP_LIBRARIES} ${LIB_CRYPTO} ${OPENSSL_CRYPTO_LIBRARY})
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LXW_PRIVATE_COMPILE_DEFINITIONS})
 
 # /utf-8 needs VS2015 Update 2 or above.
