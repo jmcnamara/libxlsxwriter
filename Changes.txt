@@ -1,6 +1,11 @@
 /**
 @page changes Changes
 
+## 1.0.8 July 3 2021
+
+- Fix for dynamic library soname on Linux.
+
+
 ## 1.0.7 July 1 2021
 
 - Added support for writing Unix date/times via the
