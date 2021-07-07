@@ -48,6 +48,250 @@ multi-lingual [Formula Translator](http://en.excel-translator.de/language/)
 to help you convert the formula. It can also replace semi-colons with commas.
 
 
+
+
+@section ww_formulas_dynamic_arrays Dynamic Array support
+
+Excel introduced the concept of "Dynamic Arrays" and new functions that use
+them in Office 365. The new functions are:
+
+- `FILTER`
+- `RANDARRAY`
+- `SEQUENCE`
+- `SORTBY`
+- `SORT`
+- `UNIQUE`
+- `XLOOKUP`
+- `XMATCH`
+
+The following special case functions were also added with Dynamic Arrays:
+
+- `SINGLE`: Explained below in @ref ww_formulas_intersection.
+- `ANCHORARRAY`:  Explained below in @ref ww_formulas_spill.
+- `LAMBDA` and `LET`: Explained below in @ref ww_formulas_lambda.
+
+These functions are all "future functions" and need to written in
+libxlsxwriter as follows:
+
+- `_xlfn.ANCHORARRAY`
+- `_xlfn.LAMBDA`
+- `_xlfn.RANDARRAY`
+- `_xlfn.SEQUENCE`
+- `_xlfn.SINGLE`
+- `_xlfn.SORTBY`
+- `_xlfn.UNIQUE`
+- `_xlfn.XLOOKUP`
+- `_xlfn.XMATCH`
+- `_xlfn._xlws.FILTER`
+- `_xlfn._xlws.SORT`
+
+Future functions are explained in the section below on @ref
+ww_formulas_future.
+
+@subsection ww_formulas_intro Dynamic Arrays - An introduction
+
+Dynamic arrays in Excel are ranges of return values that can change in size
+based on the results. For example, a function such as `FILTER()` returns an
+array of values that can vary in size depending on the the filter results:
+
+@code
+    worksheet_write_dynamic_array_formula(worksheet, RANGE("F2:F2"),
+                                          "=_xlfn._xlws.FILTER(A1:D17,C1:C17=K2)",
+                                          NULL);
+@endcode
+
+This formula gives the results shown in the image below. The dynamic range
+here is "F2:I5" but it can vary based on the filter criteria.
+
+@image html dynamic_arrays02.png
+
+
+It is also possible to get dynamic array behavior with older Excel
+functions. For example, the Excel function `"=LEN(A1)"` applies to a single
+cell and returns a single value but it can also apply to a range of cells and
+return a range of values using an array formula like `"{=LEN(A1:A3)}"`. This
+type of "static" array behavior is referred to as a CSE (Ctrl+Shift+Enter)
+formula and has existed in Excel since early versions. In Office 365 Excel
+updated and extended this behavior to create the concept of dynamic arrays. In
+Excel 365 you can now write the previous LEN function as `"=LEN(A1:A3)"` and
+get a dynamic range of return values. In libxlsxwriter you can use the
+`worksheet_write_array_formula()` function to get a static/CSE range and
+`worksheet_write_dynamic_array_formula()` to get a dynamic range. For example:
+
+@code
+    worksheet_write_dynamic_array_formula(worksheet, RANGE("B1:B3"),
+                                          "=LEN(A1:A3)",
+                                          NULL);
+@endcode
+
+Which gives the following result:
+
+@image html intersection03.png
+
+The difference between the two types of array functions is explained in the
+Microsoft documentation on [Dynamic array formulas vs. legacy CSE array
+formulas](https://support.microsoft.com/en-us/office/dynamic-array-formulas-vs-legacy-cse-array-formulas-ca421f1b-fbb2-4c99-9924-df571bd4f1b4). Note
+the use of the word "legacy" here. This, and the documentation itself, is a
+clear indication of the future importance of dynamic arrays in Excel.
+
+For a wider and more general introduction to dynamic arrays see the following:
+[Dynamic array formulas in Excel](https://exceljet.net/dynamic-array-formulas-in-excel).
+
+The `worksheet_write_dynamic_array_formula()` function takes a `(first_row,
+first_col, last_row, last_col)` cell range to define the area that the formula
+applies to. However, since the range is dynamic this generally won't be known
+in advance in which case you can specify the range with the same start and end
+cell. The following range is "F2:F2":
+
+@code
+    worksheet_write_dynamic_array_formula(worksheet, 1, 5, 1, 5,
+                                          "=_xlfn._xlws.FILTER(A1:D17,C1:C17=K2)",
+                                          NULL);
+@endcode
+
+As a syntactic shortcut you can use the `worksheet_write_dynamic_formula()`
+function which only requires the start cell:
+
+@code
+    worksheet_write_dynamic_formula(worksheet, 1, 5,
+                                    "=_xlfn._xlws.FILTER(A1:D17,C1:C17=K2)",
+                                    NULL);
+@endcode
+
+
+@subsection ww_formulas_intersection Dynamic Arrays - The Implicit Intersection Operator "@"
+
+The Implicit Intersection Operator, "@", is used by Excel 365 to indicate a
+position in a formula that is implicitly returning a single value when a range
+or an array could be returned.
+
+We can see how this operator works in practice by considering the formula we
+used in the last section: `=LEN(A1:A3)`. In Excel versions without support for
+dynamic arrays, i.e. prior to Excel 365, this formula would operate on a
+single value from the input range and return a single value, like the
+following in Excel 2011:
+
+@image html intersection01.png
+
+There is an implicit conversion here of the range of input values, "A1:A3", to
+a single value "A1". Since this was the default behavior of older versions of
+Excel this conversion isn't highlighted in any way. But if you open the same
+file in Excel 365 it will appear as follows:
+
+@image html intersection02.png
+
+The result of the formula is the same (this is important to note) and it still
+operates on, and returns, a single value. However the formula now contains a
+"@" operator to show that it is implicitly using a single value from the given
+range.
+
+Finally, if you entered this formula in Excel 365, or with
+`worksheet_write_dynamic_array_formula()` in libxlsxwriter, it would operate
+on the entire range and return an array of values:
+
+@image html intersection03.png
+
+If you are encountering the Implicit Intersection Operator "@" for the first
+time then it is probably from a point of view of "why is Excel/libxlsxwriter
+putting @s in my formulas". In practical terms if you encounter this operator,
+and you don't intend it to be there, then you should probably write the
+formula as a CSE or dynamic array function using
+`worksheet_write_array_formula()` or `worksheet_write_dynamic_array_formula()`.
+
+
+A full explanation of this operator is shown in the Microsoft documentation on
+the [Implicit intersection operator: \@]
+(https://support.microsoft.com/en-us/office/implicit-intersection-operator-ce3be07b-0101-4450-a24e-c1c999be2b34?ui=en-us&rs=en-us&ad=us>).
+
+One important thing to note is that the "@" operator isn't stored with the
+formula. It is just displayed by Excel 365 when reading "legacy"
+formulas. However, it is possible to write it to a formula, if necessary,
+using `_xlfn.SINGLE()`. The unusual cases where this may be necessary are
+shown in the linked document in the previous paragraph.
+
+
+@subsection ww_formulas_spill Dynamic Arrays - The Spilled Range Operator "#"
+
+In the section above on @ref ww_formulas_intro we saw that dynamic array formulas
+can return variable sized ranges of results. The Excel documentation refers to
+this as a "Spilled" range/array from the idea that the results spill into the
+required number of cells. This is explained in the Microsoft documentation on
+[Dynamic array formulas and spilled array behavior]
+(https://support.microsoft.com/en-us/office/dynamic-array-formulas-and-spilled-array-behavior-205c6b06-03ba-4151-89a1-87a7eb36e531).
+
+Since a spilled range is variable in size a new operator is required to refer
+to the range. This operator is the [Spilled range operator]
+(https://support.microsoft.com/en-us/office/spilled-range-operator-3dd5899f-bca2-4b9d-a172-3eae9ac22efd)
+and it is represented by "#". For example, the range `F2#` in the image
+below is used to refer to a dynamic array returned by `UNIQUE()` in the cell
+`F2`:
+
+@image html spill01.png
+
+Unfortunately, Excel doesn't store the formula like this and in libxlsxwriter
+you need to use the explicit function `_xlfn.ANCHORARRAY()` to refer to a
+spilled range. The example in the image above was generated using the
+following:
+
+@code
+    // Same as '=COUNTA(F2#)' in Excel.
+    worksheet_write_dynamic_formula(worksheet9, CELL("J2"),
+                                    "=COUNTA(_xlfn.ANCHORARRAY(F2))",
+                                    NULL);
+@endcode
+
+
+@subsection ww_formulas_lambda The Excel 365 LAMBDA() function
+
+@note At the time of writing the `LAMBDA()` function in Excel is only
+available to Excel 365 users subscribed to the Beta Channel updates.
+
+Beta Channel versions of Excel 365 have introduced a powerful new
+function/feature called `LAMBDA()`. This is similar to
+[lambda expressions]
+(https://docs.microsoft.com/en-us/cpp/cpp/lambda-expressions-in-cpp?view=msvc-160)
+in C++ (and other languages).
+
+Consider the following Excel example which converts the variable `temp` from Fahrenheit to Celsius:
+
+    LAMBDA(temp, (5/9) * (temp-32))
+
+This could be called in Excel with an argument:
+
+    =LAMBDA(temp, (5/9) * (temp-32))(212)
+
+Or assigned to a defined name and called as a user defined function:
+
+    =ToCelsius(212)
+
+
+    An libxlsxwriter example that replicates the described Excel functionality is
+shown below:
+
+@code
+    // Write the lambda as a function.
+    worksheet_write_dynamic_formula(worksheet, CELL("A2"),
+                                    "=_xlfn.LAMBDA(_xlpm.temp, (5/9) * (_xlpm.temp-32))(32)",
+                                    NULL);
+
+    // Create the lambda function as a defined name and write it as a dynamic formula.
+    workbook_define_name(workbook,
+                         "ToCelsius",
+                         "=_xlfn.LAMBDA(_xlpm.temp, (5/9) * (_xlpm.temp-32))");
+
+    worksheet_write_dynamic_formula(worksheet, CELL("A3"), "=ToCelsius(212)", NULL);
+@endcode
+
+Note, that the formula name must have a "_xlfn." prefix and the parameters in
+the `LAMBDA()` function must have a "_xlpm."  prefix for compatibility with
+how the formulas are stored in Excel. These prefixes won't show up in the
+formula, as shown in the image.
+
+@image html lambda01.png
+
+The `LET()` function is often used in conjunction with `LAMBDA()` to assign
+names to calculation results.
+
 @section ww_formulas_future Formulas added in Excel 2010 and later
 
 
@@ -199,6 +443,25 @@ The following list is taken from
   | `_xlfn.Z.TEST`                   |
 
 
+The dynamic array functions shown in the @ref ww_formulas_dynamic_arrays
+section above are also future functions:
+
+
+  | Dynamic Array Functions          |
+  | -------------------------------- |
+  | `_xlfn.ANCHORARRAY`              |
+  | `_xlfn.LAMBDA`                   |
+  | `_xlfn.RANDARRAY`                |
+  | `_xlfn.SEQUENCE`                 |
+  | `_xlfn.SINGLE`                   |
+  | `_xlfn.SORTBY`                   |
+  | `_xlfn.UNIQUE`                   |
+  | `_xlfn.XLOOKUP`                  |
+  | `_xlfn.XMATCH`                   |
+  | `_xlfn._xlws.FILTER`             |
+  | `_xlfn._xlws.SORT`               |
+
+
 @section ww_formulas_errors Dealing with formula errors
 
 If there is an error in the syntax of a formula it is usually displayed in
@@ -220,6 +483,13 @@ follows:
     listed above (@ref ww_formulas_future). If it does then ensure that the
     correct prefix is used.
 
+5. If the function loads in Excel but appears with one or more ``@`` symbols
+   added then it is probably an array function and should be written using
+   `worksheet_write_array_formula()` or
+   `worksheet_write_dynamic_array_formula()` (see the sections above on @ref
+   ww_formulas_dynamic_arrays and @ref ww_formulas_intersection).
+
+
 Finally if you have completed all the previous steps and still get a
 @c \#NAME? error you can examine a valid Excel file to see what the correct
 syntax should be. To do this you should create a valid formula in Excel and
@@ -229,7 +499,7 @@ The following shows how to do that using Linux `unzip` and `libxml's
 [xmllint](http://xmlsoft.org/xmllint.html) to format the XML for clarity:
 
     $ unzip myfile.xlsx -d myfile
-    $ xmllint --format myfile/xl/worksheets/sheet1.xml | grep '<f>'
+    $ xmllint --format myfile/xl/worksheets/sheet1.xml | grep '</f>'
 
             <f>SUM(1, 2, 3)</f>
 
@@ -249,7 +519,7 @@ some mobile device applications.
 
 If required, it is also possible to specify the calculated result of the
 formula using the `result` parameter for
-:func:`worksheet_write_formula_num()`:
+`worksheet_worksheet_write_formula_num()`:
 
 @code
     worksheet_write_formula_num(worksheet, 0, 0, "=2+2", NULL, 4);

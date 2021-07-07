@@ -7064,6 +7064,33 @@ worksheet_write_array_formula(lxw_worksheet *self,
 }
 
 /*
+ * Write a single cell dynamic array formula with a default result to a cell.
+ */
+lxw_error
+worksheet_write_dynamic_formula(lxw_worksheet *self,
+                                lxw_row_t row,
+                                lxw_col_t col,
+                                const char *formula, lxw_format *format)
+{
+    return _store_array_formula(self, row, col, row, col, formula, format, 0,
+                                LXW_TRUE);
+}
+
+/*
+ * Write a single cell dynamic array formula with a numerical result to a cell.
+ */
+lxw_error
+worksheet_write_dynamic_formula_num(lxw_worksheet *self,
+                                    lxw_row_t row,
+                                    lxw_col_t col,
+                                    const char *formula,
+                                    lxw_format *format, double result)
+{
+    return _store_array_formula(self, row, col, row, col, formula, format,
+                                result, LXW_TRUE);
+}
+
+/*
  * Write a dynamic array formula with a numerical result to a cell in Excel.
  */
 lxw_error

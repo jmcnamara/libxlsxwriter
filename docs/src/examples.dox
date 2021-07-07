@@ -240,7 +240,7 @@ Example of writing "rich" multi-format strings to a worksheet.
 <table  width="600">
 <tr>
   <td>@ref rich_strings.c "&lt;&lt; rich_strings.c"</td>
-  <td align="right">@ref utf8.c "utf8.c &gt;&gt;"</td>
+  <td align="right">@ref dynamic_arrays.c "dynamic_arrays.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -251,11 +251,28 @@ Example of writing array formulas to a worksheet.
 
 
 
-@example utf8.c
+
+@example dynamic_arrays.c
 
 <table  width="600">
 <tr>
   <td>@ref array_formula.c "&lt;&lt; array_formula.c"</td>
+  <td align="right">@ref utf8.c "utf8.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of writing Excel 365 dynamic array formulas to a worksheet.
+
+@image html dynamic_arrays01.png
+
+
+
+
+@example utf8.c
+
+<table  width="600">
+<tr>
+  <td>@ref dynamic_arrays.c "&lt;&lt; dynamic_arrays.c"</td>
   <td align="right">@ref constant_memory.c "constant_memory.c &gt;&gt;"</td>
 </tr>
 </table>
@@ -685,7 +702,7 @@ An example of how to create panes in a worksheet, both "freeze" panes and
 <table  width="600">
 <tr>
   <td>@ref panes.c "&lt;&lt; panes.c"</td>
-  <td align="right">@ref chart.c "chart.c &gt;&gt;"</td>
+  <td align="right">@ref lambda.c "lambda.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -696,11 +713,31 @@ Example of hiding worksheet errors and warnings.
 
 
 
-@example chart.c
+@example lambda.c
 
 <table  width="600">
 <tr>
   <td>@ref ignore_errors.c "&lt;&lt; ignore_errors.c"</td>
+  <td align="right">@ref chart.c "chart.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of using the new Excel `LAMBDA()` function. It demonstrates how to
+create a lambda function in Excel and also how to assign a name to it so that
+it can be called as a user defined function. This particular example converts
+from Fahrenheit to Celsius. Note, this function is only currently available if
+you are subscribed to the Microsoft Office Beta Channel program.
+
+@image html lambda01.png
+
+
+
+
+@example chart.c
+
+<table  width="600">
+<tr>
+  <td>@ref lambda.c "&lt;&lt; lambda.c"</td>
   <td align="right">@ref chart_area.c "chart_area.c &gt;&gt;"</td>
 </tr>
 </table>

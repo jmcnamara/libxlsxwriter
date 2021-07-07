@@ -15,3 +15,19 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_dynamic_array01(self):
         self.run_exe_test('test_dynamic_array01')
+
+    def test_dynamic_array02(self):
+        self.run_exe_test('test_dynamic_array02')
+
+    def test_dynamic_array03(self):
+        self.run_exe_test('test_dynamic_array03')
+
+    # Some variant of the default test case.
+    def test_dynamic_array51(self):
+        self.run_exe_test('test_dynamic_array51', 'dynamic_array01.xlsx')
+
+    def test_dynamic_array52(self):
+        self.run_exe_test('test_dynamic_array52', 'dynamic_array01.xlsx')
+
+    def test_dynamic_array53(self):
+        self.run_exe_test('test_dynamic_array53', 'dynamic_array01.xlsx')

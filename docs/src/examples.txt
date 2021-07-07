@@ -114,6 +114,14 @@ Example of writing array formulas to a worksheet.
 @image html array_formula.png
 
 ##############################################################
+
+@example dynamic_arrays.c
+
+Example of writing Excel 365 dynamic array formulas to a worksheet.
+
+@image html dynamic_arrays01.png
+
+##############################################################
 @example utf8.c
 A simple Unicode UTF-8 example. Note, the source file is UTF-8 encoded.
 
@@ -314,6 +322,17 @@ An example of how to create panes in a worksheet, both "freeze" panes and
 Example of hiding worksheet errors and warnings.
 
 @image html ignore_errors2.png
+
+##############################################################
+@example lambda.c
+
+Example of using the new Excel `LAMBDA()` function. It demonstrates how to
+create a lambda function in Excel and also how to assign a name to it so that
+it can be called as a user defined function. This particular example converts
+from Fahrenheit to Celsius. Note, this function is only currently available if
+you are subscribed to the Microsoft Office Beta Channel program.
+
+@image html lambda01.png
 
 ##############################################################
 @example chart.c

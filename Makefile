@@ -129,6 +129,7 @@ tags:
 doc: docs
 docs:
 	$(Q)$(MAKE) -C docs
+	@echo "Docs built."
 
 docs_doxygen_only:
 	$(Q)$(MAKE) -C docs docs_doxygen_only

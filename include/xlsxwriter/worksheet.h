@@ -2020,16 +2020,16 @@ lxw_error worksheet_write_formula(lxw_worksheet *worksheet,
  * @brief Write an array formula to a worksheet cell.
  *
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
- * @param first_row   The first row of the range. (All zero indexed.)
- * @param first_col   The first column of the range.
- * @param last_row    The last row of the range.
- * @param last_col    The last col of the range.
- * @param formula     Array formula to write to cell.
- * @param format      A pointer to a Format instance or NULL.
+ * @param first_row The first row of the range. (All zero indexed.)
+ * @param first_col The first column of the range.
+ * @param last_row  The last row of the range.
+ * @param last_col  The last col of the range.
+ * @param formula   Array formula to write to cell.
+ * @param format    A pointer to a Format instance or NULL.
  *
  * @return A #lxw_error code.
  *
-  * The `%worksheet_write_array_formula()` function writes an array formula to
+ * The `%worksheet_write_array_formula()` function writes an array formula to
  * a cell range. In Excel an array formula is a formula that performs a
  * calculation on a set of values.
  *
@@ -2066,6 +2066,94 @@ lxw_error worksheet_write_array_formula(lxw_worksheet *worksheet,
                                         const char *formula,
                                         lxw_format *format);
 
+/**
+ * @brief Write an Excel 365 dynamic array formula to a worksheet range.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param first_row The first row of the range. (All zero indexed.)
+ * @param first_col The first column of the range.
+ * @param last_row  The last row of the range.
+ * @param last_col  The last col of the range.
+ * @param formula   Dynamic Array formula to write to cell.
+ * @param format    A pointer to a Format instance or NULL.
+ *
+ * @return A #lxw_error code.
+ *
+ *
+ * The `%worksheet_write_dynamic_array_formula()` function writes an Excel 365
+ * dynamic array formula to a cell range. Some examples of functions that
+ * return dynamic arrays are:
+ *
+ * - `FILTER`
+ * - `RANDARRAY`
+ * - `SEQUENCE`
+ * - `SORTBY`
+ * - `SORT`
+ * - `UNIQUE`
+ * - `XLOOKUP`
+ * - `XMATCH`
+ *
+ * Dynamic array formulas and their usage in libxlsxwriter is explained in
+ * detail @ref ww_formulas_dynamic_arrays. The following is a example usage:
+ *
+ * @code
+ *     worksheet_write_dynamic_array_formula(worksheet, 1, 5, 1, 5,
+ *                                           "=_xlfn._xlws.FILTER(A1:D17,C1:C17=K2)",
+ *                                           NULL);
+ * @endcode
+ *
+ * This formula gives the results shown in the image below.
+ *
+ * @image html dynamic_arrays02.png
+ *
+ * The need for the `_xlfn._xlws.` prefix in the formula is explained in @ref
+ * ww_formulas_future.
+ */
+lxw_error worksheet_write_dynamic_array_formula(lxw_worksheet *worksheet,
+                                                lxw_row_t first_row,
+                                                lxw_col_t first_col,
+                                                lxw_row_t last_row,
+                                                lxw_col_t last_col,
+                                                const char *formula,
+                                                lxw_format *format);
+
+/**
+ * @brief Write an Excel 365 dynamic array formula to a worksheet cell.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param formula   Formula string to write to cell.
+ * @param format    A pointer to a Format instance or NULL.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_write_dynamic_formula()` function is similar to the
+ * `worksheet_write_dynamic_array_formula()` function, shown above, except
+ * that it writes a dynamic array formula to a single cell, rather than a
+ * range. This is a syntactic shortcut since the array range isn't generally
+ * known for a dynamic range and specifying the initial cell is sufficient for
+ * Excel, as shown in the example below:
+ * 
+ * @code
+ *     worksheet_write_dynamic_formula(worksheet, 7, 1,
+ *                                     "=_xlfn._xlws.SORT(_xlfn.UNIQUE(B2:B17))",
+ *                                     NULL);
+ * @endcode
+ *
+ * This formula gives the following result:
+ *
+ * @image html dynamic_arrays01.png
+ *
+ * The need for the `_xlfn.` and `_xlfn._xlws.` prefixes in the formula is
+ * explained in @ref ww_formulas_future.
+ */
+lxw_error worksheet_write_dynamic_formula(lxw_worksheet *worksheet,
+                                          lxw_row_t row,
+                                          lxw_col_t col,
+                                          const char *formula,
+                                          lxw_format *format);
+
 lxw_error worksheet_write_array_formula_num(lxw_worksheet *worksheet,
                                             lxw_row_t first_row,
                                             lxw_col_t first_col,
@@ -2075,14 +2163,6 @@ lxw_error worksheet_write_array_formula_num(lxw_worksheet *worksheet,
                                             lxw_format *format,
                                             double result);
 
-lxw_error worksheet_write_dynamic_array_formula(lxw_worksheet *worksheet,
-                                                lxw_row_t first_row,
-                                                lxw_col_t first_col,
-                                                lxw_row_t last_row,
-                                                lxw_col_t last_col,
-                                                const char *formula,
-                                                lxw_format *format);
-
 lxw_error worksheet_write_dynamic_array_formula_num(lxw_worksheet *worksheet,
                                                     lxw_row_t first_row,
                                                     lxw_col_t first_col,
@@ -2091,6 +2171,13 @@ lxw_error worksheet_write_dynamic_array_formula_num(lxw_worksheet *worksheet,
                                                     const char *formula,
                                                     lxw_format *format,
                                                     double result);
+
+lxw_error worksheet_write_dynamic_formula_num(lxw_worksheet *worksheet,
+                                              lxw_row_t row,
+                                              lxw_col_t col,
+                                              const char *formula,
+                                              lxw_format *format,
+                                              double result);
 
 /**
  * @brief Write a date or time to a worksheet cell.
