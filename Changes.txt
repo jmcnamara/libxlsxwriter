@@ -1,6 +1,14 @@
 /**
 @page changes Changes
 
+## 1.1.0 July 9 2021
+
+- Fix for Cocoapod issue where local md5 files conflicted with BoringSSL headers.
+
+  Issue [#342][gh_342].
+
+  [gh_342]: https://github.com/jmcnamara/libxlsxwriter/issues/342
+  
 ## 1.0.9 July 7 2021
 
 - Added support for Excel 365 dynamic arrays. See
