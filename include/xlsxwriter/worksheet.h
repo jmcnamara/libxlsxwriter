@@ -4609,13 +4609,14 @@ void worksheet_fit_to_pages(lxw_worksheet *worksheet, uint16_t width,
                             uint16_t height);
 
 /**
- * @brief Set the start page number when printing.
+ * @brief Set the start/first page number when printing.
  *
  * @param worksheet  Pointer to a lxw_worksheet instance to be updated.
- * @param start_page Starting page number.
+ * @param start_page Page number of the starting page when printing.
  *
- * The `%worksheet_set_start_page()` function is used to set the number of
- * the starting page when the worksheet is printed out:
+ * The `%worksheet_set_start_page()` function is used to set the number number
+ * of the first page when the worksheet is printed out. It is the same as the
+ * "First Page Number" option in Excel:
  *
  * @code
  *     // Start print from page 2.
