@@ -64,9 +64,12 @@ ifdef USE_BIG_ENDIAN
 CFLAGS += -DLXW_BIG_ENDIAN
 endif
 
-# Use a user-defined double number formatting function.
-ifdef USE_DOUBLE_FUNCTION
-CFLAGS += -DUSE_DOUBLE_FUNCTION
+# Use a third party double number formatting function.
+ifdef USE_DTOA_LIBRARY
+CFLAGS += -DUSE_DTOA_LIBRARY
+DTOA_LIB_DIR = ../third_party/dtoa
+DTOA_LIB_OBJ = $(DTOA_LIB_DIR)/emyg_dtoa.o
+DTOA_LIB_SO  = $(DTOA_LIB_DIR)/emyg_dtoa.so
 endif
 
 # Use fmemopen() to avoid creating certain temporary files
@@ -152,7 +155,7 @@ test_lib : libxlsxwriter_test.a
 
 # The static library.
 $(LIBXLSXWRITER_A) : $(OBJS)
-	$(Q)$(AR) $(ARFLAGS) $@ $(MINIZIP_OBJ) $(TMPFILEPLUS_OBJ) $(MD5_OBJ) $^
+	$(Q)$(AR) $(ARFLAGS) $@ $(MINIZIP_OBJ) $(TMPFILEPLUS_OBJ) $(DTOA_LIB_OBJ) $(MD5_OBJ) $^
 
 # The dynamic library.
 ifeq ($(findstring m32,$(CFLAGS)),m32)
@@ -160,11 +163,11 @@ ARCH = -m32
 endif
 
 $(LIBXLSXWRITER_SO) : $(SOBJS)
-	$(Q)$(CC) $(LDFLAGS) $(SOFLAGS) $(ARCH) $(TARGET_ARCH) -o $@ $(MINIZIP_SO) $(TMPFILEPLUS_SO) $(MD5_SO) $^ $(LIBS)
+	$(Q)$(CC) $(LDFLAGS) $(SOFLAGS) $(ARCH) $(TARGET_ARCH) -o $@ $(MINIZIP_SO) $(TMPFILEPLUS_SO) $(MD5_SO) $(DTOA_LIB_SO) $^ $(LIBS)
 
 # The test library.
 $(LIBXLSXWRITER_TO) : $(TOBJS)
-	$(Q)$(AR) $(ARFLAGS) $@ $(MINIZIP_OBJ) $(TMPFILEPLUS_OBJ) $(MD5_OBJ) $^
+	$(Q)$(AR) $(ARFLAGS) $@ $(MINIZIP_OBJ) $(TMPFILEPLUS_OBJ) $(DTOA_LIB_SO) $(MD5_OBJ) $^
 
 # Minimal target for quick compile without creating the libs.
 test_compile : $(OBJS)

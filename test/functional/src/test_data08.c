@@ -13,7 +13,7 @@
 int main() {
 
     /* Test that the module works if the locale is changed. */
-#ifdef USE_DOUBLE_FUNCTION
+#ifdef USE_DTOA_LIBRARY
     setlocale(LC_NUMERIC, "de_DE");
 #endif
 

@@ -16,6 +16,10 @@
 #include "xlsxwriter/common.h"
 #include "xlsxwriter/third_party/tmpfileplus.h"
 
+#ifdef USE_DTOA_LIBRARY
+#include "xlsxwriter/third_party/emyg_dtoa.h"
+#endif
+
 char *error_strings[LXW_MAX_ERRNO + 1] = {
     "No error.",
     "Memory error, failed to malloc() required memory.",
@@ -575,27 +579,14 @@ lxw_tmpfile(char *tmpdir)
 }
 
 /*
- * Sample function to handle sprintf of doubles for locale portable code. This
- * is usually handled by a lxw_sprintf_dbl() macro but it can be replaced with
- * a function of the same name.
- *
- * The code below is a simplified example that changes numbers like 123,45 to
- * 123.45. End-users can replace this with something more rigorous if
- * required.
+ * Use third party function to handle sprintf of doubles for locale portable
+ * code.
  */
-#ifdef USE_DOUBLE_FUNCTION
+#ifdef USE_DTOA_LIBRARY
 int
 lxw_sprintf_dbl(char *data, double number)
 {
-    char *tmp;
-
-    lxw_snprintf(data, LXW_ATTR_32, "%.16g", number);
-
-    /* Replace comma with decimal point. */
-    tmp = strchr(data, ',');
-    if (tmp)
-        *tmp = '.';
-
+    emyg_dtoa(number, data);
     return 0;
 }
 #endif

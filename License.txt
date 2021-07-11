@@ -35,8 +35,8 @@ Libxlsxwriter is released under a FreeBSD license:
 
 
 Libxlsxwriter includes `queue.h` and `tree.h` from FreeBSD, the `minizip`
-component of `zlib`, `tmpfileplus` and `md5` which have the following
-licenses:
+component of `zlib`. It also includes and uses the optional `tmpfileplus`,
+`md5` and `emyg_dtoa`. These components which have the following licenses:
 
 
 Queue.h from FreeBSD:
@@ -135,17 +135,48 @@ Note, it is possible to compile libxlsxwriter without statically linking the
 [Tmpfileplus](http://www.di-mgt.com.au/c_function_to_create_temp_file.html)
 has the following license:
 
-     This Source Code Form is subject to the terms of the Mozilla Public
-     License, v. 2.0. If a copy of the MPL was not distributed with this
-     file, You can obtain one at http://mozilla.org/MPL/2.0/.
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-     Copyright (c) 2012-16 David Ireland, DI Management Services Pty Ltd
-     <http://www.di-mgt.com.au/contact/>.
+    Copyright (c) 2012-16 David Ireland, DI Management Services Pty Ltd
+    <http://www.di-mgt.com.au/contact/>.
 
 See the [Mozilla Public License, v. 2.0](http://mozilla.org/MPL/2.0/).
 
 Note, it is possible to compile libxlsxwriter using the standard library
 `tmpfile()` function instead of `tmpfileplus`, see @ref gsg_tmpdir.
+
+The [Milo Yip DTOA library](https://github.com/miloyip/dtoa-benchmark) for
+converting doubles to strings. It has the following license:
+
+    Copyright (C) 2015 Doug Currie
+    based on dtoa_milo.h
+    Copyright (C) 2014 Milo Yip
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in
+    all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+    THE SOFTWARE.
+
+This Milo Yip DTOA library (emyg_dtoa) is uses to avoid issues where the
+standard sprintf() dtoa function changes output based on locale settings. It
+is also 40-50% faster than the standard dtoa for raw numeric data. The use of
+this library is optional. If you wish to use it you can pass
+`USE_DTOA_LIBRARY=1` to make when compiling.
 
 [Openwall MD5](https://openwall.info/wiki/people/solar/software/public-domain-source-code/md5)
 has the following licence:

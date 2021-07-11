@@ -47,6 +47,12 @@
 #           during configuration. This may produce bugs while cross-
 #           compiling or using MinGW/MSYS.
 #
+#       USE_DTOA_LIBRARY
+#           Use the third party emyg_dtoa() library (default off). The
+#           emyg_dtoa() library is used to avoid sprintf double issues with
+#           different locale settings. To enable this library, pass
+#           `-DUSE_DTOA_LIBRARY=ON` during configuration.
+#
 #       USE_NO_MD5
 #           Compile without third party MD5 support. This will turn off the
 #           functionality of avoiding duplicate image files in the output xlsx
@@ -127,7 +133,7 @@ option(USE_NO_MD5 "Build libxlsxwriter without third party MD5 lib" OFF)
 option(USE_OPENSSL_MD5 "Build libxlsxwriter with the OpenSSL MD5 lib" OFF)
 option(USE_FMEMOPEN "Use fmemopen() in place of some temporary files" OFF)
 option(IOAPI_NO_64 "Disable 64-bit filesystem support" OFF)
-option(USE_DOUBLE_FUNCTION "Build libxlsxwriter with locale independent double" OFF)
+option(USE_DTOA_LIBRARY "Use the locale independent third party Milo Yip DTOA library" OFF)
 
 if(MSVC)
     option(USE_STATIC_MSVC_RUNTIME "Use the static runtime library" OFF)
@@ -163,8 +169,8 @@ if(USE_FMEMOPEN)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_FMEMOPEN)
 endif()
 
-if(USE_DOUBLE_FUNCTION)
-    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_DOUBLE_FUNCTION)
+if(USE_DTOA_LIBRARY)
+    list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_DTOA_LIBRARY)
 endif()
 
 if(NOT BUILD_SHARED_LIBS)
@@ -258,6 +264,10 @@ if(USE_OPENSSL_MD5)
 	    include_directories(${OPENSSL_INCLUDE_DIR})
 	    message(STATUS "OpenSSL version: ${OPENSSL_VERSION}")
 	endif()
+endif()
+
+if (USE_DTOA_LIBRARY)
+    list(APPEND LXW_SOURCES third_party/dtoa/emyg_dtoa.c)
 endif()
 
 set(LXW_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")

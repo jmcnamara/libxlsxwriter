@@ -58,11 +58,6 @@ endif
 
 # End of LIBS
 
-# Use a user-defined double number formatting function.
-ifdef USE_DOUBLE_FUNCTION
-CFLAGS += -DUSE_DOUBLE_FUNCTION
-endif
-
 # House-keeping build targets.
 all :
 	$(Q)$(MAKE) -C utility

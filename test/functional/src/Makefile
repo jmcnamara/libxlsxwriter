@@ -42,9 +42,9 @@ ifdef USE_OPENSSL_MD5
 LIBS   += -lcrypto
 endif
 
-# Use a user-defined double number formatting function.
-ifdef USE_DOUBLE_FUNCTION
-CFLAGS += -DUSE_DOUBLE_FUNCTION
+# Use a third party double number formatting function.
+ifdef USE_DTOA_LIBRARY
+CFLAGS += -DUSE_DTOA_LIBRARY
 endif
 
 all : $(LIBXLSXWRITER) $(EXES)

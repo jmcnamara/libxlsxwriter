@@ -3643,7 +3643,7 @@ STATIC void
 _write_number_cell(lxw_worksheet *self, char *range,
                    int32_t style_index, lxw_cell *cell)
 {
-#ifdef USE_DOUBLE_FUNCTION
+#ifdef USE_DTOA_LIBRARY
     char data[LXW_ATTR_32];
 
     lxw_sprintf_dbl(data, cell->u.number);
@@ -3657,11 +3657,11 @@ _write_number_cell(lxw_worksheet *self, char *range,
 #else
     if (style_index)
         fprintf(self->file,
-                "<c r=\"%s\" s=\"%d\"><v>%.16g</v></c>",
+                "<c r=\"%s\" s=\"%d\"><v>%.16G</v></c>",
                 range, style_index, cell->u.number);
     else
         fprintf(self->file,
-                "<c r=\"%s\"><v>%.16g</v></c>", range, cell->u.number);
+                "<c r=\"%s\"><v>%.16G</v></c>", range, cell->u.number);
 
 #endif
 }

@@ -659,6 +659,26 @@ Libxlsxwriter can be compiled on a big endian system as follows:
 
     make USE_BIG_ENDIAN=1
 
+
+@section gsg_dtoa Using a double formatting library
+
+Excel uses an IEEE 754 doubles for all numeric values. These values are stored
+in standard `sprintf(...,"%.16G",...)` formatting as numbers like "1234.56" or
+"456E+123". However in some locales, such as "de_DE" these numbers can be
+stored with the locale specific decimal place like "1234,56" which causes
+Excel to give an error when it loads the file.
+
+It some cases this issue can be resolved by using the `setlocale()` or
+`uselocale()` functions in your application. Alternatively you can compile
+libxlsxwriter with support for a third party `dtoa()` (decimal to ascii)
+function. Currently libxlsxwriter uses the [Milo Yip DTOA
+library](https://github.com/miloyip/dtoa-benchmark) as an optional
+compilation. This avoids the locale sprintf issue and it is also 40-50% faster
+than the standard dtoa for raw numeric data.
+
+If you wish to use it you can pass "USE_DTOA_LIBRARY=1" to `make` or
+"-DUSE_DTOA_LIBRARY=ON" to cmake.
+
 @section gsg_next Next steps
 
 If you got libxlsxwriter built and working successfully then the next sections

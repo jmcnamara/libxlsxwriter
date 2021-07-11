@@ -5,12 +5,9 @@
 
 @section ww_mem_constant Constant Memory Mode
 
-By default libxlsxwriter holds all cell data in memory. This is to allow
-non-sequential data storage and also to allow future features where formatting
-is applied separately from the data.
-
-The effect of this is that for large files libxlsxwriter can consume a lot of
-memory.
+By default libxlsxwriter holds all cell data in memory to allow non-sequential
+data storage. The effect of this is that for large files libxlsxwriter can
+consume a lot of memory.
 
 Fortunately, this memory usage can be reduced almost completely by using
 workbook_new_opt() and the lxw_workbook_options `constant_memory` property:
@@ -90,6 +87,9 @@ depending on the amount of repeated string data.
 
 Currently the library is optimized but not highly optimized. Also, the library
 is currently single threaded.
+
+Compiling with the embedded but option dtoa library is 40-50% faster for raw
+numeric data. See @ref gsg_dtoa.
 
 Next: @ref working_with_macros
 

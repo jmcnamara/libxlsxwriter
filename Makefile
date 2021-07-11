@@ -33,11 +33,13 @@ endif
 ifndef USE_STANDARD_TMPFILE
 	$(Q)$(MAKE) -C third_party/tmpfileplus
 endif
-
 ifndef USE_NO_MD5
 ifndef USE_OPENSSL_MD5
 	$(Q)$(MAKE) -C third_party/md5
 endif
+endif
+ifdef USE_DTOA_LIBRARY
+	$(Q)$(MAKE) -C third_party/dtoa
 endif
 
 # Build a macOS universal binary.
@@ -73,6 +75,7 @@ clean :
 	$(Q)$(MAKE) clean -C third_party/minizip
 	$(Q)$(MAKE) clean -C third_party/tmpfileplus
 	$(Q)$(MAKE) clean -C third_party/md5
+	$(Q)$(MAKE) clean -C third_party/dtoa
 
 # Run the unit tests.
 test : all test_unit test_functional

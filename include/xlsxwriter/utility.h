@@ -235,13 +235,15 @@ void lxw_str_tolower(char *str);
 FILE *lxw_tmpfile(char *tmpdir);
 FILE *lxw_fopen(const char *filename, const char *mode);
 
-/* Use a user defined function to format doubles in sprintf or else a simple
- * macro (the default). */
-#ifdef USE_DOUBLE_FUNCTION
+/* Use the third party dtoa function to avoid locale issues with sprintf
+ * double formatting. Otherwise we use a simple macro that falls back to the
+ * default c-lib sprintf.
+ */
+#ifdef USE_DTOA_LIBRARY
 int lxw_sprintf_dbl(char *data, double number);
 #else
 #define lxw_sprintf_dbl(data, number) \
-        lxw_snprintf(data, LXW_ATTR_32, "%.16g", number)
+        lxw_snprintf(data, LXW_ATTR_32, "%.16G", number)
 #endif
 
 uint16_t lxw_hash_password(const char *password);

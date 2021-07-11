@@ -18,3 +18,6 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_types08(self):
         self.run_exe_test('test_types08')
+
+    def test_types11(self):
+        self.run_exe_test('test_types11')
