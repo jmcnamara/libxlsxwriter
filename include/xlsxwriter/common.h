@@ -50,7 +50,10 @@ enum lxw_boolean {
     /** False value. */
     LXW_FALSE,
     /** True value. */
-    LXW_TRUE
+    LXW_TRUE,
+    /** False value. Used to turn off a property that is default on, in order
+     *  to distinguish it from an uninitialized value. */
+    LXW_EXPLICIT_FALSE
 };
 
 /**

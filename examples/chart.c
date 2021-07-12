@@ -44,6 +44,12 @@ int main() {
     chart_add_series(chart, NULL, "Sheet1!$B$1:$B$5");
     chart_add_series(chart, NULL, "Sheet1!$C$1:$C$5");
 
+
+    lxw_chart_font font = {.bold = LXW_EXPLICIT_FALSE, .color = LXW_COLOR_BLUE};
+
+    chart_title_set_name(chart, "Year End Results");
+    chart_title_set_name_font(chart, &font);
+
     /* Insert the chart into the worksheet. */
     worksheet_insert_chart(worksheet, CELL("B7"), chart);
 

@@ -3235,13 +3235,27 @@ void chart_title_set_name_range(lxw_chart *chart, const char *sheetname,
  * chart title:
  *
  * @code
- *     lxw_chart_font font = {.bold = LXW_TRUE, .color = LXW_COLOR_BLUE};
+ *     lxw_chart_font font = {.color = LXW_COLOR_BLUE};
  *
  *     chart_title_set_name(chart, "Year End Results");
  *     chart_title_set_name_font(chart, &font);
  * @endcode
  *
  * @image html chart_title_set_name_font.png
+ *
+ * In Excel a chart title font is bold by default (as shown in the image
+ * above). To turn off bold in the font you cannot use #LXW_FALSE (0) since
+ * that is indistinguishable from an uninitialized value. Instead you should
+ * use #LXW_EXPLICIT_FALSE:
+ *
+ * @code
+ *     lxw_chart_font font = {.bold = LXW_EXPLICIT_FALSE, .color = LXW_COLOR_BLUE};
+ *
+ *     chart_title_set_name(chart, "Year End Results");
+ *     chart_title_set_name_font(chart, &font);
+ * @endcode
+ *
+ * @image html chart_title_set_name_font2.png
  *
  * For more information see @ref chart_fonts.
  */
