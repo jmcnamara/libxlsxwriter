@@ -18,6 +18,7 @@
 #import "shared_strings.h"
 #import "styles.h"
 #import "theme.h"
+#import "third_party/emyg_dtoa.h"
 #import "third_party/ioapi.h"
 #import "third_party/md5.h"
 #import "third_party/queue.h"

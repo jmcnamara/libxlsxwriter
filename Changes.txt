@@ -1,6 +1,23 @@
 /**
 @page changes Changes
 
+## 1.1.1 July 12 2021
+
+- Added optional third party library to handle sprintf handling of
+  doubles. This is to avoid issues with number formatting in some locales. The
+  optional library is the Milo Yip DTOA implementation. See @ref gsg_dtoa.
+
+  Issue [#272][gh_272].
+
+  [gh_272]: https://github.com/jmcnamara/libxlsxwriter/issues/272
+
+- Added the #LXW_EXPLICIT_FALSE variable to allow the default bold property in
+  chart title fonts to be turned off.
+
+  Issue [#199][gh_199].
+
+  [gh_199]: https://github.com/jmcnamara/libxlsxwriter/issues/199
+
 ## 1.1.0 July 9 2021
 
 - Fix for Cocoapod issue where local md5 files conflicted with BoringSSL headers.
