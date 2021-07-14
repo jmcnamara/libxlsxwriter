@@ -159,6 +159,7 @@ _escape_attributes(struct xml_attribute *attribute)
     char *encoded = (char *) calloc(LXW_MAX_ENCODED_ATTRIBUTE_LENGTH, 1);
     char *p_encoded = encoded;
     char *p_attr = attribute->value;
+    RETURN_ON_MEM_ERROR(p_encoded, NULL);
 
     while (*p_attr) {
         switch (*p_attr) {
@@ -201,6 +202,7 @@ lxw_escape_data(const char *data)
 
     char *encoded = (char *) calloc(encoded_len, 1);
     char *p_encoded = encoded;
+    RETURN_ON_MEM_ERROR(p_encoded, NULL);
 
     while (*data) {
         switch (*data) {
@@ -255,6 +257,7 @@ lxw_escape_control_characters(const char *string)
 
     char *encoded = (char *) calloc(encoded_len, 1);
     char *p_encoded = encoded;
+    RETURN_ON_MEM_ERROR(p_encoded, NULL);
 
     while (*string) {
         switch (*string) {
@@ -313,6 +316,7 @@ lxw_escape_url_characters(const char *string, uint8_t escape_hash)
 
     char *encoded = (char *) calloc(encoded_len, 1);
     char *p_encoded = encoded;
+    RETURN_ON_MEM_ERROR(p_encoded, NULL);
 
     while (*string) {
         switch (*string) {
