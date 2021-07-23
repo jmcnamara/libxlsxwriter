@@ -38,7 +38,7 @@ Pod::Spec.new do |s|
   s.author                = { "John McNamara" => "jmcnamara@cpan.org" }
 
   s.source                = { :git => "https://github.com/jmcnamara/libxlsxwriter.git", :tag => "RELEASE_" + s.version.to_s }
-  s.source_files          = "src/**/*.c", "third_party/**/{zip.c,ioapi.c,tmpfileplus.c,md5.c}", "include/**/*.h"
+  s.source_files          = "src/*.c", "third_party/**/{zip.c,ioapi.c,tmpfileplus.c,md5.c}", "include/**/*.h"
   s.preserve_paths        = [ 'third_party/**/*.h' ]
   s.header_dir            = "xlsxwriter"
   s.header_mappings_dir   = "include"
