@@ -61,7 +61,7 @@ clean :
 
 # Executable targets.
 %: %.c $(LIBXLSXWRITER)
-	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) $(GCOV) $< -o $@ $(LIBS)
+	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) $(LDFLAGS) $(GCOV) $< -o $@ $(LIBS)
 
 test_valgrind: all
 	$(Q)$(foreach exe,$(EXES),valgrind -q --error-exitcode=1 --leak-check=full ./$(exe) || exit;)

@@ -106,7 +106,7 @@ clean :
 # Builds the tests.
 #
 test_all : test_all.o $(OBJS) $(LIBS_A)
-	$(Q)$(CC) $(CFLAGS) -I$(INC_DIR) -o $@ $^ $(LIBS_O)
+	$(Q)$(CC) $(CFLAGS) $(LDFLAGS) -I$(INC_DIR) -o $@ $^ $(LIBS_O)
 
 
 ###############################################################################
