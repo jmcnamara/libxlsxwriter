@@ -536,6 +536,56 @@ enum lxw_conditional_icon_types {
     LXW_CONDITIONAL_ICONS_5_QUARTERS
 };
 
+/** @brief The criteria used in autofilter rules.
+ *
+ * Criteria used to define an autofilter rule condition.
+ */
+enum lxw_filter_criteria {
+    LXW_FILTER_CRITERIA_NONE,
+
+    /** Filter cells equal to a value. */
+    LXW_FILTER_CRITERIA_EQUAL_TO,
+
+    /** Filter cells not equal to a value. */
+    LXW_FILTER_CRITERIA_NOT_EQUAL_TO,
+
+    /** Filter cells greater than a value. */
+    LXW_FILTER_CRITERIA_GREATER_THAN,
+
+    /** Filter cells less than a value. */
+    LXW_FILTER_CRITERIA_LESS_THAN,
+
+    /** Filter cells greater than or equal to a value. */
+    LXW_FILTER_CRITERIA_GREATER_THAN_OR_EQUAL_TO,
+
+    /** Filter cells less than or equal to a value. */
+    LXW_FILTER_CRITERIA_LESS_THAN_OR_EQUAL_TO,
+
+    /** Filter cells that are blank. */
+    LXW_FILTER_CRITERIA_BLANKS,
+
+    /** Filter cells that are not blank. */
+    LXW_FILTER_CRITERIA_NON_BLANKS
+};
+
+enum lxw_filter_operator {
+    LXW_FILTER_AND,
+
+    LXW_FILTER_OR
+};
+
+enum lxw_filter_type {
+    LXW_FILTER_TYPE_NONE,
+
+    LXW_FILTER_TYPE_SINGLE,
+
+    LXW_FILTER_TYPE_AND,
+
+    LXW_FILTER_TYPE_OR,
+
+    LXW_FILTER_TYPE_STRING_LIST
+};
+
 /** Options to control the positioning of worksheet objects such as images
  *  or charts. See @ref working_with_object_positioning. */
 enum lxw_object_position {
@@ -772,6 +822,7 @@ typedef struct lxw_print_area {
 
 typedef struct lxw_autofilter {
     uint8_t in_use;
+    uint8_t has_rules;
     lxw_row_t first_row;
     lxw_row_t last_row;
     lxw_col_t first_col;
@@ -1261,6 +1312,32 @@ typedef struct lxw_cond_format_hash_element {
 
     RB_ENTRY (lxw_cond_format_hash_element) tree_pointers;
 } lxw_cond_format_hash_element;
+
+typedef struct lxw_filter_rule {
+
+    uint8_t criteria;
+    double value;
+    char *value_string;
+} lxw_filter_rule;
+
+typedef struct lxw_filter_rule_obj {
+
+    uint8_t type;
+    uint8_t is_custom;
+    uint8_t has_blanks;
+    lxw_col_t col_num;
+
+    uint8_t criteria1;
+    uint8_t criteria2;
+    double value1;
+    double value2;
+    char *value1_string;
+    char *value2_string;
+
+    uint16_t num_list_filters;
+    char **list;
+
+} lxw_filter_rule_obj;
 
 /**
  * @brief Options for inserted images.
@@ -1800,6 +1877,9 @@ typedef struct lxw_worksheet {
     lxw_object_properties *footer_center_object_props;
     lxw_object_properties *footer_right_object_props;
     lxw_object_properties *background_image;
+
+    lxw_filter_rule_obj **filter_rules;
+    lxw_col_t num_filter_rules;
 
     STAILQ_ENTRY (lxw_worksheet) list_pointers;
 
@@ -3529,6 +3609,16 @@ lxw_error worksheet_autofilter(lxw_worksheet *worksheet, lxw_row_t first_row,
                                lxw_col_t first_col, lxw_row_t last_row,
                                lxw_col_t last_col);
 
+lxw_error worksheet_filter_column(lxw_worksheet *worksheet, lxw_col_t col,
+                                  lxw_filter_rule *rule);
+
+lxw_error worksheet_filter_column2(lxw_worksheet *worksheet, lxw_col_t col,
+                                   lxw_filter_rule *rule1,
+                                   lxw_filter_rule *rule2, uint8_t operator);
+
+lxw_error worksheet_filter_list(lxw_worksheet *worksheet, lxw_col_t col,
+                                char **list);
+
 /**
  * @brief Add a data validation to a cell.
  *
@@ -5124,6 +5214,8 @@ STATIC void _worksheet_write_data_validations(lxw_worksheet *self);
 
 STATIC double _pixels_to_height(double pixels);
 STATIC double _pixels_to_width(double pixels);
+
+STATIC void _worksheet_write_auto_filter(lxw_worksheet *worksheet);
 #endif /* TESTING */
 
 /* *INDENT-OFF* */

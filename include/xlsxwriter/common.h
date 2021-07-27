@@ -293,6 +293,9 @@ enum lxw_custom_property_types {
 #define LXW_WARN_FORMAT2(message, var1, var2)    \
     LXW_PRINTF(LXW_STDERR "[WARNING]: " message "\n", var1, var2)
 
+#define LXW_WARN_FORMAT3(message, var1, var2, var3) \
+    LXW_PRINTF(LXW_STDERR "[WARNING]: " message "\n", var1, var2, var3)
+
 /* Chart axis type checks. */
 #define LXW_WARN_CAT_AXIS_ONLY(function)                                   \
     do {                                                                   \

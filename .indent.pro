@@ -107,6 +107,8 @@
 -T lxw_drawing_rel_id
 -T lxw_error
 -T lxw_fill
+-T lxw_filter_rule
+-T lxw_filter_rule_obj
 -T lxw_font
 -T lxw_format
 -T lxw_hash_element
