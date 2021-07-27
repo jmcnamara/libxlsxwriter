@@ -12,7 +12,7 @@
     got = (char*)calloc(file_size + 1, 1);                          \
                                                                     \
     rewind(testfile);                                               \
-    fread(got, file_size, 1, testfile);                             \
+    (void)fread(got, file_size, 1, testfile);                       \
                                                                     \
     ASSERT_STR((exp), (got));                                       \
                                                                     \
@@ -32,7 +32,7 @@
     got = (char*)calloc(file_size + 1, 1);                          \
                                                                     \
     rewind(testfile);                                               \
-    fread(got, file_size, 1, testfile);                             \
+    (void)fread(got, file_size, 1, testfile);                       \
                                                                     \
     /* Start comparison from first difference. */                   \
     char *got_short = got;                                          \

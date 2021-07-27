@@ -2241,12 +2241,17 @@ lxw_error worksheet_write_datetime(lxw_worksheet *worksheet,
  *
  * @image html date_example03.png
  *
+ * Unixtime is generally represented with a 32 bit `time_t` type which has a
+ * range of approximately 1900-12-14 to 2038-01-19. To access the full Excel
+ * date range of 1900-01-01 to 9999-12-31 this function uses a 64 bit
+ * parameter.
+ *
  * See @ref working_with_dates for more information about handling dates and
  * times in libxlsxwriter.
  */
 lxw_error worksheet_write_unixtime(lxw_worksheet *worksheet,
                                    lxw_row_t row,
-                                   lxw_col_t col, time_t unixtime,
+                                   lxw_col_t col, int64_t unixtime,
                                    lxw_format *format);
 
 /**

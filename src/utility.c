@@ -428,7 +428,7 @@ lxw_datetime_to_excel_datetime(lxw_datetime *datetime)
  * 1900 epoch.
  */
 double
-lxw_unixtime_to_excel_date(time_t unixtime)
+lxw_unixtime_to_excel_date(int64_t unixtime)
 {
     return lxw_unixtime_to_excel_date_epoch(unixtime, LXW_FALSE);
 }
@@ -438,7 +438,7 @@ lxw_unixtime_to_excel_date(time_t unixtime)
  * 1900 or 1904 epoch.
  */
 double
-lxw_unixtime_to_excel_date_epoch(time_t unixtime, uint8_t date_1904)
+lxw_unixtime_to_excel_date_epoch(int64_t unixtime, uint8_t date_1904)
 {
     double excel_datetime = 0.0;
     int epoch = date_1904 ? 24107.0 : 25568.0;

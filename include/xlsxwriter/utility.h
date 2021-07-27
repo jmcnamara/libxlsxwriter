@@ -214,9 +214,9 @@ double lxw_datetime_to_excel_date_epoch(lxw_datetime *datetime,
  *
  * See @ref working_with_dates for more details.
  */
-double lxw_unixtime_to_excel_date(time_t unixtime);
+double lxw_unixtime_to_excel_date(int64_t unixtime);
 
-double lxw_unixtime_to_excel_date_epoch(time_t unixtime, uint8_t date_1904);
+double lxw_unixtime_to_excel_date_epoch(int64_t unixtime, uint8_t date_1904);
 
 char *lxw_strdup(const char *str);
 char *lxw_strdup_formula(const char *formula);

@@ -7204,7 +7204,7 @@ lxw_error
 worksheet_write_unixtime(lxw_worksheet *self,
                          lxw_row_t row_num,
                          lxw_col_t col_num,
-                         time_t unixtime, lxw_format *format)
+                         int64_t unixtime, lxw_format *format)
 {
     lxw_cell *cell;
     double excel_date;
