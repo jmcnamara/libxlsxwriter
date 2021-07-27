@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = workbook_new("test_autofilter01.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_autofilter06.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     uint16_t i;
 
@@ -28,7 +28,7 @@ int main() {
         {"South", "Orange",  9000, "September" },
         {"North", "Apple",   2000, "November"  },
         {"West",  "Apple",   9000, "November"  },
-        {"South", "Pear",    7000, "October"   },
+        {"",      "Pear",    7000, "October"   },
         {"North", "Pear",    9000, "August"    },
         {"West",  "Orange",  1000, "December"  },
         {"West",  "Grape",   1000, "November"  },
@@ -73,14 +73,17 @@ int main() {
         {"South", "Pear",    1000, "December"  },
         {"North", "Grape",   10000, "July"     },
         {"East",  "Grape",   6000, "February"  }
-    }; 
+    };
 
 
     /* Write the column headers. */
     worksheet_write_string(worksheet, 0, 0, "Region", NULL);
     worksheet_write_string(worksheet, 0, 1, "Item",   NULL);
-    worksheet_write_string(worksheet, 0, 2, "Volume" , NULL);
+    worksheet_write_string(worksheet, 0, 2, "Volume", NULL);
     worksheet_write_string(worksheet, 0, 3, "Month",  NULL);
+
+
+    lxw_row_col_options hidden = {.hidden = LXW_TRUE};
 
 
     /* Write the row data. */
@@ -89,10 +92,21 @@ int main() {
         worksheet_write_string(worksheet, i + 1, 1, data[i].item,   NULL);
         worksheet_write_number(worksheet, i + 1, 2, data[i].volume, NULL);
         worksheet_write_string(worksheet, i + 1, 3, data[i].month,  NULL);
+
+        if (strcmp(data[i].region, "") != 0) {
+            /* Row matches the filter, no further action required. */
+        }
+        else {
+            /* We need to hide rows that don't match the filter. */
+            worksheet_set_row_opt(worksheet, i + 1, LXW_DEF_ROW_HEIGHT, NULL, &hidden);
+        }
     }
-    
 
     worksheet_autofilter(worksheet, 0, 0, 50, 3);
+
+    lxw_filter_rule filter_rule1 = {.criteria  = LXW_FILTER_CRITERIA_NON_BLANKS};
+
+    worksheet_filter_column(worksheet, 0, &filter_rule1);
 
 
     return workbook_close(workbook);

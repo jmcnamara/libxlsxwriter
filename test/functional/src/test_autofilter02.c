@@ -11,7 +11,7 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = workbook_new("test_autofilter01.xlsx");
+    lxw_workbook  *workbook  = workbook_new("test_autofilter02.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
     uint16_t i;
 
@@ -73,7 +73,7 @@ int main() {
         {"South", "Pear",    1000, "December"  },
         {"North", "Grape",   10000, "July"     },
         {"East",  "Grape",   6000, "February"  }
-    }; 
+    };
 
 
     /* Write the column headers. */
@@ -83,16 +83,31 @@ int main() {
     worksheet_write_string(worksheet, 0, 3, "Month",  NULL);
 
 
+    lxw_row_col_options hidden = {.hidden = LXW_TRUE};
+
+
     /* Write the row data. */
     for (i = 0; i < sizeof(data)/sizeof(struct row); i++) {
         worksheet_write_string(worksheet, i + 1, 0, data[i].region, NULL);
         worksheet_write_string(worksheet, i + 1, 1, data[i].item,   NULL);
         worksheet_write_number(worksheet, i + 1, 2, data[i].volume, NULL);
         worksheet_write_string(worksheet, i + 1, 3, data[i].month,  NULL);
+
+        if (strcmp(data[i].region, "East") == 0) {
+            /* Row matches the filter, no further action required. */
+        }
+        else {
+            /* We need to hide rows that don't match the filter. */
+            worksheet_set_row_opt(worksheet, i + 1, LXW_DEF_ROW_HEIGHT, NULL, &hidden);
+        }
     }
-    
 
     worksheet_autofilter(worksheet, 0, 0, 50, 3);
+
+    lxw_filter_rule filter_rule1 = {.criteria     = LXW_FILTER_CRITERIA_EQUAL_TO,
+                                    .value_string = "East"};
+
+    worksheet_filter_column(worksheet, 0, &filter_rule1);
 
 
     return workbook_close(workbook);
