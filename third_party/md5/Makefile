@@ -3,6 +3,8 @@
 # Simplied Makefile to build the openwall md5 library for libxlsxwriter.
 #
 
+-include ../../config.mk
+
 # Keep the output quiet by default.
 Q=@
 ifdef V

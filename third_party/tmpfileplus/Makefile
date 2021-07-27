@@ -3,6 +3,8 @@
 # Simplied Makefile to build tmpfileplus for the libxlsxwriter library.
 #
 
+-include ../../config.mk
+
 # Keep the output quiet by default.
 Q=@
 ifdef V

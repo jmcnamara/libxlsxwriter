@@ -5,6 +5,8 @@
 # Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
 #
 
+-include ../../../config.mk
+
 # Keep the output quiet by default.
 Q=@
 ifdef V

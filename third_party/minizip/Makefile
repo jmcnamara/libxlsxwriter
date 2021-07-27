@@ -3,6 +3,8 @@
 # Simplied Makefile to build the minizip objects for the libxlsxwriter library.
 #
 
+-include ../../config.mk
+
 # Keep the output quiet by default.
 Q=@
 ifdef V

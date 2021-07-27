@@ -3,6 +3,8 @@
 # Simplied Makefile to build the emyg_dtoa library for libxlsxwriter.
 #
 
+-include ../../config.mk
+
 # Keep the output quiet by default.
 Q=@
 ifdef V
