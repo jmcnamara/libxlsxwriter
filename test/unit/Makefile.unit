@@ -53,7 +53,7 @@ clean :
 	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) -c $<
 
 test_%: main.o test_%.o $(LIBS_A)
-	$(Q)$(CC) $(CFLAGS) -o $@ $^ $(LIBS_O)
+	$(Q)$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $^ $(LIBS_O)
 
 # Link all the tests into one test executable.
 test_all : main.o $(OBJS) $(LIBS_A)
