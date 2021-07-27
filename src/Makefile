@@ -177,7 +177,7 @@ test_compile : $(OBJS)
 	$(Q)$(CC) -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) $(TARGET_ARCH) $(GCOV) -c $<
 
 %.so : %.c $(HDRS)
-	$(Q)$(CC) $(FPIC) -I$(INC_DIR) $(LDFLAGS) $(CFLAGS) $(CXXFLAGS) $(TARGET_ARCH) $(GCOV) -c $< -o $@
+	$(Q)$(CC) $(FPIC) -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) $(TARGET_ARCH) $(GCOV) -c $< -o $@
 
 %.to : %.c $(HDRS)
 	$(Q)$(CC) -g $(OPT_LEVEL) -DTESTING -I$(INC_DIR) $(CFLAGS) $(CXXFLAGS) $(GCOV) -c $< -o $@
