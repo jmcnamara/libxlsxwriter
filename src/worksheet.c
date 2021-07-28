@@ -2954,10 +2954,11 @@ lxw_worksheet_prepare_chart(lxw_worksheet *self,
         drawing_object->anchor = object_props->object_position;
 
     drawing_object->type = LXW_DRAWING_CHART;
-    drawing_object->description = lxw_strdup("TODO_DESC");
+    drawing_object->description = lxw_strdup(object_props->description);
     drawing_object->tip = NULL;
     drawing_object->rel_index = _get_drawing_rel_index(self, NULL);
     drawing_object->url_rel_index = 0;
+    drawing_object->decorative = object_props->decorative;
 
     /* Scale to user scale. */
     width = object_props->width * object_props->x_scale;
@@ -9254,6 +9255,8 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
         object_props->x_scale = user_options->x_scale;
         object_props->y_scale = user_options->y_scale;
         object_props->object_position = user_options->object_position;
+        object_props->description = lxw_strdup(user_options->description);
+        object_props->decorative = user_options->decorative;
     }
 
     /* Copy other options or set defaults. */

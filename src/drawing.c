@@ -648,12 +648,13 @@ _drawing_write_c_nv_graphic_frame_pr(lxw_drawing *self)
  * Write the <xdr:nvGraphicFramePr> element.
  */
 STATIC void
-_drawing_write_nv_graphic_frame_pr(lxw_drawing *self, uint32_t index)
+_drawing_write_nv_graphic_frame_pr(lxw_drawing *self, uint32_t index,
+                                   lxw_drawing_object *drawing_object)
 {
     lxw_xml_start_tag(self->file, "xdr:nvGraphicFramePr", NULL);
 
     /* Write the xdr:cNvPr element. */
-    _drawing_write_c_nv_pr(self, "Chart", index, NULL);
+    _drawing_write_c_nv_pr(self, "Chart", index, drawing_object);
 
     /* Write the xdr:cNvGraphicFramePr element. */
     _drawing_write_c_nv_graphic_frame_pr(self);
@@ -781,7 +782,8 @@ _drawing_write_a_graphic(lxw_drawing *self, uint32_t index)
  */
 STATIC void
 _drawing_write_graphic_frame(lxw_drawing *self, uint32_t index,
-                             uint32_t rel_index)
+                             uint32_t rel_index,
+                             lxw_drawing_object *drawing_object)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -792,7 +794,7 @@ _drawing_write_graphic_frame(lxw_drawing *self, uint32_t index,
     lxw_xml_start_tag(self->file, "xdr:graphicFrame", &attributes);
 
     /* Write the xdr:nvGraphicFramePr element. */
-    _drawing_write_nv_graphic_frame_pr(self, index);
+    _drawing_write_nv_graphic_frame_pr(self, index, drawing_object);
 
     /* Write the xdr:xfrm element. */
     _drawing_write_xfrm(self);
@@ -829,7 +831,8 @@ _drawing_write_two_cell_anchor(lxw_drawing *self, uint32_t index,
 
     if (drawing_object->type == LXW_DRAWING_CHART) {
         /* Write the xdr:graphicFrame element for charts. */
-        _drawing_write_graphic_frame(self, index, drawing_object->rel_index);
+        _drawing_write_graphic_frame(self, index, drawing_object->rel_index,
+                                     drawing_object);
     }
     else if (drawing_object->type == LXW_DRAWING_IMAGE) {
         /* Write the xdr:pic element. */
@@ -908,7 +911,7 @@ _drawing_write_absolute_anchor(lxw_drawing *self, uint32_t frame_index)
         _drawing_write_ext(self, 6162675, 6124575);
     }
 
-    _drawing_write_graphic_frame(self, frame_index, frame_index);
+    _drawing_write_graphic_frame(self, frame_index, frame_index, NULL);
 
     /* Write the xdr:clientData element. */
     _drawing_write_client_data(self);

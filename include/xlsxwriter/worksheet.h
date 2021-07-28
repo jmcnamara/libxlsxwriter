@@ -1331,6 +1331,18 @@ typedef struct lxw_chart_options {
      *  See @ref working_with_object_positioning.*/
     uint8_t object_position;
 
+    /** Optional description or "Alt text" for the chart. This field can be
+     *  used to provide a text description of the chart to help
+     *  accessibility. Defaults to the image filename as in Excel. Set to NULL
+     *  to ignore the description field. */
+    char *description;
+
+    /** Optional parameter to help accessibility. It is used to mark the chart
+     *  as decorative, and thus uninformative, for automated screen
+     *  readers. As in Excel, if this parameter is in use the `description`
+     *  field isn't written. */
+    uint8_t decorative;
+
 } lxw_chart_options;
 
 /* Internal struct to represent lxw_image_options and lxw_chart_options
