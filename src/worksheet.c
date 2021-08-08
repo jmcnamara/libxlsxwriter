@@ -4537,7 +4537,7 @@ _worksheet_write_col_breaks(lxw_worksheet *self)
  * Write the <filter> element.
  */
 STATIC void
-_worksheet_write_filter(lxw_worksheet *self, char *str, double num,
+_worksheet_write_filter(lxw_worksheet *self, const char *str, double num,
                         uint8_t operator)
 {
     struct xml_attribute_list attributes;
@@ -4604,7 +4604,7 @@ _worksheet_write_filter_standard(lxw_worksheet *self,
  * Write the <customFilter> element.
  */
 STATIC void
-_worksheet_write_custom_filter(lxw_worksheet *self, char *str, double num,
+_worksheet_write_custom_filter(lxw_worksheet *self, const char *str, double num,
                                uint8_t operator)
 {
     struct xml_attribute_list attributes;
