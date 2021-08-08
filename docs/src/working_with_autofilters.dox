@@ -1,0 +1,217 @@
+/**
+@page working_with_autofilters Working with Autofilters
+
+@tableofcontents
+
+An autofilter in Excel is a way of filtering a 2D range of data based on some
+simple criteria.
+
+@image html autofilter1.png
+
+
+@section ww_autofilters_range Applying an autofilter
+
+The first step is to apply an autofilter to a cell range in a worksheet using
+the worksheet_autofilter() function:
+
+@code
+    worksheet_autofilter(worksheet, 0, 0, 10, 3);
+@endcode
+
+Or more explicitly using the RANGE() macro:
+
+@code
+    worksheet_autofilter(worksheet, RANGE("A1:D11")); //Same as above.
+@endcode
+
+
+@section ww_autofilters_data Filtering data in an autofilter
+
+The `worksheet_autofilter()` function defines the cell range that the filter
+applies to and creates drop-down selectors in the header row.
+
+However, in order to apply a filter condition it is necessary to add filter
+rules to the columns using the `%worksheet_filter_column()`,
+`%worksheet_filter_column2()` or `%worksheet_filter_list()` functions:
+
+- `worksheet_filter_column()`: filter on a single criterion such as "Column ==
+  East". More complex conditions such as "<=" or ">=" can also be used.
+
+- `worksheet_filter_column2()`: filter on two criteria such as "Column == East
+  or Column == West". Complex conditions can also be used.
+
+- `worksheet_filter_list()`: filter on a list of values such as "Column in (East, West,
+  North)".
+
+For example you could create a filter like "Column A == East" using a
+lxw_filter_rule rule and the `worksheet_filter_column()` function like this:
+
+@code
+    lxw_filter_rule filter_rule = {.criteria     = LXW_FILTER_CRITERIA_EQUAL_TO,
+                                   .value_string = "East"};
+
+    worksheet_filter_column(worksheet, 0, &filter_rule);
+@endcode
+
+Unfortunately, it isn't sufficient to just specify the filter condition. You
+must also hide the rows that don't match the criteria since Excel doesn't do
+that automatically when reading a file. With libxlsxwriter you can hide rows
+using the `worksheet_set_row_opt()` function with the lxw_row_col_options
+`hidden` parameter.
+
+The following is an example of how you might filter a data range to match an
+autofilter criteria:
+
+@code
+    lxw_row_col_options hidden = {.hidden = LXW_TRUE};
+
+    lxw_filter_rule filter_rule = {.criteria     = LXW_FILTER_CRITERIA_EQUAL_TO,
+                                   .value_string = "East"};
+
+    worksheet_filter_column(worksheet, 0, &filter_rule);
+
+    for (i = 0; i < 100; i++) {
+        // Write some other cell data for a row...
+
+        if (strcmp(data[i].region, "East") == 0) {
+            // Row matches the filter, no further action required.
+        }
+        else {
+            // Hide rows that don't match the filter.
+            worksheet_set_row_opt(worksheet, i + 1, LXW_DEF_ROW_HEIGHT, NULL, &hidden);
+        }
+    }
+@endcode
+
+Note, the `if()` statement above is written to match the logic of the criteria
+in the rule. However you could get the same results with the following
+simpler, but reversed, logic:
+
+@code
+         if (strcmp(data[i].region, "East") != 0) {
+             worksheet_set_row_opt(worksheet, i + 1, LXW_DEF_ROW_HEIGHT, NULL, &hidden);
+         }
+@endcode
+
+
+
+@section ww_autofilters_criteria Setting a filter criteria for a column
+
+The `worksheet_filter_column()` and `worksheet_filter_column2()` functions can
+be used to filter columns in a autofilter range based on simple conditions:
+
+@code
+
+    lxw_filter_rule filter_rule1 = {.criteria     = LXW_FILTER_CRITERIA_EQUAL_TO,
+                                    .value_string = "East"};
+
+    lxw_filter_rule filter_rule2 = {.criteria     = LXW_FILTER_CRITERIA_GREATER_THAN,
+                                    .value        = 3000};
+
+    lxw_filter_rule filter_rule3 = {.criteria     = LXW_FILTER_CRITERIA_LESS_THAN,
+                                    .value        = 8000};
+
+    worksheet_filter_column (worksheet, 0, &filter_rule1);
+    worksheet_filter_column2(worksheet, 2, &filter_rule2, &filter_rule3, LXW_FILTER_AND);
+@endcode
+
+The `col` parameter, used in both these functions, is a zero indexed column
+number and must refer to a column in an existing autofilter created with
+`worksheet_autofilter()`.
+
+The `criteria` parameter in lxw_filter_rule can have one of the following values:
+
+- #LXW_FILTER_CRITERIA_EQUAL_TO: Filter cells equal to a value.
+
+- #LXW_FILTER_CRITERIA_NOT_EQUAL_TO: Filter cells not equal to a value.
+
+- #LXW_FILTER_CRITERIA_GREATER_THAN: Filter cells greater than a value.
+
+- #LXW_FILTER_CRITERIA_LESS_THAN: Filter cells less than a value.
+
+- #LXW_FILTER_CRITERIA_GREATER_THAN_OR_EQUAL_TO: Filter cells greater than or
+   equal to a value.
+
+- #LXW_FILTER_CRITERIA_LESS_THAN_OR_EQUAL_TO: Filter cells less than or equal
+   to a value.
+
+- #LXW_FILTER_CRITERIA_BLANKS: Filter cells that are blank. This does not
+   require a `.value_string` or `.value` value.
+
+- #LXW_FILTER_CRITERIA_NON_BLANKS: Filter cells that are not blank. This does
+   not require a `.value_string` or `.value` value.
+
+The `value` parameter is used to set a numeric matching condition while
+`value_string` is used to set a string matching condition. Excel also allows
+some simple string matching operations:
+
+@code
+    // Begins with c.
+    lxw_filter_rule filter_rule1 = {.criteria     = LXW_FILTER_CRITERIA_EQUAL_TO,
+                                    .value_string = "c*"};
+    // Doesn't begin with c.
+    lxw_filter_rule filter_rule2 = {.criteria     = LXW_FILTER_CRITERIA_NOT_EQUAL_TO,
+                                    .value_string = "c*"};
+    // Ends with c.
+    lxw_filter_rule filter_rule3 = {.criteria     = LXW_FILTER_CRITERIA_EQUAL_TO,
+                                    .value_string = "*c"};
+    // Doesn't end with c.
+    lxw_filter_rule filter_rule4 = {.criteria     = LXW_FILTER_CRITERIA_NOT_EQUAL_TO,
+                                    .value_string = "*c"};
+    // Contains c.
+    lxw_filter_rule filter_rule5 = {.criteria     = LXW_FILTER_CRITERIA_EQUAL_TO,
+                                    .value_string = "*c*"};
+    // Doesn't contain c.
+    lxw_filter_rule filter_rule6 = {.criteria     = LXW_FILTER_CRITERIA_NOT_EQUAL_TO,
+                                    .value_string = "*c*"};
+@endcode
+
+You can use "*" to match any character or number and "?" to match any single
+character or number. No other regular expression quantifier is supported by
+Excel's filters. Excel's regular expression characters can be escaped using
+"~".
+
+
+@section ww_autofilters_list Setting a column list filter
+
+Prior to Excel 2007 it was only possible to have either 1 or 2 filter
+conditions such as the ones shown above with the `worksheet_filter_column()`
+and `worksheet_filter_column()` functions.
+
+Excel 2007 introduced a new list style filter where it is possible to specify one
+or more "or" style criteria. For example if your column contained data for the
+months of the year you could filter the data based on certain months:
+
+@image html autofilter2.png
+
+The `worksheet_filter_list()` function can be used to represent these types of
+filters:
+
+@code
+    char* list[] = {"March", "April", "May", NULL};
+
+    worksheet_filter_list(worksheet, 0, list);
+@endcode
+
+
+To filter blanks as part of the list use `Blanks` as a list item:
+
+@code
+    char* list[] = {"March", "April", "May", "Blanks", NULL};
+
+    worksheet_filter_list(worksheet, 0, list);
+@endcode
+
+As explained above, it isn't sufficient to just specify filters. You must also
+hide any rows that don't match the filter condition.
+
+@section ww_autofilters_example Example
+
+For a detailed working example with several different filter types see @ref
+autofilter.c.
+
+
+
+Next: @ref working_with_data_validation
+
+*/

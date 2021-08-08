@@ -853,6 +853,7 @@ INPUT                  = src/mainpage.dox \
                          src/working_with_dates.dox \
                          src/working_with_charts.dox \
                          src/working_with_object_position.dox \
+                         src/working_with_autofilters.dox \
                          src/working_with_data_validation.dox \
                          src/working_with_conditional_formatting.dox \
                          src/working_with_comments.dox \

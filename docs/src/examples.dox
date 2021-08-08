@@ -341,9 +341,9 @@ Example of merging cells with a rich string in a worksheet.
 </tr>
 </table>
 
-Example of adding an autofilter to a worksheet.
+Example of adding autofilters to a worksheets and adding filter conditions.
 
-@image html autofilter.png
+@image html autofilter3.png
 
 
 
