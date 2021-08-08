@@ -1,6 +1,20 @@
 /**
 @page changes Changes
 
+
+## 1.1.2 August 8 2021
+
+- Added support for autofilter rules. See @ref working_with_autofilters and
+  @ref autofilter.c.
+
+  Feature request [#254][gh_254].
+
+  [gh_254]: https://github.com/jmcnamara/libxlsxwriter/issues/254
+
+- Added Description/Alt Text and Decorative accessibility options for
+  charts. These options were already available for images.
+
+
 ## 1.1.1 July 12 2021
 
 - Added optional third party library to handle sprintf handling of
@@ -25,7 +39,7 @@
   Issue [#342][gh_342].
 
   [gh_342]: https://github.com/jmcnamara/libxlsxwriter/issues/342
-  
+
 ## 1.0.9 July 7 2021
 
 - Added support for Excel 365 dynamic arrays. See

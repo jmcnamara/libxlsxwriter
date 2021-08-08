@@ -3730,7 +3730,7 @@ lxw_error worksheet_filter_column2(lxw_worksheet *worksheet, lxw_col_t col,
  * @param col       The column in the autofilter that the rules applies to.
  * @param list      Array of strings to filter on.
  *
- * @return
+ * @return A #lxw_error code.
  *
  * The `worksheet_filter_column_list()` function can be used specify multiple
  * string matching criteria. This is a newer type of filter introduced in
