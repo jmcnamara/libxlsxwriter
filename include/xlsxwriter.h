@@ -18,8 +18,8 @@
 #include "xlsxwriter/format.h"
 #include "xlsxwriter/utility.h"
 
-#define LXW_VERSION "1.1.2"
-#define LXW_VERSION_ID 112
+#define LXW_VERSION "1.1.3"
+#define LXW_VERSION_ID 113
 #define LXW_SOVERSION "3"
 
 #endif /* __LXW_XLSXWRITER_H__ */

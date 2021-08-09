@@ -1,6 +1,10 @@
 /**
 @page changes Changes
 
+## 1.1.3 August 9 2021
+
+- Changed worksheet_filter_column2() parameter name "operator" to "and_or" to
+  avoid a conflict with the C++ reserved keyword.
 
 ## 1.1.2 August 8 2021
 
