@@ -4538,12 +4538,12 @@ _worksheet_write_col_breaks(lxw_worksheet *self)
  */
 STATIC void
 _worksheet_write_filter(lxw_worksheet *self, const char *str, double num,
-                        uint8_t operator)
+                        uint8_t oper)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    if (operator == LXW_FILTER_CRITERIA_BLANKS)
+    if (oper == LXW_FILTER_CRITERIA_BLANKS)
         return;
 
     LXW_INIT_ATTRIBUTES();
@@ -4605,22 +4605,22 @@ _worksheet_write_filter_standard(lxw_worksheet *self,
  */
 STATIC void
 _worksheet_write_custom_filter(lxw_worksheet *self, const char *str, double num,
-                               uint8_t operator)
+                               uint8_t oper)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
 
-    if (operator == LXW_FILTER_CRITERIA_NOT_EQUAL_TO)
+    if (oper == LXW_FILTER_CRITERIA_NOT_EQUAL_TO)
         LXW_PUSH_ATTRIBUTES_STR("operator", "notEqual");
-    if (operator == LXW_FILTER_CRITERIA_GREATER_THAN)
+    if (oper == LXW_FILTER_CRITERIA_GREATER_THAN)
         LXW_PUSH_ATTRIBUTES_STR("operator", "greaterThan");
-    else if (operator == LXW_FILTER_CRITERIA_GREATER_THAN_OR_EQUAL_TO)
+    else if (oper == LXW_FILTER_CRITERIA_GREATER_THAN_OR_EQUAL_TO)
         LXW_PUSH_ATTRIBUTES_STR("operator", "greaterThanOrEqual");
-    else if (operator == LXW_FILTER_CRITERIA_LESS_THAN)
+    else if (oper == LXW_FILTER_CRITERIA_LESS_THAN)
         LXW_PUSH_ATTRIBUTES_STR("operator", "lessThan");
-    else if (operator == LXW_FILTER_CRITERIA_LESS_THAN_OR_EQUAL_TO)
+    else if (oper == LXW_FILTER_CRITERIA_LESS_THAN_OR_EQUAL_TO)
         LXW_PUSH_ATTRIBUTES_STR("operator", "lessThanOrEqual");
 
     if (str)
@@ -6001,7 +6001,7 @@ _worksheet_write_cf_rule_text(lxw_worksheet *self,
     struct xml_attribute *attribute;
     uint8_t pos;
     char formula[LXW_ATTR_32 * 2];
-    char *operators[] = {
+    char *opers[] = {
         "containsText",
         "notContains",
         "beginsWith",
@@ -6029,7 +6029,7 @@ _worksheet_write_cf_rule_text(lxw_worksheet *self,
         LXW_PUSH_ATTRIBUTES_INT("stopIfTrue", 1);
 
     pos = criteria - LXW_CONDITIONAL_CRITERIA_TEXT_CONTAINING;
-    LXW_PUSH_ATTRIBUTES_STR("operator", operators[pos]);
+    LXW_PUSH_ATTRIBUTES_STR("operator", opers[pos]);
 
     LXW_PUSH_ATTRIBUTES_STR("text", cond_format->min_value_string);
 
@@ -6078,7 +6078,7 @@ _worksheet_write_cf_rule_cell(lxw_worksheet *self,
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char *operators[] = {
+    char *opers[] = {
         "none",
         "equal",
         "notEqual",
@@ -6102,7 +6102,7 @@ _worksheet_write_cf_rule_cell(lxw_worksheet *self,
     if (cond_format->stop_if_true)
         LXW_PUSH_ATTRIBUTES_INT("stopIfTrue", 1);
 
-    LXW_PUSH_ATTRIBUTES_STR("operator", operators[cond_format->criteria]);
+    LXW_PUSH_ATTRIBUTES_STR("operator", opers[cond_format->criteria]);
 
     lxw_xml_start_tag(self->file, "cfRule", &attributes);
 
@@ -8374,7 +8374,7 @@ worksheet_filter_column(lxw_worksheet *self, lxw_col_t col,
 lxw_error
 worksheet_filter_column2(lxw_worksheet *self, lxw_col_t col,
                          lxw_filter_rule *rule1, lxw_filter_rule *rule2,
-                         uint8_t operator)
+                         uint8_t oper)
 {
     lxw_filter_rule_obj *rule_obj;
     uint16_t rule_index;
@@ -8408,7 +8408,7 @@ worksheet_filter_column2(lxw_worksheet *self, lxw_col_t col,
     rule_obj = calloc(1, sizeof(lxw_filter_rule_obj));
     RETURN_ON_MEM_ERROR(rule_obj, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
-    if (operator == LXW_FILTER_AND)
+    if (oper == LXW_FILTER_AND)
         rule_obj->type = LXW_FILTER_TYPE_AND;
     else
         rule_obj->type = LXW_FILTER_TYPE_OR;

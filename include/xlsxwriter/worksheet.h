@@ -3688,7 +3688,7 @@ lxw_error worksheet_filter_column(lxw_worksheet *worksheet, lxw_col_t col,
  * @param col       The column in the autofilter that the rules applies to.
  * @param rule1     First lxw_filter_rule autofilter rule.
  * @param rule2     Second lxw_filter_rule autofilter rule.
- * @param operator  A #lxw_filter_operator and/or operator.
+ * @param oper      A #lxw_filter_operator and/or operator.
  *
  * @return A #lxw_error code.
  *
@@ -3722,7 +3722,7 @@ lxw_error worksheet_filter_column(lxw_worksheet *worksheet, lxw_col_t col,
  */
 lxw_error worksheet_filter_column2(lxw_worksheet *worksheet, lxw_col_t col,
                                    lxw_filter_rule *rule1,
-                                   lxw_filter_rule *rule2, uint8_t operator);
+                                   lxw_filter_rule *rule2, uint8_t oper);
 /**
  * @brief Write multiple string filters to an autofilter column.
  *
