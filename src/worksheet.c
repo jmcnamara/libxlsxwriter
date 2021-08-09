@@ -4538,12 +4538,12 @@ _worksheet_write_col_breaks(lxw_worksheet *self)
  */
 STATIC void
 _worksheet_write_filter(lxw_worksheet *self, const char *str, double num,
-                        uint8_t operator)
+                        uint8_t criteria)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
-    if (operator == LXW_FILTER_CRITERIA_BLANKS)
+    if (criteria == LXW_FILTER_CRITERIA_BLANKS)
         return;
 
     LXW_INIT_ATTRIBUTES();
@@ -4605,22 +4605,22 @@ _worksheet_write_filter_standard(lxw_worksheet *self,
  */
 STATIC void
 _worksheet_write_custom_filter(lxw_worksheet *self, const char *str, double num,
-                               uint8_t operator)
+                               uint8_t criteria)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
 
-    if (operator == LXW_FILTER_CRITERIA_NOT_EQUAL_TO)
+    if (criteria == LXW_FILTER_CRITERIA_NOT_EQUAL_TO)
         LXW_PUSH_ATTRIBUTES_STR("operator", "notEqual");
-    if (operator == LXW_FILTER_CRITERIA_GREATER_THAN)
+    if (criteria == LXW_FILTER_CRITERIA_GREATER_THAN)
         LXW_PUSH_ATTRIBUTES_STR("operator", "greaterThan");
-    else if (operator == LXW_FILTER_CRITERIA_GREATER_THAN_OR_EQUAL_TO)
+    else if (criteria == LXW_FILTER_CRITERIA_GREATER_THAN_OR_EQUAL_TO)
         LXW_PUSH_ATTRIBUTES_STR("operator", "greaterThanOrEqual");
-    else if (operator == LXW_FILTER_CRITERIA_LESS_THAN)
+    else if (criteria == LXW_FILTER_CRITERIA_LESS_THAN)
         LXW_PUSH_ATTRIBUTES_STR("operator", "lessThan");
-    else if (operator == LXW_FILTER_CRITERIA_LESS_THAN_OR_EQUAL_TO)
+    else if (criteria == LXW_FILTER_CRITERIA_LESS_THAN_OR_EQUAL_TO)
         LXW_PUSH_ATTRIBUTES_STR("operator", "lessThanOrEqual");
 
     if (str)
@@ -8374,7 +8374,7 @@ worksheet_filter_column(lxw_worksheet *self, lxw_col_t col,
 lxw_error
 worksheet_filter_column2(lxw_worksheet *self, lxw_col_t col,
                          lxw_filter_rule *rule1, lxw_filter_rule *rule2,
-                         uint8_t operator)
+                         uint8_t and_or)
 {
     lxw_filter_rule_obj *rule_obj;
     uint16_t rule_index;
@@ -8408,7 +8408,7 @@ worksheet_filter_column2(lxw_worksheet *self, lxw_col_t col,
     rule_obj = calloc(1, sizeof(lxw_filter_rule_obj));
     RETURN_ON_MEM_ERROR(rule_obj, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
-    if (operator == LXW_FILTER_AND)
+    if (and_or == LXW_FILTER_AND)
         rule_obj->type = LXW_FILTER_TYPE_AND;
     else
         rule_obj->type = LXW_FILTER_TYPE_OR;
