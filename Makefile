@@ -67,6 +67,7 @@ clean :
 	$(Q)$(MAKE) clean -C src
 	$(Q)$(MAKE) clean -C test/unit
 	$(Q)$(MAKE) clean -C test/functional/src
+	$(Q)$(MAKE) clean -C test/cpp
 	$(Q)$(MAKE) clean -C examples
 	$(Q)rm -rf docs/html
 	$(Q)rm -rf test/functional/__pycache__
@@ -78,7 +79,7 @@ clean :
 	$(Q)$(MAKE) clean -C third_party/dtoa
 
 # Run the unit tests.
-test : all test_unit test_functional
+test : all test_cpp test_unit test_functional
 
 # Test for C++ const correctness on APIs.
 test_const : all
@@ -95,6 +96,10 @@ test_functional : all
 test_unit : all
 	$(Q)$(MAKE) -C src test_lib
 	$(Q)$(MAKE) -C test/unit test
+
+# Test C++ compilation.
+test_cpp : all
+	$(Q)$(MAKE) -C test/cpp
 
 # Test Cmake. This test should really be done with Cmake in the cmake dir but
 # this is a workaround for now.
