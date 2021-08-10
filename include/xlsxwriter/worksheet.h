@@ -3727,7 +3727,7 @@ lxw_error worksheet_filter_column2(lxw_worksheet *worksheet, lxw_col_t col,
  *
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
  * @param col       The column in the autofilter that the rules applies to.
- * @param list      Array of strings to filter on.
+ * @param list      A NULL terminated array of strings to filter on.
  *
  * @return A #lxw_error code.
  *
@@ -3750,7 +3750,8 @@ lxw_error worksheet_filter_column2(lxw_worksheet *worksheet, lxw_col_t col,
  * @image html autofilter2.png
  *
  *
- * To filter blanks as part of the list use `Blanks` as a list item:
+ * Note, the array must be NULL terminated to indicate the end of the array of
+ * strings. To filter blanks as part of the list use `Blanks` as a list item:
  *
  * @code
  *     char* list[] = {"March", "April", "May", "Blanks", NULL};
