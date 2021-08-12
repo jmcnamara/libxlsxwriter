@@ -8515,7 +8515,7 @@ worksheet_filter_list(lxw_worksheet *self, lxw_col_t col, char **list)
     RETURN_ON_MEM_ERROR(rule_obj, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     tmp_list = calloc(num_filters + 1, sizeof(char *));
-    RETURN_ON_MEM_ERROR(tmp_list, LXW_ERROR_MEMORY_MALLOC_FAILED);
+    GOTO_LABEL_ON_MEM_ERROR(tmp_list, mem_error);
 
     /* Copy input list (without any "Blanks" command) to an internal list. */
     input_list_index = 0;
@@ -8541,6 +8541,11 @@ worksheet_filter_list(lxw_worksheet *self, lxw_col_t col, char **list)
     self->autofilter.has_rules = LXW_TRUE;
 
     return LXW_NO_ERROR;
+
+mem_error:
+    free(rule_obj);
+    return LXW_ERROR_MEMORY_MALLOC_FAILED;
+
 }
 
 /*
