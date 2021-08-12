@@ -4604,8 +4604,8 @@ _worksheet_write_filter_standard(lxw_worksheet *self,
  * Write the <customFilter> element.
  */
 STATIC void
-_worksheet_write_custom_filter(lxw_worksheet *self, const char *str, double num,
-                               uint8_t criteria)
+_worksheet_write_custom_filter(lxw_worksheet *self, const char *str,
+                               double num, uint8_t criteria)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;

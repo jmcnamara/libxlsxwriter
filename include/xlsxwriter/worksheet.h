@@ -584,7 +584,7 @@ enum lxw_filter_operator {
     LXW_FILTER_OR
 };
 
-/* Internal filter types.*/
+/* Internal filter types. */
 enum lxw_filter_type {
     LXW_FILTER_TYPE_NONE,
 
