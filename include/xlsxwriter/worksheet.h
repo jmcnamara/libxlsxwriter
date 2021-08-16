@@ -536,6 +536,37 @@ enum lxw_conditional_icon_types {
     LXW_CONDITIONAL_ICONS_5_QUARTERS
 };
 
+/** @brief The type of table style.
+ *
+ * The type of table style (Light, Medium or Dark).
+ */
+enum lxw_table_style_type {
+
+    LXW_TABLE_STYLE_TYPE_DEFAULT,
+
+    /** Light table style. */
+    LXW_TABLE_STYLE_TYPE_LIGHT,
+
+    /** Light table style. */
+    LXW_TABLE_STYLE_TYPE_MEDIUM,
+
+    /** Light table style. */
+    LXW_TABLE_STYLE_TYPE_DARK
+};
+
+enum lxw_table_total_functions {
+
+    LXW_TABLE_FUNCTION_NONE = 0,
+    LXW_TABLE_FUNCTION_AVERAGE = 101,
+    LXW_TABLE_FUNCTION_COUNT_NUMS = 102,
+    LXW_TABLE_FUNCTION_COUNT = 103,
+    LXW_TABLE_FUNCTION_MAX = 104,
+    LXW_TABLE_FUNCTION_MIN = 105,
+    LXW_TABLE_FUNCTION_STD_DEV = 107,
+    LXW_TABLE_FUNCTION_SUM = 109,
+    LXW_TABLE_FUNCTION_VAR = 110
+};
+
 /** @brief The criteria used in autofilter rules.
  *
  * Criteria used to define an autofilter rule condition.
@@ -765,6 +796,7 @@ STAILQ_HEAD(lxw_cond_format_list, lxw_cond_format_obj);
 STAILQ_HEAD(lxw_image_props, lxw_object_properties);
 STAILQ_HEAD(lxw_chart_props, lxw_object_properties);
 STAILQ_HEAD(lxw_comment_objs, lxw_vml_obj);
+STAILQ_HEAD(lxw_table_objs, lxw_table_obj);
 
 /**
  * @brief Options for rows and columns.
@@ -1324,6 +1356,59 @@ typedef struct lxw_cond_format_hash_element {
     RB_ENTRY (lxw_cond_format_hash_element) tree_pointers;
 } lxw_cond_format_hash_element;
 
+typedef struct lxw_table_column {
+    char *header;
+    char *formula;
+    char *total_string;
+    uint8_t total_function;
+    double total_value;
+    lxw_format *header_format;
+    lxw_format *format;
+} lxw_table_column;
+
+typedef struct lxw_table_options {
+    char *name;
+    char *total_string;
+    lxw_table_column **columns;
+    uint8_t banded_columns;
+    uint8_t first_column;
+    uint8_t last_column;
+    uint8_t no_autofilter;
+    uint8_t no_banded_rows;
+    uint8_t no_header_row;
+    uint8_t style_type;
+    uint8_t style_type_number;
+    uint8_t total_row;
+
+} lxw_table_options;
+
+typedef struct lxw_table_obj {
+    char *name;
+    char *total_string;
+    lxw_table_column **columns;
+    uint8_t banded_columns;
+    uint8_t first_column;
+    uint8_t last_column;
+    uint8_t no_autofilter;
+    uint8_t no_banded_rows;
+    uint8_t no_header_row;
+    uint8_t style_type;
+    uint8_t style_type_number;
+    uint8_t total_row;
+
+    lxw_row_t first_row;
+    lxw_col_t first_col;
+    lxw_row_t last_row;
+    lxw_col_t last_col;
+    lxw_col_t num_cols;
+    uint32_t id;
+
+    char sqref[LXW_MAX_ATTRIBUTE_LENGTH];
+    char filter_sqref[LXW_MAX_ATTRIBUTE_LENGTH];
+    STAILQ_ENTRY (lxw_table_obj) list_pointers;
+
+} lxw_table_obj;
+
 /**
  * @brief Options for autofilter rules.
  *
@@ -1747,6 +1832,8 @@ typedef struct lxw_worksheet {
     struct lxw_vml_drawing_rel_ids *vml_drawing_rel_ids;
     struct lxw_comment_objs *comment_objs;
     struct lxw_comment_objs *header_image_objs;
+    struct lxw_table_objs *table_objs;
+    uint16_t table_count;
 
     lxw_row_t dim_rowmin;
     lxw_row_t dim_rowmax;
@@ -1854,6 +1941,7 @@ typedef struct lxw_worksheet {
     struct lxw_rel_tuples *external_drawing_links;
     struct lxw_rel_tuples *drawing_links;
     struct lxw_rel_tuples *vml_drawing_links;
+    struct lxw_rel_tuples *external_table_links;
 
     struct lxw_panes panes;
 
@@ -3926,6 +4014,10 @@ lxw_error worksheet_conditional_format_range(lxw_worksheet *worksheet,
                                              lxw_conditional_format
                                              *conditional_format);
 
+lxw_error worksheet_add_table(lxw_worksheet *worksheet, lxw_row_t first_row,
+                              lxw_col_t first_col, lxw_row_t last_row,
+                              lxw_col_t last_col, lxw_table_options *options);
+
  /**
   * @brief Make a worksheet the active, i.e., visible worksheet.
   *
@@ -5308,9 +5400,12 @@ uint32_t lxw_worksheet_prepare_vml_objects(lxw_worksheet *worksheet,
                                            uint32_t vml_drawing_id,
                                            uint32_t comment_id);
 
-void lxw_worksheet_prepare_header_vml_objects(lxw_worksheet *self,
+void lxw_worksheet_prepare_header_vml_objects(lxw_worksheet *worksheet,
                                               uint32_t vml_header_id,
                                               uint32_t vml_drawing_id);
+
+void lxw_worksheet_prepare_tables(lxw_worksheet *worksheet,
+                                  uint32_t table_id);
 
 lxw_row *lxw_worksheet_find_row(lxw_worksheet *worksheet, lxw_row_t row_num);
 lxw_cell *lxw_worksheet_find_cell_in_row(lxw_row *row, lxw_col_t col_num);

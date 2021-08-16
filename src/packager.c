@@ -447,6 +447,85 @@ _get_drawing_count(lxw_packager *self)
 }
 
 /*
+ * Write the worksheet table files.
+ */
+STATIC lxw_error
+_write_table_files(lxw_packager *self)
+{
+    lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
+    lxw_worksheet *worksheet;
+    lxw_table *table;
+    lxw_table_obj *table_obj;
+    lxw_error err;
+
+    char filename[LXW_FILENAME_LENGTH] = { 0 };
+    uint32_t index = 1;
+
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
+
+        if (STAILQ_EMPTY(worksheet->table_objs))
+            continue;
+
+        STAILQ_FOREACH(table_obj, worksheet->table_objs, list_pointers) {
+
+            lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+                         "xl/tables/table%d.xml", index++);
+
+            table = lxw_table_new();
+            if (!table) {
+                err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+                RETURN_ON_ERROR(err);
+            }
+
+            table->file = lxw_tmpfile(self->tmpdir);
+            if (!table->file) {
+                lxw_table_free(table);
+                return LXW_ERROR_CREATING_TMPFILE;
+            }
+
+            table->table_obj = table_obj;
+
+            lxw_table_assemble_xml_file(table);
+
+            err = _add_file_to_zip(self, table->file, filename);
+            fclose(table->file);
+            lxw_table_free(table);
+            RETURN_ON_ERROR(err);
+        }
+    }
+
+    return LXW_NO_ERROR;
+}
+
+/*
+ * Count  the table files.
+ */
+uint32_t
+_get_table_count(lxw_packager *self)
+{
+    lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
+    lxw_worksheet *worksheet;
+    uint32_t table_count = 0;
+
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            worksheet = sheet->u.chartsheet->worksheet;
+        else
+            worksheet = sheet->u.worksheet;
+
+        table_count += worksheet->table_count;
+    }
+
+    return table_count;
+}
+
+/*
  * Write the comment/header VML files.
  */
 STATIC lxw_error
@@ -947,6 +1026,7 @@ _write_content_types_file(lxw_packager *self)
     uint32_t chartsheet_index = 1;
     uint32_t drawing_count = _get_drawing_count(self);
     uint32_t chart_count = _get_chart_count(self);
+    uint32_t table_count = _get_table_count(self);
     lxw_error err = LXW_NO_ERROR;
 
     if (!content_types) {
@@ -1006,6 +1086,12 @@ _write_content_types_file(lxw_packager *self)
         lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                      "/xl/drawings/drawing%d.xml", index);
         lxw_ct_add_drawing_name(content_types, filename);
+    }
+
+    for (index = 1; index <= table_count; index++) {
+        lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+                     "/xl/tables/table%d.xml", index);
+        lxw_ct_add_table_name(content_types, filename);
     }
 
     if (workbook->has_vml)
@@ -1130,6 +1216,7 @@ _write_worksheet_rels_file(lxw_packager *self)
 
         if (STAILQ_EMPTY(worksheet->external_hyperlinks) &&
             STAILQ_EMPTY(worksheet->external_drawing_links) &&
+            STAILQ_EMPTY(worksheet->external_table_links) &&
             !worksheet->external_vml_header_link &&
             !worksheet->external_vml_comment_link &&
             !worksheet->external_background_link &&
@@ -1163,6 +1250,11 @@ _write_worksheet_rels_file(lxw_packager *self)
         if (rel)
             lxw_add_worksheet_relationship(rels, rel->type, rel->target,
                                            rel->target_mode);
+
+        STAILQ_FOREACH(rel, worksheet->external_table_links, list_pointers) {
+            lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+                                           rel->target_mode);
+        }
 
         rel = worksheet->external_background_link;
         if (rel)
@@ -1526,6 +1618,9 @@ lxw_create_package(lxw_packager *self)
     RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_comment_files(self);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
+
+    error = _write_table_files(self);
     RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_shared_strings_file(self);

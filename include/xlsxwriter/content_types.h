@@ -53,6 +53,8 @@ void lxw_ct_add_chart_name(lxw_content_types *content_types,
                            const char *name);
 void lxw_ct_add_drawing_name(lxw_content_types *content_types,
                              const char *name);
+void lxw_ct_add_table_name(lxw_content_types *content_types,
+                           const char *name);
 void lxw_ct_add_comment_name(lxw_content_types *content_types,
                              const char *name);
 void lxw_ct_add_vml_name(lxw_content_types *content_types);

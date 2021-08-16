@@ -1209,7 +1209,6 @@ _prepare_drawings(lxw_workbook *self)
 /*
  * Iterate through the worksheets and set up the VML objects.
  */
-
 STATIC void
 _prepare_vml(lxw_workbook *self)
 {
@@ -1407,6 +1406,34 @@ _prepare_defined_names(lxw_workbook *self)
                                     range, worksheet->index, LXW_FALSE);
             }
         }
+    }
+}
+
+/*
+ * Iterate through the worksheets and set up the table objects.
+ */
+STATIC void
+_prepare_tables(lxw_workbook *self)
+{
+    lxw_worksheet *worksheet;
+    lxw_sheet *sheet;
+    uint32_t table_id = 0;
+    uint32_t table_count = 0;
+
+    STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
+
+        table_count = worksheet->table_count;
+
+        if (table_count == 0)
+            continue;
+
+        lxw_worksheet_prepare_tables(worksheet, table_id + 1);
+
+        table_id += table_count;
     }
 }
 
@@ -2141,6 +2168,9 @@ workbook_close(lxw_workbook *self)
 
     /* Add cached data to charts. */
     _add_chart_cache_data(self);
+
+    /* Set the table ids for the worksheet tables. */
+    _prepare_tables(self);
 
     /* Create a packager object to assemble sub-elements into a zip file. */
     packager = lxw_packager_new(self->filename,

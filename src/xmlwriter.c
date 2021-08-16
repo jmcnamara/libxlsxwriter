@@ -17,6 +17,7 @@
 #define LXW_LT   "&lt;"
 #define LXW_GT   "&gt;"
 #define LXW_QUOT "&quot;"
+#define LXW_NL   "&#xA;"
 
 /* Defines. */
 #define LXW_MAX_ENCODED_ATTRIBUTE_LENGTH (LXW_MAX_ATTRIBUTE_LENGTH*6)
@@ -177,6 +178,10 @@ _escape_attributes(struct xml_attribute *attribute)
             case '"':
                 memcpy(p_encoded, LXW_QUOT, sizeof(LXW_QUOT) - 1);
                 p_encoded += sizeof(LXW_QUOT) - 1;
+                break;
+            case '\n':
+                memcpy(p_encoded, LXW_NL, sizeof(LXW_NL) - 1);
+                p_encoded += sizeof(LXW_NL) - 1;
                 break;
             default:
                 *p_encoded = *p_attr;
@@ -373,7 +378,7 @@ _fprint_escaped_attributes(FILE * xmlfile,
         STAILQ_FOREACH(attribute, attributes, list_entries) {
             fprintf(xmlfile, " %s=", attribute->key);
 
-            if (!strpbrk(attribute->value, "&<>\"")) {
+            if (!strpbrk(attribute->value, "&<>\"\n")) {
                 fprintf(xmlfile, "\"%s\"", attribute->value);
             }
             else {

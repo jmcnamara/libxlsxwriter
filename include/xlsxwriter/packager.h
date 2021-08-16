@@ -24,6 +24,7 @@
 #include "app.h"
 #include "core.h"
 #include "custom.h"
+#include "table.h"
 #include "theme.h"
 #include "styles.h"
 #include "format.h"

@@ -141,6 +141,10 @@
 -T lxw_sheet
 -T lxw_sst
 -T lxw_styles
+-T lxw_table
+-T lxw_table_column
+-T lxw_table_obj
+-T lxw_table_options
 -T lxw_theme
 -T lxw_tuple
 -T lxw_vml
