@@ -78,6 +78,11 @@ clean :
 	$(Q)$(MAKE) clean -C third_party/md5
 	$(Q)$(MAKE) clean -C third_party/dtoa
 
+# Clean src and lib dir only, as a precursor for static analysis.
+clean_src :
+	$(Q)$(MAKE) clean -C src
+	$(Q)rm -f  lib/*
+
 # Run the unit tests.
 test : all test_cpp test_unit test_functional
 
@@ -165,9 +170,7 @@ strip:
 	$(Q)strip lib/*
 
 # Run a coverity static analysis.
-coverity: all
-	$(Q)$(MAKE) -C src clean
-	$(Q)rm -f  lib/*
+coverity: clean_src third_party
 	$(Q)rm -rf  cov-int
 	$(Q)rm -f libxlsxwriter-coverity.tgz
 	$(Q)../../cov-analysis-linux64-2019.03/bin/cov-build --dir cov-int make -C src libxlsxwriter.a
@@ -231,9 +234,7 @@ endif
 
 
 # Run a scan-build static analysis.
-scan_build: all
-	$(Q)$(MAKE) -C src clean
-	$(Q)rm -f  lib/*
+scan_build: clean_src third_party
 	$(Q)scan-build make -C src libxlsxwriter.a
 	$(Q)$(MAKE) -C src clean
 	$(Q)rm -f  lib/*
