@@ -35,6 +35,7 @@ my @examples = (
     [ 'data_validate.c',        'Examples of worksheet data validation and drop down lists' ],
     [ 'conditional_format1.c',  'A simple conditional formatting example' ],
     [ 'conditional_format2.c',  'An advanced conditional formatting example' ],
+    [ 'tables.c',               'Example of table to a worksheet.' ],
     [ 'images.c',               'Example of adding images to a worksheet.' ],
     [ 'image_buffer.c',         'Example of adding an image from a memory buffer.' ],
     [ 'headers_footers.c',      'Example of adding worksheet headers/footers' ],

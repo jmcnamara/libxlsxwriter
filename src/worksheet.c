@@ -9128,6 +9128,13 @@ worksheet_add_table(lxw_worksheet *self, lxw_row_t first_row,
     lxw_table_obj *table_obj;
     lxw_table_column **columns;
 
+    if (self->optimize) {
+            LXW_WARN_FORMAT("worksheet_add_table(): "
+                            "worksheet tables aren't supported in "
+                            "'constant_memory' mode");
+            return LXW_ERROR_FEATURE_NOT_SUPPORTED;
+    }
+
     /* Swap last row/col with first row/col as necessary */
     if (first_row > last_row) {
         tmp_row = last_row;

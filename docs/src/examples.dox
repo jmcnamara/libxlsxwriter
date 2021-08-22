@@ -388,7 +388,7 @@ a format to a cell or a range of cells based on certain criteria.
 <table  width="600">
 <tr>
   <td>@ref conditional_format1.c "&lt;&lt; conditional_format1.c"</td>
-  <td align="right">@ref images.c "images.c &gt;&gt;"</td>
+  <td align="right">@ref tables.c "tables.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -402,11 +402,30 @@ criteria.
 
 
 
-@example images.c
+
+@example tables.c
 
 <table  width="600">
 <tr>
   <td>@ref conditional_format2.c "&lt;&lt; conditional_format2.c"</td>
+  <td align="right">@ref images.c "images.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of how to add tables to a worksheet. Tables in Excel are used to group
+rows and columns of data into a single structure that can be referenced in a
+formula or formatted collectively.
+
+@image html tables12.png
+
+
+
+
+@example images.c
+
+<table  width="600">
+<tr>
+  <td>@ref tables.c "&lt;&lt; tables.c"</td>
   <td align="right">@ref image_buffer.c "image_buffer.c &gt;&gt;"</td>
 </tr>
 </table>

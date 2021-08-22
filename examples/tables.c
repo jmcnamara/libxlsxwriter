@@ -450,4 +450,5 @@ void write_worksheet_data(lxw_worksheet *worksheet, lxw_format *format) {
     worksheet_write_number(worksheet, CELL("F5"),  5000,  format);
     worksheet_write_number(worksheet, CELL("F6"),  6000,  format);
     worksheet_write_number(worksheet, CELL("F7"),   700,  format);
+
 }

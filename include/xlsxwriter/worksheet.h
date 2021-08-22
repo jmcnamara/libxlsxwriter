@@ -554,16 +554,39 @@ enum lxw_table_style_type {
     LXW_TABLE_STYLE_TYPE_DARK
 };
 
+/**
+ * @brief Standard Excel functions for totals in tables.
+ *
+ * Definitions for the standard Excel functions that are available via the
+ * dropdown in the total row of an Excel table.
+ *
+ */
 enum lxw_table_total_functions {
 
     LXW_TABLE_FUNCTION_NONE = 0,
+
+    /** Use the average function as the table total. */
     LXW_TABLE_FUNCTION_AVERAGE = 101,
+
+    /** Use the count numbers function as the table total. */
     LXW_TABLE_FUNCTION_COUNT_NUMS = 102,
+
+    /** Use the count function as the table total. */
     LXW_TABLE_FUNCTION_COUNT = 103,
+
+    /** Use the max function as the table total. */
     LXW_TABLE_FUNCTION_MAX = 104,
+
+    /** Use the min function as the table total. */
     LXW_TABLE_FUNCTION_MIN = 105,
+
+    /** Use the standard deviation function as the table total. */
     LXW_TABLE_FUNCTION_STD_DEV = 107,
+
+    /** Use the sum function as the table total. */
     LXW_TABLE_FUNCTION_SUM = 109,
+
+    /** Use the var function as the table total. */
     LXW_TABLE_FUNCTION_VAR = 110
 };
 
@@ -1356,29 +1379,252 @@ typedef struct lxw_cond_format_hash_element {
     RB_ENTRY (lxw_cond_format_hash_element) tree_pointers;
 } lxw_cond_format_hash_element;
 
+/**
+ * @brief Table columns options.
+ *
+ * Structure to set the options of a table column added with
+ * worksheet_add_table(). See @ref ww_tables_columns.
+ */
 typedef struct lxw_table_column {
+
+    /** Set the header name/caption for the column. If NULL the header defaults
+     *  to  Column 1, Column 2, etc. */
     char *header;
+
+    /** Set the formula for the column. */
     char *formula;
+
+    /** Set the string description for the column total.  */
     char *total_string;
+
+    /** Set the function for the column total.  */
     uint8_t total_function;
-    double total_value;
+
+    /** Set the format for the column header.  */
     lxw_format *header_format;
+
+    /** Set the format for the data rows in the column.  */
     lxw_format *format;
+
+    /** Set the formula value for the column total (not generally required). */
+    double total_value;
+
 } lxw_table_column;
 
+/**
+ * @brief Worksheet table options.
+ *
+ * Options used to define worksheet tables. See @ref working_with_tables for
+ * more information.
+ *
+ */
 typedef struct lxw_table_options {
+
+    /**
+     * The `name` parameter is used to set the name of the table. This
+     * parameter is optional and by default tables are named `Table1`,
+     * `Table2`, etc. in the worksheet order that they are added.
+     *
+     * @code
+     *     lxw_table_options options = {.name = "Sales"};
+     *
+     *     worksheet_add_table(worksheet, RANGE("B3:G8"), &options);
+     * @endcode
+     *
+     * If you override the table name you must ensure that it doesn't clash
+     * with an existing table name and that it follows Excel's requirements
+     * for table names, see the Microsoft Office documentation on
+     * [Naming an Excel Table]
+     * (https://support.microsoft.com/en-us/office/rename-an-excel-table-fbf49a4f-82a3-43eb-8ba2-44d21233b114).
+     */
     char *name;
-    char *total_string;
-    lxw_table_column **columns;
-    uint8_t banded_columns;
-    uint8_t first_column;
-    uint8_t last_column;
-    uint8_t no_autofilter;
-    uint8_t no_banded_rows;
+
+    /**
+     * The `no_header_row` parameter can be used to turn off the header row in
+     * the table. It is on by default:
+     *
+     * @code
+     *     lxw_table_options options = {.no_header_row = LXW_TRUE};
+     *
+     *     worksheet_add_table(worksheet, RANGE("B4:F7"), &options);
+     * @endcode
+     *
+     * @image html tables4.png
+     *
+     * Without this option the header row will contain default captions such
+     * as `Column 1`, ``Column 2``, etc. These captions can be overridden
+     * using the `columns` parameter shown below.
+     *
+     */
     uint8_t no_header_row;
+
+    /**
+     * The `no_autofilter` parameter can be used to turn off the autofilter in
+     * the header row. It is on by default:
+     *
+     * @code
+     *     lxw_table_options options = {.no_autofilter = LXW_TRUE};
+     *
+     *     worksheet_add_table(worksheet, RANGE("B3:F7"), &options);
+     * @endcode
+     *
+     * @image html tables3.png
+     *
+     * The autofilter is only shown if the `no_header_row` parameter is off
+     * (the default). Filter conditions within the table are not supported.
+     *
+     */
+    uint8_t no_autofilter;
+
+    /**
+     * The `no_banded_rows` parameter can be used to turn off the rows of alternating
+     * color in the table. It is on by default:
+     *
+     * @code
+     *     lxw_table_options options = {.no_banded_rows = LXW_TRUE};
+     *
+     *     worksheet_add_table(worksheet, RANGE("B3:F7"), &options);
+     * @endcode
+     *
+     * @image html tables6.png
+     *
+     */
+    uint8_t no_banded_rows;
+
+    /**
+     * The `banded_columns` parameter can be used to used to create columns of
+     * alternating color in the table. It is off by default:
+     *
+     * @code
+     *     lxw_table_options options = {.banded_columns = LXW_TRUE};
+     *
+     *     worksheet_add_table(worksheet, RANGE("B3:F7"), &options);
+     * @endcode
+     *
+     * The banded columns formatting is shown in the image in the previous
+     * section above.
+     */
+    uint8_t banded_columns;
+
+    /**
+     * The `first_column` parameter can be used to highlight the first column
+     * of the table. The type of highlighting will depend on the `style_type`
+     * of the table. It may be bold text or a different color. It is off by
+     * default:
+     *
+     * @code
+     *     lxw_table_options options = {.first_column = LXW_TRUE, .last_column = LXW_TRUE};
+     *
+     *     worksheet_add_table(worksheet, RANGE("B3:F7"), &options);
+     * @endcode
+     *
+     * @image html tables5.png
+     */
+    uint8_t first_column;
+
+    /**
+     * The `last_column` parameter can be used to highlight the last column of
+     * the table. The type of highlighting will depend on the `style` of the
+     * table. It may be bold text or a different color. It is off by default:
+     *
+     * @code
+     *     lxw_table_options options = {.first_column = LXW_TRUE, .last_column = LXW_TRUE};
+     *
+     *     worksheet_add_table(worksheet, RANGE("B3:F7"), &options);
+     * @endcode
+     *
+     * The `last_column` formatting is shown in the image in the previous
+     * section above.
+     */
+    uint8_t last_column;
+
+
+    /**
+     * The `style_type` parameter can be used to set the style of the table,
+     * in conjunction with the `style_type_number` parameter:
+     *
+     * @code
+     *     lxw_table_options options = {
+     *         .style_type = LXW_TABLE_STYLE_TYPE_LIGHT,
+     *         .style_type_number = 11,
+     *     };
+     *
+     *     worksheet_add_table(worksheet, RANGE("B3:G8"), &options);
+     * @endcode
+     *
+     *
+     * @image html tables11.png
+     *
+     * There are three types of table style in Excel: Light, Medium and Dark
+     * which are represented using the #lxw_table_style_type enum values:
+     *
+     * - #LXW_TABLE_STYLE_TYPE_LIGHT
+     *
+     * - #LXW_TABLE_STYLE_TYPE_MEDIUM
+     *
+     * - #LXW_TABLE_STYLE_TYPE_DARK
+     *
+     * Within those ranges there are between 11 and 28 other style types which
+     * can be set with `style_type_number` (depending on the style type).
+     * Check Excel to find the style that you want. The dialog with the
+     * options laid out in numeric order are shown below:
+     *
+     * @image html tables14.png
+     *
+     * The default table style in Excel is 'Table Style Medium 9' (highlighted
+     * with a green border in the image above), which is set by default in
+     * libxlsxwriter as:
+     *
+     * @code
+     *     lxw_table_options options = {
+     *         .style_type = LXW_TABLE_STYLE_TYPE_MEDIUM,
+     *         .style_type_number = 9,
+     *     };
+     * @endcode
+     *
+     * You can also turn the table style off by setting it to Light 0:
+     *
+     * @code
+     *     lxw_table_options options = {
+     *         .style_type = LXW_TABLE_STYLE_TYPE_LIGHT,
+     *         .style_type_number = 0,
+     *     };
+     * @endcode
+     *
+     * @image html tables13.png
+     *
+     */
     uint8_t style_type;
+
+    /**
+     * The `style_type_number` parameter is used with `style_type` to set the
+     * style of a worksheet table. */
     uint8_t style_type_number;
+
+    /**
+     * The `total_row` parameter can be used to turn on the total row in the
+     * last row of a table. It is distinguished from the other rows by a
+     * different formatting and also with dropdown `SUBTOTAL` functions:
+     *
+     * @code
+     *     lxw_table_options options = {.total_row = LXW_TRUE};
+     *
+     *     worksheet_add_table(worksheet, RANGE("B3:G8"), &options);
+     * @endcode
+     *
+     * @image html tables9.png
+     *
+     * The default total row doesn't have any captions or functions. These
+     * must by specified via the `columns` parameter below.
+     */
     uint8_t total_row;
+
+    /**
+     * The `columns` parameter can be used to set properties for columns
+     * within the table. See @ref ww_tables_columns for a detailed
+     * explanation.
+     */
+    lxw_table_column **columns;
 
 } lxw_table_options;
 
@@ -2337,7 +2583,7 @@ lxw_error worksheet_write_dynamic_array_formula(lxw_worksheet *worksheet,
  * range. This is a syntactic shortcut since the array range isn't generally
  * known for a dynamic range and specifying the initial cell is sufficient for
  * Excel, as shown in the example below:
- * 
+ *
  * @code
  *     worksheet_write_dynamic_formula(worksheet, 7, 1,
  *                                     "=_xlfn._xlws.SORT(_xlfn.UNIQUE(B2:B17))",
@@ -4013,7 +4259,36 @@ lxw_error worksheet_conditional_format_range(lxw_worksheet *worksheet,
                                              lxw_col_t last_col,
                                              lxw_conditional_format
                                              *conditional_format);
-
+/**
+ * @brief Add an Excel table to a worksheet.
+ *
+ * @param worksheet  Pointer to a lxw_worksheet instance to be updated.
+ * @param first_row  The first row of the range. (All zero indexed.)
+ * @param first_col  The first column of the range.
+ * @param last_row   The last row of the range.
+ * @param last_col   The last col of the range.
+ * @param options    A #lxw_table_options struct to define the table options.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_add_table()` function is used to add a table to a
+ * worksheet. Tables in Excel are a way of grouping a range of cells into a
+ * single entity that has common formatting or that can be referenced from
+ * formulas. Tables can have column headers, autofilters, total rows, column
+ * formulas and default formatting.
+ *
+ * @code
+ *     worksheet_add_table(worksheet, 2, 1, 6, 5, NULL);
+ * @endcode
+ *
+ * Output:
+ *
+ * @image html tables1.png
+ *
+ * See @ref working_with_tables for more detailed usage information and also
+ * @ref tables.c.
+ *
+ */
 lxw_error worksheet_add_table(lxw_worksheet *worksheet, lxw_row_t first_row,
                               lxw_col_t first_col, lxw_row_t last_row,
                               lxw_col_t last_col, lxw_table_options *options);

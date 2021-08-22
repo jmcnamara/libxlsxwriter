@@ -17,6 +17,28 @@ However, there are a few potential issues and differences that the user should
 be aware of. These are explained in the following sections.
 
 
+@section ww_formulas_results Formula Results
+
+Libxlsxwriter doesn't calculate the result of a formula and instead stores the
+value 0 as the formula result. It then sets a global flag in the XLSX file to
+say that all formulas and functions should be recalculated when the file is
+opened.
+
+This is the method recommended in the Excel documentation and in general it
+works fine with spreadsheet applications. However, applications that don't
+have a facility to calculate formulas will only display the 0
+results. Examples of such applications are Excel Viewer, PDF Converters, and
+some mobile device applications.
+
+If required, it is also possible to specify the calculated result of the
+formula using the `result` parameter for
+`worksheet_worksheet_write_formula_num()`:
+
+
+@code
+    worksheet_write_formula_num(worksheet, 0, 0, "=2+2", NULL, 4);
+@endcode
+
 @section ww_formulas_non_us Non US Excel functions and syntax
 
 Excel stores formulas in the format of the US English version, regardless
@@ -503,27 +525,6 @@ The following shows how to do that using Linux `unzip` and `libxml's
 
             <f>SUM(1, 2, 3)</f>
 
-
-@section ww_formulas_results Formula Results
-
-Libxlsxwriter doesn't calculate the result of a formula and instead stores the
-value 0 as the formula result. It then sets a global flag in the XLSX file to
-say that all formulas and functions should be recalculated when the file is
-opened.
-
-This is the method recommended in the Excel documentation and in general it
-works fine with spreadsheet applications. However, applications that don't
-have a facility to calculate formulas will only display the 0
-results. Examples of such applications are Excel Viewer, PDF Converters, and
-some mobile device applications.
-
-If required, it is also possible to specify the calculated result of the
-formula using the `result` parameter for
-`worksheet_worksheet_write_formula_num()`:
-
-@code
-    worksheet_write_formula_num(worksheet, 0, 0, "=2+2", NULL, 4);
-@endcode
 
 Next: @ref working_with_dates
 

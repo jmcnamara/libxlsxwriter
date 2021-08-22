@@ -184,6 +184,16 @@ criteria.
 @image html conditional_format1.png
 
 ##############################################################
+
+@example tables.c
+
+Example of how to add tables to a worksheet. Tables in Excel are used to group
+rows and columns of data into a single structure that can be referenced in a
+formula or formatted collectively.
+
+@image html tables12.png
+
+##############################################################
 @example images.c
 
 Example of adding images to a worksheet.
