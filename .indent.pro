@@ -47,6 +47,7 @@
 -T lxw_author_id
 -T lxw_autofilter
 -T lxw_border
+-T lxw_button_options
 -T lxw_cell
 -T lxw_chart
 -T lxw_chart_axis

@@ -564,6 +564,7 @@ _write_vml_files(lxw_packager *self)
             }
 
             vml->comment_objs = worksheet->comment_objs;
+            vml->button_objs = worksheet->button_objs;
             vml->vml_shape_id = worksheet->vml_shape_id;
             vml->comment_display_default = worksheet->comment_display_default;
 

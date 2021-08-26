@@ -1538,7 +1538,6 @@ typedef struct lxw_table_options {
      */
     uint8_t last_column;
 
-
     /**
      * The `style_type` parameter can be used to set the style of the table,
      * in conjunction with the `style_type_number` parameter:
@@ -1892,6 +1891,50 @@ typedef struct lxw_comment_options {
 
 } lxw_comment_options;
 
+/**
+ * @brief Options for inserted buttons.
+ *
+ * Options for modifying buttons inserted via `worksheet_insert_button()`.
+ *
+ */
+typedef struct lxw_button_options {
+
+    /** Sets the caption on the button. The default is "Button n" where n is
+     *  the current number of buttons in the worksheet, including this
+     *  button. */
+    char *caption;
+
+    /** Name of the macro to run when the button is pressed. The macro must be
+     *  included with workbook_add_vba_project(). */
+    char *macro;
+
+    /** Optional description or "Alt text" for the button. This field can be
+     *  used to provide a text description of the button to help
+     *  accessibility. Set to NULL to ignore the description field. */
+    char *description;
+
+    /** This option is used to set the width of the cell button box
+     *  explicitly in pixels. The default width is 64 pixels. */
+    uint16_t width;
+
+    /** This option is used to set the height of the cell button box
+     *  explicitly in pixels. The default height is 20 pixels. */
+    uint16_t height;
+
+    /** X scale of the button as a decimal. */
+    double x_scale;
+
+    /** Y scale of the button as a decimal. */
+    double y_scale;
+
+    /** Offset from the left of the cell in pixels.  */
+    int32_t x_offset;
+
+    /** Offset from the top of the cell in pixels. */
+    int32_t y_offset;
+
+} lxw_button_options;
+
 /* Internal structure for VML object options. */
 typedef struct lxw_vml_obj {
 
@@ -1920,6 +1963,7 @@ typedef struct lxw_vml_obj {
     char *text;
     char *image_position;
     char *name;
+    char *macro;
     STAILQ_ENTRY (lxw_vml_obj) list_pointers;
 
 } lxw_vml_obj;
@@ -2078,6 +2122,7 @@ typedef struct lxw_worksheet {
     struct lxw_vml_drawing_rel_ids *vml_drawing_rel_ids;
     struct lxw_comment_objs *comment_objs;
     struct lxw_comment_objs *header_image_objs;
+    struct lxw_comment_objs *button_objs;
     struct lxw_table_objs *table_objs;
     uint16_t table_count;
 
@@ -2146,6 +2191,7 @@ typedef struct lxw_worksheet {
     uint8_t num_validations;
     uint8_t has_dynamic_arrays;
     char *vba_codename;
+    uint16_t num_buttons;
 
     lxw_color_t tab_color;
 
@@ -2200,6 +2246,7 @@ typedef struct lxw_worksheet {
     uint8_t has_comments;
     uint8_t has_header_vml;
     uint8_t has_background_image;
+    uint8_t has_buttons;
     lxw_rel_tuple *external_vml_comment_link;
     lxw_rel_tuple *external_comment_link;
     lxw_rel_tuple *external_vml_header_link;
@@ -4259,6 +4306,11 @@ lxw_error worksheet_conditional_format_range(lxw_worksheet *worksheet,
                                              lxw_col_t last_col,
                                              lxw_conditional_format
                                              *conditional_format);
+
+lxw_error worksheet_insert_button(lxw_worksheet *worksheet, lxw_row_t row_num,
+                                  lxw_col_t col_num,
+                                  lxw_button_options *options);
+
 /**
  * @brief Add an Excel table to a worksheet.
  *

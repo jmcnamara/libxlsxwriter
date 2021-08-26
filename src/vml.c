@@ -127,10 +127,9 @@ _vml_write_text_valign(lxw_vml *self)
  * Write the <x:FmlaMacro> element.
  */
 STATIC void
-_vml_write_fmla_macro(lxw_vml *self)
+_vml_write_fmla_macro(lxw_vml *self, lxw_vml_obj *vml_obj)
 {
-    lxw_xml_data_element(self->file, "x:FmlaMacro", "[0]!Button1_Click",
-                         NULL);
+    lxw_xml_data_element(self->file, "x:FmlaMacro", vml_obj->macro, NULL);
 }
 
 /*
@@ -182,11 +181,11 @@ _vml_write_rotation_lock(lxw_vml *self)
  * Write the <x:Column> element.
  */
 STATIC void
-_vml_write_column(lxw_vml *self, lxw_vml_obj *comment_obj)
+_vml_write_column(lxw_vml *self, lxw_vml_obj *vml_obj)
 {
     char data[LXW_ATTR_32];
 
-    lxw_snprintf(data, LXW_ATTR_32, "%d", comment_obj->col);
+    lxw_snprintf(data, LXW_ATTR_32, "%d", vml_obj->col);
 
     lxw_xml_data_element(self->file, "x:Column", data, NULL);
 }
@@ -195,11 +194,11 @@ _vml_write_column(lxw_vml *self, lxw_vml_obj *comment_obj)
  * Write the <x:Row> element.
  */
 STATIC void
-_vml_write_row(lxw_vml *self, lxw_vml_obj *comment_obj)
+_vml_write_row(lxw_vml *self, lxw_vml_obj *vml_obj)
 {
     char data[LXW_ATTR_32];
 
-    lxw_snprintf(data, LXW_ATTR_32, "%d", comment_obj->row);
+    lxw_snprintf(data, LXW_ATTR_32, "%d", vml_obj->row);
 
     lxw_xml_data_element(self->file, "x:Row", data, NULL);
 }
@@ -217,20 +216,20 @@ _vml_write_auto_fill(lxw_vml *self)
  * Write the <x:Anchor> element.
  */
 STATIC void
-_vml_write_anchor(lxw_vml *self, lxw_vml_obj *comment_obj)
+_vml_write_anchor(lxw_vml *self, lxw_vml_obj *vml_obj)
 {
     char anchor_data[LXW_MAX_ATTRIBUTE_LENGTH];
 
     lxw_snprintf(anchor_data,
                  LXW_MAX_ATTRIBUTE_LENGTH,
                  "%d, %d, %d, %d, %d, %d, %d, %d",
-                 comment_obj->from.col,
-                 (uint32_t) comment_obj->from.col_offset,
-                 comment_obj->from.row,
-                 (uint32_t) comment_obj->from.row_offset,
-                 comment_obj->to.col,
-                 (uint32_t) comment_obj->to.col_offset,
-                 comment_obj->to.row, (uint32_t) comment_obj->to.row_offset);
+                 vml_obj->from.col,
+                 (uint32_t) vml_obj->from.col_offset,
+                 vml_obj->from.row,
+                 (uint32_t) vml_obj->from.row_offset,
+                 vml_obj->to.col,
+                 (uint32_t) vml_obj->to.col_offset,
+                 vml_obj->to.row, (uint32_t) vml_obj->to.row_offset);
 
     lxw_xml_data_element(self->file, "x:Anchor", anchor_data, NULL);
 }
@@ -311,7 +310,7 @@ _vml_write_shapetype_lock(lxw_vml *self)
  * Write the <font> element.
  */
 STATIC void
-_vml_write_font(lxw_vml *self)
+_vml_write_font(lxw_vml *self, lxw_vml_obj *vml_obj)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -321,7 +320,7 @@ _vml_write_font(lxw_vml *self)
     LXW_PUSH_ATTRIBUTES_STR("size", "220");
     LXW_PUSH_ATTRIBUTES_STR("color", "#000000");
 
-    lxw_xml_data_element(self->file, "font", "Button 1", &attributes);
+    lxw_xml_data_element(self->file, "font", vml_obj->name, &attributes);
 
     LXW_FREE_ATTRIBUTES();
 }
@@ -471,7 +470,7 @@ _vml_write_image_shapetype(lxw_vml *self)
  * Write the <x:ClientData> element.
  */
 STATIC void
-_vml_write_button_client_data(lxw_vml *self)
+_vml_write_button_client_data(lxw_vml *self, lxw_vml_obj *vml_obj)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -482,7 +481,7 @@ _vml_write_button_client_data(lxw_vml *self)
     lxw_xml_start_tag(self->file, "x:ClientData", &attributes);
 
     /* Write the <x:Anchor> element. */
-    _vml_write_anchor(self, NULL);
+    _vml_write_anchor(self, vml_obj);
 
     /* Write the x:PrintObject element. */
     _vml_write_print_object(self);
@@ -491,7 +490,7 @@ _vml_write_button_client_data(lxw_vml *self)
     _vml_write_auto_fill(self);
 
     /* Write the x:FmlaMacro element. */
-    _vml_write_fmla_macro(self);
+    _vml_write_fmla_macro(self, vml_obj);
 
     /* Write the x:TextHAlign element. */
     _vml_write_text_halign(self);
@@ -508,7 +507,7 @@ _vml_write_button_client_data(lxw_vml *self)
  * Write the <div> element.
  */
 STATIC void
-_vml_write_button_div(lxw_vml *self)
+_vml_write_button_div(lxw_vml *self, lxw_vml_obj *vml_obj)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -519,7 +518,7 @@ _vml_write_button_div(lxw_vml *self)
     lxw_xml_start_tag(self->file, "div", &attributes);
 
     /* Write the font element. */
-    _vml_write_font(self);
+    _vml_write_font(self, vml_obj);
 
     lxw_xml_end_tag(self->file, "div");
 
@@ -530,7 +529,7 @@ _vml_write_button_div(lxw_vml *self)
  * Write the <v:textbox> element.
  */
 STATIC void
-_vml_write_button_textbox(lxw_vml *self)
+_vml_write_button_textbox(lxw_vml *self, lxw_vml_obj *vml_obj)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -542,7 +541,7 @@ _vml_write_button_textbox(lxw_vml *self)
     lxw_xml_start_tag(self->file, "v:textbox", &attributes);
 
     /* Write the div element. */
-    _vml_write_button_div(self);
+    _vml_write_button_div(self, vml_obj);
 
     lxw_xml_end_tag(self->file, "v:textbox");
 
@@ -592,22 +591,49 @@ _vml_write_button_path(lxw_vml *self)
  * Write the <v:shape> element for buttons.
  */
 STATIC void
-_vml_write_button_shape(lxw_vml *self)
+_vml_write_button_shape(lxw_vml *self, uint32_t vml_shape_id,
+                        uint32_t z_index, lxw_vml_obj *vml_obj)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
-    char id[] = "_x0000_s1025";
     char type[] = "#_x0000_t201";
-    char style[] = "position:absolute;margin-left:96pt;margin-top:15pt;"
-        "width:48pt;height:15pt;z-index:1;mso-wrap-style:tight";
     char o_button[] = "t";
     char fillcolor[] = "buttonFace [67]";
     char strokecolor[] = "windowText [64]";
     char o_insetmode[] = "auto";
 
+    char id[LXW_ATTR_32];
+    char margin_left[LXW_ATTR_32];
+    char margin_top[LXW_ATTR_32];
+    char width[LXW_ATTR_32];
+    char height[LXW_ATTR_32];
+    char style[LXW_MAX_ATTRIBUTE_LENGTH];
+
+    lxw_sprintf_dbl(margin_left, vml_obj->col_absolute * 0.75);
+    lxw_sprintf_dbl(margin_top, vml_obj->row_absolute * 0.75);
+    lxw_sprintf_dbl(width, vml_obj->width * 0.75);
+    lxw_sprintf_dbl(height, vml_obj->height * 0.75);
+
+    lxw_snprintf(id, LXW_ATTR_32, "_x0000_s%d", vml_shape_id);
+
+    lxw_snprintf(style,
+                 LXW_MAX_ATTRIBUTE_LENGTH,
+                 "position:absolute;"
+                 "margin-left:%spt;"
+                 "margin-top:%spt;"
+                 "width:%spt;"
+                 "height:%spt;"
+                 "z-index:%d;"
+                 "mso-wrap-style:tight",
+                 margin_left, margin_top, width, height, z_index);
+
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("id", id);
     LXW_PUSH_ATTRIBUTES_STR("type", type);
+
+    if (vml_obj->text)
+        LXW_PUSH_ATTRIBUTES_STR("alt", vml_obj->text);
+
     LXW_PUSH_ATTRIBUTES_STR("style", style);
     LXW_PUSH_ATTRIBUTES_STR("o:button", o_button);
     LXW_PUSH_ATTRIBUTES_STR("fillcolor", fillcolor);
@@ -623,10 +649,10 @@ _vml_write_button_shape(lxw_vml *self)
     _vml_write_rotation_lock(self);
 
     /* Write the v:textbox element. */
-    _vml_write_button_textbox(self);
+    _vml_write_button_textbox(self, vml_obj);
 
     /* Write the x:ClientData element. */
-    _vml_write_button_client_data(self);
+    _vml_write_button_client_data(self, vml_obj);
 
     lxw_xml_end_tag(self->file, "v:shape");
 
@@ -672,7 +698,7 @@ _vml_write_button_shapetype(lxw_vml *self)
  * Write the <x:ClientData> element.
  */
 STATIC void
-_vml_write_comment_client_data(lxw_vml *self, lxw_vml_obj *comment_obj)
+_vml_write_comment_client_data(lxw_vml *self, lxw_vml_obj *vml_obj)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -689,19 +715,19 @@ _vml_write_comment_client_data(lxw_vml *self, lxw_vml_obj *comment_obj)
     _vml_write_size_with_cells(self);
 
     /* Write the <x:Anchor> element. */
-    _vml_write_anchor(self, comment_obj);
+    _vml_write_anchor(self, vml_obj);
 
     /* Write the <x:AutoFill> element. */
     _vml_write_auto_fill(self);
 
     /* Write the <x:Row> element. */
-    _vml_write_row(self, comment_obj);
+    _vml_write_row(self, vml_obj);
 
     /* Write the <x:Column> element. */
-    _vml_write_column(self, comment_obj);
+    _vml_write_column(self, vml_obj);
 
     /* Write the x:Visible element. */
-    if (comment_obj->visible == LXW_COMMENT_DISPLAY_VISIBLE)
+    if (vml_obj->visible == LXW_COMMENT_DISPLAY_VISIBLE)
         _vml_write_visible(self);
 
     lxw_xml_end_tag(self->file, "x:ClientData");
@@ -793,7 +819,7 @@ _vml_write_comment_path(lxw_vml *self, uint8_t has_gradient, char *type)
  */
 STATIC void
 _vml_write_comment_shape(lxw_vml *self, uint32_t vml_shape_id,
-                         uint32_t z_index, lxw_vml_obj *comment_obj)
+                         uint32_t z_index, lxw_vml_obj *vml_obj)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -808,24 +834,24 @@ _vml_write_comment_shape(lxw_vml *self, uint32_t vml_shape_id,
     char type[] = "#_x0000_t202";
     char o_insetmode[] = "auto";
 
-    lxw_sprintf_dbl(margin_left, comment_obj->col_absolute * 0.75);
-    lxw_sprintf_dbl(margin_top, comment_obj->row_absolute * 0.75);
-    lxw_sprintf_dbl(width, comment_obj->width * 0.75);
-    lxw_sprintf_dbl(height, comment_obj->height * 0.75);
+    lxw_sprintf_dbl(margin_left, vml_obj->col_absolute * 0.75);
+    lxw_sprintf_dbl(margin_top, vml_obj->row_absolute * 0.75);
+    lxw_sprintf_dbl(width, vml_obj->width * 0.75);
+    lxw_sprintf_dbl(height, vml_obj->height * 0.75);
 
     lxw_snprintf(id, LXW_ATTR_32, "_x0000_s%d", vml_shape_id);
 
-    if (comment_obj->visible == LXW_COMMENT_DISPLAY_DEFAULT)
-        comment_obj->visible = self->comment_display_default;
+    if (vml_obj->visible == LXW_COMMENT_DISPLAY_DEFAULT)
+        vml_obj->visible = self->comment_display_default;
 
-    if (comment_obj->visible == LXW_COMMENT_DISPLAY_VISIBLE)
+    if (vml_obj->visible == LXW_COMMENT_DISPLAY_VISIBLE)
         lxw_snprintf(visible, LXW_ATTR_32, "visible");
     else
         lxw_snprintf(visible, LXW_ATTR_32, "hidden");
 
-    if (comment_obj->color)
+    if (vml_obj->color)
         lxw_snprintf(fillcolor, LXW_ATTR_32, "#%06x",
-                     comment_obj->color & LXW_COLOR_MASK);
+                     vml_obj->color & LXW_COLOR_MASK);
     else
         lxw_snprintf(fillcolor, LXW_ATTR_32, "#%06x", 0xffffe1);
 
@@ -862,7 +888,7 @@ _vml_write_comment_shape(lxw_vml *self, uint32_t vml_shape_id,
     _vml_write_comment_textbox(self);
 
     /* Write the x:ClientData element. */
-    _vml_write_comment_client_data(self, comment_obj);
+    _vml_write_comment_client_data(self, vml_obj);
 
     lxw_xml_end_tag(self->file, "v:shape");
 
@@ -981,7 +1007,22 @@ lxw_vml_assemble_xml_file(lxw_vml *self)
     /* Write the o:shapelayout element. */
     _vml_write_shapelayout(self);
 
-    if (self->comment_objs) {
+    if (self->button_objs && !STAILQ_EMPTY(self->button_objs)) {
+        /* Write the <v:shapetype> element. */
+        _vml_write_button_shapetype(self);
+
+        STAILQ_FOREACH(button_obj, self->button_objs, list_pointers) {
+            self->vml_shape_id++;
+
+            /* Write the <v:shape> element. */
+            _vml_write_button_shape(self, self->vml_shape_id, z_index,
+                                    button_obj);
+
+            z_index++;
+        }
+    }
+
+    if (self->comment_objs && !STAILQ_EMPTY(self->comment_objs)) {
         /* Write the <v:shapetype> element. */
         _vml_write_comment_shapetype(self);
 
@@ -996,18 +1037,7 @@ lxw_vml_assemble_xml_file(lxw_vml *self)
         }
     }
 
-    if (self->button_objs) {
-        /* Write the <v:shapetype> element. */
-        _vml_write_button_shapetype(self);
-
-        STAILQ_FOREACH(button_obj, self->button_objs, list_pointers) {
-            /* Write the <v:shape> element. */
-            _vml_write_button_shape(self);
-
-        }
-    }
-
-    if (self->image_objs) {
+    if (self->image_objs && !STAILQ_EMPTY(self->image_objs)) {
         /* Write the <v:shapetype> element. */
         _vml_write_image_shapetype(self);
 

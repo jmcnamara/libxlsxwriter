@@ -153,6 +153,10 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     GOTO_LABEL_ON_MEM_ERROR(worksheet->header_image_objs, mem_error);
     STAILQ_INIT(worksheet->header_image_objs);
 
+    worksheet->button_objs = calloc(1, sizeof(struct lxw_comment_objs));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->button_objs, mem_error);
+    STAILQ_INIT(worksheet->button_objs);
+
     worksheet->selections = calloc(1, sizeof(struct lxw_selections));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->selections, mem_error);
     STAILQ_INIT(worksheet->selections);
@@ -303,6 +307,7 @@ _free_vml_object(lxw_vml_obj *vml_obj)
     free(vml_obj->text);
     free(vml_obj->image_position);
     free(vml_obj->name);
+    free(vml_obj->macro);
 
     free(vml_obj);
 }
@@ -515,7 +520,7 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
     lxw_col_t col;
     lxw_merged_range *merged_range;
     lxw_object_properties *object_props;
-    lxw_vml_obj *header_image_vml;
+    lxw_vml_obj *vml_obj;
     lxw_selection *selection;
     lxw_data_val_obj *data_validation;
     lxw_rel_tuple *relationship;
@@ -611,12 +616,22 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
 
     if (worksheet->header_image_objs) {
         while (!STAILQ_EMPTY(worksheet->header_image_objs)) {
-            header_image_vml = STAILQ_FIRST(worksheet->header_image_objs);
+            vml_obj = STAILQ_FIRST(worksheet->header_image_objs);
             STAILQ_REMOVE_HEAD(worksheet->header_image_objs, list_pointers);
-            _free_vml_object(header_image_vml);
+            _free_vml_object(vml_obj);
         }
 
         free(worksheet->header_image_objs);
+    }
+
+    if (worksheet->button_objs) {
+        while (!STAILQ_EMPTY(worksheet->button_objs)) {
+            vml_obj = STAILQ_FIRST(worksheet->button_objs);
+            STAILQ_REMOVE_HEAD(worksheet->button_objs, list_pointers);
+            _free_vml_object(vml_obj);
+        }
+
+        free(worksheet->button_objs);
     }
 
     if (worksheet->selections) {
@@ -3107,35 +3122,131 @@ _get_comment_params(lxw_vml_obj *comment, lxw_comment_options *options)
 }
 
 /*
- * Calculate the comment object position and vertices.
+ * This function handles the additional optional parameters to
+ * worksheet_insert_button() as well as calculating the button object
+ * position and vertices.
+ */
+lxw_error
+_get_button_params(lxw_vml_obj *button, uint16_t button_number,
+                   lxw_button_options *options)
+{
+
+    int32_t x_offset = 0;
+    int32_t y_offset = 0;
+    uint32_t height = LXW_DEF_ROW_HEIGHT_PIXELS;
+    uint32_t width = LXW_DEF_COL_WIDTH_PIXELS;
+    double x_scale = 1.0;
+    double y_scale = 1.0;
+    lxw_row_t row = button->row;
+    lxw_col_t col = button->col;
+    char buffer[LXW_ATTR_32];
+    uint8_t has_caption = LXW_FALSE;
+    uint8_t has_macro = LXW_FALSE;
+    size_t len;
+
+    /* Set any user defined options. */
+    if (options) {
+
+        if (options->width > 0.0)
+            width = options->width;
+
+        if (options->height > 0.0)
+            height = options->height;
+
+        if (options->x_scale > 0.0)
+            x_scale = options->x_scale;
+
+        if (options->y_scale > 0.0)
+            y_scale = options->y_scale;
+
+        if (options->x_offset != 0)
+            x_offset = options->x_offset;
+
+        if (options->y_offset != 0)
+            y_offset = options->y_offset;
+
+        if (options->caption) {
+            button->name = lxw_strdup(options->caption);
+            RETURN_ON_MEM_ERROR(button->name, LXW_ERROR_MEMORY_MALLOC_FAILED);
+            has_caption = LXW_TRUE;
+        }
+
+        if (options->macro) {
+            len = sizeof("[0]!") + strlen(options->macro);
+            button->macro = calloc(1, len);
+            RETURN_ON_MEM_ERROR(button->macro,
+                                LXW_ERROR_MEMORY_MALLOC_FAILED);
+
+            if (button->macro)
+                lxw_snprintf(button->macro, len, "[0]!%s", options->macro);
+
+            has_macro = LXW_TRUE;
+        }
+
+        if (options->description) {
+            button->text = lxw_strdup(options->description);
+            RETURN_ON_MEM_ERROR(button->text, LXW_ERROR_MEMORY_MALLOC_FAILED);
+        }
+    }
+
+    if (!has_caption) {
+        lxw_snprintf(buffer, LXW_ATTR_32, "Button %d", button_number);
+        button->name = lxw_strdup(buffer);
+        RETURN_ON_MEM_ERROR(button->name, LXW_ERROR_MEMORY_MALLOC_FAILED);
+    }
+
+    if (!has_macro) {
+        lxw_snprintf(buffer, LXW_ATTR_32, "[0]!Button%d_Click",
+                     button_number);
+        button->macro = lxw_strdup(buffer);
+        RETURN_ON_MEM_ERROR(button->macro, LXW_ERROR_MEMORY_MALLOC_FAILED);
+    }
+
+    /* Scale the width/height to the default/user scale and round to the
+     * nearest pixel. */
+    width = (uint32_t) (0.5 + x_scale * width);
+    height = (uint32_t) (0.5 + y_scale * height);
+
+    button->width = width;
+    button->height = height;
+    button->start_col = col;
+    button->start_row = row;
+    button->x_offset = x_offset;
+    button->y_offset = y_offset;
+
+    return LXW_NO_ERROR;
+}
+
+/*
+ * Calculate the vml_obj object position and vertices.
  */
 void
-_worksheet_position_vml_object(lxw_worksheet *self, lxw_vml_obj *comment)
+_worksheet_position_vml_object(lxw_worksheet *self, lxw_vml_obj *vml_obj)
 {
     lxw_object_properties object_props;
     lxw_drawing_object drawing_object;
 
-    object_props.col = comment->start_col;
-    object_props.row = comment->start_row;
-    object_props.x_offset = comment->x_offset;
-    object_props.y_offset = comment->y_offset;
-    object_props.width = comment->width;
-    object_props.height = comment->height;
+    object_props.col = vml_obj->start_col;
+    object_props.row = vml_obj->start_row;
+    object_props.x_offset = vml_obj->x_offset;
+    object_props.y_offset = vml_obj->y_offset;
+    object_props.width = vml_obj->width;
+    object_props.height = vml_obj->height;
 
     drawing_object.anchor = LXW_OBJECT_DONT_MOVE_DONT_SIZE;
 
     _worksheet_position_object_pixels(self, &object_props, &drawing_object);
 
-    comment->from.col = drawing_object.from.col;
-    comment->from.row = drawing_object.from.row;
-    comment->from.col_offset = drawing_object.from.col_offset;
-    comment->from.row_offset = drawing_object.from.row_offset;
-    comment->to.col = drawing_object.to.col;
-    comment->to.row = drawing_object.to.row;
-    comment->to.col_offset = drawing_object.to.col_offset;
-    comment->to.row_offset = drawing_object.to.row_offset;
-    comment->col_absolute = drawing_object.col_absolute;
-    comment->row_absolute = drawing_object.row_absolute;
+    vml_obj->from.col = drawing_object.from.col;
+    vml_obj->from.row = drawing_object.from.row;
+    vml_obj->from.col_offset = drawing_object.from.col_offset;
+    vml_obj->from.row_offset = drawing_object.from.row_offset;
+    vml_obj->to.col = drawing_object.to.col;
+    vml_obj->to.row = drawing_object.to.row;
+    vml_obj->to.col_offset = drawing_object.to.col_offset;
+    vml_obj->to.row_offset = drawing_object.to.row_offset;
+    vml_obj->col_absolute = drawing_object.col_absolute;
+    vml_obj->row_absolute = drawing_object.row_absolute;
 }
 
 /*
@@ -9129,10 +9240,10 @@ worksheet_add_table(lxw_worksheet *self, lxw_row_t first_row,
     lxw_table_column **columns;
 
     if (self->optimize) {
-            LXW_WARN_FORMAT("worksheet_add_table(): "
-                            "worksheet tables aren't supported in "
-                            "'constant_memory' mode");
-            return LXW_ERROR_FEATURE_NOT_SUPPORTED;
+        LXW_WARN_FORMAT("worksheet_add_table(): "
+                        "worksheet tables aren't supported in "
+                        "'constant_memory' mode");
+        return LXW_ERROR_FEATURE_NOT_SUPPORTED;
     }
 
     /* Swap last row/col with first row/col as necessary */
@@ -10989,6 +11100,49 @@ worksheet_conditional_format_cell(lxw_worksheet *self,
 {
     return worksheet_conditional_format_range(self, row, col,
                                               row, col, options);
+}
+
+/*
+ * Insert a button object into the worksheet.
+ */
+lxw_error
+worksheet_insert_button(lxw_worksheet *self, lxw_row_t row_num,
+                        lxw_col_t col_num, lxw_button_options *options)
+{
+    lxw_error err;
+    lxw_vml_obj *button;
+
+    err = _check_dimensions(self, row_num, col_num, LXW_TRUE, LXW_TRUE);
+    if (err)
+        return err;
+
+    button = calloc(1, sizeof(lxw_vml_obj));
+    GOTO_LABEL_ON_MEM_ERROR(button, mem_error);
+
+    button->row = row_num;
+    button->col = col_num;
+
+    /* Set user and default parameters for the button. */
+    err = _get_button_params(button, 1 + self->num_buttons, options);
+    if (err)
+        goto mem_error;
+
+    /* Calculate the worksheet position of the button. */
+    _worksheet_position_vml_object(self, button);
+
+    self->has_vml = LXW_TRUE;
+    self->has_buttons = LXW_TRUE;
+    self->num_buttons++;
+
+    STAILQ_INSERT_TAIL(self->button_objs, button, list_pointers);
+
+    return LXW_NO_ERROR;
+
+mem_error:
+    if (button)
+        _free_vml_object(button);
+
+    return LXW_ERROR_MEMORY_MALLOC_FAILED;
 }
 
 /*
