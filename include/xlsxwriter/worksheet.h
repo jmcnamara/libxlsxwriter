@@ -4306,10 +4306,36 @@ lxw_error worksheet_conditional_format_range(lxw_worksheet *worksheet,
                                              lxw_col_t last_col,
                                              lxw_conditional_format
                                              *conditional_format);
-
-lxw_error worksheet_insert_button(lxw_worksheet *worksheet, lxw_row_t row_num,
-                                  lxw_col_t col_num,
-                                  lxw_button_options *options);
+/**
+ * @brief Insert a button object into a worksheet.
+ *
+ * @param worksheet  Pointer to a lxw_worksheet instance to be updated.
+ * @param row        The zero indexed row number.
+ * @param col        The zero indexed column number.
+ * @param options    A #lxw_button_options object to set the button properties.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_insert_button()` function can be used to insert an Excel
+ * form button into a worksheet. This function is generally only useful when
+ * used in conjunction with the `workbook_add_vba_project()` function to tie
+ * the button to a macro from an embedded VBA project:
+ *
+ * @code
+ *     lxw_button_options options = {.caption = "Press Me",
+ *                                   .macro   = "say_hello"};
+ *
+ *     worksheet_insert_button(worksheet, 2, 1, &options);
+ * @endcode
+ *
+ * @image html macros.png
+ *
+ * The button properties are set using the lxw_button_options struct.
+ *
+ * See also @ref working_with_macros
+ */
+lxw_error worksheet_insert_button(lxw_worksheet *worksheet, lxw_row_t row,
+                                  lxw_col_t col, lxw_button_options *options);
 
 /**
  * @brief Add an Excel table to a worksheet.

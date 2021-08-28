@@ -82,6 +82,33 @@ or else Excel will complain and possibly not open the file:
     lxw_workbook *workbook = new_workbook("macro.xlsm");
 @endcode
 
+It is also possible to assign a macro to a button that is inserted into a
+worksheet using the `worksheet_insert_button()` function:
+
+@code
+    lxw_button_options options = {.caption = "Press Me",
+                                  .macro   = "say_hello"};
+
+     worksheet_insert_button(worksheet, 2, 1, &options);
+@endcode
+
+See the full example at @ref macro.c.
+
+It may be necessary to specify a more explicit macro name prefixed by the
+workbook VBA name as follows:
+
+
+@code
+    lxw_button_options options = {.caption = "Press Me",
+                                  .macro   = "ThisWorkbook.say_hello"};
+
+     worksheet_insert_button(worksheet, 2, 1, &options);
+@endcode
+
+@note Button is the only VBA Control supported by libxlsxwriter and due to the
+implementation effort required it is unlikely that any other form elements
+will be added in the future.
+
 
 @section ww_macros_codenames Setting the VBA codenames
 
@@ -113,6 +140,8 @@ clarity:
       <workbookPr codeName="MyWorkbook" defaultThemeVersion="124226"/>
       <sheetPr codeName="MySheet1"/>
 
+@note This step is particularly important for macros created with non-English
+versions of Excel.
 
 @section ww_macros_debugging What to do if it doesn't work
 

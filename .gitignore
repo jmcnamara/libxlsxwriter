@@ -41,6 +41,7 @@ examples/*
 !examples/logo.png
 !examples/logo_small.png
 !examples/Makefile
+!examples/vbaProject.bin
 cov-int
 libxlsxwriter-coverity.tgz
 build
