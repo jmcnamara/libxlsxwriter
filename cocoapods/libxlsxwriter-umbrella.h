@@ -17,6 +17,7 @@
 #import "relationships.h"
 #import "shared_strings.h"
 #import "styles.h"
+#import "table.h"
 #import "theme.h"
 #import "third_party/emyg_dtoa.h"
 #import "third_party/ioapi.h"

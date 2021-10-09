@@ -1,6 +1,17 @@
 /**
 @page changes Changes
 
+
+## 1.1.4 October 9 2021
+
+- Added support for Worksheet tables. Tables in Excel are a way of grouping a
+  range of cells into a single entity that has common formatting or that can
+  be referenced from formulas. Tables can have column headers, autofilters,
+  total rows, column formulas and default formatting. See @ref
+  working_with_tables and @ref tables.c.
+
+- Added support for adding a macro button to a worksheet. See @ref macro.c.
+
 ## 1.1.3 August 9 2021
 
 - Changed worksheet_filter_column2() parameter name "operator" to "and_or" to
