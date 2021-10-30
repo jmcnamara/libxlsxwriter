@@ -2396,27 +2396,28 @@ _worksheet_write_sheet_view(lxw_worksheet *self)
         LXW_PUSH_ATTRIBUTES_STR("showGridLines", "0");
 
     /* Hide zeroes in cells. */
-    if (!self->show_zeros) {
+    if (!self->show_zeros)
         LXW_PUSH_ATTRIBUTES_STR("showZeros", "0");
-    }
 
     /* Display worksheet right to left for Hebrew, Arabic and others. */
-    if (self->right_to_left) {
+    if (self->right_to_left)
         LXW_PUSH_ATTRIBUTES_STR("rightToLeft", "1");
-    }
 
     /* Show that the sheet tab is selected. */
     if (self->selected)
         LXW_PUSH_ATTRIBUTES_STR("tabSelected", "1");
 
     /* Turn outlines off. Also required in the outlinePr element. */
-    if (!self->outline_on) {
+    if (!self->outline_on)
         LXW_PUSH_ATTRIBUTES_STR("showOutlineSymbols", "0");
-    }
 
     /* Set the page view/layout mode if required. */
     if (self->page_view)
         LXW_PUSH_ATTRIBUTES_STR("view", "pageLayout");
+
+    /* Set the top left cell if required. */
+    if (self->top_left_cell[0])
+        LXW_PUSH_ATTRIBUTES_STR("topLeftCell", self->top_left_cell);
 
     /* Set the zoom level. */
     if (self->zoom != 100 && !self->page_view) {
@@ -9463,6 +9464,18 @@ worksheet_set_selection(lxw_worksheet *self,
     lxw_strcpy(selection->sqref, sqref);
 
     STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
+}
+
+/*
+ * Set the first visible cell at the top left of the worksheet.
+ */
+void
+worksheet_set_top_left_cell(lxw_worksheet *self, lxw_row_t row, lxw_col_t col)
+{
+    if (row == 0 && col == 0)
+        return;
+
+    lxw_rowcol_to_cell(self->top_left_cell, row, col);
 }
 
 /*

@@ -2236,6 +2236,7 @@ typedef struct lxw_worksheet {
     struct lxw_rel_tuples *external_table_links;
 
     struct lxw_panes panes;
+    char top_left_cell[LXW_MAX_CELL_NAME_LENGTH];
 
     struct lxw_protection_obj protection;
 
@@ -4577,6 +4578,27 @@ void worksheet_split_panes_opt(lxw_worksheet *worksheet,
 void worksheet_set_selection(lxw_worksheet *worksheet,
                              lxw_row_t first_row, lxw_col_t first_col,
                              lxw_row_t last_row, lxw_col_t last_col);
+
+/**
+ * @brief Set the first visible cell at the top left of a worksheet.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The cell row (zero indexed).
+ * @param col       The cell column (zero indexed).
+ *
+ * The `%worksheet_set_top_left_cell()` function can be used to set the
+ * top leftmost visible cell in the worksheet:
+ *
+ * @code
+ *     worksheet_set_top_left_cell(worksheet, 31, 26);
+ *     worksheet_set_top_left_cell(worksheet, CELL("AA32")); // Same as above.
+ * @endcode
+ *
+ * @image html top_left_cell.png
+ *
+ */
+void worksheet_set_top_left_cell(lxw_worksheet *worksheet, lxw_row_t row,
+                                 lxw_col_t col);
 
 /**
  * @brief Set the page orientation as landscape.
