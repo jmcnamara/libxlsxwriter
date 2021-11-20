@@ -34,4 +34,4 @@ clean :
 
 # Executable targets.
 %: %.cpp $(LIBXLSXWRITER)
-	$(Q)$(CXX) -I$(INC_DIR) $(CXXFLAGS) $< -o $@ $(LIBS)
+	$(Q)$(CXX) -I$(INC_DIR) $(CXXFLAGS) $(LDFLAGS) $< -o $@ $(LIBS)
