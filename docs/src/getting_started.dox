@@ -459,23 +459,20 @@ hello_world.xlsx file in the same directory you ran it from.
 
 A convenient way to get the latest release version of libxlsxwriter and
 integrate it into your Visual Studio build environment is to use the
-[vcpkg](https://docs.microsoft.com/en-us/cpp/build/vcpkg?view=vs-2019 )
+[vcpkg](https://vcpkg.io)
 tool. This uses the CMake build system shown in the previous section but with
 less user interaction. From the vcpkg docs:
 
-> "vcpkg" is a cross-platform command-line package manager for C and C++
-> libraries. It simplifies the acquisition and installation of third-party
-> libraries on Windows, Linux, and macOS. If your project uses third-party
-> libraries, we recommend that you use vcpkg to install them. vcpkg supports
-> both open-source and proprietary libraries. All libraries in the vcpkg Windows
-> catalog have been tested for compatibility with Visual Studio 2015, Visual
-> Studio 2017, and Visual Studio 2019. Between the Windows and Linux/macOS
-> catalogs, vcpkg now supports thousands of libraries. The C++ community adds
-> more libraries to both catalogs on an ongoing basis.
+> vcpkg is a free C/C++ package manager for acquiring and managing
+> libraries. Choose from over 1500 open source libraries to download and build
+> in a single step or add your own private libraries to simplify your build
+> process. Maintained by the Microsoft C++ team and open source contributors.
+
 
 Install vcpkg and libxlsxwriter as follows in Windows CMD or Powershell:
 
     > git clone https://github.com/microsoft/vcpkg.git
+    > cd vcpkg
     > bootstrap-vcpkg.bat
     > vcpkg install libxlsxwriter
 
@@ -518,7 +515,8 @@ Replace the empty main with a libxlsxwriter example from the distro. Make sure
 to include "stdafx.h" and "xlsxwriter.h":
 
 @code
-#include "stdafx.h"
+// Some older versions on Visual Studio make need this include:
+// #include "stdafx.h"
 #include "xlsxwriter.h"
 
 int main() {
