@@ -18,6 +18,7 @@ PYTEST ?= py.test
 PYTESTFILES ?= test
 
 VERSION   = $(shell sed -n -e 's/.*LXW_VERSION \"\(.*\)\"/\1/p'   include/xlsxwriter.h)
+SOVERSION = $(shell sed -n -e 's/.*LXW_SOVERSION \"\(.*\)\"/\1/p' include/xlsxwriter.h)
 
 .PHONY: docs tags examples third_party
 
@@ -47,16 +48,17 @@ universal_binary :
 	$(Q)$(MAKE) clean
 	$(Q)TARGET_ARCH="-target x86_64-apple-macos10.12" $(MAKE) all
 	$(Q)mv lib/libxlsxwriter.a     libxlsxwriter_x86_64.a
-	$(Q)mv lib/libxlsxwriter.dylib libxlsxwriter_x86_64.dylib
+	$(Q)mv lib/libxlsxwriter.$(SOVERSION).dylib libxlsxwriter_x86_64.dylib
 
 	$(Q)$(MAKE) clean
 	$(Q)TARGET_ARCH="-target arm64-apple-macos11" $(MAKE) all
 	$(Q)mv lib/libxlsxwriter.a     lib/libxlsxwriter_arm64.a
-	$(Q)mv lib/libxlsxwriter.dylib lib/libxlsxwriter_arm64.dylib
+	$(Q)mv lib/libxlsxwriter.$(SOVERSION).dylib lib/libxlsxwriter_arm64.dylib
 	$(Q)mv libxlsxwriter_x86_64.a libxlsxwriter_x86_64.dylib lib
 
-	$(Q)lipo -create -output lib/libxlsxwriter.a     lib/libxlsxwriter_x86_64.a     lib/libxlsxwriter_arm64.a
-	$(Q)lipo -create -output lib/libxlsxwriter.dylib lib/libxlsxwriter_x86_64.dylib lib/libxlsxwriter_arm64.dylib
+	$(Q)lipo -create -output lib/libxlsxwriter.a                  lib/libxlsxwriter_x86_64.a     lib/libxlsxwriter_arm64.a
+	$(Q)lipo -create -output lib/libxlsxwriter.$(SOVERSION).dylib lib/libxlsxwriter_x86_64.dylib lib/libxlsxwriter_arm64.dylib
+	$(Q)rm -f lib/libxlsxwriter_x86_64.* lib/libxlsxwriter_arm64.*
 
 # Build the example programs.
 examples : all
