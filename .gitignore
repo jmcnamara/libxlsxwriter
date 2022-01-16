@@ -38,8 +38,7 @@ docs/latex
 _temp.c
 examples/*
 !examples/*.c
-!examples/logo.png
-!examples/logo_small.png
+!examples/*.png
 !examples/Makefile
 !examples/vbaProject.bin
 cov-int

@@ -240,6 +240,15 @@ mainly on collapsed outlines.
 @image html outline2.png
 
 ##############################################################
+@example watermark.c
+
+Example of how to a watermark image for a worksheet using the method suggested
+in the Microsoft documentation:
+https://support.microsoft.com/en-us/office/add-a-watermark-in-excel-a372182a-d733-484e-825c-18ddf3edf009
+
+@image html worksheet_watermark.png
+
+##############################################################
 @example background.c
 
 Example of how to set the background image for a worksheet.

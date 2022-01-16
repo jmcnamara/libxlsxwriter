@@ -509,7 +509,7 @@ Example of how to generate Excel outlines and grouping.
 <table  width="600">
 <tr>
   <td>@ref outline.c "&lt;&lt; outline.c"</td>
-  <td align="right">@ref background.c "background.c &gt;&gt;"</td>
+  <td align="right">@ref watermark.c "watermark.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -521,11 +521,29 @@ mainly on collapsed outlines.
 
 
 
-@example background.c
+@example watermark.c
 
 <table  width="600">
 <tr>
   <td>@ref outline_collapsed.c "&lt;&lt; outline_collapsed.c"</td>
+  <td align="right">@ref background.c "background.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of how to a watermark image for a worksheet using the method suggested
+in the Microsoft documentation:
+https://support.microsoft.com/en-us/office/add-a-watermark-in-excel-a372182a-d733-484e-825c-18ddf3edf009
+
+@image html worksheet_watermark.png
+
+
+
+
+@example background.c
+
+<table  width="600">
+<tr>
+  <td>@ref watermark.c "&lt;&lt; watermark.c"</td>
   <td align="right">@ref tab_colors.c "tab_colors.c &gt;&gt;"</td>
 </tr>
 </table>

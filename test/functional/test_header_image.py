@@ -100,6 +100,10 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
         self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins', '<pageSetup']}
         self.run_exe_test('test_header_image19')
 
+    def test_header_image20(self):
+        self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins', '<pageSetup']}
+        self.run_exe_test('test_header_image20')
+                          
     # Test format strings with &[Picture] instead of &G.
     def test_header_image51(self):
         self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins', '<pageSetup']}

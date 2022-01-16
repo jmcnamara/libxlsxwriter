@@ -42,6 +42,7 @@ my @examples = (
     [ 'defined_name.c',         'Example of how to create defined names' ],
     [ 'outline.c',              'Example of grouping and outlines' ],
     [ 'outline_collapsed.c',    'Example of grouping and collapsed outlines' ],
+    [ 'watermark.c',            'Example of how to set a watermark image for a worksheet' ],
     [ 'background.c',           'Example of how to set the background image for a worksheet' ],
     [ 'tab_colors.c',           'Example of how to set worksheet tab colors' ],
     [ 'diagonal_border.c',      'Example of how to set a worksheet cell diagonal border.' ],
