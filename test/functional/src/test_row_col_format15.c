@@ -3,7 +3,7 @@
  *
  * Simple test case to test worksheet set_row() and set_column().
  *
- * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2022, John McNamara, jmcnamara@cpan.org
  *
  */
 

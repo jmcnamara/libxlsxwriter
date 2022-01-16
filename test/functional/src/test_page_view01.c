@@ -3,7 +3,7 @@
  *
  * Simple test case fort set_page_view().
  *
- * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2022, John McNamara, jmcnamara@cpan.org
  *
  */
 

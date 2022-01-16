@@ -4,7 +4,7 @@
 # Simple program to generate the examples.dox file from a simple text file,
 # with links to the next/previous examples.
 #
-# Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
+# Copyright 2014-2022, John McNamara, jmcnamara@cpan.org
 #
 use strict;
 use warnings;

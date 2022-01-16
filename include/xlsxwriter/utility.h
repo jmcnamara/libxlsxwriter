@@ -1,7 +1,7 @@
 /*
  * libxlsxwriter
  *
- * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
+ * Copyright 2014-2022, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  */
 
 /**
@@ -9,7 +9,7 @@
  *
  * @brief Utility functions for libxlsxwriter.
  *
- * <!-- Copyright 2014-2021, John McNamara, jmcnamara@cpan.org -->
+ * <!-- Copyright 2014-2022, John McNamara, jmcnamara@cpan.org -->
  *
  */
 
