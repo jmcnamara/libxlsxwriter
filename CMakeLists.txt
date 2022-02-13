@@ -305,6 +305,7 @@ target_include_directories(${PROJECT_NAME}
 #   sources       Name of variable holding source files
 #   target        Test name
 #
+
 macro(CreateTest sources target)
     set(output_name xlsxwriter_${target})
     set(dependencies ${output_name})
@@ -357,14 +358,27 @@ if(BUILD_TESTS)
     CreateTest(LXW_UNIT_SOURCES unit)
 
     # functional tests
-    # WARNING: currently doesn't work, since the Python tests expect
-    # in-source builds
-    #find_program(PYTHON python)
-    #foreach(source ${LXW_FUNCTIONAL_SOURCES})
-    #    get_filename_component(basename ${source} NAME_WE)
-    #    add_executable(${basename} ${source})
-    #    target_link_libraries(${basename} xlsxwriter)
-    #endforeach(source)
+    find_program(PYTHON python)
+    find_program(PYTEST pytest)
+
+    set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test/functional/src )
+
+    foreach(source ${LXW_FUNCTIONAL_SOURCES})
+       get_filename_component(basename ${source} NAME_WE)
+       add_executable(${basename} ${source})
+       target_link_libraries(${basename} xlsxwriter)
+    endforeach(source)
+
+    add_custom_command(TARGET xlsxwriter_unit POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/test/functional test/functional
+    )
+
+    add_test(NAME functional
+        COMMAND pytest -v test/functional
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
+
+
 endif()
 
 # EXAMPLES
