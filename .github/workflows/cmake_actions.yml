@@ -1,0 +1,43 @@
+name: Build with CMake
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  build:
+    name:
+      Build with cmake
+   
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        tests: [ON, OFF]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        sudo apt-get -y install zlib1g-dev
+        sudo apt-get -y install libminizip-dev
+        sudo apt-get -y install libssl-dev
+ 
+    - name: Configure CMake
+      working-directory: ${{ github.workspace }}/cmake
+      run:  cmake .. -DBUILD_TESTS=${{ matrix.tests }} -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+
+    - name: Build
+      working-directory: ${{ github.workspace }}/cmake
+      run: cmake --build . --config Release --parallel
+
+    - name: Test
+      working-directory: ${{ github.workspace }}/cmake
+      run: ctest -C Release -V
