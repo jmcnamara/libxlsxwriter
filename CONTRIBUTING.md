@@ -181,9 +181,9 @@ If you have `valgrind` installed you can use the test suite to check for memory 
 ```
 
 When you push your changes they will also be tested automatically using
-[Travis CI][travis].
+[GitHub Actions][actions].
 
-[Travis]: https://travis-ci.org/jmcnamara/libxlsxwriter/
+[actions]: https://github.com/jmcnamara/libxlsxwriter/actions
 [pytest]: http://pytest.org/
 
 

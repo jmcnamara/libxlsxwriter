@@ -86,10 +86,11 @@ Then run the tests:
     make test_valgrind
 
 
-@section tests_travis Travis Continuous Integration
+@section tests_ci GitHub Actions Continuous Integration
 
-Libxlsxwriter is configured to run all tests in [Travis Continuous
-Integration](https://travis-ci.org/jmcnamara/libxlsxwriter) for each commit.
+Libxlsxwriter is configured to run all tests with [GitHub Actions Continuous
+Integration](https://github.com/jmcnamara/libxlsxwriter/actions) for each
+commit.
 
 
 Next: @ref faq
