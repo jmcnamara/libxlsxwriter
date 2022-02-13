@@ -47,7 +47,7 @@ jobs:
       run: ${{ matrix.make_flags }} make test_unit V=1
 
     - name: test functional
-      run: ${{ matrix.make_flags }} make test_functional V=1
+      run: ${{ matrix.make_flags }} make test_functional V=1 -j
 
     - name: test cpp
       run: ${{ matrix.make_flags }} make test_cpp V=1
