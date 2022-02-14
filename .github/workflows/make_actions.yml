@@ -54,23 +54,3 @@ jobs:
 
     - name: test examples
       run: ${{ matrix.make_flags }} make examples V=1
-
-  valgrind:
-    name:
-      Test for memory leaks with valgrind
-    runs-on: ubuntu-latest
-    env:
-      CC: gcc
-
-    steps:
-    - uses: actions/checkout@v2
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pytest
-        sudo apt-get -y install valgrind
-        sudo apt-get -y install zlib1g-dev
-
-    - name: test valgrind
-      run: ${{ matrix.make_flags }} make test_valgrind V=1
