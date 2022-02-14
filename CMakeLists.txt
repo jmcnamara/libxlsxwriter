@@ -359,12 +359,12 @@ if(BUILD_TESTS)
 
     # functional tests
     find_package(Python COMPONENTS Interpreter REQUIRED)
-    find_package(pytest)
+    # find_package(pytest)
 
-    if(NOT (pytest_FOUND))
-        message("Please install the Python pytest library to run functional tests:")
-        message("    pip install pytest\n")
-    endif()
+    # if(NOT (pytest_FOUND))
+    #     message("Please install the Python pytest library to run functional tests:")
+    #     message("    pip install pytest\n")
+    # endif()
 
     set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/test/functional/src )
 
