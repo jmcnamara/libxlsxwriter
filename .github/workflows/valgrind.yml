@@ -25,4 +25,4 @@ jobs:
         sudo apt-get -y install zlib1g-dev
 
     - name: test valgrind
-      run: make test_valgrind V=1
+      run: make test_valgrind V=1 -j

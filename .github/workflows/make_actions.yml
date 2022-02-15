@@ -1,4 +1,4 @@
-name: Build with make
+name: Build with Make
 
 on:
   push:
