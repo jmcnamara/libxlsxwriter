@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name:
-      Build optional configs with make
+      Make
     strategy:
       matrix:
         cc:         [gcc, clang]
@@ -20,9 +20,7 @@ jobs:
                      "USE_NO_MD5=1",
                      "USE_OPENSSL_MD5=1",
                      "USE_FMEMOPEN=1"]
-        os:         [ubuntu-latest]
-
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     env:
       CC:     ${{ matrix.cc }}
       CXX:    ${{ matrix.cc }}

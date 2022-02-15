@@ -5,19 +5,26 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-env:
-  BUILD_TYPE: Release
 
 jobs:
   build:
     name:
-      Build with cmake
-
-    runs-on: ubuntu-latest
-
+      Cmake
     strategy:
       matrix:
-        tests: [ON, OFF]
+        cc:          [gcc, clang]
+        cmake_flags: ["",
+                      "-DBUILD_EXAMPLES=ON       -DBUILD_TESTS=OFF",
+                      "-DUSE_DTOA_LIBRARY=ON     -DBUILD_TESTS=ON",
+                      "-DUSE_FMEMOPEN=ON         -DBUILD_TESTS=ON",
+                      "-DUSE_NO_MD5=ON           -DBUILD_TESTS=ON",
+                      "-DUSE_OPENSSL_MD5=ON      -DBUILD_TESTS=ON",
+                      "-DUSE_STANDARD_TMPFILE=ON -DBUILD_TESTS=ON",
+                      "-DUSE_SYSTEM_MINIZIP=ON   -DBUILD_TESTS=ON",
+                      "-DUSE_SYSTEM_MINIZIP=ON   -DUSE_OPENSSL_MD5=ON -DBUILD_TESTS=ON"]
+    runs-on: ubuntu-latest
+    env:
+      CC: ${{ matrix.cc }}
 
     steps:
     - uses: actions/checkout@v2
@@ -32,7 +39,7 @@ jobs:
 
     - name: Configure CMake
       working-directory: ${{ github.workspace }}/cmake
-      run:  cmake .. -DBUILD_TESTS=${{ matrix.tests }} -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}
+      run:  cmake .. -DBUILD_TESTS=ON ${{ matrix.cmake_flags }} -DCMAKE_BUILD_TYPE=Release
 
     - name: Build
       working-directory: ${{ github.workspace }}/cmake

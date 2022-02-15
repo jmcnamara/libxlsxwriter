@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     name:
-      Test for memory leaks with valgrind
+      Valgrind
     runs-on: ubuntu-latest
     env:
       CC: gcc

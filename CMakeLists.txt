@@ -378,11 +378,17 @@ if(BUILD_TESTS)
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/test/functional test/functional
     )
 
-    add_test(NAME functional
-        COMMAND pytest -v test/functional
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-    )
-
+    if(USE_NO_MD5)
+        add_test(NAME functional
+            COMMAND pytest -v test/functional -m "not skipif"
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        )
+    else()
+        add_test(NAME functional
+            COMMAND pytest -v test/functional
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        )
+    endif()
 
 endif()
 
