@@ -2,9 +2,7 @@ name: Test for memory leaks with valgrind
 
 on:
   push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
   build:
@@ -19,10 +17,8 @@ jobs:
 
     - name: Install dependencies
       run: |
-        python -m pip install --upgrade pip
-        pip install pytest
         sudo apt-get -y install valgrind
         sudo apt-get -y install zlib1g-dev
 
     - name: test valgrind
-      run: make test_valgrind V=1 -j
+      run: make test_valgrind V=1 -j 2
