@@ -1,0 +1,22 @@
+name: Coverity Scan
+
+on:
+  push:
+    branches: [coverity]
+
+jobs:
+  coverity:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v2
+
+    - name: Build third party libs to exclude them from scan
+      run: make third_party
+
+    - uses: vapier/coverity-scan-action@v1
+      with:
+        project: libxlsxwriter
+        email: ${{ secrets.COVERITY_SCAN_EMAIL }}
+        token: ${{ secrets.COVERITY_SCAN_TOKEN }}
+        command: make -C src libxlsxwriter.a
