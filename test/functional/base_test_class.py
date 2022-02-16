@@ -7,6 +7,7 @@
 
 import unittest
 import os
+import sys
 from helper_functions import _compare_xlsx_files
 
 
@@ -28,8 +29,14 @@ class XLSXBaseTest(unittest.TestCase):
     def run_exe_test(self, exe_name, exp_filename=None):
         """Run C exe and compare output xlsx file with the Excel file."""
 
+        # Create the executable command
+        if sys.platform == 'win32':
+            command = r'cd test\functional\src && %s.exe' % exe_name
+        else:
+            command = 'cd test/functional/src && ./%s' % exe_name
+
         # Run the C executable to generate the "got" xlsx file.
-        got = os.system("cd test/functional/src; ./%s" % exe_name)
+        got = os.system(command)
         self.assertEqual(got, self.no_system_error)
 
         # Create the path/file names for the xlsx/xlsm files to compare.
