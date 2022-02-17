@@ -1,0 +1,23 @@
+name: Check code style
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name:
+      Check code style
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get -y install indent
+        sudo ln -s /usr/bin/indent /usr/bin/gindent
+
+    - name: Make indent
+      run: |
+        make indent
+        git status | grep 'nothing to commit'
