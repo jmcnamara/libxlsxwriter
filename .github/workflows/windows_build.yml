@@ -1,0 +1,52 @@
+name: Cmake on Windows
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: CMake on Windows
+
+    strategy:
+      matrix:
+        cmake_flags: ["-DBUILD_EXAMPLES=ON       -DBUILD_TESTS=ON",
+                      "-DUSE_DTOA_LIBRARY=ON     -DBUILD_TESTS=ON",
+                      "-DUSE_OPENSSL_MD5=ON      -DBUILD_TESTS=ON",
+                      "-DUSE_SYSTEM_MINIZIP=ON   -DBUILD_TESTS=ON",
+                      "-DUSE_SYSTEM_MINIZIP=ON   -DUSE_OPENSSL_MD5=ON -DBUILD_TESTS=ON"]
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: |
+        vcpkg.exe install zlib:x64-windows minizip:x64-windows openssl:x64-windows
+        vcpkg.exe integrate install
+        pip install pytest
+
+    - name: Configure CMake
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: |
+        cd cmake
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        cmake .. -DCMAKE_BUILD_TYPE=Release ${{ matrix.cmake_flags }} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -A x64
+
+    - name: Build
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: |
+        cd cmake
+        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+        cmake --build . --config Release
+
+    - name: Test
+      working-directory: ${{env.GITHUB_WORKSPACE}}
+      shell: cmd
+      run: |
+        cd cmake
+        copy test\functional\src\Release\*.exe test\functional\src
+        pytest -v test/functional
