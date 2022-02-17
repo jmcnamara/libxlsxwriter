@@ -1,4 +1,4 @@
-name: Test for memory leaks with valgrind
+name: Test for memory leaks
 
 on: [push, pull_request]
 
