@@ -12,10 +12,12 @@
 #include <stdint.h>
 
 #ifdef USE_SYSTEM_MINIZIP
+#pragma GCC system_header
 #include "minizip/zip.h"
 #else
 #include "third_party/zip.h"
 #endif
+
 
 #include "common.h"
 #include "workbook.h"
