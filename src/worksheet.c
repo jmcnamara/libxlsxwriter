@@ -416,6 +416,7 @@ _free_object_properties(lxw_object_properties *object_property)
     free(object_property->md5);
     free(object_property->image_position);
     free(object_property);
+    object_property = NULL;
 }
 
 /*
@@ -9615,25 +9616,30 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
                          lxw_header_footer_options *options)
 {
     lxw_error err;
+    char *tmp_header;
     char *found_string;
     char *offset_string;
     uint8_t placeholder_count = 0;
     uint8_t image_count = 0;
 
-    if (!string)
+    if (!string) {
+        LXW_WARN_FORMAT("worksheet_set_header_opt/footer_opt(): "
+                        "header/footer string cannot be NULL.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
 
-    if (lxw_utf8_strlen(string) > LXW_HEADER_FOOTER_MAX)
+    if (lxw_utf8_strlen(string) > LXW_HEADER_FOOTER_MAX) {
+        LXW_WARN_FORMAT("worksheet_set_header_opt/footer_opt(): "
+                        "header/footer string exceeds Excel's limit of "
+                        "255 characters.");
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
+    }
 
-    /* Clear existing header. */
-    free(self->header);
-
-    self->header = lxw_strdup(string);
-    RETURN_ON_MEM_ERROR(self->header, LXW_ERROR_MEMORY_MALLOC_FAILED);
+    tmp_header = lxw_strdup(string);
+    RETURN_ON_MEM_ERROR(tmp_header, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     /* Replace &[Picture] with &G which is used internally by Excel. */
-    while ((found_string = strstr(self->header, "&[Picture]"))) {
+    while ((found_string = strstr(tmp_header, "&[Picture]"))) {
         found_string++;
         *found_string = 'G';
 
@@ -9645,7 +9651,7 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
     }
 
     /* Count &G placeholders and ensure there are sufficient images. */
-    found_string = self->header;
+    found_string = tmp_header;
     while (*found_string) {
         if (*found_string == '&' && *(found_string + 1) == 'G')
             placeholder_count++;
@@ -9658,11 +9664,13 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
                          "string \"%s\" does not match the number of supplied "
                          "images.", string);
 
-        /* Reset the header string. */
-        free(self->header);
-
+        free(tmp_header);
         return LXW_ERROR_PARAMETER_VALIDATION;
     }
+
+    /* Free any previous header string so we can overwrite it. */
+    free(self->header);
+    self->header = NULL;
 
     if (options) {
         /* Ensure there are enough images to match the placeholders. There is
@@ -9681,9 +9689,7 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
                              "string \"%s\" does not match the number of supplied "
                              "images.", string);
 
-            /* Reset the header string. */
-            free(self->header);
-
+            free(tmp_header);
             return LXW_ERROR_PARAMETER_VALIDATION;
         }
 
@@ -9699,7 +9705,7 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
                                                  options->image_left,
                                                  HEADER_LEFT);
         if (err) {
-            free(self->header);
+            free(tmp_header);
             return err;
         }
 
@@ -9707,7 +9713,7 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
                                                  options->image_center,
                                                  HEADER_CENTER);
         if (err) {
-            free(self->header);
+            free(tmp_header);
             return err;
         }
 
@@ -9715,12 +9721,13 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
                                                  options->image_right,
                                                  HEADER_RIGHT);
         if (err) {
-            free(self->header);
+            free(tmp_header);
             return err;
         }
     }
 
-    self->header_footer_changed = 1;
+    self->header = tmp_header;
+    self->header_footer_changed = LXW_TRUE;
 
     return LXW_NO_ERROR;
 }
@@ -9733,25 +9740,30 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
                          lxw_header_footer_options *options)
 {
     lxw_error err;
+    char *tmp_footer;
     char *found_string;
     char *offset_string;
     uint8_t placeholder_count = 0;
     uint8_t image_count = 0;
 
-    if (!string)
+    if (!string) {
+        LXW_WARN_FORMAT("worksheet_set_header_opt/footer_opt(): "
+                        "header/footer string cannot be NULL.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
 
-    if (lxw_utf8_strlen(string) > LXW_HEADER_FOOTER_MAX)
+    if (lxw_utf8_strlen(string) > LXW_HEADER_FOOTER_MAX) {
+        LXW_WARN_FORMAT("worksheet_set_header_opt/footer_opt(): "
+                        "header/footer string exceeds Excel's limit of "
+                        "255 characters.");
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
+    }
 
-    /* Clear existing header. */
-    free(self->footer);
-
-    self->footer = lxw_strdup(string);
-    RETURN_ON_MEM_ERROR(self->footer, LXW_ERROR_MEMORY_MALLOC_FAILED);
+    tmp_footer = lxw_strdup(string);
+    RETURN_ON_MEM_ERROR(tmp_footer, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     /* Replace &[Picture] with &G which is used internally by Excel. */
-    while ((found_string = strstr(self->footer, "&[Picture]"))) {
+    while ((found_string = strstr(tmp_footer, "&[Picture]"))) {
         found_string++;
         *found_string = 'G';
 
@@ -9763,7 +9775,7 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
     }
 
     /* Count &G placeholders and ensure there are sufficient images. */
-    found_string = self->footer;
+    found_string = tmp_footer;
     while (*found_string) {
         if (*found_string == '&' && *(found_string + 1) == 'G')
             placeholder_count++;
@@ -9776,11 +9788,13 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
                          "string \"%s\" does not match the number of supplied "
                          "images.", string);
 
-        /* Reset the footer string. */
-        free(self->footer);
-
+        free(tmp_footer);
         return LXW_ERROR_PARAMETER_VALIDATION;
     }
+
+    /* Free any previous footer string so we can overwrite it. */
+    free(self->footer);
+    self->footer = NULL;
 
     if (options) {
         /* Ensure there are enough images to match the placeholders. There is
@@ -9799,9 +9813,7 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
                              "string \"%s\" does not match the number of supplied "
                              "images.", string);
 
-            /* Reset the header string. */
-            free(self->footer);
-
+            free(tmp_footer);
             return LXW_ERROR_PARAMETER_VALIDATION;
         }
 
@@ -9817,7 +9829,7 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
                                                  options->image_left,
                                                  FOOTER_LEFT);
         if (err) {
-            free(self->footer);
+            free(tmp_footer);
             return err;
         }
 
@@ -9825,7 +9837,7 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
                                                  options->image_center,
                                                  FOOTER_CENTER);
         if (err) {
-            free(self->footer);
+            free(tmp_footer);
             return err;
         }
 
@@ -9833,12 +9845,13 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
                                                  options->image_right,
                                                  FOOTER_RIGHT);
         if (err) {
-            free(self->footer);
+            free(tmp_footer);
             return err;
         }
     }
 
-    self->header_footer_changed = 1;
+    self->footer = tmp_footer;
+    self->header_footer_changed = LXW_TRUE;
 
     return LXW_NO_ERROR;
 }
