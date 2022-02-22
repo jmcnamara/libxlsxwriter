@@ -18,8 +18,6 @@ Install the `pytest` module using one of the following methods:
 
     sudo apt-get install -y python-pytest
     # or
-    sudo easy_install pytest
-    # or
     sudo pip install pytest
 
 The functional tests can then be run:
@@ -29,17 +27,21 @@ The functional tests can then be run:
     $ make test_functional
 
     =========================== test session starts ===========================
-    collected 14 items
+    collected 749 items
 
-    test/functional/test_formatting.py:16: TestCompareXLSXFiles.test_format01 PASSED
-    test/functional/test_formatting.py:19: TestCompareXLSXFiles.test_format02 PASSED
-    test/functional/test_formatting.py:24: TestCompareXLSXFiles.test_format06 PASSED
+    test/functional/test_array_formula.py::TestCompareXLSXFiles::test_array_formula01 PASSED [  0%]
+    test/functional/test_array_formula.py::TestCompareXLSXFiles::test_array_formula02 PASSED [  0%]
+    test/functional/test_array_formula.py::TestCompareXLSXFiles::test_array_formula03 PASSED [  0%]
+    test/functional/test_array_formula.py::TestCompareXLSXFiles::test_array_formula04 PASSED [  1%]
+    test/functional/test_autofilter.py::TestCompareXLSXFiles::test_autofilter00 PASSED       [  1%]
+    test/functional/test_autofilter.py::TestCompareXLSXFiles::test_autofilter01 PASSED       [  1%]
     ...
-    test/functional/test_write_data.py:25: TestCompareXLSXFiles.test_data04 PASSED
-    test/functional/test_write_data.py:28: TestCompareXLSXFiles.test_data05 PASSED
-    test/functional/test_write_data.py:31: TestCompareXLSXFiles.test_data06 PASSED
-    test/functional/test_write_data.py:34: TestCompareXLSXFiles.test_data07 PASSED
-    =========================== 14 passed in 0.41 seconds =====================
+    test/functional/test_write_data.py::TestCompareXLSXFiles::test_data05 PASSED             [ 99%]
+    test/functional/test_write_data.py::TestCompareXLSXFiles::test_data06 PASSED             [ 99%]
+    test/functional/test_write_data.py::TestCompareXLSXFiles::test_data07 PASSED             [ 99%]
+    test/functional/test_write_data.py::TestCompareXLSXFiles::test_data08 PASSED             [ 99%]
+    test/functional/test_write_data.py::TestCompareXLSXFiles::test_data09 PASSED             [100%]
+    =========================== 749 passed in 30.60s ===============================
 
 
 @section tests_ Unit Tests
@@ -55,22 +57,33 @@ The unit tests can then be run as follows:
 
     $ make test_unit
     Compiling unit tests ...
-    TEST 1/155 utility:_datetime_date_and_time [OK]
-    TEST 2/155 utility:_datetime_date_only [OK]
-    TEST 3/155 utility:_datetime_date_only_1904 [OK]
-    TEST 4/155 utility:_datetime_time_only [OK]
+    TEST 1/429 utility:lxw_col_to_name [OK]
+    TEST 2/429 utility:test_datetime_date_and_time [OK]
+    TEST 3/429 utility:test_datetime_date_only [OK]
+    TEST 4/429 utility:test_datetime_date_only_1904 [OK]
+    TEST 5/429 utility:test_datetime_time_only [OK]
+    TEST 6/429 utility:test_unixtime [OK]
     ...
-    TEST 152/155 styles:write_xf34 [OK]
-    TEST 153/155 styles:write_xf35 [OK]
-    TEST 154/155 styles:write_xf36 [OK]
-    TEST 155/155 styles:xml_declaration [OK]
+    TEST 425/429 worksheet:worksheet_table12 [OK]
+    TEST 426/429 worksheet:worksheet_table13 [OK]
+    TEST 427/429 worksheet:worksheet_table14 [OK]
+    TEST 428/429 worksheet:worksheet_table15 [OK]
+    TEST 429/429 table:xml_declaration [OK]
 
-    RESULTS: 155 tests (155 ok, 0 failed, 0 skipped) ran in 42 ms
+    RESULTS: 429 tests (429 ok, 0 failed, 0 skipped) ran in 153 ms
 
 Both functional and unit test can be run together:
 
     $ make test
 
+@section tests_cmake Testing with CMake
+
+You can run the unit and functional tests via CMake as follows:
+
+    cd cmake
+    cmake .. -DBUILD_TESTS=ON
+    cmake --build .
+    ctest -V
 
 @section tests_valgrind Valgrind Tests
 
@@ -88,9 +101,9 @@ Then run the tests:
 
 @section tests_ci GitHub Actions Continuous Integration
 
-Libxlsxwriter is configured to run all tests with [GitHub Actions Continuous
-Integration](https://github.com/jmcnamara/libxlsxwriter/actions) for each
-commit.
+Libxlsxwriter is configured to run all these tests with [GitHub Actions
+Continuous Integration](https://github.com/jmcnamara/libxlsxwriter/actions)
+for each commit.
 
 
 Next: @ref faq

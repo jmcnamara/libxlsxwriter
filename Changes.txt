@@ -426,7 +426,7 @@
   [gh_153]: https://github.com/jmcnamara/libxlsxwriter/issues/153
 
 - Added docs on building an app with Cmake and Microsoft Visual C++ on
-  Windows. See @ref gsg_cmake_app.
+  Windows.
 
 
 ## 0.7.6 January 11 2018
@@ -486,7 +486,7 @@
 
 ## 0.7.0 June 26 2017
 
-- Added support for CMake build system. See @ref gsg_cmake.
+- Added support for CMake build system.
   Thanks to Alex Huszagh.
 
 - Fixed issue where image filehandles weren't closed until the overall file

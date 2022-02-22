@@ -7,12 +7,10 @@ Here are some instructions to get you up and running with the libxlsxwriter
 library on different OSes.
 
 
-@section gsg_linux Installation on Linux
-
-@subsection gsg_quick_start Quick-start on Linux
+@section gsg_quick_start Quick-start on Linux
 
 If you prefer to assemble Ikea furniture first and only read the instructions
-when you have parts left over, then the following minimal set of commands
+when you have parts left over then the following minimal set of commands
 should get you up and running on a Debian like system:
 
     sudo apt-get install -y zlib1g-dev
@@ -21,15 +19,17 @@ should get you up and running on a Debian like system:
     make
     sudo make install
 
-If you read instructions first and then assemble the furniture you will know
-how to proceed.
+If you read the instructions first and then assemble the furniture you will
+know how to proceed.
+
+
+@section gsg_linux Installation on Linux
 
 @subsection gsg_dependencies Install the dependencies
 
-The only dependency (apart from @ref running_the_tests "testing dependencies")
-is [Zlib](http://www.zlib.net) version >= 1.2.8.
+The only non-optional dependency when building libxlsxwriter is [Zlib](http://www.zlib.net).
 
-The easiest way to install `zlib` is from the source code:
+You can do install `zlib` from source as follows:
 
     curl -O -L  http://www.zlib.net/zlib-1.2.11.tar.gz
     tar zxf zlib-1.2.11.tar.gz
@@ -45,21 +45,20 @@ libraries. For example:
 
     sudo apt-get install -y zlib1g-dev
 
-However, you need to ensure that the version installed is >= 1.2.8 or you will
-get zlib related compilation issues.
+The zlib version must be >= 1.2.8 to avoid compilation issues.
+
+@note There optional dependencies that can be installed for testing.
+See @ref running_the_tests.
 
 
-@subsection gsg_git Get the source code via Git
+@subsection gsg_git Get the source code
 
-Clone the libxlsxwriter source code repository from GitHub as follows:
+To get the latest version of the source code you can clone the libxlsxwriter
+repository from GitHub:
 
     git clone https://github.com/jmcnamara/libxlsxwriter.git
-    # Or use your preferred protocol instead of https.
 
-
-@subsection gsg_tarball Get the source code as a tarball
-
-If you prefer you can get a tarball of the latest code as follows:
+Alternatively you can get a tarball of the latest source code as follows:
 
     curl -O -L http://github.com/jmcnamara/libxlsxwriter/archive/master.tar.gz
 
@@ -80,22 +79,32 @@ To see a verbose summary of the compilation steps use `V=1`:
 
     make V=1
 
+With CMake you can build the library as follows:
 
-@subsection gsg_examples Try an example
+    cd cmake # Or another sub-directory.
+    cmake ..
+    cmake --build .
+
+@subsection gsg_examples Build the examples
 
 If there weren't any warnings or errors in the previous step (and there
 shouldn't have been) then you can build the programs in the `examples`
 directory and try one of them out:
 
+    # With Make:
     make examples
+
+    # or CMake:
+    cd cmake
+    cmake .. -DBUILD_EXAMPLES=ON
+    cmake --build .
+
+    # Then:
     ./examples/hello
 
 This will create a `hello_world.xlsx` file in your current directory. Open the
 file in a spreadsheet application. The output should look like this: @image
 html hello01.png
-
-There is a large range of tests that you can run but they have some additional
-dependencies. If you are interested see @ref running_the_tests.
 
 
 @subsection gsg_install Install the library
@@ -111,21 +120,22 @@ by using the `PREFIX` environmental variable:
     make install PREFIX=/usr/third_party
 
 A staging directory can be set with `DESTDIR` which is prepended to all
-install paths, a feature mostly useful for packaging:
+install paths. This is a an occasionally useful feature for packaging:
 
     make install PREFIX=/usr/third_party DESTDIR=./staging/
 
 This would build and link the code with `/usr/third_party` as the
 installation location but actually install to `./staging/usr/third_party`.
 
-This installation method isn't fool proof but if it fails on your system you
-will probably know exactly how to fix it or have no idea how to fix it. I'm
-hoping for the former.
+With CMake you can install the library as follows:
 
+    cd cmake
+    cmake ..
+    cmake --build . --target install
 
 @subsection gsg_using Using the library
 
-Using you favourite editor create a file like the following called
+Using your source code editor create a file like the following called
 `myexcel.c`:
 
 @code
@@ -179,39 +189,21 @@ library you created in the "Build the source code" step:
                                /path/to/libxlsxwriter/lib/libxlsxwriter.a -lz
 
 
-@section gsg_bsd Installation on FreeBSD and OpenBSD
-
-Installation on FreeBSD and OpenBSD is mainly the same as on Linux, see above,
-with the differences outlined below.
-
-Both FreeBSD and OpenBSD come with the zlib development libraries
-pre-installed so there are no additional dependencies. However, if you have
-any issues then follow the instructions
-@ref gsg_dependencies "to install zlib".
-
-
-@ref gsg_git or @ref gsg_tarball "get the source code as a tarball" as shown
-above then build the source code as follows using **gmake** (not make):
-
-    cd libxlsxwriter
-    gmake
-
-Then follow the instructions in the Linux section to
-@ref gsg_install "install the library" and
-@ref gsg_using "use the library".
-
-
 @section gsg_macos Installation on macOS and iOS
 
-The instructions for installing on Linux, shown above, will also work on
-macOS.
+The easiest way to install libxlsxwriter for Xcode and iOS is to use the
+CocoaPods method shown in the next section.
 
-To install for Xcode and iOS use the Cocoa Pods method shown in the next
-section.
+To install libxlsxwriter from the macOS commandline requires the
+[Xcode "commandline tools"](https://developer.apple.com/xcode/resources/).
+You can then follow the same instructions for compiling and installing on
+Linux, as shown above.
 
-On macOS you can also use [brew/homebrew](https://brew.sh), see below.
+For commandline access to libxlsxwriter you can also use
+[brew/homebrew](https://brew.sh), see below.
 
-@subsection gsg_cocoapods Install using Cocoa Pods for Xcode
+
+@subsection gsg_cocoapods Install using CocoaPods for Xcode
 
 For iOS and macOS projects in Xcode you can install libxlsxwriter using
 [CocoaPods](https://cocoapods.org).
@@ -240,28 +232,6 @@ macOS with Objective-C and Swift see [libxlsxwriter Cocoa
 Examples](https://github.com/lrossi/libxlsxwriterCocoaExamples) or
 [LibXlsxWriterSwiftSample](https://github.com/FrankenApps/LibXlsxWriterSwiftSample).
 
-@subsection gsg_universal Compiling a universal binary on macOS
-
-With Xcode 12.2 and later you can compile libxlsxwriter as a "universal
-binary" for both Apple silicon and Intel-based Macs, i.e., arm64 and x86_64.
-
-You can compile a universal binary with standard make as follows:
-
-    $ make universal_binary
-
-    # Which gives:
-    $ lipo -archs lib/libxlsxwriter.a
-    x86_64 arm64
-
-    $ lipo -archs lib/libxlsxwriter.dylib
-    x86_64 arm64
-
-Or with Cmake (see also @ref gsg_cmake):
-
-    cd cmake
-    cmake -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64" ..
-    make
-
 
 @subsection gsg_brew Installation on macOS with homebrew
 
@@ -274,79 +244,116 @@ Once installed you can compile and run a libxlsxwriter program as follows:
     cc myexcel.c -o myexcel -I/usr/local/include -L/usr/local/lib -lxlsxwriter
     ./myexcel
 
-@section gsg_cmake Install using CMake
+@section gsg_windows Installation on Windows
 
-Libxlsxwriter also supports [CMake](https://cmake.org) for building and
-installing the library, as follows:
+There are several ways to compile libxlsxwriter on and for Windows, see below.
 
-    cmake $SOURCE_DIR $FLAGS
 
-For example:
+@subsection gsg_vcpkg Using vcpkg for Microsoft Visual Studio
 
-    cd cmake
-    cmake ..
-    make
-    make install
+The most convenient way to get the latest release version of libxlsxwriter and
+integrate it into your Visual Studio build environment is to use the
+[vcpkg](https://vcpkg.io) tool:
 
-@subsection gsg_cmake_flags CMake Flags
+> vcpkg is a free C/C++ package manager for acquiring and managing
+> libraries. Choose from over 1500 open source libraries to download and build
+> in a single step or add your own private libraries to simplify your build
+> process. Maintained by the Microsoft C++ team and open source contributors.
 
-Certain build features can be controlled by passing flags to Cmake. For
+
+Install vcpkg and libxlsxwriter as follows in Windows CMD or Powershell:
+
+    git clone https://github.com/microsoft/vcpkg.git
+    cd vcpkg
+    bootstrap-vcpkg.bat
+    vcpkg install libxlsxwriter
+
+You should then see libxlsxwriter installed as follows (note that the required
+zlib dependency has also been installed):
+
+    vcpkg list
+
+      libxlsxwriter:x86-windows  0.8.6-1   Libxlsxwriter is a C library that ...
+      zlib:x86-windows           1.2.11-5  A compression library
+
+You can also install libxlsxwriter for other build targets like `x64`
+
+    vcpkg install libxlsxwriter:x64-windows
+
+    vcpkg list
+
+      libxlsxwriter:x64-windows  1.1.4      Libxlsxwriter is a C library that ...
+      libxlsxwriter:x86-windows  1.1.4      Libxlsxwriter is a C library that ...
+      zlib:x64-windows           1.2.11#13  A compression library
+      zlib:x86-windows           1.2.11#13  A compression library
+
+To use libxlsxwriter from within Visual Studio you can "integrate" it into
+your environment:
+
+    vcpkg integrate install
+
+      Applied user-wide integration for this vcpkg root.
+
+All MSBuild C projects can now include libxlsxwriter directly. Linking will
+also be handled automatically. For example, create a new Win32 Console (or
+other C/C++) application in Visual Studio:
+
+    File
+      -> New
+        -> Project
+
+    Visual C++
+      -> Win32
+        -> Win32 Console Application
+
+Replace the empty main with a libxlsxwriter example from the distro. For
 example:
 
-    cd cmake
-    cmake .. -DBUILD_TESTS=ON
-    make
+@code
+// Some older versions on Visual Studio may need "stdafx.h".
+// #include "stdafx.h"
 
-    # Run the unit tests.
-    ./xlsxwriter_unit
+#include "xlsxwriter.h"
 
-Some of the Libxlsxwriter specific flags are:
+int main() {
 
-- `BUILD_STATIC`: Build static libraries (default on). To build shared
-   libraries, pass `-DBUILD_STATIC=OFF` during configuration.
+    lxw_workbook  *workbook = workbook_new("hello_world.xlsx");
+    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
-- `BUILD_EXAMPLES`: Build example files (default off). To build the examples,
-   pass `-DBUILD_EXAMPLES=ON` during configuration.
+    worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
+    worksheet_write_number(worksheet, 1, 0, 123, NULL);
 
-- `BUILD_TESTS`: Build unittests (default off). To build the unittests, pass
-  `-DBUILD_TESTS=ON` during configuration.
+    workbook_close(workbook);
 
-- `ZLIB_ROOT`: The ZLIB root directory can be specified either through an
-   environment variable (`export ZLIB_ROOT=/usr/include`) or using a flag with
-   CMake (`-DZLIB_ROOT:STRING=/usr/include`). This sets the preferred search
-   path for the ZLIB installation.
+    return 0;
+}
+@endcode
 
-@subsection gsg_cmake_options CMake Options
+Change the target to "Release" and the architecture to "x86" or "x64"
+(depending on the version you installed above). You can now "Build Solution".
+The resulting executable will be put in the output directory with the required
+"xlsxwriter.dll" and "zlib1.dll" files.
 
-CMake sets debug and release builds with the `CMAKE_BUILD_TYPE` option. To
-build in release mode, pass `-DCMAKE_BUILD_TYPE=Release` during configuration.
 
-@subsection gsg_cmake_generators CMake Generators
+@subsection gsg_cmake_app Using CMake for Microsoft Visual Studio
 
-CMake also supports custom build generators, such as Makefiles, Ninja, Visual
-Studio, and Xcode. For example, to generate a Visual Studio solution,
-configure with:
-
-    cmake .. -G "Visual Studio 14 2015 Win64"
-
-For more information on using generators see:
-[cmake-generators](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html).
-
-@subsection gsg_cmake_app Cmake for Microsoft Visual Studio
-
-You can also use Cmake to build a Microsoft Visual Studio (although see also
-the next section on using vcpkg which is less manual).
+For a more manual installation, and for older versions of Microsoft Visual
+Studio or Windows, you can use CMake as shown below.
 
 Open a Windows CMD or Command Window and set up your MSVC environment, if
-required.
+required. Something like this:
 
-Then create a work directory and and an install directory that the include and
+    "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+
+    # Or:
+    "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+
+Then create a work directory and an install directory that the include and
 library files will be installed to. Set the follow variables to point to the
 directories:
 
     set    WORK_DIR=C:/Users/Username/tmp
     set INSTALL_DIR=C:/Users/Username/tmp/install_dir
-
 
 Build the Zlib library:
 
@@ -387,13 +394,14 @@ Create a new Win32 Console (or other C/C++) application in Visual Studio:
 
 
 Change the ARCH in the main Dialog to "x64" and the Configuration to "Release"
-(or to match the parameter to cmake).
+(or to match the parameters to cmake).
 
 Replace the empty main with a libxlsxwriter example from the distro. Make sure
 to include "stdafx.h" and "xlsxwriter.h":
 
 @code
-#include "stdafx.h"
+#include "stdafx.h" // This may not be required.
+
 #include "xlsxwriter.h"
 
 int main() {
@@ -455,91 +463,218 @@ Build the solution and run the output executable. It should create a
 hello_world.xlsx file in the same directory you ran it from.
 
 
-@section gsg_vcpkg Using libxlsxwriter in Microsoft Visual Studio via vcpkg
+@subsection gsg_ming Installation on Windows using Mingw-w64 and MSYS2
 
-A convenient way to get the latest release version of libxlsxwriter and
-integrate it into your Visual Studio build environment is to use the
-[vcpkg](https://vcpkg.io)
-tool. This uses the CMake build system shown in the previous section but with
-less user interaction. From the vcpkg docs:
+The libxlsxwriter library can also be compiled on Windows using the
+[Mingw-w64](http://mingw-w64.org/doku.php) "Minimalist GNU for Windows"
+toolchain. These tools can be run from the Windows `cmd.exe` but it is
+recommended to use the [MSYS2](http://msys2.github.io) "Minimal System" Bourne
+Shell.
 
-> vcpkg is a free C/C++ package manager for acquiring and managing
-> libraries. Choose from over 1500 open source libraries to download and build
-> in a single step or add your own private libraries to simplify your build
-> process. Maintained by the Microsoft C++ team and open source contributors.
+Here are some instructions on how to compile libxlsxwriter with Mingw-w64 and
+MSYS2:
 
+    # Install MSYS2 64 or 32 bit from http://msys2.github.io/
 
-Install vcpkg and libxlsxwriter as follows in Windows CMD or Powershell:
+    # Install the dev tools for libxlsxwriter.
+    pacman -S git gcc make zlib-devel
 
-    > git clone https://github.com/microsoft/vcpkg.git
-    > cd vcpkg
-    > bootstrap-vcpkg.bat
-    > vcpkg install libxlsxwriter
+    # Clone and build libxlsxwriter.
+    git clone https://github.com/jmcnamara/libxlsxwriter.git
+    cd libxlsxwriter/
+    make
 
-You should then see libxlsxwriter installed as follows (note that the required
-zlib dependency has also been installed):
+By default the library is installed in `/usr/local` on MinGW/MSYS systems. If
+you know how to extend your build environments to use that directory then you
+can just run `make install`. However, it is generally causes less compile/link
+issues if you install them in the `/usr` directory like this:
 
-    > vcpkg list
-    libxlsxwriter:x86-windows  0.8.6-1   Libxlsxwriter is a C library that ...
-    zlib:x86-windows           1.2.11-5  A compression library
+    make install PREFIX=/usr
 
-You can also install libxlsxwriter for other build targets like `x64`
+After compilation you can follow the instructions in the @ref gsg_using
+section above. When compiling with the library you may also need to link
+against the zlib library using `-lz`:
 
-    > vcpkg install libxlsxwriter:x64-windows
+    gcc myexcel.c -o myexcel -lxlsxwriter -lz
 
-    > vcpkg list
-    libxlsxwriter:x64-windows  0.8.6-1   Libxlsxwriter is a C library that ...
-    libxlsxwriter:x86-windows  0.8.6-1   Libxlsxwriter is a C library that ...
-    zlib:x64-windows           1.2.11-5  A compression library
-    zlib:x86-windows           1.2.11-5  A compression library
+It is also possible to use [Cygwin](https://cygwin.com) and the older [MinGW
+and MSYS](http://mingw.org). Libxlsxwriter has been confirmed to compile and
+work in all of these environments.
 
-To use libxlsxwriter from within Visual Studio you can "integrate" it into
-your environment:
+See also @ref gsg_tmpdir.
 
-    > vcpkg integrate install
-    Applied user-wide integration for this vcpkg root.
+@subsection gsg_qt Installation in Qt-Creator for Windows
 
-All MSBuild C projects can now include libxlsxwriter directly. Linking will
-also be handled automatically. For example, create a new Win32 Console (or
-other C/C++) application in Visual Studio:
+The following external guide shows how to [Build libxlsxwriter inside
+Qt-Creator for Windows](https://github.com/jmcnamara/libxlsxwriter/issues/270)
+with step by step instructions.
 
-    File
-      -> New
-        -> Project
+@section gsg_bsd Installation on FreeBSD and OpenBSD
 
-    Visual C++
-      -> Win32
-        -> Win32 Console Application
+Installation on FreeBSD and OpenBSD is mainly the same as on @ref gsg_linux
+"Linux". To compile the library @ref gsg_git "get the source code" and build it
+using **gmake** (not make):
 
-Replace the empty main with a libxlsxwriter example from the distro. Make sure
-to include "stdafx.h" and "xlsxwriter.h":
+    cd libxlsxwriter
+    gmake
 
-@code
-// Some older versions on Visual Studio make need this include:
-// #include "stdafx.h"
-#include "xlsxwriter.h"
+Then follow the instructions in the Linux section to @ref gsg_install
+"install" and @ref gsg_using "use" the library.
 
-int main() {
-
-    lxw_workbook  *workbook = workbook_new("hello_world.xlsx");
-    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
-
-    worksheet_write_string(worksheet, 0, 0, "Hello", NULL);
-    worksheet_write_number(worksheet, 1, 0, 123, NULL);
-
-    workbook_close(workbook);
-
-    return 0;
-}
-@endcode
-
-Change the target to "Release" and the architecture to "x86" (or whatever you
-installed above). You can now "Build Solution". The resulting executable will
-be put in the output directory with the required "xlsxwriter.dll" and
-"zlib1.dll" files.
+Both FreeBSD and OpenBSD come with the zlib development libraries
+pre-installed so there are no additional dependencies. However, if you have
+any issues then follow the instructions to @ref gsg_dependencies "install zlib".
 
 
-@section gsg_tmpdir Specifying a TEMP directory for libxlsxwriter
+@section gsg_compilation_options Compilation Options
+
+As shown in the previous sections Libxlsxwriter provides both a Make and
+CMake based build system. The Make build is a straightforward system for
+building the library and running tests on Unix like systems. The CMake system
+offers support for more operating systems, cross compilation, and integration
+with larger CMake builds. In particular it enables building on Windows.
+
+The following are various compilation targets and options for both build systems:
+
+| Make                     | CMake                                      | Description                         |
+| :----------------------- | :----------------------------------------- | :---------------------------------- |
+| `examples`               | `-DBUILD_EXAMPLES=ON`                      | Build the example                   |
+| `test`                   | `-DBUILD_TESTS=ON`                         | Build the tests                     |
+| `USE_DTOA_LIBRARY=1`     | `-DUSE_DTOA_LIBRARY=ON`                    | Use alternative double sprintf      |
+| `USE_FMEMOPEN=1`         | `-DUSE_FMEMOPEN=ON`                        | Use fmemopen() for temp image files |
+| `USE_OPENSSL_MD5=1`      | `-DUSE_OPENSSL_MD5=ON`                     | Use OpenSSL for MD5 digest          |
+| `USE_NO_MD5=1`           | `-DUSE_NO_MD5=ON`                          | Don't use a MD5 digest              |
+| `USE_SYSTEM_MINIZIP=1`   | `-DUSE_SYSTEM_MINIZIP=ON`                  | Use system minzip library           |
+| `USE_STANDARD_TMPFILE=1` | `-DUSE_STANDARD_TMPFILE=ON`                | Use system tmpfile() function       |
+| `USE_BIG_ENDIAN=1`       | `-DUSE_BIG_ENDIAN=ON`                      | Build on big endian systems         |
+| `universal_binary`       | `-DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"` | Create a macOS "Universal Binary"   |
+|                          | `-DBUILD_SHARED_LIBS=ON`                   | Build shared library (default on)   |
+|                          | `-DUSE_STATIC_MSVC_RUNTIME=ON`             | Use static msvc runtime library     |
+|                          | `-DCMAKE_BUILD_TYPE=Release`               | Set the build type.                 |
+
+
+The compilation options would be used as follows:
+
+    # Make
+    make examples USE_DTOA_LIBRARY=1`
+
+    # CMake
+    cd cmake
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=ON -DUSE_DTOA_LIBRARY=ON
+    cmake --build . --config Release
+
+Each of the options are explained below:
+
+- `examples/BUILD_EXAMPLES`: Builds the @ref examples "example programs".
+
+- `test/BUILD_TESTS`: Builds the tests (see @ref running_the_tests). With Make
+  the tests are also run once they are compiled. With CMake you can run them
+  using `ctest`.
+
+- `USE_DTOA_LIBRARY`: See @ref gsg_dtoa "using a double formatting library".
+
+- `USE_FMEMOPEN`: When inserting an image from a buffer using
+  `worksheet_insert_image_buffer()` libxlsxwriter writes the buffer to a
+  temporary file before processing it. In order to avoid this small overhead
+  you can use this option to invoke `fmemopen()` instead. This option isn't on
+  by default since it isn't supported on Windows.
+
+- `USE_OPENSSL_MD5`: Uses OpenSSL to provide a MD5 digest of image files in
+  order to avoid storing duplicates. See @ref gsg_md5.
+
+- `USE_NO_MD5`: Don't use a MD5 digest of image files in order to remove
+  duplicates. This can be used if you aren't handling image files and don't
+  need the additional function in the library. See @ref gsg_md5.
+
+- `USE_SYSTEM_MINIZIP`: Uses a system minizip library, rather than the
+  included copy, to create the xlsx zip container. See @ref gsg_minizip.
+
+- `USE_STANDARD_TMPFILE`: Uses the standard library `tmpfile()` function
+  to handle temp files instead of `tmpfileplus`. See @ref gsg_tmpdir.
+
+- `USE_BIG_ENDIAN`: Compiles libxlsxwriter on a big endian system. See @ref
+  gsg_endian.
+
+- `universal_binary/CMAKE_OSX_ARCHITECTURES`: Builds a "universal binary" for
+   both Apple silicon and Intel-based Macs. See @ref gsg_universal.
+
+- `BUILD_SHARED_LIBS`: Builds a dynamically loading version of the library
+  (`.so`, `.dll` or `.dylib` depending on the operating system).
+
+- `USE_STATIC_MSVC_RUNTIME`: Sets flags for Microsoft Visual C to use a static
+  MSVC runtime.
+
+- `CMAKE_BUILD_TYPE`: Sets the build type (generally `Release` or `Debug`).
+
+You can view, and set, your CMake options from within your build directory
+using the `ccmake` tool:
+
+    ccmake .
+
+
+@subsection gsg_dtoa Using a double formatting library
+
+Excel uses an IEEE 754 doubles for all numeric values. These values are stored
+in standard `sprintf(...,"%.16G",...)` formatting as numbers like "1234.56" or
+"456E+123". However in some locales, such as "de_DE" these numbers can be
+stored with the locale specific decimal place like "1234,56" which causes
+Excel to give an error when it loads the file.
+
+It some cases this issue can be resolved by using the `setlocale()` or
+`uselocale()` functions in your application. Alternatively you can compile
+libxlsxwriter with support for a third party `dtoa()` (decimal to ascii)
+function. Currently libxlsxwriter uses the [Milo Yip DTOA
+library](https://github.com/miloyip/dtoa-benchmark) as an optional
+compilation. This avoids the locale sprintf issue and it is also 40-50% faster
+than the standard dtoa for raw numeric data.
+
+
+@subsection gsg_md5 MD5 functionality for handling duplicate images
+
+Libxlsxwriter uses a an MD5 digest to avoid including duplicate image files in
+the xlsx file. By default it uses a third party library, [Openwall
+MD5](https://openwall.info/wiki/people/solar/software/public-domain-source-code/md5),
+which is a fast portable implementation of the MD5 Algorithm and which uses
+the same function prototypes as OpenSSL MD5 digest. See @ref license.
+
+The Openwall MD5 code is included in the libxlsxwriter repo and compiled in by
+default. If you don't want to use this code, and the additional license, you
+can use OpenSSL's MD5 functions dynamically by using the `USE_OPENSSL_MD5`
+option:
+
+    make USE_OPENSSL_MD5=1
+
+    # or:
+    cmake .. -DUSE_OPENSSL_MD5=ON
+
+This requires that you have the OpenSSL development libraries installed and on
+paths known to your compiler.
+
+If this MD5 functionality isn't required it is possible to compile
+libxlsxwriter without image de-duplication by using the `USE_NO_MD5=1` option:
+
+    make USE_NO_MD5=1
+
+    # or:
+    cmake .. -DUSE_NO_MD5=ON
+
+@subsection gsg_minizip Linking against system minizip
+
+Libxlsxwriter uses the `minizip` component of [Zlib](http://www.zlib.net) to
+create the xlsx zip file container. The source files for `minizip` are
+included in the src tree of libxlsxwriter and are statically linked by
+default.
+
+If you have a `lminizip` library already installed on your system and prefer
+to dynamically link against that you can use the following compilation option:
+
+    make USE_SYSTEM_MINIZIP=1
+
+    # or:
+    cmake .. -DUSE_SYSTEM_MINIZIP=ON
+
+
+@subsection gsg_tmpdir Specifying a TEMP directory for libxlsxwriter
 
 The libxlsxwriter library creates temporary files in the system `TEMP`
 directory during assembly of an xlsx file. On Windows this directory may not
@@ -567,120 +702,78 @@ follows:
 
     make USE_STANDARD_TMPFILE=1
 
+    # or:
+    cmake .. -DUSE_STANDARD_TMPFILE=ON
+
 @note When using the the standard library `tmpfile()` the `tmpdir` parameter,
 shown above, is ignored.
 
-@section gsg_ming Installation on Windows using Mingw-w64 and MSYS2
-
-The libxlsxwriter library can also be compiled on Windows using the
-[Mingw-w64](http://mingw-w64.org/doku.php) "Minimalist GNU for Windows"
-toolchain. These tools can be run from the Windows `cmd.exe` but it is
-recommended to use the [MSYS2](http://msys2.github.io) "Minimal System" Bourne
-Shell.
-
-Here are some instructions on how to compile libxlsxwriter with Mingw-w64 and
-MSYS2:
-
-    # Install MSYS2 64 or 32 bit from http://msys2.github.io/
-
-    # Install the dev tools for libxlsxwriter.
-    pacman -S git gcc make zlib-devel
-
-    # Clone and build libxlsxwriter.
-    git clone https://github.com/jmcnamara/libxlsxwriter.git
-    cd libxlsxwriter/
-    make
-
-By default the library is installed in `/usr/local` on MinGW/MSYS systems. If
-you know how to extend your build environments to use that directory then you
-can just run `make install`. However, it is generally easier to work with if
-you install them in the `/usr` directory like this:
-
-    make install PREFIX=/usr
-
-After compilation you can follow the instructions in the @ref gsg_using
-section above. When compiling with the library you may also need to link
-against the zlib library using `-lz`:
-
-    gcc myexcel.c -o myexcel -lxlsxwriter -lz
-
-It is also possible to use [Cygwin](https://cygwin.com) and the older [MinGW
-and MSYS](http://mingw.org). Libxlsxwriter has been confirmed to compile and
-work in all of these environments.
-
-See also @ref gsg_tmpdir.
-
-@section gsg_qt Installation in Qt-Creator for Windows
-
-The following external guide shows how to [Build libxlsxwriter inside
-Qt-Creator for Windows](https://github.com/jmcnamara/libxlsxwriter/issues/270)
-with step by step instructions.
-
-@section gsg_md5 MD5 functionality for handling duplicate images
-
-Libxlsxwriter uses a an MD5 digest to avoid including duplicate image files in
-the xlsx file. By default it uses a third party library, [Openwall
-MD5](https://openwall.info/wiki/people/solar/software/public-domain-source-code/md5),
-which is a fast portable implementation of the MD5 Algorithm and which uses
-the same function prototypes as OpenSSL MD5 digest. See @ref license.
-
-The Openwall MD5 code is included in the libxlsxwriter repo and compiled in by
-default. If you don't want to use this code, and the additional license, you
-can use OpenSSL's MD5 functions dynamically by passing `USE_OPENSSL_MD5=1` to
-make.
-
-    make USE_OPENSSL_MD5=1
-
-This requires that you have the OpenSSL development libraries installed and on
-paths known to your compiler.
-
-If this MD5 functionality isn't required it is possible to compile
-libxlsxwriter without image de-duplication by passing `USE_NO_MD5=1` to make.
-
-    make USE_NO_MD5=1
-
-@section gsg_minizip Linking against system minizip
-
-Libxlsxwriter uses the `minizip` component of [Zlib](http://www.zlib.net) to
-create the xlsx zip file container. The source files for `minizip` are
-included in the src tree of libxlsxwriter and are statically linked by
-default.
-
-If you have a `lminizip` library already installed on your system and prefer
-to dynamically link against that you can use the following compilation option:
-
-    make USE_SYSTEM_MINIZIP=1
-
-@section gsg_endian Compiling on Big Endian Architecture
+@subsection gsg_endian Compiling on Big Endian Architecture
 
 Libxlsxwriter can be compiled on a big endian system as follows:
 
     make USE_BIG_ENDIAN=1
 
+    # or:
+    cmake .. -DUSE_BIG_ENDIAN=ON
 
-@section gsg_dtoa Using a double formatting library
+@subsection gsg_universal Compiling a universal binary on macOS
 
-Excel uses an IEEE 754 doubles for all numeric values. These values are stored
-in standard `sprintf(...,"%.16G",...)` formatting as numbers like "1234.56" or
-"456E+123". However in some locales, such as "de_DE" these numbers can be
-stored with the locale specific decimal place like "1234,56" which causes
-Excel to give an error when it loads the file.
+With Xcode 12.2 and later you can compile libxlsxwriter as a "universal
+binary" for both Apple silicon and Intel-based Macs, i.e., arm64 and x86_64.
 
-It some cases this issue can be resolved by using the `setlocale()` or
-`uselocale()` functions in your application. Alternatively you can compile
-libxlsxwriter with support for a third party `dtoa()` (decimal to ascii)
-function. Currently libxlsxwriter uses the [Milo Yip DTOA
-library](https://github.com/miloyip/dtoa-benchmark) as an optional
-compilation. This avoids the locale sprintf issue and it is also 40-50% faster
-than the standard dtoa for raw numeric data.
+You can compile a universal binary with standard make as follows:
 
-If you wish to use it you can pass "USE_DTOA_LIBRARY=1" to `make` or
-"-DUSE_DTOA_LIBRARY=ON" to cmake.
+    $ make universal_binary
+
+    # Which gives:
+    $ lipo -archs lib/libxlsxwriter.a
+    x86_64 arm64
+
+    $ lipo -archs lib/libxlsxwriter.dylib
+    x86_64 arm64
+
+Or with CMake:
+
+    cd cmake
+    cmake .. -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+    make
+
+
+@subsection gsg_minimal Minimal dependency compilation
+
+As explained in the previous sections Libxlsxwriter includes 3 additional
+libraries within the `third_party` directory:
+
+1. `md5`: Used for MD5 hashing to avoid including duplicate images. See @ref
+   gsg_md5.
+
+2. `minizip`: Uses creating the xlsx zip container (this is part of the zlib
+   code base but generally packaged separately). See @ref gsg_minizip.
+
+3. `tmpfileplus`: Used mainly to overcome temp file issues on Windows but also
+   used for changing the default temp directory. See @ref gsg_tmpdir.
+
+These components are included in the libxlsxwriter repository to ensure that
+the library compiles and runs on as many OSes as possible with the least
+amount of additional dependencies.
+
+However, all of these are optional and a minimal version of libxlsxwriter can
+be compiled without them by relying on external libraries as follows:
+
+    # Make:
+    make USE_OPENSSL_MD5=1 USE_SYSTEM_MINIZIP=1 USE_STANDARD_TMPFILE=1
+
+    # CMake:
+    cd cmake
+    cmake .. -DUSE_OPENSSL_MD5=ON -DUSE_SYSTEM_MINIZIP=ON -DUSE_STANDARD_TMPFILE=ON
+    cmake --build .
 
 @section gsg_next Next steps
 
-If you got libxlsxwriter built and working successfully then the next sections
-will look at how to create some more in-depth examples.
+Once you get libxlsxwriter built and working the next sections will show you
+how to create some more in-depth examples.
+
 
 Next: @ref tutorial01
 
