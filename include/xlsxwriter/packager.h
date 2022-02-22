@@ -18,7 +18,6 @@
 #include "third_party/zip.h"
 #endif
 
-
 #include "common.h"
 #include "workbook.h"
 #include "worksheet.h"
