@@ -36,7 +36,7 @@ int main() {
             for (col_num = 0; col_num < 64; col_num += 8) {
 
                 chart = workbook_add_chart(workbook, chart_types[chart_num]);
-                sprintf(chart_title, "Style %d", style_num);
+                snprintf(chart_title, 32, "Style %d", style_num);
 
                 chart_add_series(chart, NULL, "=Data!$A$1:$A$6");
                 chart_title_set_name(chart, chart_title);

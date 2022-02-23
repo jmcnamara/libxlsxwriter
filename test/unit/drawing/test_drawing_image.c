@@ -4,6 +4,9 @@
  * Copyright 2014-2022, John McNamara, jmcnamara@cpan.org
  *
  */
+#ifdef _WIN32
+#define strdup _strdup
+#endif
 
 #include <string.h>
 #include "../ctest.h"

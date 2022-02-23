@@ -24,7 +24,7 @@ width_to_pixels(double width)
     else
         pixels = (uint32_t) (width * max_digit_width + 0.5) + 5;
 
-    return pixels;
+    return (uint32_t)pixels;
 }
 
 // Function used for testing.

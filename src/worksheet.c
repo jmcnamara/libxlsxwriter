@@ -3480,8 +3480,8 @@ lxw_worksheet_prepare_header_image(lxw_worksheet *self,
     header_image_vml = calloc(1, sizeof(lxw_vml_obj));
     GOTO_LABEL_ON_MEM_ERROR(header_image_vml, mem_error);
 
-    header_image_vml->width = object_props->width;
-    header_image_vml->height = object_props->height;
+    header_image_vml->width = (uint32_t) object_props->width;
+    header_image_vml->height = (uint32_t) object_props->height;
     header_image_vml->x_dpi = object_props->x_dpi;
     header_image_vml->y_dpi = object_props->y_dpi;
     header_image_vml->rel_index = 1;
@@ -4251,7 +4251,7 @@ _get_image_properties(lxw_object_properties *image_props)
 
     size_read = fread(buffer, 1, LXW_IMAGE_BUFFER_SIZE, image_props->stream);
     while (size_read) {
-        MD5_Update(&md5_context, buffer, size_read);
+        MD5_Update(&md5_context, buffer, (unsigned long) size_read);
         size_read =
             fread(buffer, 1, LXW_IMAGE_BUFFER_SIZE, image_props->stream);
     }

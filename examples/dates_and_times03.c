@@ -24,13 +24,13 @@ int main() {
     /* Write some Unix datetimes with formatting. */
 
     /* 1970-01-01. The Unix epoch. */
-    worksheet_write_unixtime(worksheet, 0, 0,           0, format);
+    worksheet_write_unixtime(worksheet, 0, 0,             0, format);
 
     /* 2000-01-01. */
-    worksheet_write_unixtime(worksheet, 1, 0,  1577836800, format);
+    worksheet_write_unixtime(worksheet, 1, 0,  1577836800LL, format);
 
     /* 1900-01-01. */
-    worksheet_write_unixtime(worksheet, 2, 0, -2208988800, format);
+    worksheet_write_unixtime(worksheet, 2, 0, -2208988800LL, format);
 
     return workbook_close(workbook);
 }

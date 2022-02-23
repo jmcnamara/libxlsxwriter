@@ -441,7 +441,7 @@ double
 lxw_unixtime_to_excel_date_epoch(int64_t unixtime, uint8_t date_1904)
 {
     double excel_datetime = 0.0;
-    int epoch = date_1904 ? 24107.0 : 25568.0;
+    double epoch = date_1904 ? 24107.0 : 25568.0;
 
     excel_datetime = epoch + (unixtime / (24 * 60 * 60.0));
 

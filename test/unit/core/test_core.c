@@ -13,6 +13,7 @@
 
 #ifdef _WIN32
 #define timegm _mkgmtime
+#define strdup _strdup
 #endif
 
 // Test assembling a complete core file.

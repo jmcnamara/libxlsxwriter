@@ -155,6 +155,8 @@ void assert_fail(const char* caller, int line);
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #include <windows.h>
+#include <io.h>
+#define isatty _isatty
 #endif
 
 #ifdef __APPLE__
@@ -344,13 +346,11 @@ static int gettimeofday(struct timeval* tp, void* tz)
         uint64_t ns100;
         FILETIME file_time;
     } now;
-    SYSTEMTIME system_time;
-    uint64_t value;
 
     if (tp != NULL) {
         GetSystemTimeAsFileTime(&now.file_time);
         now.ns100 -= EPOCH_TIME;
-        tp->tv_sec = now.ns100 / HECTONANOSEC_PER_SEC;
+        tp->tv_sec = (long)now.ns100 / HECTONANOSEC_PER_SEC;
         tp->tv_usec = (long) (now.ns100 % HECTONANOSEC_PER_SEC) / 10;
     }
 
