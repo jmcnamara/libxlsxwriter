@@ -58,3 +58,5 @@ cmake
 !cmake/FindMINIZIP.cmake
 !cmake/FindPackage.cmake
 !cmake/i686-toolchain.cmake
+
+.vscode
