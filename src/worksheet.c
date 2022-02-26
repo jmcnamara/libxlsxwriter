@@ -2626,6 +2626,9 @@ _worksheet_write_page_setup(lxw_worksheet *self)
     else
         LXW_PUSH_ATTRIBUTES_STR("orientation", "landscape");
 
+    if (self->black_white)
+        LXW_PUSH_ATTRIBUTES_STR("blackAndWhite", "1");
+
     /* Set start page active flag. */
     if (self->page_start)
         LXW_PUSH_ATTRIBUTES_INT("useFirstPageNumber", 1);
@@ -10057,6 +10060,16 @@ worksheet_set_print_scale(lxw_worksheet *self, uint16_t scale)
     self->fit_page = LXW_FALSE;
 
     self->print_scale = scale;
+    self->page_setup_changed = LXW_TRUE;
+}
+
+/*
+ * Set the print in black and white option.
+ */
+void
+worksheet_print_black_and_white(lxw_worksheet *self)
+{
+    self->black_white = LXW_TRUE;
     self->page_setup_changed = LXW_TRUE;
 }
 
