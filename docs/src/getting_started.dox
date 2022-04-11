@@ -29,7 +29,7 @@ know how to proceed.
 
 The only non-optional dependency when building libxlsxwriter is [Zlib](http://www.zlib.net).
 
-You can do install `zlib` from source as follows:
+You can install `zlib` from source as follows:
 
     curl -O -L  http://www.zlib.net/zlib-1.2.11.tar.gz
     tar zxf zlib-1.2.11.tar.gz
@@ -47,7 +47,7 @@ libraries. For example:
 
 The zlib version must be >= 1.2.8 to avoid compilation issues.
 
-@note There optional dependencies that can be installed for testing.
+@note There are optional dependencies that can be installed for testing.
 See @ref running_the_tests.
 
 
@@ -154,20 +154,20 @@ Using your source code editor create a file like the following called
     }
     @endcode
 
-If you executed the `"make install"` command in the previous section then you
+If you executed the install commands in the previous section then you
 should be able to compile the program as follows:
 
     cc myexcel.c -o myexcel -lxlsxwriter
 
-In some environments, or if you changed the `PREFIX` location, you may
+In some OS environments, or if you changed the `PREFIX` location, you may
 have to provide explicit `include` and `lib` paths:
 
     cc myexcel.c -o myexcel -I/usr/local/include -L/usr/local/lib -lxlsxwriter
 
 You can also use
-[pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/) (after you
-use `"make install"`) to automatically determine the required arguments and
-paths:
+[pkg-config](https://www.freedesktop.org/wiki/Software/pkg-config/) 
+(after installation of the library) to automatically determine the required
+arguments and paths:
 
     $ pkg-config --cflags --libs xlsxwriter
     -I/usr/local/include -L/usr/local/lib -lxlsxwriter -lz
@@ -540,7 +540,7 @@ The following are various compilation targets and options for both build systems
 | :----------------------- | :----------------------------------------- | :---------------------------------- |
 | `examples`               | `-DBUILD_EXAMPLES=ON`                      | Build the example                   |
 | `test`                   | `-DBUILD_TESTS=ON`                         | Build the tests                     |
-| `USE_DTOA_LIBRARY=1`     | `-DUSE_DTOA_LIBRARY=ON`                    | Use alternative double sprintf      |
+| `USE_DTOA_LIBRARY=1`     | `-DUSE_DTOA_LIBRARY=ON`                    | Use alternative double in sprintf   |
 | `USE_FMEMOPEN=1`         | `-DUSE_FMEMOPEN=ON`                        | Use fmemopen() for temp image files |
 | `USE_OPENSSL_MD5=1`      | `-DUSE_OPENSSL_MD5=ON`                     | Use OpenSSL for MD5 digest          |
 | `USE_NO_MD5=1`           | `-DUSE_NO_MD5=ON`                          | Don't use a MD5 digest              |
@@ -556,7 +556,7 @@ The following are various compilation targets and options for both build systems
 The compilation options would be used as follows:
 
     # Make
-    make examples USE_DTOA_LIBRARY=1`
+    make examples USE_DTOA_LIBRARY=1
 
     # CMake
     cd cmake
