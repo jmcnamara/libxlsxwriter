@@ -34,9 +34,10 @@ Libxlsxwriter is released under a FreeBSD license:
     official policies, either expressed or implied, of the FreeBSD Project.
 
 
-Libxlsxwriter includes `queue.h` and `tree.h` from FreeBSD, the `minizip`
-component of `zlib`. It also includes and uses the optional `tmpfileplus`,
-`md5` and `emyg_dtoa`. These components which have the following licenses:
+Libxlsxwriter includes the `queue.h` and `tree.h` macros from FreeBSD. It also
+includes and, unless overridden, uses the optional libraries `minizip`,
+`tmpfileplus` and `md5`. It also includes the `emyg_dtoa` library but doesn't
+use it by default. These components have the following licenses:
 
 
 Queue.h from FreeBSD:
