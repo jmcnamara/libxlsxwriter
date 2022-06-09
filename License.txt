@@ -173,7 +173,7 @@ converting doubles to strings. It has the following license:
     OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
     THE SOFTWARE.
 
-This Milo Yip DTOA library (emyg_dtoa) is uses to avoid issues where the
+This Milo Yip DTOA library (emyg_dtoa) is used to avoid issues where the
 standard sprintf() dtoa function changes output based on locale settings. It
 is also 40-50% faster than the standard dtoa for raw numeric data. The use of
 this library is optional. If you wish to use it you can pass

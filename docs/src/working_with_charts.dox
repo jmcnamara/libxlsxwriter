@@ -984,7 +984,7 @@ A chart line #lxw_chart_line struct with default properties is:
                            .dash_type = LXW_CHART_LINE_DASH_SOLID};
 @endcode
 
-The `none` member is uses to turn the line off (it is always on by default
+The `none` member is used to turn the line off (it is always on by default
 except in Scatter charts). This is useful if you wish to plot a series with
 markers without a line, or a column fill without a border:
 
