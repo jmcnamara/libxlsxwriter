@@ -1,7 +1,43 @@
 /*****************************************************************************
- * packager - A library for creating Excel XLSX packager files.
+ * packager - A library for assembling xml files into an Excel XLSX file.
  *
- * Used in conjunction with the libxlsxwriter library.
+ * A class for writing the Excel XLSX Packager file.
+ *
+ * This module is used in conjunction with libxlsxwriter to create an
+ * Excel XLSX container file.
+ *
+ * From Wikipedia: The Open Packaging Conventions (OPC) is a
+ * container-file technology initially created by Microsoft to store
+ * a combination of XML and non-XML files that together form a single
+ * entity such as an Open XML Paper Specification (OpenXPS)
+ * document. http://en.wikipedia.org/wiki/Open_Packaging_Conventions.
+ *
+ * At its simplest an Excel XLSX file contains the following elements::
+ *
+ *      ____ [Content_Types].xml
+ *     |
+ *     |____ docProps
+ *     | |____ app.xml
+ *     | |____ core.xml
+ *     |
+ *     |____ xl
+ *     | |____ workbook.xml
+ *     | |____ worksheets
+ *     | | |____ sheet1.xml
+ *     | |
+ *     | |____ styles.xml
+ *     | |
+ *     | |____ theme
+ *     | | |____ theme1.xml
+ *     | |
+ *     | |_____rels
+ *     | |____ workbook.xml.rels
+ *     |
+ *     |_____rels
+ *       |____ .rels
+ *
+ * The Packager class coordinates the classes that represent the
+ * elements of the package and writes them into the XLSX file.
  *
  * Copyright 2014-2022, John McNamara, jmcnamara@cpan.org. See LICENSE.txt.
  *
