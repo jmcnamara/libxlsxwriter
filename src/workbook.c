@@ -2118,7 +2118,7 @@ workbook_close(lxw_workbook *self)
         sheet = STAILQ_FIRST(self->sheets);
         if (!sheet->is_chartsheet) {
             worksheet = sheet->u.worksheet;
-            worksheet->selected = 1;
+            worksheet->selected = LXW_TRUE;
             worksheet->hidden = 0;
         }
     }
@@ -2131,7 +2131,7 @@ workbook_close(lxw_workbook *self)
             worksheet = sheet->u.worksheet;
 
         if (worksheet->index == self->active_sheet)
-            worksheet->active = 1;
+            worksheet->active = LXW_TRUE;
 
         if (worksheet->has_dynamic_arrays)
             self->has_metadata = LXW_TRUE;
