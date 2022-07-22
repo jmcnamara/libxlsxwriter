@@ -202,9 +202,9 @@ endif()
 # Configure pkg-config
 file(READ "include/xlsxwriter.h" ver)
 
-string(REGEX MATCH "LXW_VERSION .*\"\(.*\)\".*" _ ${ver})
+string(REGEX MATCH "LXW_VERSION \"([^\"]+)\"" _ ${ver})
 set(VERSION ${CMAKE_MATCH_1})
-string(REGEX MATCH "LXW_SOVERSION .*\"\(.*\)\".*" _ ${ver})
+string(REGEX MATCH "LXW_SOVERSION \"([^\"]+)\"" _ ${ver})
 set(SOVERSION ${CMAKE_MATCH_1})
 set(PREFIX ${CMAKE_INSTALL_PREFIX})
 
