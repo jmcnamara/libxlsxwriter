@@ -77,7 +77,6 @@ int main() {
 ```
 
 
-
 See the [full documentation](http://libxlsxwriter.github.io) for the getting
 started guide, a tutorial, the main API documentation and examples.
 
