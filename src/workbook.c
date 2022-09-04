@@ -484,7 +484,6 @@ _prepare_fills(lxw_workbook *self)
         if (format->pattern <= LXW_PATTERN_SOLID
             && format->bg_color == LXW_COLOR_UNSET
             && format->fg_color != LXW_COLOR_UNSET) {
-            format->bg_color = LXW_COLOR_UNSET;
             format->pattern = LXW_PATTERN_SOLID;
         }
 
