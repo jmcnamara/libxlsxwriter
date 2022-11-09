@@ -7,6 +7,10 @@
  *
  */
 
+#ifdef USE_FMEMOPEN
+#define _POSIX_C_SOURCE 200809L
+#endif
+
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
@@ -575,6 +579,25 @@ lxw_tmpfile(char *tmpdir)
 #else
     (void) tmpdir;
     return tmpfile();
+#endif
+}
+
+/**
+ * Return a memory-backed file if supported, otherwise a temporary one
+ */
+FILE *
+lxw_memstream(char **buf, size_t *size, char *tmpdir)
+{
+    static size_t s;
+    if (!size)
+        size = &s;
+    *buf = NULL;
+    *size = 0;
+#ifdef USE_FMEMOPEN
+    (void) tmpdir;
+    return open_memstream(buf, size);
+#else
+    return lxw_tmpfile(tmpdir);
 #endif
 }
 

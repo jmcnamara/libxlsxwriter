@@ -72,7 +72,7 @@ DTOA_LIB_OBJ = $(DTOA_LIB_DIR)/emyg_dtoa.o
 DTOA_LIB_SO  = $(DTOA_LIB_DIR)/emyg_dtoa.so
 endif
 
-# Use fmemopen() to avoid creating certain temporary files
+# Use fmemopen()/open_memstream() to avoid creating temporary files
 ifdef USE_FMEMOPEN
 CFLAGS += -DUSE_FMEMOPEN
 endif

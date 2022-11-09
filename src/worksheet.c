@@ -195,7 +195,9 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     if (init_data && init_data->optimize) {
         FILE *tmpfile;
 
-        tmpfile = lxw_tmpfile(init_data->tmpdir);
+        worksheet->optimize_buffer = NULL;
+        tmpfile = lxw_memstream(&worksheet->optimize_buffer,
+                                NULL, init_data->tmpdir);
         if (!tmpfile) {
             LXW_ERROR("Error creating tmpfile() for worksheet in "
                       "'constant_memory' mode.");
@@ -2536,6 +2538,7 @@ _worksheet_write_optimized_sheet_data(lxw_worksheet *self)
         }
 
         fclose(self->optimize_tmpfile);
+        free(self->optimize_buffer);
 
         lxw_xml_end_tag(self->file, "sheetData");
     }
@@ -8415,6 +8418,7 @@ worksheet_write_rich_string(lxw_worksheet *self,
     lxw_format *default_format = NULL;
     lxw_rich_string_tuple *rich_string_tuple = NULL;
     FILE *tmpfile;
+    char *buf = NULL;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
@@ -8439,7 +8443,7 @@ worksheet_write_rich_string(lxw_worksheet *self,
         return err;
 
     /* Create a tmp file for the styles object. */
-    tmpfile = lxw_tmpfile(self->tmpdir);
+    tmpfile = lxw_memstream(&buf, NULL, self->tmpdir);
     if (!tmpfile)
         return LXW_ERROR_CREATING_TMPFILE;
 
@@ -8487,12 +8491,14 @@ worksheet_write_rich_string(lxw_worksheet *self,
     rewind(tmpfile);
     if (fread(rich_string, file_size, 1, tmpfile) < 1) {
         fclose(tmpfile);
+        free(buf);
         free(rich_string);
         return LXW_ERROR_READING_TMPFILE;
     }
 
     /* Close the temp file. */
     fclose(tmpfile);
+    free(buf);
 
     if (lxw_utf8_strlen(rich_string) > LXW_STR_MAX) {
         free(rich_string);
@@ -8532,6 +8538,7 @@ mem_error:
     lxw_styles_free(styles);
     lxw_format_free(default_format);
     fclose(tmpfile);
+    free(buf);
 
     return LXW_ERROR_MEMORY_MALLOC_FAILED;
 }
