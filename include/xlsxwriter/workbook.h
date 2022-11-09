@@ -243,6 +243,13 @@ typedef struct lxw_doc_properties {
  *   for more information. This option is off by default.
  *
  *   [zip64_wiki]: https://en.wikipedia.org/wiki/Zip_(file_format)#ZIP64
+
+ * - `output_buffer`: Output to a buffer instead of a file. The buffer must be
+ *   freed manually by calling free(). This option is required when filename is
+ *   NULL.
+ *
+ * - `output_buffer_size`: Used with output_buffer to get the size of the
+ *   created buffer. This option is required when filename is NULL.
  *
  * @note In `constant_memory` mode each row of in-memory data is written to
  * disk and then freed when a new row is started via one of the
@@ -268,6 +275,11 @@ typedef struct lxw_workbook_options {
     /** Allow ZIP64 extensions when creating the xlsx file zip container. */
     uint8_t use_zip64;
 
+    /** Output buffer to use instead of writing to a file */
+    char **output_buffer;
+
+    /** Used with output_buffer to get the size of the created buffer */
+    size_t *output_buffer_size;
 } lxw_workbook_options;
 
 /**
@@ -376,7 +388,9 @@ lxw_workbook *workbook_new(const char *filename);
  * @code
  *    lxw_workbook_options options = {.constant_memory = LXW_TRUE,
  *                                    .tmpdir = "C:\\Temp",
- *                                    .use_zip64 = LXW_FALSE};
+ *                                    .use_zip64 = LXW_FALSE,
+ *                                    .output_buffer = NULL,
+ *                                    .output_buffer_size = NULL};
  *
  *    lxw_workbook  *workbook  = workbook_new_opt("filename.xlsx", &options);
  * @endcode

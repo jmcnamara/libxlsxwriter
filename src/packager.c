@@ -113,21 +113,67 @@ _open_zipfile_win32(const char *filename)
 
 #endif
 
+STATIC voidpf ZCALLBACK
+_fopen_memstream(voidpf opaque, const char *filename, int mode)
+{
+    lxw_packager *packager = (lxw_packager *) opaque;
+    (void) filename;
+    (void) mode;
+    return lxw_memstream(&packager->output_buffer,
+                         &packager->output_buffer_size, packager->tmpdir);
+}
+
+STATIC int ZCALLBACK
+_fclose_memstream(voidpf opaque, voidpf stream)
+{
+    lxw_packager *packager = (lxw_packager *) opaque;
+    FILE *file = (FILE *) stream;
+    long size;
+    /* Ensure memstream buffer is updated */
+    if (fflush(file))
+        goto mem_error;
+    /* If the memstream is backed by a temporary file, no buffer is created,
+       so create it manually. */
+    if (!packager->output_buffer) {
+        if (fseek(file, 0L, SEEK_END))
+            goto mem_error;
+        size = ftell(file);
+        if (size == -1)
+            goto mem_error;
+        packager->output_buffer = malloc(size);
+        GOTO_LABEL_ON_MEM_ERROR(packager->output_buffer, mem_error);
+        rewind(file);
+        if (fread(packager->output_buffer, size, 1, file) < 1)
+            goto mem_error;
+        packager->output_buffer_size = size;
+    }
+    return fclose(file);
+
+mem_error:
+    fclose(file);
+    return EOF;
+}
+
 /*
  * Create a new packager object.
  */
 lxw_packager *
 lxw_packager_new(const char *filename, char *tmpdir, uint8_t use_zip64)
 {
+    zlib_filefunc_def filefunc;
     lxw_packager *packager = calloc(1, sizeof(lxw_packager));
     GOTO_LABEL_ON_MEM_ERROR(packager, mem_error);
 
     packager->buffer = calloc(1, LXW_ZIP_BUFFER_SIZE);
     GOTO_LABEL_ON_MEM_ERROR(packager->buffer, mem_error);
 
-    packager->filename = lxw_strdup(filename);
+    packager->filename = NULL;
     packager->tmpdir = tmpdir;
-    GOTO_LABEL_ON_MEM_ERROR(packager->filename, mem_error);
+
+    if (filename) {
+        packager->filename = lxw_strdup(filename);
+        GOTO_LABEL_ON_MEM_ERROR(packager->filename, mem_error);
+    }
 
     packager->buffer_size = LXW_ZIP_BUFFER_SIZE;
     packager->use_zip64 = use_zip64;
@@ -143,12 +189,24 @@ lxw_packager_new(const char *filename, char *tmpdir, uint8_t use_zip64)
     packager->zipfile_info.internal_fa = 0;
     packager->zipfile_info.external_fa = 0;
 
+    packager->output_buffer = NULL;
+    packager->output_buffer_size = 0;
+
     /* Create a zip container for the xlsx file. */
+    if (packager->filename) {
 #ifdef _WIN32
-    packager->zipfile = _open_zipfile_win32(packager->filename);
+        packager->zipfile = _open_zipfile_win32(packager->filename);
 #else
-    packager->zipfile = zipOpen(packager->filename, 0);
+        packager->zipfile = zipOpen(packager->filename, 0);
 #endif
+    }
+    else {
+        fill_fopen_filefunc(&filefunc);
+        filefunc.opaque = packager;
+        filefunc.zopen_file = _fopen_memstream;
+        filefunc.zclose_file = _fclose_memstream;
+        packager->zipfile = zipOpen2(packager->filename, 0, NULL, &filefunc);
+    }
 
     if (packager->zipfile == NULL)
         goto mem_error;
