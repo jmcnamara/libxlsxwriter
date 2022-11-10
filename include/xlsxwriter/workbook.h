@@ -245,11 +245,11 @@ typedef struct lxw_doc_properties {
  *   [zip64_wiki]: https://en.wikipedia.org/wiki/Zip_(file_format)#ZIP64
 
  * - `output_buffer`: Output to a buffer instead of a file. The buffer must be
- *   freed manually by calling free(). This option is required when filename is
- *   NULL.
+ *   freed manually by calling free(). This option can only be used if filename
+ *   is NULL.
  *
  * - `output_buffer_size`: Used with output_buffer to get the size of the
- *   created buffer. This option is required when filename is NULL.
+ *   created buffer. This option can only be used if filename is NULL.
  *
  * @note In `constant_memory` mode each row of in-memory data is written to
  * disk and then freed when a new row is started via one of the

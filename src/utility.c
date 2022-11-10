@@ -586,7 +586,7 @@ lxw_tmpfile(char *tmpdir)
  * Return a memory-backed file if supported, otherwise a temporary one
  */
 FILE *
-lxw_memstream(char **buf, size_t *size, char *tmpdir)
+lxw_get_filehandle(char **buf, size_t *size, char *tmpdir)
 {
     static size_t s;
     if (!size)

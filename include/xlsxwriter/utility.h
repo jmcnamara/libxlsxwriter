@@ -233,7 +233,7 @@ void lxw_str_tolower(char *str);
 #endif
 
 FILE *lxw_tmpfile(char *tmpdir);
-FILE *lxw_memstream(char **buf, size_t *size, char *tmpdir);
+FILE *lxw_get_filehandle(char **buf, size_t *size, char *tmpdir);
 FILE *lxw_fopen(const char *filename, const char *mode);
 
 /* Use the third party dtoa function to avoid locale issues with sprintf

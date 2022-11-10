@@ -15,7 +15,7 @@ jobs:
                      "USE_DTOA_LIBRARY=1",
                      "USE_NO_MD5=1",
                      "USE_OPENSSL_MD5=1",
-                     "USE_FMEMOPEN=1"]
+                     "USE_MEM_FILE=1"]
     runs-on: ubuntu-latest
     env:
       CC:     ${{ matrix.cc }}

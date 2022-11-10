@@ -541,7 +541,7 @@ The following are various compilation targets and options for both build systems
 | `examples`               | `-DBUILD_EXAMPLES=ON`                      | Build the example                                     |
 | `test`                   | `-DBUILD_TESTS=ON`                         | Build the tests                                       |
 | `USE_DTOA_LIBRARY=1`     | `-DUSE_DTOA_LIBRARY=ON`                    | Use alternative double in sprintf                     |
-| `USE_FMEMOPEN=1`         | `-DUSE_FMEMOPEN=ON`                        | Use fmemopen()/open_memstream() instead of temp files |
+| `USE_MEM_FILE=1`         | `-DUSE_MEM_FILE=ON`                        | Use fmemopen()/open_memstream() instead of temp files |
 | `USE_OPENSSL_MD5=1`      | `-DUSE_OPENSSL_MD5=ON`                     | Use OpenSSL for MD5 digest                            |
 | `USE_NO_MD5=1`           | `-DUSE_NO_MD5=ON`                          | Don't use a MD5 digest                                |
 | `USE_SYSTEM_MINIZIP=1`   | `-DUSE_SYSTEM_MINIZIP=ON`                  | Use system minzip library                             |
@@ -573,7 +573,7 @@ Each of the options are explained below:
 
 - `USE_DTOA_LIBRARY`: See @ref gsg_dtoa "using a double formatting library".
 
-- `USE_FMEMOPEN`: Use fmemopen()/open_memstream() instead of temporary files.
+- `USE_MEM_FILE`: Use fmemopen()/open_memstream() instead of temporary files.
   This option isn't on by default since it isn't supported on Windows.
 
 - `USE_OPENSSL_MD5`: Uses OpenSSL to provide a MD5 digest of image files in
