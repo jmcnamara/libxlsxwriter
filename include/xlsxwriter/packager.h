@@ -62,10 +62,12 @@ typedef struct lxw_packager {
     lxw_workbook *workbook;
 
     size_t buffer_size;
+    size_t output_buffer_size;
     zipFile zipfile;
     zip_fileinfo zipfile_info;
     char *filename;
     char *buffer;
+    char *output_buffer;
     char *tmpdir;
     uint8_t use_zip64;
 

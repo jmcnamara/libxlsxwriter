@@ -113,21 +113,75 @@ _open_zipfile_win32(const char *filename)
 
 #endif
 
+STATIC voidpf ZCALLBACK
+_fopen_memstream(voidpf opaque, const char *filename, int mode)
+{
+    lxw_packager *packager = (lxw_packager *) opaque;
+    (void) filename;
+    (void) mode;
+    return lxw_get_filehandle(&packager->output_buffer,
+                              &packager->output_buffer_size,
+                              packager->tmpdir);
+}
+
+STATIC int ZCALLBACK
+_fclose_memstream(voidpf opaque, voidpf stream)
+{
+    lxw_packager *packager = (lxw_packager *) opaque;
+    FILE *file = (FILE *) stream;
+    long size;
+
+    /* Ensure memstream buffer is updated */
+    if (fflush(file))
+        goto mem_error;
+
+    /* If the memstream is backed by a temporary file, no buffer is created,
+       so create it manually. */
+    if (!packager->output_buffer) {
+        if (fseek(file, 0L, SEEK_END))
+            goto mem_error;
+
+        size = ftell(file);
+        if (size == -1)
+            goto mem_error;
+
+        packager->output_buffer = malloc(size);
+        GOTO_LABEL_ON_MEM_ERROR(packager->output_buffer, mem_error);
+
+        rewind(file);
+        if (fread(packager->output_buffer, size, 1, file) < 1)
+            goto mem_error;
+
+        packager->output_buffer_size = size;
+    }
+
+    return fclose(file);
+
+mem_error:
+    fclose(file);
+    return EOF;
+}
+
 /*
  * Create a new packager object.
  */
 lxw_packager *
 lxw_packager_new(const char *filename, char *tmpdir, uint8_t use_zip64)
 {
+    zlib_filefunc_def filefunc;
     lxw_packager *packager = calloc(1, sizeof(lxw_packager));
     GOTO_LABEL_ON_MEM_ERROR(packager, mem_error);
 
     packager->buffer = calloc(1, LXW_ZIP_BUFFER_SIZE);
     GOTO_LABEL_ON_MEM_ERROR(packager->buffer, mem_error);
 
-    packager->filename = lxw_strdup(filename);
+    packager->filename = NULL;
     packager->tmpdir = tmpdir;
-    GOTO_LABEL_ON_MEM_ERROR(packager->filename, mem_error);
+
+    if (filename) {
+        packager->filename = lxw_strdup(filename);
+        GOTO_LABEL_ON_MEM_ERROR(packager->filename, mem_error);
+    }
 
     packager->buffer_size = LXW_ZIP_BUFFER_SIZE;
     packager->use_zip64 = use_zip64;
@@ -143,12 +197,24 @@ lxw_packager_new(const char *filename, char *tmpdir, uint8_t use_zip64)
     packager->zipfile_info.internal_fa = 0;
     packager->zipfile_info.external_fa = 0;
 
+    packager->output_buffer = NULL;
+    packager->output_buffer_size = 0;
+
     /* Create a zip container for the xlsx file. */
+    if (packager->filename) {
 #ifdef _WIN32
-    packager->zipfile = _open_zipfile_win32(packager->filename);
+        packager->zipfile = _open_zipfile_win32(packager->filename);
 #else
-    packager->zipfile = zipOpen(packager->filename, 0);
+        packager->zipfile = zipOpen(packager->filename, 0);
 #endif
+    }
+    else {
+        fill_fopen_filefunc(&filefunc);
+        filefunc.opaque = packager;
+        filefunc.zopen_file = _fopen_memstream;
+        filefunc.zclose_file = _fclose_memstream;
+        packager->zipfile = zipOpen2(packager->filename, 0, NULL, &filefunc);
+    }
 
     if (packager->zipfile == NULL)
         goto mem_error;
@@ -188,7 +254,8 @@ _write_workbook_file(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     lxw_error err;
 
-    workbook->file = lxw_tmpfile(self->tmpdir);
+    char *buffer = NULL;
+    workbook->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
     if (!workbook->file)
         return LXW_ERROR_CREATING_TMPFILE;
 
@@ -196,6 +263,7 @@ _write_workbook_file(lxw_packager *self)
 
     err = _add_file_to_zip(self, workbook->file, "xl/workbook.xml");
     fclose(workbook->file);
+    free(buffer);
     RETURN_ON_ERROR(err);
 
     return LXW_NO_ERROR;
@@ -211,6 +279,7 @@ _write_worksheet_files(lxw_packager *self)
     lxw_sheet *sheet;
     lxw_worksheet *worksheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
+    char *buffer = NULL;
     uint32_t index = 1;
     lxw_error err;
 
@@ -226,7 +295,7 @@ _write_worksheet_files(lxw_packager *self)
         if (worksheet->optimize_row)
             lxw_worksheet_write_single_row(worksheet);
 
-        worksheet->file = lxw_tmpfile(self->tmpdir);
+        worksheet->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
         if (!worksheet->file)
             return LXW_ERROR_CREATING_TMPFILE;
 
@@ -234,6 +303,7 @@ _write_worksheet_files(lxw_packager *self)
 
         err = _add_file_to_zip(self, worksheet->file, sheetname);
         fclose(worksheet->file);
+        free(buffer);
         RETURN_ON_ERROR(err);
     }
 
@@ -250,6 +320,7 @@ _write_chartsheet_files(lxw_packager *self)
     lxw_sheet *sheet;
     lxw_chartsheet *chartsheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
+    char *buffer = NULL;
     uint32_t index = 1;
     lxw_error err;
 
@@ -262,7 +333,7 @@ _write_chartsheet_files(lxw_packager *self)
         lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
                      "xl/chartsheets/sheet%d.xml", index++);
 
-        chartsheet->file = lxw_tmpfile(self->tmpdir);
+        chartsheet->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
         if (!chartsheet->file)
             return LXW_ERROR_CREATING_TMPFILE;
 
@@ -270,6 +341,7 @@ _write_chartsheet_files(lxw_packager *self)
 
         err = _add_file_to_zip(self, chartsheet->file, sheetname);
         fclose(chartsheet->file);
+        free(buffer);
         RETURN_ON_ERROR(err);
     }
 
@@ -375,6 +447,7 @@ _write_chart_files(lxw_packager *self)
     lxw_workbook *workbook = self->workbook;
     lxw_chart *chart;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
+    char *buffer = NULL;
     uint32_t index = 1;
     lxw_error err;
 
@@ -383,7 +456,7 @@ _write_chart_files(lxw_packager *self)
         lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
                      "xl/charts/chart%d.xml", index++);
 
-        chart->file = lxw_tmpfile(self->tmpdir);
+        chart->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
         if (!chart->file)
             return LXW_ERROR_CREATING_TMPFILE;
 
@@ -391,6 +464,7 @@ _write_chart_files(lxw_packager *self)
 
         err = _add_file_to_zip(self, chart->file, sheetname);
         fclose(chart->file);
+        free(buffer);
         RETURN_ON_ERROR(err);
     }
 
@@ -425,6 +499,7 @@ _write_drawing_files(lxw_packager *self)
     lxw_worksheet *worksheet;
     lxw_drawing *drawing;
     char filename[LXW_FILENAME_LENGTH] = { 0 };
+    char *buffer = NULL;
     uint32_t index = 1;
     lxw_error err;
 
@@ -440,7 +515,7 @@ _write_drawing_files(lxw_packager *self)
             lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                          "xl/drawings/drawing%d.xml", index++);
 
-            drawing->file = lxw_tmpfile(self->tmpdir);
+            drawing->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
             if (!drawing->file)
                 return LXW_ERROR_CREATING_TMPFILE;
 
@@ -448,6 +523,7 @@ _write_drawing_files(lxw_packager *self)
 
             err = _add_file_to_zip(self, drawing->file, filename);
             fclose(drawing->file);
+            free(buffer);
             RETURN_ON_ERROR(err);
         }
     }
@@ -496,6 +572,7 @@ _write_table_files(lxw_packager *self)
     lxw_error err;
 
     char filename[LXW_FILENAME_LENGTH] = { 0 };
+    char *buffer = NULL;
     uint32_t index = 1;
 
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
@@ -518,7 +595,7 @@ _write_table_files(lxw_packager *self)
                 RETURN_ON_ERROR(err);
             }
 
-            table->file = lxw_tmpfile(self->tmpdir);
+            table->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
             if (!table->file) {
                 lxw_table_free(table);
                 return LXW_ERROR_CREATING_TMPFILE;
@@ -530,6 +607,7 @@ _write_table_files(lxw_packager *self)
 
             err = _add_file_to_zip(self, table->file, filename);
             fclose(table->file);
+            free(buffer);
             lxw_table_free(table);
             RETURN_ON_ERROR(err);
         }
@@ -572,6 +650,7 @@ _write_vml_files(lxw_packager *self)
     lxw_worksheet *worksheet;
     lxw_vml *vml;
     char filename[LXW_FILENAME_LENGTH] = { 0 };
+    char *buffer = NULL;
     uint32_t index = 1;
     lxw_error err;
 
@@ -593,7 +672,7 @@ _write_vml_files(lxw_packager *self)
             lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                          "xl/drawings/vmlDrawing%d.vml", index++);
 
-            vml->file = lxw_tmpfile(self->tmpdir);
+            vml->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
             if (!vml->file) {
                 lxw_vml_free(vml);
                 return LXW_ERROR_CREATING_TMPFILE;
@@ -609,6 +688,7 @@ _write_vml_files(lxw_packager *self)
             }
             else {
                 fclose(vml->file);
+                free(buffer);
                 lxw_vml_free(vml);
                 return LXW_ERROR_MEMORY_MALLOC_FAILED;
             }
@@ -618,6 +698,7 @@ _write_vml_files(lxw_packager *self)
             err = _add_file_to_zip(self, vml->file, filename);
 
             fclose(vml->file);
+            free(buffer);
             lxw_vml_free(vml);
 
             RETURN_ON_ERROR(err);
@@ -635,7 +716,7 @@ _write_vml_files(lxw_packager *self)
             lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                          "xl/drawings/vmlDrawing%d.vml", index++);
 
-            vml->file = lxw_tmpfile(self->tmpdir);
+            vml->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
             if (!vml->file) {
                 lxw_vml_free(vml);
                 return LXW_ERROR_CREATING_TMPFILE;
@@ -649,6 +730,7 @@ _write_vml_files(lxw_packager *self)
             }
             else {
                 fclose(vml->file);
+                free(buffer);
                 lxw_vml_free(vml);
                 return LXW_ERROR_MEMORY_MALLOC_FAILED;
             }
@@ -658,6 +740,7 @@ _write_vml_files(lxw_packager *self)
             err = _add_file_to_zip(self, vml->file, filename);
 
             fclose(vml->file);
+            free(buffer);
             lxw_vml_free(vml);
 
             RETURN_ON_ERROR(err);
@@ -678,6 +761,7 @@ _write_comment_files(lxw_packager *self)
     lxw_worksheet *worksheet;
     lxw_comment *comment;
     char filename[LXW_FILENAME_LENGTH] = { 0 };
+    char *buffer = NULL;
     uint32_t index = 1;
     lxw_error err;
 
@@ -697,7 +781,7 @@ _write_comment_files(lxw_packager *self)
         lxw_snprintf(filename, LXW_FILENAME_LENGTH,
                      "xl/comments%d.xml", index++);
 
-        comment->file = lxw_tmpfile(self->tmpdir);
+        comment->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
         if (!comment->file) {
             lxw_comment_free(comment);
             return LXW_ERROR_CREATING_TMPFILE;
@@ -711,6 +795,7 @@ _write_comment_files(lxw_packager *self)
         err = _add_file_to_zip(self, comment->file, filename);
 
         fclose(comment->file);
+        free(buffer);
         lxw_comment_free(comment);
 
         RETURN_ON_ERROR(err);
@@ -726,13 +811,14 @@ STATIC lxw_error
 _write_shared_strings_file(lxw_packager *self)
 {
     lxw_sst *sst = self->workbook->sst;
+    char *buffer = NULL;
     lxw_error err;
 
     /* Skip the sharedStrings file if there are no shared strings. */
     if (!sst->string_count)
         return LXW_NO_ERROR;
 
-    sst->file = lxw_tmpfile(self->tmpdir);
+    sst->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
     if (!sst->file)
         return LXW_ERROR_CREATING_TMPFILE;
 
@@ -740,6 +826,7 @@ _write_shared_strings_file(lxw_packager *self)
 
     err = _add_file_to_zip(self, sst->file, "xl/sharedStrings.xml");
     fclose(sst->file);
+    free(buffer);
     RETURN_ON_ERROR(err);
 
     return LXW_NO_ERROR;
@@ -757,6 +844,7 @@ _write_app_file(lxw_packager *self)
     lxw_chartsheet *chartsheet;
     lxw_defined_name *defined_name;
     lxw_app *app;
+    char *buffer = NULL;
     uint32_t named_range_count = 0;
     char *autofilter;
     char *has_range;
@@ -769,7 +857,7 @@ _write_app_file(lxw_packager *self)
         goto mem_error;
     }
 
-    app->file = lxw_tmpfile(self->tmpdir);
+    app->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
     if (!app->file) {
         err = LXW_ERROR_CREATING_TMPFILE;
         goto mem_error;
@@ -830,6 +918,7 @@ _write_app_file(lxw_packager *self)
     err = _add_file_to_zip(self, app->file, "docProps/app.xml");
 
     fclose(app->file);
+    free(buffer);
 
 mem_error:
     lxw_app_free(app);
@@ -845,13 +934,14 @@ _write_core_file(lxw_packager *self)
 {
     lxw_error err = LXW_NO_ERROR;
     lxw_core *core = lxw_core_new();
+    char *buffer = NULL;
 
     if (!core) {
         err = LXW_ERROR_MEMORY_MALLOC_FAILED;
         goto mem_error;
     }
 
-    core->file = lxw_tmpfile(self->tmpdir);
+    core->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
     if (!core->file) {
         err = LXW_ERROR_CREATING_TMPFILE;
         goto mem_error;
@@ -864,6 +954,7 @@ _write_core_file(lxw_packager *self)
     err = _add_file_to_zip(self, core->file, "docProps/core.xml");
 
     fclose(core->file);
+    free(buffer);
 
 mem_error:
     lxw_core_free(core);
@@ -879,6 +970,7 @@ _write_metadata_file(lxw_packager *self)
 {
     lxw_error err = LXW_NO_ERROR;
     lxw_metadata *metadata;
+    char *buffer = NULL;
 
     if (!self->workbook->has_metadata)
         return LXW_NO_ERROR;
@@ -890,7 +982,7 @@ _write_metadata_file(lxw_packager *self)
         goto mem_error;
     }
 
-    metadata->file = lxw_tmpfile(self->tmpdir);
+    metadata->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
     if (!metadata->file) {
         err = LXW_ERROR_CREATING_TMPFILE;
         goto mem_error;
@@ -901,6 +993,7 @@ _write_metadata_file(lxw_packager *self)
     err = _add_file_to_zip(self, metadata->file, "xl/metadata.xml");
 
     fclose(metadata->file);
+    free(buffer);
 
 mem_error:
     lxw_metadata_free(metadata);
@@ -915,6 +1008,7 @@ STATIC lxw_error
 _write_custom_file(lxw_packager *self)
 {
     lxw_custom *custom;
+    char *buffer = NULL;
     lxw_error err = LXW_NO_ERROR;
 
     if (STAILQ_EMPTY(self->workbook->custom_properties))
@@ -926,7 +1020,7 @@ _write_custom_file(lxw_packager *self)
         goto mem_error;
     }
 
-    custom->file = lxw_tmpfile(self->tmpdir);
+    custom->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
     if (!custom->file) {
         err = LXW_ERROR_CREATING_TMPFILE;
         goto mem_error;
@@ -939,6 +1033,7 @@ _write_custom_file(lxw_packager *self)
     err = _add_file_to_zip(self, custom->file, "docProps/custom.xml");
 
     fclose(custom->file);
+    free(buffer);
 
 mem_error:
     lxw_custom_free(custom);
@@ -953,13 +1048,14 @@ _write_theme_file(lxw_packager *self)
 {
     lxw_error err = LXW_NO_ERROR;
     lxw_theme *theme = lxw_theme_new();
+    char *buffer = NULL;
 
     if (!theme) {
         err = LXW_ERROR_MEMORY_MALLOC_FAILED;
         goto mem_error;
     }
 
-    theme->file = lxw_tmpfile(self->tmpdir);
+    theme->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
     if (!theme->file) {
         err = LXW_ERROR_CREATING_TMPFILE;
         goto mem_error;
@@ -970,6 +1066,7 @@ _write_theme_file(lxw_packager *self)
     err = _add_file_to_zip(self, theme->file, "xl/theme/theme1.xml");
 
     fclose(theme->file);
+    free(buffer);
 
 mem_error:
     lxw_theme_free(theme);
@@ -984,6 +1081,7 @@ STATIC lxw_error
 _write_styles_file(lxw_packager *self)
 {
     lxw_styles *styles = lxw_styles_new();
+    char *buffer = NULL;
     lxw_hash_element *hash_element;
     lxw_error err = LXW_NO_ERROR;
 
@@ -1030,7 +1128,7 @@ _write_styles_file(lxw_packager *self)
     styles->dxf_count = self->workbook->used_dxf_formats->unique_count;
     styles->has_comments = self->workbook->has_comments;
 
-    styles->file = lxw_tmpfile(self->tmpdir);
+    styles->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
     if (!styles->file) {
         err = LXW_ERROR_CREATING_TMPFILE;
         goto mem_error;
@@ -1041,6 +1139,7 @@ _write_styles_file(lxw_packager *self)
     err = _add_file_to_zip(self, styles->file, "xl/styles.xml");
 
     fclose(styles->file);
+    free(buffer);
 
 mem_error:
     lxw_styles_free(styles);
@@ -1055,6 +1154,7 @@ STATIC lxw_error
 _write_content_types_file(lxw_packager *self)
 {
     lxw_content_types *content_types = lxw_content_types_new();
+    char *buffer = NULL;
     lxw_workbook *workbook = self->workbook;
     lxw_sheet *sheet;
     char filename[LXW_MAX_ATTRIBUTE_LENGTH] = { 0 };
@@ -1071,7 +1171,7 @@ _write_content_types_file(lxw_packager *self)
         goto mem_error;
     }
 
-    content_types->file = lxw_tmpfile(self->tmpdir);
+    content_types->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
     if (!content_types->file) {
         err = LXW_ERROR_CREATING_TMPFILE;
         goto mem_error;
@@ -1154,6 +1254,7 @@ _write_content_types_file(lxw_packager *self)
     err = _add_file_to_zip(self, content_types->file, "[Content_Types].xml");
 
     fclose(content_types->file);
+    free(buffer);
 
 mem_error:
     lxw_content_types_free(content_types);
@@ -1168,6 +1269,7 @@ STATIC lxw_error
 _write_workbook_rels_file(lxw_packager *self)
 {
     lxw_relationships *rels = lxw_relationships_new();
+    char *buffer = NULL;
     lxw_workbook *workbook = self->workbook;
     lxw_sheet *sheet;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
@@ -1180,7 +1282,7 @@ _write_workbook_rels_file(lxw_packager *self)
         goto mem_error;
     }
 
-    rels->file = lxw_tmpfile(self->tmpdir);
+    rels->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
     if (!rels->file) {
         err = LXW_ERROR_CREATING_TMPFILE;
         goto mem_error;
@@ -1220,6 +1322,7 @@ _write_workbook_rels_file(lxw_packager *self)
     err = _add_file_to_zip(self, rels->file, "xl/_rels/workbook.xml.rels");
 
     fclose(rels->file);
+    free(buffer);
 
 mem_error:
     lxw_free_relationships(rels);
@@ -1235,6 +1338,7 @@ STATIC lxw_error
 _write_worksheet_rels_file(lxw_packager *self)
 {
     lxw_relationships *rels;
+    char *buffer = NULL;
     lxw_rel_tuple *rel;
     lxw_workbook *workbook = self->workbook;
     lxw_sheet *sheet;
@@ -1262,7 +1366,7 @@ _write_worksheet_rels_file(lxw_packager *self)
 
         rels = lxw_relationships_new();
 
-        rels->file = lxw_tmpfile(self->tmpdir);
+        rels->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
         if (!rels->file) {
             lxw_free_relationships(rels);
             return LXW_ERROR_CREATING_TMPFILE;
@@ -1311,6 +1415,7 @@ _write_worksheet_rels_file(lxw_packager *self)
         err = _add_file_to_zip(self, rels->file, sheetname);
 
         fclose(rels->file);
+        free(buffer);
         lxw_free_relationships(rels);
 
         RETURN_ON_ERROR(err);
@@ -1327,6 +1432,7 @@ STATIC lxw_error
 _write_chartsheet_rels_file(lxw_packager *self)
 {
     lxw_relationships *rels;
+    char *buffer = NULL;
     lxw_rel_tuple *rel;
     lxw_workbook *workbook = self->workbook;
     lxw_sheet *sheet;
@@ -1348,7 +1454,7 @@ _write_chartsheet_rels_file(lxw_packager *self)
 
         rels = lxw_relationships_new();
 
-        rels->file = lxw_tmpfile(self->tmpdir);
+        rels->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
         if (!rels->file) {
             lxw_free_relationships(rels);
             return LXW_ERROR_CREATING_TMPFILE;
@@ -1372,6 +1478,7 @@ _write_chartsheet_rels_file(lxw_packager *self)
         err = _add_file_to_zip(self, rels->file, sheetname);
 
         fclose(rels->file);
+        free(buffer);
         lxw_free_relationships(rels);
 
         RETURN_ON_ERROR(err);
@@ -1388,6 +1495,7 @@ STATIC lxw_error
 _write_drawing_rels_file(lxw_packager *self)
 {
     lxw_relationships *rels;
+    char *buffer = NULL;
     lxw_rel_tuple *rel;
     lxw_workbook *workbook = self->workbook;
     lxw_sheet *sheet;
@@ -1407,7 +1515,7 @@ _write_drawing_rels_file(lxw_packager *self)
 
         rels = lxw_relationships_new();
 
-        rels->file = lxw_tmpfile(self->tmpdir);
+        rels->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
         if (!rels->file) {
             lxw_free_relationships(rels);
             return LXW_ERROR_CREATING_TMPFILE;
@@ -1427,6 +1535,7 @@ _write_drawing_rels_file(lxw_packager *self)
         err = _add_file_to_zip(self, rels->file, sheetname);
 
         fclose(rels->file);
+        free(buffer);
         lxw_free_relationships(rels);
 
         RETURN_ON_ERROR(err);
@@ -1444,13 +1553,14 @@ _write_vml_drawing_rels_file(lxw_packager *self, lxw_worksheet *worksheet,
                              uint32_t index)
 {
     lxw_relationships *rels;
+    char *buffer = NULL;
     lxw_rel_tuple *rel;
     char sheetname[LXW_FILENAME_LENGTH] = { 0 };
     lxw_error err = LXW_NO_ERROR;
 
     rels = lxw_relationships_new();
 
-    rels->file = lxw_tmpfile(self->tmpdir);
+    rels->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
     if (!rels->file) {
         lxw_free_relationships(rels);
         return LXW_ERROR_CREATING_TMPFILE;
@@ -1470,6 +1580,7 @@ _write_vml_drawing_rels_file(lxw_packager *self, lxw_worksheet *worksheet,
     err = _add_file_to_zip(self, rels->file, sheetname);
 
     fclose(rels->file);
+    free(buffer);
     lxw_free_relationships(rels);
 
     return err;
@@ -1482,6 +1593,7 @@ STATIC lxw_error
 _write_root_rels_file(lxw_packager *self)
 {
     lxw_relationships *rels = lxw_relationships_new();
+    char *buffer = NULL;
     lxw_error err = LXW_NO_ERROR;
 
     if (!rels) {
@@ -1489,7 +1601,7 @@ _write_root_rels_file(lxw_packager *self)
         goto mem_error;
     }
 
-    rels->file = lxw_tmpfile(self->tmpdir);
+    rels->file = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
     if (!rels->file) {
         err = LXW_ERROR_CREATING_TMPFILE;
         goto mem_error;
@@ -1514,6 +1626,7 @@ _write_root_rels_file(lxw_packager *self)
     err = _add_file_to_zip(self, rels->file, "_rels/.rels");
 
     fclose(rels->file);
+    free(buffer);
 
 mem_error:
     lxw_free_relationships(rels);
@@ -1555,7 +1668,7 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
     while (size_read) {
 
         if (size_read < self->buffer_size) {
-            if (feof(file) == 0) {
+            if (ferror(file)) {
                 LXW_ERROR("Error reading member file data");
                 RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
             }

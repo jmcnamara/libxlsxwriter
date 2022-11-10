@@ -12,7 +12,7 @@ jobs:
         cmake_flags: ["",
                       "-DBUILD_EXAMPLES=ON       -DBUILD_TESTS=ON",
                       "-DUSE_DTOA_LIBRARY=ON     -DBUILD_TESTS=ON",
-                      "-DUSE_FMEMOPEN=ON         -DBUILD_TESTS=ON",
+                      "-DUSE_MEM_FILE=ON         -DBUILD_TESTS=ON",
                       "-DUSE_NO_MD5=ON           -DBUILD_TESTS=ON",
                       "-DUSE_OPENSSL_MD5=ON      -DBUILD_TESTS=ON",
                       "-DUSE_STANDARD_TMPFILE=ON -DBUILD_TESTS=ON",

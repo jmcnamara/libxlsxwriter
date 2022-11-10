@@ -2108,6 +2108,7 @@ typedef struct lxw_worksheet {
 
     FILE *file;
     FILE *optimize_tmpfile;
+    char *optimize_buffer;
     struct lxw_table_rows *table;
     struct lxw_table_rows *hyperlinks;
     struct lxw_table_rows *comments;

@@ -18,7 +18,9 @@ int main() {
     /* Set the worksheet options. */
     lxw_workbook_options options = {.constant_memory = LXW_TRUE,
                                     .tmpdir = NULL,
-                                    .use_zip64 = LXW_FALSE};
+                                    .use_zip64 = LXW_FALSE,
+                                    .output_buffer = NULL,
+                                    .output_buffer_size = NULL};
 
     /* Create a new workbook with options. */
     lxw_workbook  *workbook  = workbook_new_opt("constant_memory.xlsx", &options);
