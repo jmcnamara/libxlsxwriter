@@ -196,8 +196,10 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
         FILE *tmpfile;
 
         worksheet->optimize_buffer = NULL;
+        worksheet->optimize_buffer_size = 0;
         tmpfile = lxw_get_filehandle(&worksheet->optimize_buffer,
-                                     NULL, init_data->tmpdir);
+                                     &worksheet->optimize_buffer_size,
+                                     init_data->tmpdir);
         if (!tmpfile) {
             LXW_ERROR("Error creating tmpfile() for worksheet in "
                       "'constant_memory' mode.");
@@ -2526,15 +2528,23 @@ _worksheet_write_optimized_sheet_data(lxw_worksheet *self)
 
         lxw_xml_start_tag(self->file, "sheetData", NULL);
 
-        /* Flush and rewind the temp file. */
+        /* Flush the temp file. */
         fflush(self->optimize_tmpfile);
-        rewind(self->optimize_tmpfile);
 
-        while (read_size) {
-            read_size =
-                fread(buffer, 1, LXW_BUFFER_SIZE, self->optimize_tmpfile);
+        if (self->optimize_buffer) {
             /* Ignore return value. There is no easy way to raise error. */
-            (void) fwrite(buffer, 1, read_size, self->file);
+            (void) fwrite(self->optimize_buffer, self->optimize_buffer_size,
+                          1, self->file);
+        }
+        else {
+            /* Rewind the temp file. */
+            rewind(self->optimize_tmpfile);
+            while (read_size) {
+                read_size =
+                    fread(buffer, 1, LXW_BUFFER_SIZE, self->optimize_tmpfile);
+                /* Ignore return value. There is no easy way to raise error. */
+                (void) fwrite(buffer, 1, read_size, self->file);
+            }
         }
 
         fclose(self->optimize_tmpfile);
@@ -8418,7 +8428,6 @@ worksheet_write_rich_string(lxw_worksheet *self,
     lxw_format *default_format = NULL;
     lxw_rich_string_tuple *rich_string_tuple = NULL;
     FILE *tmpfile;
-    char *buffer = NULL;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
@@ -8443,7 +8452,7 @@ worksheet_write_rich_string(lxw_worksheet *self,
         return err;
 
     /* Create a tmp file for the styles object. */
-    tmpfile = lxw_get_filehandle(&buffer, NULL, self->tmpdir);
+    tmpfile = lxw_get_filehandle(&rich_string, NULL, self->tmpdir);
     if (!tmpfile)
         return LXW_ERROR_CREATING_TMPFILE;
 
@@ -8479,26 +8488,27 @@ worksheet_write_rich_string(lxw_worksheet *self,
     lxw_styles_free(styles);
     lxw_format_free(default_format);
 
-    /* Flush the file and read the size to calculate the required memory. */
+    /* Flush the file. */
     fflush(tmpfile);
-    file_size = ftell(tmpfile);
 
-    /* Allocate a buffer for the rich string xml data. */
-    rich_string = calloc(file_size + 1, 1);
-    GOTO_LABEL_ON_MEM_ERROR(rich_string, mem_error);
+    if (!rich_string) {
+        /* Read the size to calculate the required memory. */
+        file_size = ftell(tmpfile);
+        /* Allocate a buffer for the rich string xml data. */
+        rich_string = calloc(file_size + 1, 1);
+        GOTO_LABEL_ON_MEM_ERROR(rich_string, mem_error);
 
-    /* Rewind the file and read the data into the memory buffer. */
-    rewind(tmpfile);
-    if (fread(rich_string, file_size, 1, tmpfile) < 1) {
-        fclose(tmpfile);
-        free(buffer);
-        free(rich_string);
-        return LXW_ERROR_READING_TMPFILE;
+        /* Rewind the file and read the data into the memory buffer. */
+        rewind(tmpfile);
+        if (fread(rich_string, file_size, 1, tmpfile) < 1) {
+            fclose(tmpfile);
+            free(rich_string);
+            return LXW_ERROR_READING_TMPFILE;
+        }
     }
 
     /* Close the temp file. */
     fclose(tmpfile);
-    free(buffer);
 
     if (lxw_utf8_strlen(rich_string) > LXW_STR_MAX) {
         free(rich_string);
@@ -8538,7 +8548,6 @@ mem_error:
     lxw_styles_free(styles);
     lxw_format_free(default_format);
     fclose(tmpfile);
-    free(buffer);
 
     return LXW_ERROR_MEMORY_MALLOC_FAILED;
 }
