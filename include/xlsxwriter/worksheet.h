@@ -1793,7 +1793,7 @@ typedef struct lxw_object_properties {
     FILE *stream;
     uint8_t image_type;
     uint8_t is_image_buffer;
-    unsigned char *image_buffer;
+    char *image_buffer;
     size_t image_buffer_size;
     double width;
     double height;
@@ -2109,6 +2109,7 @@ typedef struct lxw_worksheet {
     FILE *file;
     FILE *optimize_tmpfile;
     char *optimize_buffer;
+    size_t optimize_buffer_size;
     struct lxw_table_rows *table;
     struct lxw_table_rows *hyperlinks;
     struct lxw_table_rows *comments;
