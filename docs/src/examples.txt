@@ -136,6 +136,20 @@ mode.
 @image html constant_memory.png
 
 ##############################################################
+@example output_buffer.c
+
+Example of using libxlsxwriter to write a workbook file to a memory buffer.
+
+@image html hello01.png
+
+##############################################################
+@example image_buffer.c
+
+Example of adding an image to a worksheet from a memory buffer.
+
+@image html image_buffer2.png
+
+##############################################################
 @example merge_range.c
 
 Example of merging cells in a worksheet.
@@ -199,13 +213,6 @@ formula or formatted collectively.
 Example of adding images to a worksheet.
 
 @image html images.png
-
-##############################################################
-@example image_buffer.c
-
-Example of adding an image to a worksheet from a memory buffer.
-
-@image html image_buffer2.png
 
 ##############################################################
 @example headers_footers.c

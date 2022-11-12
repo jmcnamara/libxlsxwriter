@@ -1,5 +1,5 @@
 /*
- * Example of using libxlsxwriter for writing a workbook file to a buffer.
+ * Example of using libxlsxwriter to write a workbook file to a memory buffer.
  *
  * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
  *

@@ -288,7 +288,7 @@ A simple Unicode UTF-8 example. Note, the source file is UTF-8 encoded.
 <table  width="600">
 <tr>
   <td>@ref utf8.c "&lt;&lt; utf8.c"</td>
-  <td align="right">@ref merge_range.c "merge_range.c &gt;&gt;"</td>
+  <td align="right">@ref output_buffer.c "output_buffer.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -300,11 +300,43 @@ mode.
 
 
 
-@example merge_range.c
+@example output_buffer.c
 
 <table  width="600">
 <tr>
   <td>@ref constant_memory.c "&lt;&lt; constant_memory.c"</td>
+  <td align="right">@ref image_buffer.c "image_buffer.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of using libxlsxwriter to write a workbook file to a memory buffer.
+
+@image html hello01.png
+
+
+
+
+@example image_buffer.c
+
+<table  width="600">
+<tr>
+  <td>@ref output_buffer.c "&lt;&lt; output_buffer.c"</td>
+  <td align="right">@ref merge_range.c "merge_range.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of adding an image to a worksheet from a memory buffer.
+
+@image html image_buffer2.png
+
+
+
+
+@example merge_range.c
+
+<table  width="600">
+<tr>
+  <td>@ref image_buffer.c "&lt;&lt; image_buffer.c"</td>
   <td align="right">@ref merge_rich_string.c "merge_rich_string.c &gt;&gt;"</td>
 </tr>
 </table>
@@ -426,7 +458,7 @@ formula or formatted collectively.
 <table  width="600">
 <tr>
   <td>@ref tables.c "&lt;&lt; tables.c"</td>
-  <td align="right">@ref image_buffer.c "image_buffer.c &gt;&gt;"</td>
+  <td align="right">@ref headers_footers.c "headers_footers.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -437,27 +469,11 @@ Example of adding images to a worksheet.
 
 
 
-@example image_buffer.c
-
-<table  width="600">
-<tr>
-  <td>@ref images.c "&lt;&lt; images.c"</td>
-  <td align="right">@ref headers_footers.c "headers_footers.c &gt;&gt;"</td>
-</tr>
-</table>
-
-Example of adding an image to a worksheet from a memory buffer.
-
-@image html image_buffer2.png
-
-
-
-
 @example headers_footers.c
 
 <table  width="600">
 <tr>
-  <td>@ref image_buffer.c "&lt;&lt; image_buffer.c"</td>
+  <td>@ref images.c "&lt;&lt; images.c"</td>
   <td align="right">@ref defined_name.c "defined_name.c &gt;&gt;"</td>
 </tr>
 </table>
