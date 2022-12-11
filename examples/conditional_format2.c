@@ -167,17 +167,17 @@ int main() {
 
     worksheet_write_string(worksheet5,
                            CELL("A1"),
-                           "Top 10 values are in light red. "
-                           "Bottom 10 values are in light green.",
+                           "Top 15 values are in light red. "
+                           "Bottom 15 values are in light green.",
                            NULL);
 
     conditional_format->type     = LXW_CONDITIONAL_TYPE_TOP;
-    conditional_format->value    = 10;
+    conditional_format->value    = 15;
     conditional_format->format   = format1;
     worksheet_conditional_format_range(worksheet5, RANGE("B3:K12"), conditional_format);
 
     conditional_format->type     = LXW_CONDITIONAL_TYPE_BOTTOM;
-    conditional_format->value    = 10;
+    conditional_format->value    = 15;
     conditional_format->format   = format2;
     worksheet_conditional_format_range(worksheet5, RANGE("B3:K12"), conditional_format);
 
