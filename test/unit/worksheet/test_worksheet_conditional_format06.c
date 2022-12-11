@@ -46,10 +46,10 @@ CTEST(worksheet, worksheet_condtional_format06) {
                 "</row>"
               "</sheetData>"
               "<conditionalFormatting sqref=\"A1:A4\">"
-                "<cfRule type=\"top10\" priority=\"1\" rank=\"10\"/>"
-                "<cfRule type=\"top10\" priority=\"2\" bottom=\"1\" rank=\"10\"/>"
-                "<cfRule type=\"top10\" priority=\"3\" percent=\"1\" rank=\"10\"/>"
-                "<cfRule type=\"top10\" priority=\"4\" percent=\"1\" bottom=\"1\" rank=\"10\"/>"
+                "<cfRule type=\"top10\" priority=\"1\" rank=\"15\"/>"
+                "<cfRule type=\"top10\" priority=\"2\" bottom=\"1\" rank=\"16\"/>"
+                "<cfRule type=\"top10\" priority=\"3\" percent=\"1\" rank=\"17\"/>"
+                "<cfRule type=\"top10\" priority=\"4\" percent=\"1\" bottom=\"1\" rank=\"18\"/>"
               "</conditionalFormatting>"
               "<pageMargins left=\"0.7\" right=\"0.7\" top=\"0.75\" bottom=\"0.75\" header=\"0.3\" footer=\"0.3\"/>"
             "</worksheet>";
@@ -68,21 +68,21 @@ CTEST(worksheet, worksheet_condtional_format06) {
     lxw_conditional_format *conditional_format = calloc(1, sizeof(lxw_conditional_format));
 
     conditional_format->type     = LXW_CONDITIONAL_TYPE_TOP;
-    conditional_format->value    = 10;
+    conditional_format->value    = 15;
     worksheet_conditional_format_range(worksheet, RANGE("A1:A4"), conditional_format);
 
     conditional_format->type     = LXW_CONDITIONAL_TYPE_BOTTOM;
-    conditional_format->value    = 10;
+    conditional_format->value    = 16;
     worksheet_conditional_format_range(worksheet, RANGE("A1:A4"), conditional_format);
 
     conditional_format->type     = LXW_CONDITIONAL_TYPE_TOP;
     conditional_format->criteria = LXW_CONDITIONAL_CRITERIA_TOP_OR_BOTTOM_PERCENT;
-    conditional_format->value    = 10;
+    conditional_format->value    = 17;
     worksheet_conditional_format_range(worksheet, RANGE("A1:A4"), conditional_format);
 
     conditional_format->type     = LXW_CONDITIONAL_TYPE_BOTTOM;
     conditional_format->criteria = LXW_CONDITIONAL_CRITERIA_TOP_OR_BOTTOM_PERCENT;
-    conditional_format->value    = 10;
+    conditional_format->value    = 18;
     worksheet_conditional_format_range(worksheet, RANGE("A1:A4"), conditional_format);
 
 

@@ -6382,7 +6382,7 @@ _worksheet_write_cf_rule_top(lxw_worksheet *self,
         LXW_PUSH_ATTRIBUTES_INT("bottom", 1);
 
     /* Rank must be an int in the range 1-1000 . */
-    if (cond_format->min_value < 1.0 || cond_format->min_value > 1.0)
+    if (cond_format->min_value < 1.0 || cond_format->min_value > 1000.0)
         LXW_PUSH_ATTRIBUTES_DBL("rank", 10);
     else
         LXW_PUSH_ATTRIBUTES_DBL("rank", (uint16_t) cond_format->min_value);
