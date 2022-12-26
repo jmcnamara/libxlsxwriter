@@ -15,17 +15,16 @@ int main() {
     lxw_worksheet *worksheet;
 
     /* We don't use the returned worksheets in this example and use a generic
-     * loop instead. */
+     * loop below instead. */
     workbook_add_worksheet(workbook, NULL);
     workbook_add_worksheet(workbook, NULL);
 
     /* Define some global/workbook names. */
-    workbook_define_name(workbook, "Sales", "=!G1:H10");
-
     workbook_define_name(workbook, "Exchange_rate", "=0.96");
     workbook_define_name(workbook, "Sales",         "=Sheet1!$G$1:$H$10");
 
-    /* Define a local/worksheet name. */
+    /* Define a local/worksheet name. This overrides the global "Sales" name
+     * with a local defined name. */
     workbook_define_name(workbook, "Sheet2!Sales",  "=Sheet2!$G$1:$G$10");
 
     /* Write some text to the worksheets and one of the defined name in a formula. */
