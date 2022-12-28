@@ -778,8 +778,7 @@ Example of hiding worksheet errors and warnings.
 Example of using the new Excel `LAMBDA()` function. It demonstrates how to
 create a lambda function in Excel and also how to assign a name to it so that
 it can be called as a user defined function. This particular example converts
-from Fahrenheit to Celsius. Note, this function is only currently available if
-you are subscribed to the Microsoft Office Beta Channel program.
+from Fahrenheit to Celsius.
 
 @image html lambda01.png
 

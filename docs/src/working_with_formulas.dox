@@ -268,7 +268,7 @@ following:
 @note At the time of writing the `LAMBDA()` function in Excel is only
 available to Excel 365 users subscribed to the Beta Channel updates.
 
-Beta Channel versions of Excel 365 have introduced a powerful new
+Recent versions of Excel 365 have introduced a powerful new
 function/feature called `LAMBDA()`. This is similar to
 [lambda expressions]
 (https://docs.microsoft.com/en-us/cpp/cpp/lambda-expressions-in-cpp?view=msvc-160)
