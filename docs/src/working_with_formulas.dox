@@ -265,9 +265,6 @@ following:
 
 @subsection ww_formulas_lambda The Excel 365 LAMBDA() function
 
-@note At the time of writing the `LAMBDA()` function in Excel is only
-available to Excel 365 users subscribed to the Beta Channel updates.
-
 Recent versions of Excel 365 have introduced a powerful new
 function/feature called `LAMBDA()`. This is similar to
 [lambda expressions]
