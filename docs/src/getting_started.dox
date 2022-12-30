@@ -536,21 +536,21 @@ with larger CMake builds. In particular it enables building on Windows.
 
 The following are various compilation targets and options for both build systems:
 
-| Make                     | CMake                                      | Description                                           |
-| :----------------------- | :----------------------------------------- | :---------------------------------------------------- |
-| `examples`               | `-DBUILD_EXAMPLES=ON`                      | Build the example                                     |
-| `test`                   | `-DBUILD_TESTS=ON`                         | Build the tests                                       |
-| `USE_DTOA_LIBRARY=1`     | `-DUSE_DTOA_LIBRARY=ON`                    | Use alternative double in sprintf                     |
-| `USE_MEM_FILE=1`         | `-DUSE_MEM_FILE=ON`                        | Use fmemopen()/open_memstream() instead of temp files |
-| `USE_OPENSSL_MD5=1`      | `-DUSE_OPENSSL_MD5=ON`                     | Use OpenSSL for MD5 digest                            |
-| `USE_NO_MD5=1`           | `-DUSE_NO_MD5=ON`                          | Don't use a MD5 digest                                |
-| `USE_SYSTEM_MINIZIP=1`   | `-DUSE_SYSTEM_MINIZIP=ON`                  | Use system minzip library                             |
-| `USE_STANDARD_TMPFILE=1` | `-DUSE_STANDARD_TMPFILE=ON`                | Use system tmpfile() function                         |
-| `USE_BIG_ENDIAN=1`       | `-DUSE_BIG_ENDIAN=ON`                      | Build on big endian systems                           |
-| `universal_binary`       | `-DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"` | Create a macOS "Universal Binary"                     |
-|                          | `-DBUILD_SHARED_LIBS=ON`                   | Build shared library (default on)                     |
-|                          | `-DUSE_STATIC_MSVC_RUNTIME=ON`             | Use static msvc runtime library                       |
-|                          | `-DCMAKE_BUILD_TYPE=Release`               | Set the build type.                                   |
+| Make                     | CMake                                      | Description                                               |
+| :----------------------- | :----------------------------------------- | :-------------------------------------------------------- |
+| `examples`               | `-DBUILD_EXAMPLES=ON`                      | Build the example                                         |
+| `test`                   | `-DBUILD_TESTS=ON`                         | Build the tests                                           |
+| `USE_DTOA_LIBRARY=1`     | `-DUSE_DTOA_LIBRARY=ON`                    | Use alternative double in sprintf                         |
+| `USE_MEM_FILE=1`         | `-DUSE_MEM_FILE=ON`                        | Use `fmemopen()`/`open_memstream()` instead of temp files |
+| `USE_OPENSSL_MD5=1`      | `-DUSE_OPENSSL_MD5=ON`                     | Use OpenSSL for MD5 digest                                |
+| `USE_NO_MD5=1`           | `-DUSE_NO_MD5=ON`                          | Don't use a MD5 digest                                    |
+| `USE_SYSTEM_MINIZIP=1`   | `-DUSE_SYSTEM_MINIZIP=ON`                  | Use system minzip library                                 |
+| `USE_STANDARD_TMPFILE=1` | `-DUSE_STANDARD_TMPFILE=ON`                | Use system `tmpfile()` function                           |
+| `USE_BIG_ENDIAN=1`       | `-DUSE_BIG_ENDIAN=ON`                      | Build on big endian systems                               |
+| `universal_binary`       | `-DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"` | Create a macOS "Universal Binary"                         |
+|                          | `-DBUILD_SHARED_LIBS=ON`                   | Build shared library (default on)                         |
+|                          | `-DUSE_STATIC_MSVC_RUNTIME=ON`             | Use static msvc runtime library                           |
+|                          | `-DCMAKE_BUILD_TYPE=Release`               | Set the build type.                                       |
 
 
 The compilation options would be used as follows:

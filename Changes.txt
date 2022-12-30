@@ -2,6 +2,17 @@
 @page changes Changes
 
 
+## 1.1.5 December 30 2022
+
+- Added support for writing a workbook to a memory buffer instead of to a file
+  via the `output_buffer` parameter of @ref workbook_new_opt(). See also
+  @ref output_buffer.c.
+
+- Add support for using in-memory data instead of temporary files on systems where
+ `fmemopen()` and `open_memstream()` are supported. This requires the `USE_MEM_FILE`
+  compilation option.
+
+
 ## 1.1.4 October 9 2021
 
 - Added support for Worksheet tables. Tables in Excel are a way of grouping a
