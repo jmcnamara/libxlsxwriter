@@ -163,6 +163,9 @@ endif()
 
 if(USE_OPENSSL_MD5)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_OPENSSL_MD5)
+    if(NOT MSVC)
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
+    endif()
 endif()
 
 if(USE_MEM_FILE OR USE_FMEMOPEN)

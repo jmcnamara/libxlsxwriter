@@ -49,7 +49,7 @@ ifdef USE_NO_MD5
 CFLAGS += -DUSE_NO_MD5
 else
 ifdef USE_OPENSSL_MD5
-CFLAGS += -DUSE_OPENSSL_MD5
+CFLAGS += -DUSE_OPENSSL_MD5 -Wno-deprecated-declarations
 LIBS   += -lcrypto
 else
 # Use md5 (the default).
