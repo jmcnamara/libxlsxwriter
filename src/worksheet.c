@@ -10380,7 +10380,7 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
     /* Write the image buffer to a file (preferably in memory) so we can read
      * the dimensions like an ordinary file. */
 #ifdef USE_FMEMOPEN
-    image_stream = fmemopen(NULL, image_size, "w+b");
+    image_stream = fmemopen(NULL, image_size, "wb+");
 #else
     image_stream = lxw_tmpfile(self->tmpdir);
 #endif
@@ -10534,7 +10534,7 @@ worksheet_set_background_buffer(lxw_worksheet *self,
     /* Write the image buffer to a file (preferably in memory) so we can read
      * the dimensions like an ordinary file. */
 #ifdef USE_FMEMOPEN
-    image_stream = fmemopen(NULL, image_size, "w+b");
+    image_stream = fmemopen(NULL, image_size, "wb+");
 #else
     image_stream = lxw_tmpfile(self->tmpdir);
 #endif
