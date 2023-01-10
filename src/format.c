@@ -98,6 +98,8 @@ lxw_format_new(void)
     format->color_indexed = LXW_FALSE;
     format->font_only = LXW_FALSE;
 
+    format->quote_prefix = LXW_FALSE;
+
     return format;
 
 mem_error:
@@ -798,4 +800,13 @@ format_set_hyperlink(lxw_format *self)
     self->xf_id = 1;
     self->underline = LXW_UNDERLINE_SINGLE;
     self->theme = 10;
+}
+
+/*
+ * Set the quote_prefix property.
+ */
+void
+format_set_quote_prefix(lxw_format *self)
+{
+    self->quote_prefix = LXW_TRUE;
 }

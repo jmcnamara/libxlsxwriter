@@ -435,6 +435,8 @@ typedef struct lxw_format {
     uint8_t color_indexed;
     uint8_t font_only;
 
+    uint8_t quote_prefix;
+
     STAILQ_ENTRY (lxw_format) list_pointers;
 } lxw_format;
 
@@ -1277,6 +1279,26 @@ void format_set_diag_border(lxw_format *format, uint8_t style);
  * see @ref working_with_colors and the above example.
  */
 void format_set_diag_color(lxw_format *format, lxw_color_t color);
+
+/**
+ * @brief Turn on quote prefix for the format.
+ *
+ * @param format Pointer to a Format instance.
+ *
+ * Set the quote prefix property of a format to ensure a string is treated
+ * as a string after editing. This is the same as prefixing the string with
+ * a single quote in Excel. You don't need to add the quote to the
+ * string but you do need to add the format.
+ *
+ * @code
+ *     format = workbook_add_format(workbook);
+ *     format_set_quote_prefix(format);
+ *
+ *     worksheet_write_string(worksheet, 0, 0, "=Foo", format);
+ * @endcode
+ *
+ */
+void format_set_quote_prefix(lxw_format *format);
 
 void format_set_font_outline(lxw_format *format);
 void format_set_font_shadow(lxw_format *format);

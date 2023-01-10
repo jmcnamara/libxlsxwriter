@@ -1182,6 +1182,9 @@ _write_xf(lxw_styles *self, lxw_format *format)
     LXW_PUSH_ATTRIBUTES_INT("borderId", format->border_index);
     LXW_PUSH_ATTRIBUTES_INT("xfId", format->xf_id);
 
+    if (format->quote_prefix)
+        LXW_PUSH_ATTRIBUTES_STR("quotePrefix", "1");
+
     if (format->num_format_index > 0)
         LXW_PUSH_ATTRIBUTES_STR("applyNumberFormat", "1");
 
