@@ -10380,10 +10380,12 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
     /* Write the image buffer to a file (preferably in memory) so we can read
      * the dimensions like an ordinary file. */
 #ifdef USE_FMEMOPEN
-    image_stream = fmemopen(NULL, image_size, "wb+");
+    image_stream = fmemopen((void *) image_buffer, image_size, "rb");
+
+    if (!image_stream)
+        return LXW_ERROR_CREATING_TMPFILE;
 #else
     image_stream = lxw_tmpfile(self->tmpdir);
-#endif
 
     if (!image_stream)
         return LXW_ERROR_CREATING_TMPFILE;
@@ -10394,6 +10396,7 @@ worksheet_insert_image_buffer_opt(lxw_worksheet *self,
     }
 
     rewind(image_stream);
+#endif
 
     /* Create a new object to hold the image properties. */
     object_props = calloc(1, sizeof(lxw_object_properties));
@@ -10534,10 +10537,12 @@ worksheet_set_background_buffer(lxw_worksheet *self,
     /* Write the image buffer to a file (preferably in memory) so we can read
      * the dimensions like an ordinary file. */
 #ifdef USE_FMEMOPEN
-    image_stream = fmemopen(NULL, image_size, "wb+");
+    image_stream = fmemopen((void *) image_buffer, image_size, "rb");
+
+    if (!image_stream)
+        return LXW_ERROR_CREATING_TMPFILE;
 #else
     image_stream = lxw_tmpfile(self->tmpdir);
-#endif
 
     if (!image_stream)
         return LXW_ERROR_CREATING_TMPFILE;
@@ -10548,6 +10553,7 @@ worksheet_set_background_buffer(lxw_worksheet *self,
     }
 
     rewind(image_stream);
+#endif
 
     /* Create a new object to hold the image properties. */
     object_props = calloc(1, sizeof(lxw_object_properties));
