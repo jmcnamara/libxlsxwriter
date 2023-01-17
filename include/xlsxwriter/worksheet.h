@@ -658,10 +658,10 @@ enum lxw_object_position {
     /** Default positioning for the object. */
     LXW_OBJECT_POSITION_DEFAULT,
 
-    /** Move and size with the worksheet object with the cells. */
+    /** Move and size the worksheet object with the cells. */
     LXW_OBJECT_MOVE_AND_SIZE,
 
-    /** Move but don't size with the worksheet object with the cells. */
+    /** Move but don't size the worksheet object with the cells. */
     LXW_OBJECT_MOVE_DONT_SIZE,
 
     /** Don't move or size the worksheet object with the cells. */
