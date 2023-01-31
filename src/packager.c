@@ -1440,15 +1440,15 @@ _write_worksheet_rels_file(lxw_packager *self)
             lxw_add_worksheet_relationship(rels, rel->type, rel->target,
                                            rel->target_mode);
 
-        STAILQ_FOREACH(rel, worksheet->external_table_links, list_pointers) {
-            lxw_add_worksheet_relationship(rels, rel->type, rel->target,
-                                           rel->target_mode);
-        }
-
         rel = worksheet->external_background_link;
         if (rel)
             lxw_add_worksheet_relationship(rels, rel->type, rel->target,
                                            rel->target_mode);
+
+        STAILQ_FOREACH(rel, worksheet->external_table_links, list_pointers) {
+            lxw_add_worksheet_relationship(rels, rel->type, rel->target,
+                                           rel->target_mode);
+        }
 
         rel = worksheet->external_comment_link;
         if (rel)
