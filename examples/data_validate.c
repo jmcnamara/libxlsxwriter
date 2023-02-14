@@ -170,7 +170,7 @@ int main() {
                            "Select a value from a drop down list (using a cell range)",
                            NULL);
 
-    data_validation->validate      = LXW_VALIDATION_TYPE_LIST;
+    data_validation->validate      = LXW_VALIDATION_TYPE_LIST_FORMULA;
     data_validation->value_formula = "=$E$4:$G$4";
 
     worksheet_data_validation_cell(worksheet, CELL("B15"), data_validation);
