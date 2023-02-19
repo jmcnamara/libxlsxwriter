@@ -10918,11 +10918,6 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
         GOTO_LABEL_ON_MEM_ERROR(copy->value_formula, mem_error);
     }
 
-    if (validation->validate == LXW_VALIDATION_TYPE_LIST_FORMULA) {
-        copy->value_formula = lxw_strdup_formula(validation->value_formula);
-        GOTO_LABEL_ON_MEM_ERROR(copy->value_formula, mem_error);
-    }
-
     if (validation->validate == LXW_VALIDATION_TYPE_DATE
         || validation->validate == LXW_VALIDATION_TYPE_TIME) {
         if (is_between) {
