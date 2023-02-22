@@ -1460,7 +1460,7 @@ _validation_list_length(char **list)
     if (!list || !list[0])
         return 0;
 
-    while (list[i] && length <= LXW_VALIDATION_MAX_STRING_LENGTH) {
+    while (list[i] && length < LXW_VALIDATION_MAX_STRING_LENGTH) {
         /* Include commas in the length. */
         length += 1 + lxw_utf8_strlen(list[i]);
         i++;
@@ -1481,8 +1481,8 @@ _validation_list_to_csv(char **list)
     char *str;
 
     /* Create a buffer for the concatenated, and quoted, string. */
-    /* Add +3 for quotes and EOL. */
-    str = calloc(1, LXW_VALIDATION_MAX_STRING_LENGTH + 3);
+    /* Allow for 4 byte UTF-8 chars and add 3 bytes for quotes and EOL. */
+    str = calloc(1, LXW_VALIDATION_MAX_STRING_LENGTH * 4 + 3);
     if (!str)
         return NULL;
 
