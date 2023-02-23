@@ -7959,7 +7959,7 @@ _store_array_formula(lxw_worksheet *self,
     RETURN_ON_MEM_ERROR(range, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
     if (first_row == last_row && first_col == last_col)
-        lxw_rowcol_to_cell(range, first_row, last_col);
+        lxw_rowcol_to_cell(range, first_row, first_col);
     else
         lxw_rowcol_to_range(range, first_row, first_col, last_row, last_col);
 
@@ -10855,7 +10855,7 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
 
     /* Create the data validation range. */
     if (first_row == last_row && first_col == last_col)
-        lxw_rowcol_to_cell(copy->sqref, first_row, last_col);
+        lxw_rowcol_to_cell(copy->sqref, first_row, first_col);
     else
         lxw_rowcol_to_range(copy->sqref, first_row, first_col, last_row,
                             last_col);
@@ -11030,13 +11030,13 @@ worksheet_conditional_format_range(lxw_worksheet *self, lxw_row_t first_row,
 
     /* Create the data validation range. */
     if (first_row == last_row && first_col == last_col)
-        lxw_rowcol_to_cell(cond_format->sqref, first_row, last_col);
+        lxw_rowcol_to_cell(cond_format->sqref, first_row, first_col);
     else
         lxw_rowcol_to_range(cond_format->sqref, first_row, first_col,
                             last_row, last_col);
 
     /* Store the first cell string for text and date rules. */
-    lxw_rowcol_to_cell(cond_format->first_cell, first_row, last_col);
+    lxw_rowcol_to_cell(cond_format->first_cell, first_row, first_col);
 
     /* Overwrite the sqref range with a user supplied set of ranges. */
     if (user_options->multi_range) {
