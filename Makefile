@@ -210,9 +210,7 @@ endif
         -Dsonar.cfamily.build-wrapper-output=build \
         -Dsonar.working.directory=build/scannerwork \
         -Dsonar.host.url=https://sonarcloud.io \
-        -Dsonar.cfamily.threads=4 \
-        -Dsonar.coverageReportPaths=build/coverage.xml \
-        -Dsonar.cfamily.cache.enabled=false
+        -Dsonar.coverageReportPaths=build/coverage.xml
 
 sonarcloud_no_gcov:
 ifndef SONAR_TOKEN
@@ -230,9 +228,7 @@ endif
         -Dsonar.sourceEncoding=UTF-8 \
         -Dsonar.cfamily.build-wrapper-output=build \
         -Dsonar.working.directory=build/scannerwork \
-        -Dsonar.host.url=https://sonarcloud.io \
-        -Dsonar.cfamily.threads=4 \
-        -Dsonar.cfamily.cache.enabled=false
+        -Dsonar.host.url=https://sonarcloud.io
 
 
 # Run a scan-build static analysis.
