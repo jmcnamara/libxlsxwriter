@@ -32,7 +32,7 @@ Pod::Spec.new do |s|
                             * The only dependency is on `zlib`.
                             DESC
 
-  s.name                  = "xlsxwriter"
+  s.name                  = "libxlsxwriter"
   s.homepage              = "http://libxlsxwriter.github.io"
   s.documentation_url     = "http://libxlsxwriter.github.io"
   s.license               = "FreeBSD"
