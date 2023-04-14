@@ -41,7 +41,7 @@ Pod::Spec.new do |s|
   s.source                = { :git => "https://github.com/jmcnamara/libxlsxwriter.git", :tag => "RELEASE_" + s.version.to_s }
   s.source_files          = "src/*.c", "third_party/**/{zip.c,ioapi.c,tmpfileplus.c,md5.c}", "include/**/*.h"
   s.preserve_paths        = [ 'third_party/**/*.h' ]
-  s.header_dir            = "xlsxwriter"
+  s.header_dir            = "libxlsxwriter"
   s.header_mappings_dir   = "include"
   s.library               = "z"
   s.compiler_flags        = "-DNOCRYPT=1", "-DNOUNCRYPT=1"
