@@ -1,0 +1,6 @@
+.{
+    .name = "libxlsxwriter",
+    .version = "1.1.6",
+    .dependencies = .{},
+}
+//syntax tip: zig - anon struct (json-like)

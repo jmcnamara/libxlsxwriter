@@ -60,3 +60,6 @@ cmake
 !cmake/i686-toolchain.cmake
 
 .vscode
+
+zig-cache/
+zig-out/
