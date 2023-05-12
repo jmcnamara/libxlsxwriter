@@ -219,13 +219,13 @@ enable_language(CXX)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # ZLIB
-find_package(ZLIB REQUIRED "1.0")
+find_package(ZLIB "1.0" REQUIRED)
 list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
 message("zlib version: " ${ZLIB_VERSION})
 
 # MINIZIP
 if (USE_SYSTEM_MINIZIP)
-    find_package(MINIZIP REQUIRED "1.0")
+    find_package(MINIZIP "1.0" REQUIRED)
     list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${MINIZIP_INCLUDE_DIRS})
 endif()
 
