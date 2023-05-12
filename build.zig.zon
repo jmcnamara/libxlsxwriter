@@ -1,6 +1,11 @@
 .{
     .name = "libxlsxwriter",
     .version = "1.1.6",
-    .dependencies = .{},
+    .dependencies = .{
+        .zlib = .{
+            .url = "https://github.com/kassane/zlib/archive/4a99cc2bfa344c969f086fcb8c5873d80448f3e6.tar.gz",
+            .hash = "12209e851f7e2c6ba2f01de3e11b1771f03e49666065320abd8414aac152bfa75fae",
+        },
+    },
 }
 //syntax tip: zig - anon struct (json-like)
