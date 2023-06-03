@@ -5,7 +5,7 @@ project: libxlsxwriter
 target: fuzzme
 
 # Base image to run the binary in.
-image: ghcr.io/srilekhavv/fuzzme:latest
+image: ghcr.io/srilekhavv/libxlsxwriter-fuzz:latest
 
 # List of commands used to test the target
 cmds:
