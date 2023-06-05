@@ -8,6 +8,7 @@
 #include "xlsxwriter.h"
 
 int main() {
+    
     lxw_workbook  *workbook  = workbook_new("hello_world.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
