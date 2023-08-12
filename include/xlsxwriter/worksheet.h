@@ -1944,8 +1944,8 @@ typedef struct lxw_vml_obj {
     lxw_col_t start_col;
     int32_t x_offset;
     int32_t y_offset;
-    uint32_t col_absolute;
-    uint32_t row_absolute;
+    uint64_t col_absolute;
+    uint64_t row_absolute;
     uint32_t width;
     uint32_t height;
     double x_dpi;

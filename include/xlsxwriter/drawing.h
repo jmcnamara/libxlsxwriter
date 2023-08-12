@@ -45,8 +45,8 @@ typedef struct lxw_drawing_object {
     uint8_t anchor;
     struct lxw_drawing_coords from;
     struct lxw_drawing_coords to;
-    uint32_t col_absolute;
-    uint32_t row_absolute;
+    uint64_t col_absolute;
+    uint64_t row_absolute;
     uint32_t width;
     uint32_t height;
     uint8_t shape;

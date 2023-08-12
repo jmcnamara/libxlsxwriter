@@ -2993,7 +2993,6 @@ _worksheet_position_object_pixels(lxw_worksheet *self,
     drawing_object->to.row_offset = y2;
     drawing_object->col_absolute = x_abs;
     drawing_object->row_absolute = y_abs;
-
 }
 
 /*
