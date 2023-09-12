@@ -21,3 +21,6 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_macro03(self):
         self.run_exe_test('test_macro03', 'macro03.xlsm')
+
+    def test_macro_signed(self):
+        self.run_exe_test('test_macro_signed', 'macro_signed.xlsm')
