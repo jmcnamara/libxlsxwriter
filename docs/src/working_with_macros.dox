@@ -55,6 +55,10 @@ Python xlsxwriter module:
     Utility to extract a vbaProject.bin binary from an
     Excel 2007+ xlsm macro file ...
 
+If the VBA project is signed, `vba_extract.py` also extracts the 
+`vbaProjectSignature.bin` file from the xlsm file. For adding a VBA project 
+signature see @ww_macros_signature.
+
 
 @section ww_macros_adding Adding the VBA macros to a libxlsxwriter file
 
@@ -142,6 +146,27 @@ clarity:
 
 @note This step is particularly important for macros created with non-English
 versions of Excel.
+
+
+@section ww_macros_signature Adding a VBA macro signature file to a 
+libxlsxwriter file
+
+VBA macros can be signed in Excel to allow for blocking execution of unsigned 
+macros in certain environments, for example. 
+
+Once the vbaProjectSignature.bin file has been extracted it can be added to 
+the libxlsxwriter workbook using the workbook_add_vba_project_signature() 
+function:
+
+@code
+    workbook_add_vba_project_signature(workbook, "./vbaProjectSignature.bin");
+@endcode
+
+@note The name doesn't have to be `vbaProjectSignature.bin`. Any suitable 
+path/name for an existing VBA signature bin file will do.
+
+See the full example at @ref macro_signed.c.
+
 
 @section ww_macros_debugging What to do if it doesn't work
 

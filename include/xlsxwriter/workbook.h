@@ -341,6 +341,7 @@ typedef struct lxw_workbook {
     lxw_hash_table *used_dxf_formats;
 
     char *vba_project;
+    char *vba_project_signature;
     char *vba_codename;
 
     lxw_format *default_url_format;
@@ -966,7 +967,7 @@ lxw_error workbook_validate_sheet_name(lxw_workbook *workbook,
  *     workbook_add_vba_project(workbook, "vbaProject.bin");
  * @endcode
  *
- * Only one `vbaProject.bin file` can be added per workbook. The name doesn't
+ * Only one `vbaProject.bin` file can be added per workbook. The name doesn't
  * have to be `vbaProject.bin`. Any suitable path/name for an existing VBA bin
  * file will do.
  *
@@ -984,6 +985,32 @@ lxw_error workbook_validate_sheet_name(lxw_workbook *workbook,
  */
 lxw_error workbook_add_vba_project(lxw_workbook *workbook,
                                    const char *filename);
+
+/**
+ * @brief Add a vbaProjectSignature binary to the Excel workbook.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param filename The path/filename of the vbaProjectSignature.bin file.
+ *
+ * The `%workbook_add_vba_project_signature()` function can be used to add 
+ * a code signature to the VBA macros included via 
+ * `workbook_add_vba_project()`. The binary signature file should have been 
+ * extracted from an existing Excel xlsm file with signed macros.
+ *
+ * @code
+ *     workbook_add_vba_project_signature(workbook, "vbaProjectSignature.bin");
+ * @endcode
+ *
+ * Only one `vbaProjectSignature.bin` file can be added per workbook. The name 
+ * doesn't have to be `vbaProjectSignature.bin`. Any suitable path/name for an 
+ * existing VBA project signature file will do.
+ *
+ * See also @ref working_with_macros
+ *
+ * @return A #lxw_error.
+ */
+lxw_error workbook_add_vba_project_signature(lxw_workbook *workbook,
+                                             const char *filename);
 
 /**
  * @brief Set the VBA name for the workbook.

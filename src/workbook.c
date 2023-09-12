@@ -264,6 +264,7 @@ lxw_workbook_free(lxw_workbook *workbook)
     free(workbook->options.tmpdir);
     free(workbook->ordered_charts);
     free(workbook->vba_project);
+    free(workbook->vba_project_signature);
     free(workbook->vba_codename);
     free(workbook);
 }
@@ -2653,6 +2654,36 @@ workbook_add_vba_project(lxw_workbook *self, const char *filename)
     fclose(filehandle);
 
     self->vba_project = lxw_strdup(filename);
+
+    return LXW_NO_ERROR;
+}
+
+/*
+ * Add a vbaProjectSignature binary to the Excel workbook.
+ * Signature will only be included in file if workbook_add_vba_project is also called.
+ */
+lxw_error
+workbook_add_vba_project_signature(lxw_workbook *self, const char *filename)
+{
+    FILE *filehandle;
+
+    if (!filename) {
+        LXW_WARN("workbook_add_vba_project_signature(): "
+                 "filename must be specified.");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    /* Check that the vbaProjectSignature file exists and can be opened. */
+    filehandle = lxw_fopen(filename, "rb");
+    if (!filehandle) {
+        LXW_WARN_FORMAT1("workbook_add_vba_project_signature(): "
+                         "file doesn't exist or can't be opened: %s.",
+                         filename);
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+    fclose(filehandle);
+
+    self->vba_project_signature = lxw_strdup(filename);
 
     return LXW_NO_ERROR;
 }
