@@ -4743,13 +4743,13 @@ lxw_worksheet_write_single_row(lxw_worksheet *self)
 
 /* Process a header/footer image and store it in the correct slot. */
 lxw_error
-_worksheet_set_header_footer_image(lxw_worksheet *self, char *filename,
+_worksheet_set_header_footer_image(lxw_worksheet *self, const char *filename,
                                    uint8_t image_position)
 {
     FILE *image_stream;
     const char *description;
     lxw_object_properties *object_props;
-    char *image_strings[] = { "LH", "CH", "RH", "LF", "CF", "RF" };
+    const char *image_strings[] = { "LH", "CH", "RH", "LF", "CF", "RF" };
 
     /* Not all slots will have image files. */
     if (!filename)

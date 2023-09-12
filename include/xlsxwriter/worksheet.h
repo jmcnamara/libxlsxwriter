@@ -1983,17 +1983,17 @@ typedef struct lxw_header_footer_options {
     /** The left header image filename, with path if required. This should
      * have a corresponding `&G/&[Picture]` placeholder in the `&L` section of
      * the header/footer string. See `worksheet_set_header_opt()`. */
-    char *image_left;
+    const char *image_left;
 
     /** The center header image filename, with path if required. This should
      * have a corresponding `&G/&[Picture]` placeholder in the `&C` section of
      * the header/footer string. See `worksheet_set_header_opt()`. */
-    char *image_center;
+    const char *image_center;
 
     /** The right header image filename, with path if required. This should
      * have a corresponding `&G/&[Picture]` placeholder in the `&R` section of
      * the header/footer string. See `worksheet_set_header_opt()`. */
-    char *image_right;
+    const char *image_right;
 
 } lxw_header_footer_options;
 

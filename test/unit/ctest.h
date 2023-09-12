@@ -25,6 +25,8 @@ typedef void (*SetupFunc)(void*);
 typedef void (*TearDownFunc)(void*);
 
 struct ctest {
+    unsigned int magic;  // must be first member for MSVC
+
     const char* ssname;  // suite name
     const char* ttname;  // test name
     void (*run)();
@@ -33,24 +35,42 @@ struct ctest {
     void* data;
     SetupFunc setup;
     TearDownFunc teardown;
-
-    unsigned int magic;
 };
 
 #define __FNAME(sname, tname) __ctest_##sname##_##tname##_run
 #define __TNAME(sname, tname) __ctest_##sname##_##tname
 
 #define __CTEST_MAGIC (0xdeadbeef)
+
 #ifdef __APPLE__
-#define __Test_Section __attribute__ ((unused,section ("__DATA, .ctest")))
-#elif defined(_MSC_VER)
-#define __Test_Section
+
+#define __Test_Section_Attribute __attribute__ ((unused,section ("__DATA, .ctest")))
+#define __Test_Section_DeclSpec
+
+#elif !defined(_MSC_VER)
+
+#define __Test_Section_Attribute __attribute__ ((unused,section (".ctest")))
+#define __Test_Section_DeclSpec
+
 #else
-#define __Test_Section __attribute__ ((unused,section (".ctest")))
+
+// MSVC linker sections are not necessarily aligned over translation units (.c files).
+// For details see https://devblogs.microsoft.com/oldnewthing/20181107-00/?p=100155 and the two follow-up articles.
+// Solution:
+// - Use some data placed around section .ctest$b
+// - Skip zeroes inserted by the linker between data from different translation units
+
+#pragma section(".ctest$a", read)  // section for data before ctest structs
+#pragma section(".ctest$b", read)  // section for ctest structs, not necessarily aligned, used by macro __CTEST_STRUCT
+#pragma section(".ctest$c", read)  // section for data after ctest structs
+
+#define __Test_Section_Attribute
+#define __Test_Section_DeclSpec __declspec(allocate(".ctest$b"))
+
 #endif
 
 #define __CTEST_STRUCT(sname, tname, _skip, __data, __setup, __teardown) \
-    struct ctest __TNAME(sname, tname) __Test_Section = { \
+    __Test_Section_DeclSpec struct ctest __TNAME(sname, tname) __Test_Section_Attribute = { \
         .ssname=#sname, \
         .ttname=#tname, \
         .run = __FNAME(sname, tname), \
@@ -193,7 +213,17 @@ typedef int (*filter_func)(struct ctest*);
 #define ANSI_WHITE    "\033[01;37m"
 #define ANSI_NORMAL   "\033[0m"
 
+#ifdef _MSC_VER
+
+// some arbitrary data around section .ctest$b
+__declspec(allocate(".ctest$a")) unsigned int before_ctests;
+__declspec(allocate(".ctest$c")) unsigned int after_ctests;
+
+#else
+
 static CTEST(suite, test) { }
+
+#endif
 
 static void msg_start(const char* color, const char* title) {
     int size;
@@ -412,6 +442,35 @@ int ctest_main(int argc, const char *argv[])
     color_output = isatty(1);
     uint64_t t1 = getCurrentTime();
 
+#ifdef _MSC_VER
+    // scan section .ctest$b (between sections .ctest$a and .ctest$c):
+    // search for valid structs starting with __CTEST_MAGIC while skipping zeroes inserted by the linker
+    uintptr_t addr_before = (uintptr_t)&before_ctests;
+    uintptr_t addr_after  = (uintptr_t)&after_ctests;
+    uintptr_t addr;
+
+    // pass 1: calculate total number of tests to execute
+    addr = addr_before + sizeof(before_ctests);
+    while (addr < addr_after) {
+        struct ctest* test = (struct ctest*)addr;
+        if (test->magic != __CTEST_MAGIC) {
+            addr += sizeof(int);  // C11 provides alignof(struct ctest), but sizeof(int) is more compatible; assume minimum struct alignment is sizeof(int)
+            continue;
+        }
+        addr += sizeof(struct ctest);
+        if (filter(test)) total++;
+    }
+
+    // pass 2: run tests
+    addr = addr_before + sizeof(before_ctests);
+    while (addr < addr_after) {
+        struct ctest* test = (struct ctest*)addr;
+        if (test->magic != __CTEST_MAGIC) {
+            addr += sizeof(int);  // C11 provides alignof(struct ctest), but sizeof(int) is more compatible; assume minimum struct alignment is sizeof(int)
+            continue;
+        }
+        addr += sizeof(struct ctest);
+#else
     struct ctest* ctest_begin = &__TNAME(suite, test);
     struct ctest* ctest_end = &__TNAME(suite, test);
     // find begin and end of section by comparing magics
@@ -435,6 +494,7 @@ int ctest_main(int argc, const char *argv[])
 
     for (test = ctest_begin; test != ctest_end; test++) {
         if (test == &__ctest_suite_test) continue;
+#endif
         if (filter(test)) {
             ctest_errorbuffer[0] = 0;
             ctest_errorsize = MSG_SIZE-1;
