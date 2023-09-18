@@ -463,7 +463,7 @@ _add_vba_project_signature(lxw_packager *self)
     if (!workbook->vba_project_signature)
         return LXW_NO_ERROR;
     if (!workbook->vba_project)
-        return LXW_NO_ERROR;  // no VBA project: do not add signature
+        return LXW_NO_ERROR;    // no VBA project: do not add signature
 
     /* Check that the image file exists and can be opened. */
     image_stream = lxw_fopen(workbook->vba_project_signature, "rb");
@@ -1676,12 +1676,12 @@ _write_vml_drawing_rels_file(lxw_packager *self, lxw_worksheet *worksheet,
  * Write the vbaProject .rels xml file.
  */
 STATIC lxw_error
-_write_vba_project_rels_file(lxw_packager* self)
+_write_vba_project_rels_file(lxw_packager *self)
 {
-    lxw_relationships* rels;
-    lxw_workbook* workbook = self->workbook;
+    lxw_relationships *rels;
+    lxw_workbook *workbook = self->workbook;
     lxw_error err = LXW_NO_ERROR;
-    char* buffer = NULL;
+    char *buffer = NULL;
     size_t buffer_size = 0;
 
     if (!workbook->vba_project || !workbook->vba_project_signature)
@@ -1699,12 +1699,13 @@ _write_vba_project_rels_file(lxw_packager* self)
         goto mem_error;
     }
 
-    lxw_add_ms_package_relationship(rels, "/vbaProjectSignature", "vbaProjectSignature.bin");
+    lxw_add_ms_package_relationship(rels, "/vbaProjectSignature",
+                                    "vbaProjectSignature.bin");
 
     lxw_relationships_assemble_xml_file(rels);
 
     err = _add_to_zip(self, rels->file, &buffer, &buffer_size,
-        "xl/_rels/vbaProject.bin.rels");
+                      "xl/_rels/vbaProject.bin.rels");
 
     fclose(rels->file);
     free(buffer);
