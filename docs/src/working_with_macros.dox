@@ -148,24 +148,24 @@ clarity:
 versions of Excel.
 
 
-@section ww_macros_signature Adding a VBA macro signature file to a 
-libxlsxwriter file
+@section ww_macros_signature Adding signed VBA macros to a libxlsxwriter file
 
 VBA macros can be signed in Excel to allow for blocking execution of unsigned 
-macros in certain environments, for example. 
+macros in certain environments, for example.
 
-Once the vbaProjectSignature.bin file has been extracted it can be added to 
-the libxlsxwriter workbook using the workbook_add_vba_project_signature() 
-function:
+The `vba_extract.py utility` can be used to extract the `vbaProject.bin` and
+`vbaProjectSignature.bin` files from an existing xlsm file with signed macros.
+
+To add these files to the libxlsxwriter workbook use the
+`workbook_add_signed_vba_project()` function:
 
 @code
-    workbook_add_vba_project_signature(workbook, "./vbaProjectSignature.bin");
+    workbook_add_signed_vba_project(workbook, 
+                                    "./vbaProject.bin", "./vbaProjectSignature.bin");
 @endcode
 
-@note The name doesn't have to be `vbaProjectSignature.bin`. Any suitable 
-path/name for an existing VBA signature bin file will do.
-
-See the full example at @ref macro_signed.c.
+@note The names don't have to be `vbaProject.bin` and `vbaProjectSignature.bin`.
+Any suitable paths/names for existing VBA project or signature files will do.
 
 
 @section ww_macros_debugging What to do if it doesn't work

@@ -2639,7 +2639,7 @@ workbook_add_vba_project(lxw_workbook *self, const char *filename)
 
     if (!filename) {
         LXW_WARN("workbook_add_vba_project(): "
-                 "filename must be specified.");
+                 "project filename must be specified.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
@@ -2647,7 +2647,7 @@ workbook_add_vba_project(lxw_workbook *self, const char *filename)
     filehandle = lxw_fopen(filename, "rb");
     if (!filehandle) {
         LXW_WARN_FORMAT1("workbook_add_vba_project(): "
-                         "file doesn't exist or can't be opened: %s.",
+                         "project file doesn't exist or can't be opened: %s.",
                          filename);
         return LXW_ERROR_PARAMETER_VALIDATION;
     }
@@ -2659,31 +2659,36 @@ workbook_add_vba_project(lxw_workbook *self, const char *filename)
 }
 
 /*
- * Add a vbaProjectSignature binary to the Excel workbook.
- * Signature will only be included in file if workbook_add_vba_project is also called.
+ * Add a vbaProject binary and a vbaProjectSignature binary to the Excel workbook.
  */
 lxw_error
-workbook_add_vba_project_signature(lxw_workbook *self, const char *filename)
+workbook_add_signed_vba_project(lxw_workbook *self,
+                                const char *vba_project,
+                                const char *signature)
 {
     FILE *filehandle;
 
-    if (!filename) {
-        LXW_WARN("workbook_add_vba_project_signature(): "
-                 "filename must be specified.");
+    lxw_error error = workbook_add_vba_project(self, vba_project);
+    if (error != LXW_NO_ERROR)
+        return error;
+
+    if (!signature) {
+        LXW_WARN("workbook_add_signed_vba_project(): "
+                 "signature filename must be specified.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
     /* Check that the vbaProjectSignature file exists and can be opened. */
-    filehandle = lxw_fopen(filename, "rb");
+    filehandle = lxw_fopen(signature, "rb");
     if (!filehandle) {
-        LXW_WARN_FORMAT1("workbook_add_vba_project_signature(): "
-                         "file doesn't exist or can't be opened: %s.",
-                         filename);
+        LXW_WARN_FORMAT1("workbook_add_signed_vba_project(): "
+                         "signature file doesn't exist or can't be opened: %s.",
+                         signature);
         return LXW_ERROR_PARAMETER_VALIDATION;
     }
     fclose(filehandle);
 
-    self->vba_project_signature = lxw_strdup(filename);
+    self->vba_project_signature = lxw_strdup(signature);
 
     return LXW_NO_ERROR;
 }
