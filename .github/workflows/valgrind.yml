@@ -15,6 +15,7 @@ jobs:
 
     - name: Install dependencies
       run: |
+        sudo apt update
         sudo apt-get -y install valgrind
         sudo apt-get -y install zlib1g-dev
 
