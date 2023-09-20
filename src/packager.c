@@ -462,8 +462,6 @@ _add_vba_project_signature(lxw_packager *self)
 
     if (!workbook->vba_project_signature)
         return LXW_NO_ERROR;
-    if (!workbook->vba_project)
-        return LXW_NO_ERROR;    // no VBA project: do not add signature
 
     /* Check that the image file exists and can be opened. */
     image_stream = lxw_fopen(workbook->vba_project_signature, "rb");
@@ -1275,7 +1273,7 @@ _write_content_types_file(lxw_packager *self)
         lxw_ct_add_override(content_types, "/xl/workbook.xml",
                             LXW_APP_DOCUMENT "spreadsheetml.sheet.main+xml");
 
-    if (workbook->vba_project && workbook->vba_project_signature)
+    if (workbook->vba_project_signature)
         lxw_ct_add_override(content_types, "/xl/vbaProjectSignature.bin",
                             "application/vnd.ms-office.vbaProjectSignature");
 
@@ -1684,7 +1682,7 @@ _write_vba_project_rels_file(lxw_packager *self)
     char *buffer = NULL;
     size_t buffer_size = 0;
 
-    if (!workbook->vba_project || !workbook->vba_project_signature)
+    if (!workbook->vba_project_signature)
         return LXW_NO_ERROR;
 
     rels = lxw_relationships_new();

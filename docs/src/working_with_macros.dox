@@ -160,7 +160,7 @@ To add these files to the libxlsxwriter workbook use the
 `workbook_add_signed_vba_project()` function:
 
 @code
-    workbook_add_signed_vba_project(workbook, 
+    workbook_add_signed_vba_project(workbook,
                                     "./vbaProject.bin", "./vbaProjectSignature.bin");
 @endcode
 

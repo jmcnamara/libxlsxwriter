@@ -987,16 +987,16 @@ lxw_error workbook_add_vba_project(lxw_workbook *workbook,
                                    const char *filename);
 
 /**
- * @brief Add a vbaProject binary and a vbaProjectSignature binary to the Excel 
+ * @brief Add a vbaProject binary and a vbaProjectSignature binary to the Excel
  * workbook.
  *
  * @param workbook    Pointer to a lxw_workbook instance.
  * @param vba_project The path/filename of the vbaProject.bin file.
  * @param signature   The path/filename of the vbaProjectSignature.bin file.
  *
- * The `%workbook_add_signed_vba_project()` function can be used to add digitally 
- * signed macros or functions to a workbook. The function adds a binary VBA project 
- * file and a binary VBA project signature file that have been extracted from an 
+ * The `%workbook_add_signed_vba_project()` function can be used to add digitally
+ * signed macros or functions to a workbook. The function adds a binary VBA project
+ * file and a binary VBA project signature file that have been extracted from an
  * existing Excel xlsm file with digitally signed macros:
  *
  * @code

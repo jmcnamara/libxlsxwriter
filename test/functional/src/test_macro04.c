@@ -11,11 +11,11 @@
 
 int main() {
 
-    lxw_workbook  *workbook  = workbook_new("test_macro_signed.xlsm");
+    lxw_workbook  *workbook  = workbook_new("test_macro04.xlsm");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, "Foo");
 
-    workbook_add_signed_vba_project(workbook, 
-                                    "images/vbaProject05.bin", 
+    workbook_add_signed_vba_project(workbook,
+                                    "images/vbaProject05.bin",
                                     "images/vbaProject05Signature.bin");
 
     worksheet_set_column(worksheet, COLS("A:A"), 30, NULL);
