@@ -640,7 +640,7 @@ lxw_version_id(void)
 uint16_t
 lxw_hash_password(const char *password)
 {
-    uint16_t byte_count = strlen(password);
+    uint16_t byte_count = (uint16_t) strlen(password);
     uint16_t hash = 0;
     const char *p = &password[byte_count];
 

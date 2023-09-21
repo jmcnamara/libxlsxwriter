@@ -12,7 +12,9 @@
 #include <stdint.h>
 
 #ifdef USE_SYSTEM_MINIZIP
+#ifdef __GNUC__
 #pragma GCC system_header
+#endif
 #include "minizip/zip.h"
 #else
 #include "third_party/zip.h"
