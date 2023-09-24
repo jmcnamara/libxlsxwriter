@@ -66,16 +66,16 @@ STATIC void
 _free_doc_properties(lxw_doc_properties *properties)
 {
     if (properties) {
-        free(properties->title);
-        free(properties->subject);
-        free(properties->author);
-        free(properties->manager);
-        free(properties->company);
-        free(properties->category);
-        free(properties->keywords);
-        free(properties->comments);
-        free(properties->status);
-        free(properties->hyperlink_base);
+        free((void *) properties->title);
+        free((void *) properties->subject);
+        free((void *) properties->author);
+        free((void *) properties->manager);
+        free((void *) properties->company);
+        free((void *) properties->category);
+        free((void *) properties->keywords);
+        free((void *) properties->comments);
+        free((void *) properties->status);
+        free((void *) properties->hyperlink_base);
     }
 
     free(properties);
@@ -261,7 +261,7 @@ lxw_workbook_free(lxw_workbook *workbook)
     lxw_hash_free(workbook->used_xf_formats);
     lxw_hash_free(workbook->used_dxf_formats);
     lxw_sst_free(workbook->sst);
-    free(workbook->options.tmpdir);
+    free((void *) workbook->options.tmpdir);
     free(workbook->ordered_charts);
     free(workbook->vba_project);
     free(workbook->vba_project_signature);
@@ -1972,8 +1972,8 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     return worksheet;
 
 mem_error:
-    free(init_data.name);
-    free(init_data.quoted_name);
+    free((void *) init_data.name);
+    free((void *) init_data.quoted_name);
     free(worksheet_name);
     free(worksheet);
     return NULL;
@@ -2056,8 +2056,8 @@ workbook_add_chartsheet(lxw_workbook *self, const char *sheetname)
     return chartsheet;
 
 mem_error:
-    free(init_data.name);
-    free(init_data.quoted_name);
+    free((void *) init_data.name);
+    free((void *) init_data.quoted_name);
     free(chartsheet_name);
     free(chartsheet);
     return NULL;

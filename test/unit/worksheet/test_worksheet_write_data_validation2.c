@@ -486,7 +486,7 @@ CTEST(worksheet, test_write_data_validations_220) {
     char* got;
     char exp[] = "<dataValidations count=\"1\"><dataValidation type=\"list\" allowBlank=\"1\" showInputMessage=\"1\" showErrorMessage=\"1\" sqref=\"B5\"><formula1>\"a,bb,ccc\"</formula1></dataValidation></dataValidations>";
     FILE* testfile = lxw_tmpfile(NULL);
-    char *list[] = {"a", "bb", "ccc", NULL};
+    const char* list[] = {"a", "bb", "ccc", NULL};
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_LIST;
@@ -509,7 +509,7 @@ CTEST(worksheet, test_write_data_validations_221) {
     char* got;
     char exp[] = "<dataValidations count=\"1\"><dataValidation type=\"list\" allowBlank=\"1\" showDropDown=\"1\" showInputMessage=\"1\" showErrorMessage=\"1\" sqref=\"B5\"><formula1>\"a,bb,ccc\"</formula1></dataValidation></dataValidations>";
     FILE* testfile = lxw_tmpfile(NULL);
-    char *list[] = {"a", "bb", "ccc", NULL};
+    const char* list[] = {"a", "bb", "ccc", NULL};
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_LIST;

@@ -85,7 +85,7 @@ lxw_styles_free(lxw_styles *styles)
  * Write the <t> element for rich strings.
  */
 void
-lxw_styles_write_string_fragment(lxw_styles *self, char *string)
+lxw_styles_write_string_fragment(lxw_styles *self, const char *string)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;

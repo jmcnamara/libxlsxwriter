@@ -32,7 +32,8 @@ int main() {
     format_set_font_color(custom_format, LXW_COLOR_RED);
 
     /* Create a conditional format object. A static object would also work. */
-    lxw_conditional_format *conditional_format = calloc(1, sizeof(lxw_conditional_format));
+    lxw_conditional_format *conditional_format =
+        (lxw_conditional_format *)calloc(1, sizeof(lxw_conditional_format));
 
     /* Set the format type: a cell conditional: */
     conditional_format->type     = LXW_CONDITIONAL_TYPE_CELL;

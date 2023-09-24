@@ -21,7 +21,7 @@ int main() {
 
     (void)worksheet;
 
-    free(properties->hyperlink_base);
+    free((void *)properties->hyperlink_base);
     free(properties);
 
     return workbook_close(workbook);

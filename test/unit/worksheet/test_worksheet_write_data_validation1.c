@@ -128,7 +128,7 @@ CTEST(worksheet, write_data_validations04) {
     char* got;
     char exp[] = "<dataValidations count=\"1\"><dataValidation type=\"list\" allowBlank=\"1\" showInputMessage=\"1\" showErrorMessage=\"1\" sqref=\"A4\"><formula1>\"open,high,close\"</formula1></dataValidation></dataValidations>";
     FILE* testfile = lxw_tmpfile(NULL);
-    char *list[] = {"open", "high", "close", NULL};
+    const char* list[] = {"open", "high", "close", NULL};
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_LIST;

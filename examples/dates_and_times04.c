@@ -18,7 +18,7 @@ int main() {
     /* Examples date and time formats. In the output file compare how changing
      * the format strings changes the appearance of the date.
      */
-    char *date_formats[] = {
+    const char *date_formats[] = {
         "dd/mm/yy",
         "mm/dd/yy",
         "dd m yy",

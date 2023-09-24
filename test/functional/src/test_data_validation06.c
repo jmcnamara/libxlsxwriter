@@ -13,8 +13,8 @@ int main() {
 
     lxw_workbook  *workbook  = workbook_new("test_data_validation06.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
-    char *list1[] = {"Foo", "Bar", "Baz", NULL};
-    char *list2[] = {
+    const char *list1[] = {"Foo", "Bar", "Baz", NULL};
+    const char *list2[] = {
         "Foobar", "Foobas", "Foobat", "Foobau", "Foobav", "Foobaw", "Foobax",
         "Foobay", "Foobaz", "Foobba", "Foobbb", "Foobbc", "Foobbd", "Foobbe",
         "Foobbf", "Foobbg", "Foobbh", "Foobbi", "Foobbj", "Foobbk", "Foobbl",

@@ -108,7 +108,7 @@ int main() {
     worksheet_autofilter(worksheet, 0, 0, 50, 3);
 
 
-    char* list[] = {"3000", "5000", "8000", NULL};
+    const char* list[] = {"3000", "5000", "8000", NULL};
 
     worksheet_filter_list(worksheet, 2, list);
 

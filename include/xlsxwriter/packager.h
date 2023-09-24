@@ -67,10 +67,10 @@ typedef struct lxw_packager {
     size_t output_buffer_size;
     zipFile zipfile;
     zip_fileinfo zipfile_info;
-    char *filename;
-    char *buffer;
+    const char *filename;
+    const char *buffer;
     char *output_buffer;
-    char *tmpdir;
+    const char *tmpdir;
     uint8_t use_zip64;
 
 } lxw_packager;
@@ -82,7 +82,7 @@ extern "C" {
 #endif
 /* *INDENT-ON* */
 
-lxw_packager *lxw_packager_new(const char *filename, char *tmpdir,
+lxw_packager *lxw_packager_new(const char *filename, const char *tmpdir,
                                uint8_t use_zip64);
 void lxw_packager_free(lxw_packager *packager);
 lxw_error lxw_create_package(lxw_packager *self);

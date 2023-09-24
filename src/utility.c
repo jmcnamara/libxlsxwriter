@@ -572,7 +572,7 @@ lxw_quote_sheetname(const char *str)
  * version if required for safety or portability.
  */
 FILE *
-lxw_tmpfile(char *tmpdir)
+lxw_tmpfile(const char *tmpdir)
 {
 #ifndef USE_STANDARD_TMPFILE
     return tmpfileplus(tmpdir, NULL, NULL, 0);
@@ -586,7 +586,7 @@ lxw_tmpfile(char *tmpdir)
  * Return a memory-backed file if supported, otherwise a temporary one
  */
 FILE *
-lxw_get_filehandle(char **buf, size_t *size, char *tmpdir)
+lxw_get_filehandle(char **buf, size_t *size, const char *tmpdir)
 {
     static size_t s;
     if (!size)

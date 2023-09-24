@@ -13,7 +13,7 @@
 int main() {
 
     int chart_types[]    = {LXW_CHART_COLUMN, LXW_CHART_AREA, LXW_CHART_LINE, LXW_CHART_PIE};
-    char *chart_names[]  = {"Column", "Area", "Line", "Pie"};
+    const char *chart_names[]  = {"Column", "Area", "Line", "Pie"};
     char chart_title[32] = {0};
     int row_num, col_num, chart_num, style_num;
     lxw_worksheet *worksheet;

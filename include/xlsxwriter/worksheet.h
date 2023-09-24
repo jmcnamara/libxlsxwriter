@@ -979,7 +979,7 @@ typedef struct lxw_data_validation {
      * is applied using a cell reference. It is valid for any of the
      * `_FORMULA` validation types.
      */
-    char *value_formula;
+    const char *value_formula;
 
     /**
      * This parameter is used to set a list of strings for a drop down list.
@@ -998,7 +998,7 @@ typedef struct lxw_data_validation {
      * Note, the string list is restricted by Excel to 255 characters,
      * including comma separators.
      */
-    char **value_list;
+    const char **value_list;
 
     /**
      * This parameter is used to set the limiting value to which the date or
@@ -1016,7 +1016,7 @@ typedef struct lxw_data_validation {
      * This parameter is the same as `value_formula` but for the minimum value
      * when a `BETWEEN` criteria is used.
      */
-    char *minimum_formula;
+    const char *minimum_formula;
 
     /**
      * This parameter is the same as `value_datetime` but for the minimum value
@@ -1034,7 +1034,7 @@ typedef struct lxw_data_validation {
      * This parameter is the same as `value_formula` but for the maximum value
      * when a `BETWEEN` criteria is used.
      */
-    char *maximum_formula;
+    const char *maximum_formula;
 
     /**
      * This parameter is the same as `value_datetime` but for the maximum value
@@ -1050,7 +1050,7 @@ typedef struct lxw_data_validation {
      *
      * The maximum title length is 32 characters.
      */
-    char *input_title;
+    const char *input_title;
 
     /**
      * The input_message parameter is used to set the input message that is
@@ -1059,7 +1059,7 @@ typedef struct lxw_data_validation {
      * The message can be split over several lines using newlines. The maximum
      * message length is 255 characters.
      */
-    char *input_message;
+    const char *input_message;
 
     /**
      * The error_title parameter is used to set the title of the error message
@@ -1067,7 +1067,7 @@ typedef struct lxw_data_validation {
      * default error title is 'Microsoft Excel'. The maximum title length is
      * 32 characters.
      */
-    char *error_title;
+    const char *error_title;
 
     /**
      * The error_message parameter is used to set the error message that is
@@ -1078,7 +1078,7 @@ typedef struct lxw_data_validation {
      * The message can be split over several lines using newlines. The maximum
      * message length is 255 characters.
      */
-    char *error_message;
+    const char *error_message;
 
 } lxw_data_validation;
 
@@ -1142,7 +1142,7 @@ typedef struct lxw_conditional_format {
      *  value_string exists in the struct then the number value is
      *  ignored. Note, if the condition refers to a text string then it must
      *  be double quoted like this `"foo"`. */
-    char *value_string;
+    const char *value_string;
 
     /** The format field is used to specify the #lxw_format format that will
      *  be applied to the cell when the conditional formatting criterion is
@@ -1163,7 +1163,7 @@ typedef struct lxw_conditional_format {
 
     /** The minimum string value used for Cell, Color Scale and Data Bar conditional
      *  formats. Usually used to set ranges like `=A1`. */
-    char *min_value_string;
+    const char *min_value_string;
 
     /** The rule used for the minimum condition in Color Scale and Data Bar
      *  conditional formats. The rule types are defined in
@@ -1180,7 +1180,7 @@ typedef struct lxw_conditional_format {
 
     /** The middle string value used for Color Scale and Data Bar conditional
      *  formats. Usually used to set ranges like `=A1`. */
-    char *mid_value_string;
+    const char *mid_value_string;
 
     /** The rule used for the middle condition in Color Scale and Data Bar
      *  conditional formats. The rule types are defined in
@@ -1198,7 +1198,7 @@ typedef struct lxw_conditional_format {
 
     /** The maximum string value used for Cell, Color Scale and Data Bar conditional
      *  formats. Usually used to set ranges like `=A1`. */
-    char *max_value_string;
+    const char *max_value_string;
 
     /** The rule used for the maximum condition in Color Scale and Data Bar
      *  conditional formats. The rule types are defined in
@@ -1304,7 +1304,7 @@ typedef struct lxw_conditional_format {
      *  conditional format and any others separated by spaces. For example
      *  `"A1 C1:C5 E2 G1:G100"`.
      */
-    char *multi_range;
+    const char *multi_range;
 
     /** The stop_if_true parameter can be used to set the "stop if true"
      *  feature of a conditional formatting rule when more than one rule is
@@ -1389,13 +1389,13 @@ typedef struct lxw_table_column {
 
     /** Set the header name/caption for the column. If NULL the header defaults
      *  to  Column 1, Column 2, etc. */
-    char *header;
+    const char *header;
 
     /** Set the formula for the column. */
-    char *formula;
+    const char *formula;
 
     /** Set the string description for the column total.  */
-    char *total_string;
+    const char *total_string;
 
     /** Set the function for the column total.  */
     uint8_t total_function;
@@ -1437,7 +1437,7 @@ typedef struct lxw_table_options {
      * [Naming an Excel Table]
      * (https://support.microsoft.com/en-us/office/rename-an-excel-table-fbf49a4f-82a3-43eb-8ba2-44d21233b114).
      */
-    char *name;
+    const char *name;
 
     /**
      * The `no_header_row` parameter can be used to turn off the header row in
@@ -1666,7 +1666,7 @@ typedef struct lxw_filter_rule {
     uint8_t criteria;
 
     /** String value to which the criteria applies. */
-    char *value_string;
+    const char *value_string;
 
     /** Numeric value to which the criteria applies (if value_string isn't used). */
     double value;
@@ -1720,7 +1720,7 @@ typedef struct lxw_image_options {
      *  used to provide a text description of the image to help
      *  accessibility. Defaults to the image filename as in Excel. Set to ""
      *  to ignore the description field. */
-    char *description;
+    const char *description;
 
     /** Optional parameter to help accessibility. It is used to mark the image
      *  as decorative, and thus uninformative, for automated screen
@@ -1730,10 +1730,10 @@ typedef struct lxw_image_options {
 
     /** Add an optional hyperlink to the image. Follows the same URL rules
      *  and types as `worksheet_write_url()`. */
-    char *url;
+    const char *url;
 
     /** Add an optional mouseover tip for a hyperlink to the image. */
-    char *tip;
+    const char *tip;
 
 } lxw_image_options;
 
@@ -1765,7 +1765,7 @@ typedef struct lxw_chart_options {
      *  used to provide a text description of the chart to help
      *  accessibility. Defaults to the image filename as in Excel. Set to NULL
      *  to ignore the description field. */
-    char *description;
+    const char *description;
 
     /** Optional parameter to help accessibility. It is used to mark the chart
      *  as decorative, and thus uninformative, for automated screen
@@ -1832,7 +1832,7 @@ typedef struct lxw_comment_options {
      *  worksheet. The default author for all cell comments in a worksheet can
      *  be set using the `worksheet_set_comments_author()` function. Set to
      *  NULL if not required.  See also @ref ww_comments_author. */
-    char *author;
+    const char *author;
 
     /** This option is used to set the width of the cell comment box
      *  explicitly in pixels. The default width is 128 pixels. See also @ref
@@ -1859,7 +1859,7 @@ typedef struct lxw_comment_options {
 
     /** This option is used to set the font for the comment. The default font
      *  is 'Tahoma'.  See also @ref ww_comments_font_name. */
-    char *font_name;
+    const char *font_name;
 
      /** This option is used to set the font size for the comment. The default
       * is 8. See also @ref ww_comments_font_size. */
@@ -1902,16 +1902,16 @@ typedef struct lxw_button_options {
     /** Sets the caption on the button. The default is "Button n" where n is
      *  the current number of buttons in the worksheet, including this
      *  button. */
-    char *caption;
+    const char *caption;
 
     /** Name of the macro to run when the button is pressed. The macro must be
      *  included with workbook_add_vba_project(). */
-    char *macro;
+    const char *macro;
 
     /** Optional description or "Alt text" for the button. This field can be
      *  used to provide a text description of the button to help
      *  accessibility. Set to NULL to ignore the description field. */
-    char *description;
+    const char *description;
 
     /** This option is used to set the width of the cell button box
      *  explicitly in pixels. The default width is 64 pixels. */
@@ -1983,17 +1983,17 @@ typedef struct lxw_header_footer_options {
     /** The left header image filename, with path if required. This should
      * have a corresponding `&G/&[Picture]` placeholder in the `&L` section of
      * the header/footer string. See `worksheet_set_header_opt()`. */
-    char *image_left;
+    const char *image_left;
 
     /** The center header image filename, with path if required. This should
      * have a corresponding `&G/&[Picture]` placeholder in the `&C` section of
      * the header/footer string. See `worksheet_set_header_opt()`. */
-    char *image_center;
+    const char *image_center;
 
     /** The right header image filename, with path if required. This should
      * have a corresponding `&G/&[Picture]` placeholder in the `&R` section of
      * the header/footer string. See `worksheet_set_header_opt()`. */
-    char *image_right;
+    const char *image_right;
 
 } lxw_header_footer_options;
 
@@ -2094,7 +2094,7 @@ typedef struct lxw_rich_string_tuple {
     lxw_format *format;
 
     /** The string fragment. */
-    char *string;
+    const char *string;
 } lxw_rich_string_tuple;
 
 /**
@@ -2134,9 +2134,9 @@ typedef struct lxw_worksheet {
     lxw_col_t dim_colmax;
 
     lxw_sst *sst;
-    char *name;
-    char *quoted_name;
-    char *tmpdir;
+    const char *name;
+    const char *quoted_name;
+    const char *tmpdir;
 
     uint16_t index;
     uint8_t active;
@@ -2303,9 +2303,9 @@ typedef struct lxw_worksheet_init_data {
     uint16_t *active_sheet;
     uint16_t *first_sheet;
     lxw_sst *sst;
-    char *name;
-    char *quoted_name;
-    char *tmpdir;
+    const char *name;
+    const char *quoted_name;
+    const char *tmpdir;
     lxw_format *default_url_format;
     uint16_t max_url_length;
 
@@ -2340,7 +2340,7 @@ typedef struct lxw_cell {
     union {
         double number;
         int32_t string_id;
-        char *string;
+        const char *string;
     } u;
 
     double formula_result;
@@ -4149,7 +4149,7 @@ lxw_error worksheet_filter_column2(lxw_worksheet *worksheet, lxw_col_t col,
  * ww_autofilters_data for more details.
  */
 lxw_error worksheet_filter_list(lxw_worksheet *worksheet, lxw_col_t col,
-                                char **list);
+                                const char **list);
 
 /**
  * @brief Add a data validation to a cell.

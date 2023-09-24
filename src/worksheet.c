@@ -369,7 +369,7 @@ _free_cell(lxw_cell *cell)
     if (cell->type != NUMBER_CELL && cell->type != STRING_CELL
         && cell->type != BLANK_CELL && cell->type != BOOLEAN_CELL) {
 
-        free(cell->u.string);
+        free((void *) cell->u.string);
     }
 
     free(cell->user_data1);
@@ -486,9 +486,9 @@ _free_worksheet_table_column(lxw_table_column *column)
     if (!column)
         return;
 
-    free(column->header);
-    free(column->formula);
-    free(column->total_string);
+    free((void *) column->header);
+    free((void *) column->formula);
+    free((void *) column->total_string);
 
     free(column);
 }
@@ -785,8 +785,8 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
 
     free(worksheet->hbreaks);
     free(worksheet->vbreaks);
-    free(worksheet->name);
-    free(worksheet->quoted_name);
+    free((void *) worksheet->name);
+    free((void *) worksheet->quoted_name);
     free(worksheet->vba_codename);
     free(worksheet->vml_data_id_str);
     free(worksheet->vml_header_id_str);
@@ -896,7 +896,7 @@ _new_inline_string_cell(lxw_row_t row_num,
  */
 STATIC lxw_cell *
 _new_inline_rich_string_cell(lxw_row_t row_num,
-                             lxw_col_t col_num, char *string,
+                             lxw_col_t col_num, const char *string,
                              lxw_format *format)
 {
     lxw_cell *cell = calloc(1, sizeof(lxw_cell));
@@ -1452,7 +1452,7 @@ lxw_basename(const char *path)
 /* Function to count the total concatenated length of the strings in a
  * validation list array, including commas. */
 size_t
-_validation_list_length(char **list)
+_validation_list_length(const char **list)
 {
     uint8_t i = 0;
     size_t length = 0;
@@ -1475,7 +1475,7 @@ _validation_list_length(char **list)
 /* Function to convert an array of strings into a CSV string for data
  * validation lists. */
 char *
-_validation_list_to_csv(char **list)
+_validation_list_to_csv(const char **list)
 {
     uint8_t i = 0;
     char *str;
@@ -1670,10 +1670,10 @@ _set_default_table_columns(lxw_table_obj *table_obj)
  *  "[#This Row]" in table formulas. This is the format that Excel uses to
  *  store the references. */
 char *
-_expand_table_formula(char *formula)
+_expand_table_formula(const char *formula)
 {
     char *expanded;
-    char *ptr;
+    const char *ptr;
     size_t i;
     size_t ref_count = 0;
     size_t expanded_len;
@@ -1753,7 +1753,7 @@ _set_custom_table_columns(lxw_table_obj *table_obj,
             RETURN_ON_MEM_ERROR(str, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
             /* Free the default column header. */
-            free(table_column->header);
+            free((void *) table_column->header);
             table_column->header = str;
         }
 
@@ -4446,7 +4446,7 @@ STATIC void
 _write_inline_rich_string_cell(lxw_worksheet *self, char *range,
                                int32_t style_index, lxw_cell *cell)
 {
-    char *string = cell->u.string;
+    const char *string = cell->u.string;
 
     if (style_index)
         fprintf(self->file,
@@ -4743,7 +4743,7 @@ lxw_worksheet_write_single_row(lxw_worksheet *self)
 
 /* Process a header/footer image and store it in the correct slot. */
 lxw_error
-_worksheet_set_header_footer_image(lxw_worksheet *self, char *filename,
+_worksheet_set_header_footer_image(lxw_worksheet *self, const char *filename,
                                    uint8_t image_position)
 {
     FILE *image_stream;
@@ -8422,7 +8422,7 @@ worksheet_write_rich_string(lxw_worksheet *self,
     uint8_t i;
     long file_size;
     char *rich_string = NULL;
-    char *string_copy = NULL;
+    const char *string_copy = NULL;
     lxw_styles *styles = NULL;
     lxw_format *default_format = NULL;
     lxw_rich_string_tuple *rich_string_tuple = NULL;
@@ -8499,9 +8499,9 @@ worksheet_write_rich_string(lxw_worksheet *self,
 
         /* Rewind the file and read the data into the memory buffer. */
         rewind(tmpfile);
-        if (fread(rich_string, file_size, 1, tmpfile) < 1) {
+        if (fread((void *) rich_string, file_size, 1, tmpfile) < 1) {
             fclose(tmpfile);
-            free(rich_string);
+            free((void *) rich_string);
             return LXW_ERROR_READING_TMPFILE;
         }
     }
@@ -8510,14 +8510,14 @@ worksheet_write_rich_string(lxw_worksheet *self,
     fclose(tmpfile);
 
     if (lxw_utf8_strlen(rich_string) > LXW_STR_MAX) {
-        free(rich_string);
+        free((void *) rich_string);
         return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
     }
 
     if (!self->optimize) {
         /* Get the SST element and string id. */
         sst_element = lxw_get_sst_index(self->sst, rich_string, LXW_TRUE);
-        free(rich_string);
+        free((void *) rich_string);
 
         if (!sst_element)
             return LXW_ERROR_SHARED_STRING_INDEX_NOT_FOUND;
@@ -8530,7 +8530,7 @@ worksheet_write_rich_string(lxw_worksheet *self,
         /* Look for and escape control chars in the string. */
         if (lxw_has_control_characters(rich_string)) {
             string_copy = lxw_escape_control_characters(rich_string);
-            free(rich_string);
+            free((void *) rich_string);
         }
         else {
             string_copy = rich_string;
@@ -9152,7 +9152,7 @@ worksheet_filter_column2(lxw_worksheet *self, lxw_col_t col,
  * Set two autofilter rules for a filter column.
  */
 lxw_error
-worksheet_filter_list(lxw_worksheet *self, lxw_col_t col, char **list)
+worksheet_filter_list(lxw_worksheet *self, lxw_col_t col, const char **list)
 {
     lxw_filter_rule_obj *rule_obj;
     uint16_t rule_index;

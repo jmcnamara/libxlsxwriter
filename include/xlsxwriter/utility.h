@@ -232,8 +232,8 @@ void lxw_str_tolower(char *str);
 #define lxw_strcasecmp strcasecmp
 #endif
 
-FILE *lxw_tmpfile(char *tmpdir);
-FILE *lxw_get_filehandle(char **buf, size_t *size, char *tmpdir);
+FILE *lxw_tmpfile(const char *tmpdir);
+FILE *lxw_get_filehandle(char **buf, size_t *size, const char *tmpdir);
 FILE *lxw_fopen(const char *filename, const char *mode);
 
 /* Use the third party dtoa function to avoid locale issues with sprintf

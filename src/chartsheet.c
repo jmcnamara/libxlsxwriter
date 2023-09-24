@@ -66,8 +66,8 @@ lxw_chartsheet_free(lxw_chartsheet *chartsheet)
         return;
 
     lxw_worksheet_free(chartsheet->worksheet);
-    free(chartsheet->name);
-    free(chartsheet->quoted_name);
+    free((void *) chartsheet->name);
+    free((void *) chartsheet->quoted_name);
     free(chartsheet);
 }
 

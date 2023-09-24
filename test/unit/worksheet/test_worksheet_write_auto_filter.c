@@ -458,7 +458,7 @@ CTEST(worksheet, write_write_auto_filter19) {
 
     worksheet_autofilter(worksheet, 0, 0, 50, 3);
 
-    char* list[] = {"East", NULL};
+    const char* list[] = {"East", NULL};
 
     worksheet_filter_list(worksheet, 0, list);
 
@@ -481,7 +481,7 @@ CTEST(worksheet, write_write_auto_filter20) {
 
     worksheet_autofilter(worksheet, 0, 0, 50, 3);
 
-    char* list[] = {"East", "North", NULL};
+    const char* list[] = {"East", "North", NULL};
 
     worksheet_filter_list(worksheet, 0, list);
 
@@ -504,7 +504,7 @@ CTEST(worksheet, write_write_auto_filter21) {
 
     worksheet_autofilter(worksheet, 0, 0, 50, 3);
 
-    char* list[] = {"February", "January", "July", "June", NULL};
+    const char* list[] = {"February", "January", "July", "June", NULL};
 
     worksheet_filter_list(worksheet, 3, list);
 

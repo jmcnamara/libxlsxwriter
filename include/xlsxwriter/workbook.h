@@ -182,34 +182,34 @@ typedef struct lxw_defined_name {
  */
 typedef struct lxw_doc_properties {
     /** The title of the Excel Document. */
-    char *title;
+    const char *title;
 
     /** The subject of the Excel Document. */
-    char *subject;
+    const char *subject;
 
     /** The author of the Excel Document. */
-    char *author;
+    const char *author;
 
     /** The manager field of the Excel Document. */
-    char *manager;
+    const char *manager;
 
     /** The company field of the Excel Document. */
-    char *company;
+    const char *company;
 
     /** The category of the Excel Document. */
-    char *category;
+    const char *category;
 
     /** The keywords of the Excel Document. */
-    char *keywords;
+    const char *keywords;
 
     /** The comment field of the Excel Document. */
-    char *comments;
+    const char *comments;
 
     /** The status of the Excel Document. */
-    char *status;
+    const char *status;
 
     /** The hyperlink base URL of the Excel Document. */
-    char *hyperlink_base;
+    const char *hyperlink_base;
 
     /** The file creation date/time shown in Excel. This defaults to the
      * current time and date if set to 0. If you wish to create files that are
@@ -270,13 +270,13 @@ typedef struct lxw_workbook_options {
     uint8_t constant_memory;
 
     /** Directory to use for the temporary files created by libxlsxwriter. */
-    char *tmpdir;
+    const char *tmpdir;
 
     /** Allow ZIP64 extensions when creating the xlsx file zip container. */
     uint8_t use_zip64;
 
     /** Output buffer to use instead of writing to a file */
-    char **output_buffer;
+    const char **output_buffer;
 
     /** Used with output_buffer to get the size of the created buffer */
     size_t *output_buffer_size;

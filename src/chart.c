@@ -78,7 +78,7 @@ _chart_free_font(lxw_chart_font *font)
     if (!font)
         return;
 
-    free(font->name);
+    free((void *) font->name);
     free(font);
 }
 
@@ -5596,7 +5596,7 @@ chart_series_set_labels_custom(lxw_chart_series *series,
     for (i = 0; i < data_label_count; i++) {
         lxw_chart_data_label *user_label = data_labels[i];
         lxw_chart_custom_label *data_label = &series->data_labels[i];
-        char *src_value = user_label->value;
+        const char *src_value = user_label->value;
 
         data_label->hide = user_label->hide;
         data_label->font = _chart_convert_font_args(user_label->font);

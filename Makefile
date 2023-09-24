@@ -64,6 +64,10 @@ universal_binary :
 examples : all
 	$(Q)$(MAKE) -C examples
 
+# Build the example programs with CPP for compatibility checking.
+examples_cpp : all
+	$(Q)$(MAKE) -C examples CC=$(CXX)
+
 # Clean src and test directories.
 clean :
 	$(Q)$(MAKE) clean -C src

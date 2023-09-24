@@ -52,7 +52,7 @@
 STATIC lxw_error _add_file_to_zip(lxw_packager *self, FILE * file,
                                   const char *filename);
 
-STATIC lxw_error _add_buffer_to_zip(lxw_packager *self, char *buffer,
+STATIC lxw_error _add_buffer_to_zip(lxw_packager *self, const char *buffer,
                                     size_t buffer_size, const char *filename);
 
 STATIC lxw_error _add_to_zip(lxw_packager *self, FILE * file,
@@ -153,7 +153,7 @@ _fclose_memstream(voidpf opaque, voidpf stream)
         GOTO_LABEL_ON_MEM_ERROR(packager->output_buffer, mem_error);
 
         rewind(file);
-        if (fread(packager->output_buffer, size, 1, file) < 1)
+        if (fread((void *) packager->output_buffer, size, 1, file) < 1)
             goto mem_error;
 
         packager->output_buffer_size = size;
@@ -170,7 +170,7 @@ mem_error:
  * Create a new packager object.
  */
 lxw_packager *
-lxw_packager_new(const char *filename, char *tmpdir, uint8_t use_zip64)
+lxw_packager_new(const char *filename, const char *tmpdir, uint8_t use_zip64)
 {
     zlib_filefunc_def filefunc;
     lxw_packager *packager = calloc(1, sizeof(lxw_packager));
@@ -239,8 +239,8 @@ lxw_packager_free(lxw_packager *packager)
     if (!packager)
         return;
 
-    free(packager->buffer);
-    free(packager->filename);
+    free((void *) packager->buffer);
+    free((void *) packager->filename);
     free(packager);
 }
 
@@ -1792,7 +1792,7 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
     fflush(file);
     rewind(file);
 
-    size_read = fread(self->buffer, 1, self->buffer_size, file);
+    size_read = fread((void *) self->buffer, 1, self->buffer_size, file);
 
     while (size_read) {
 
@@ -1811,7 +1811,8 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
             RETURN_ON_ZIP_ERROR(error, LXW_ERROR_ZIP_FILE_ADD);
         }
 
-        size_read = fread(self->buffer, 1, self->buffer_size, file);
+        size_read =
+            fread((void *) (void *) self->buffer, 1, self->buffer_size, file);
     }
 
     error = zipCloseFileInZip(self->zipfile);
@@ -1824,7 +1825,7 @@ _add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
 }
 
 STATIC lxw_error
-_add_buffer_to_zip(lxw_packager *self, char *buffer, size_t buffer_size,
+_add_buffer_to_zip(lxw_packager *self, const char *buffer, size_t buffer_size,
                    const char *filename)
 {
     int16_t error = ZIP_OK;
@@ -1872,7 +1873,7 @@ _add_to_zip(lxw_packager *self, FILE * file, char **buffer,
 }
 
 /*
- * Write the xml files that make up the XLXS OPC package.
+ * Write the xml files that make up the XLSX OPC package.
  */
 lxw_error
 lxw_create_package(lxw_packager *self)

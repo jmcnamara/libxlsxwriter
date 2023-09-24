@@ -62,7 +62,7 @@ int main() {
     /* Format a Zip code. */
     format_set_num_format(format11, "00000");
     worksheet_write_number(worksheet, 13, 0, 1209, format11);
-    
+
     /* Close the workbook, save the file and free any memory. */
     return workbook_close(workbook);
 }

@@ -33,15 +33,15 @@ int main() {
     worksheet_set_column(worksheet, 0, 0, 70, NULL);
     worksheet_write_string(worksheet, CELL("A1"), "Select 'Office Button -> Prepare -> Properties' to see the file properties." , NULL);
 
-    free(properties->title);
-    free(properties->subject);
-    free(properties->author);
-    free(properties->manager);
-    free(properties->company);
-    free(properties->category);
-    free(properties->keywords);
-    free(properties->comments);
-    free(properties->status);
+    free((void *)properties->title);
+    free((void *)properties->subject);
+    free((void *)properties->author);
+    free((void *)properties->manager);
+    free((void *)properties->company);
+    free((void *)properties->category);
+    free((void *)properties->keywords);
+    free((void *)properties->comments);
+    free((void *)properties->status);
     free(properties);
 
     return workbook_close(workbook);

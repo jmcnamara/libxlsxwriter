@@ -268,7 +268,7 @@ int main() {
     worksheet_autofilter(worksheet5, 0, 0, 50, 3);
 
     /* Add the filter criteria. */
-    char* list[] = {"East", "North", "South", NULL};
+    const char* list[] = {"East", "North", "South", NULL};
 
     worksheet_filter_list(worksheet5, 0, list);
 

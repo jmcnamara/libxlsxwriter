@@ -10,7 +10,7 @@
 #include "xlsxwriter.h"
 
 int main() {
-    char *output_buffer;
+    const char *output_buffer;
     size_t output_buffer_size;
 
     /* Set the worksheet options. */
@@ -36,7 +36,7 @@ int main() {
     FILE *file = fopen("output_buffer.xlsx", "wb");
     fwrite(output_buffer, output_buffer_size, 1, file);
     fclose(file);
-    free(output_buffer);
+    free((void *)output_buffer);
 
     return ferror(stdout);
 }

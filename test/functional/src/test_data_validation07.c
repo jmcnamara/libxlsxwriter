@@ -13,7 +13,7 @@ int main() {
 
     lxw_workbook  *workbook  = workbook_new("test_data_validation07.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
-    char *list[] = {"coffee", "café", NULL};
+    const char* list[] = {"coffee", "café", NULL};
 
     lxw_data_validation *data_validation = calloc(1, sizeof(lxw_data_validation));
     data_validation->validate = LXW_VALIDATION_TYPE_LIST;
