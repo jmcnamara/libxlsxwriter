@@ -10,7 +10,6 @@ jobs:
       fail-fast: false
       matrix:
         cmake_flags: ["-DBUILD_EXAMPLES=ON       -DBUILD_TESTS=ON",
-                      "-DUSE_DTOA_LIBRARY=ON     -DBUILD_TESTS=ON",
                       #"-DUSE_SYSTEM_MINIZIP=ON   -DBUILD_TESTS=ON",
                       #"-DUSE_SYSTEM_MINIZIP=ON   -DUSE_OPENSSL_MD5=ON -DBUILD_TESTS=ON",
                       "-DUSE_OPENSSL_MD5=ON      -DBUILD_TESTS=ON",
