@@ -45,7 +45,7 @@ CTEST(worksheet, pixel_to_width01) {
     for (pixels = 0; pixels <= 1790; pixels++) {
         exp = pixels;
         got = width_to_pixels(_pixels_to_width(pixels));
-        ASSERT_DOUBLE(exp, got);
+        ASSERT_DBL_NEAR(exp, got);
     }
 }
 
@@ -59,6 +59,6 @@ CTEST(worksheet, pixel_to_height01) {
     for (pixels = 0; pixels <= 545; pixels++) {
         exp = pixels;
         got = height_to_pixels(_pixels_to_height(pixels));
-        ASSERT_DOUBLE(exp, got);
+        ASSERT_DBL_NEAR(exp, got);
     }
 }
