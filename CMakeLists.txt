@@ -345,6 +345,8 @@ file(GLOB LXW_CHART_SOURCES test/unit/chart/test*.c)
 file(GLOB LXW_CUSTOM_SOURCES test/unit/custom/test*.c)
 file(GLOB LXW_FUNCTIONAL_SOURCES test/functional/src/*.c)
 
+if(NOT MSVC)
+# Skip unit tests on Windows since ctest.h doesn't support it.
 set(LXW_UNIT_SOURCES
     test/unit/test_all.c
     ${LXW_UTILITY_SOURCES}
@@ -362,6 +364,11 @@ set(LXW_UNIT_SOURCES
     ${LXW_CHART_SOURCES}
     ${LXW_CUSTOM_SOURCES}
 )
+else()
+set(LXW_UNIT_SOURCES
+    test/cpp/test_compilation.cpp
+)
+endif()
 
 if(BUILD_TESTS)
     # unit tests

@@ -88,7 +88,7 @@
                                                                     \
     got = lxw_datetime_to_excel_datetime(datetime);                 \
                                                                     \
-    ASSERT_DOUBLE(exp, got);                                        \
+    ASSERT_DBL_NEAR(exp, got);                                      \
     free(datetime);
 
 #define TEST_DATETIME_DATE(_year, _month, _day, exp)                \
@@ -99,7 +99,7 @@
                                                                     \
     got = lxw_datetime_to_excel_datetime(datetime);                 \
                                                                     \
-    ASSERT_DOUBLE(exp, got);                                        \
+    ASSERT_DBL_NEAR(exp, got);                                      \
     free(datetime);
 
 #define TEST_DATETIME_DATE_1904(_year, _month, _day, exp)           \
@@ -110,7 +110,7 @@
                                                                     \
     got = lxw_datetime_to_excel_date_epoch(datetime, 1);            \
                                                                     \
-    ASSERT_DOUBLE(exp, got);                                        \
+    ASSERT_DBL_NEAR(exp, got);                                      \
     free(datetime);
 
 #define TEST_DATETIME(_year, _month, _day, _hour, _min, _sec, exp)  \
@@ -124,14 +124,14 @@
                                                                     \
     got = lxw_datetime_to_excel_datetime(datetime);                 \
                                                                     \
-    ASSERT_DOUBLE(exp, got);                                        \
+    ASSERT_DBL_NEAR(exp, got);                                      \
     free(datetime);
 
 #define TEST_UNIXTIME(_unixtime, exp)                               \
     got = lxw_unixtime_to_excel_date(_unixtime);                    \
-    ASSERT_DOUBLE(exp, got);
+    ASSERT_DBL_NEAR(exp, got);
 
 #define TEST_UNIXTIME_1904(_unixtime, exp)                          \
     got = lxw_unixtime_to_excel_date_epoch(_unixtime, 1);           \
-    ASSERT_DOUBLE(exp, got);
+    ASSERT_DBL_NEAR(exp, got);
 
