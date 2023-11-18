@@ -37,6 +37,11 @@
 
 */
 
+/* Pragma added by libxlsxwriter to avoid warnings with -pedantic -ansi. */
+#ifndef _WIN32
+#pragma GCC system_header
+#endif
+
 #ifndef _zip12_H
 #define _zip12_H
 
@@ -52,6 +57,14 @@ extern "C" {
 
 #ifndef _ZLIBIOAPI_H
 #include "ioapi.h"
+#endif
+
+/* Encryption not required by libxlsxwriter. */
+#ifndef NOCRYPT
+#define NOCRYPT
+#endif
+#ifndef NOUNCRYPT
+#define NOUNCRYPT
 #endif
 
 #ifdef HAVE_BZIP2
