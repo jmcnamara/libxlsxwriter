@@ -504,11 +504,11 @@ enum lxw_conditional_icon_types {
     /** Icon style: 3 symbols with tick mark, exclamation and cross. */
     LXW_CONDITIONAL_ICONS_3_SYMBOLS_UNCIRCLED,
 
-    /** Icon style: 3 colored arrows showing up, diagonal up, diagonal down
+    /** Icon style: 4 colored arrows showing up, diagonal up, diagonal down
      *  and down. */
     LXW_CONDITIONAL_ICONS_4_ARROWS_COLORED,
 
-    /** Icon style: 3 gray arrows showing up, diagonal up, diagonal down and
+    /** Icon style: 4 gray arrows showing up, diagonal up, diagonal down and
      * down. */
     LXW_CONDITIONAL_ICONS_4_ARROWS_GRAY,
 
