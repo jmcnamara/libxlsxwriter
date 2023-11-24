@@ -41,6 +41,10 @@
 #           Build example files (default off). To build the examples,
 #           pass `-DBUILD_EXAMPLES=ON` during configuration.
 #
+#       BUILD_FUZZERS
+#           Build fuzz harnesses (default off). To build the harnesses,
+#           pass `-DBUILD_FUZZERS=ON` during configuration.
+#
 #       USE_STANDARD_TMPFILE
 #           Use the standard tmpfile() function (default off). To enable
 #           the standard tmpfile, pass `-DUSE_STANDARD_TMPFILE=ON`
@@ -127,6 +131,7 @@ SET(ZLIB_ROOT "" CACHE STRING "Optional root for the ZLIB installation")
 
 option(BUILD_TESTS "Build libxlsxwriter tests" OFF)
 option(BUILD_EXAMPLES "Build libxlsxwriter examples" OFF)
+option(BUILD_FUZZERS "Build harness(es) for fuzzing" OFF)
 option(USE_SYSTEM_MINIZIP "Use system minizip installation" OFF)
 option(USE_STANDARD_TMPFILE "Use the C standard library's tmpfile()" OFF)
 option(USE_NO_MD5 "Build libxlsxwriter without third party MD5 lib" OFF)
@@ -283,6 +288,7 @@ endif()
 set(LXW_PROJECT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 set(LXW_LIB_DIR "${LXW_PROJECT_DIR}/lib")
 add_library(${PROJECT_NAME} "")
+
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${SOVERSION})
 target_sources(${PROJECT_NAME}
     PRIVATE ${LXW_SOURCES}
@@ -419,6 +425,12 @@ if(BUILD_EXAMPLES)
         target_link_libraries(${basename} ${PROJECT_NAME})
         set_target_properties(${basename} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "examples")
     endforeach(source)
+endif()
+
+# FUZZING
+# -------
+if (BUILD_FUZZERS AND DEFINED ENV{LIB_FUZZING_ENGINE})
+    add_subdirectory(dev/fuzzing)
 endif()
 
 # INSTALL
