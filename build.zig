@@ -280,8 +280,10 @@ fn buildTest(b: *std.Build, info: BuildInfo) void {
     exe.addCSourceFile(.{ .file = Path.relative(info.path), .flags = cflags });
     exe.addCSourceFile(.{ .file = Path.relative("test/unit/test_all.c"), .flags = cflags });
     exe.addIncludePath(Path.relative("test/unit"));
+    for (info.lib.include_dirs.items) |include| {
+        exe.include_dirs.append(include) catch {};
+    }
     exe.linkLibrary(info.lib);
-    exe.installLibraryHeaders(info.lib);
     exe.linkLibC();
     b.installArtifact(exe);
 
