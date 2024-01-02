@@ -1,0 +1,9 @@
+FreeBSD_task:
+  freebsd_instance:
+    image_family: freebsd-14-0
+  setup_script:
+    pkg install -y gmake devel/py-pytest
+  build_script:
+    gmake
+  test_script:
+    gmake test
