@@ -29,8 +29,8 @@
 
 #if (!defined(_WIN32)) && (!defined(WIN32)) && (!defined(__APPLE__))
 
-  /* Linux needs this to support file operation on files larger then 4+GB
-   * But might need better if/def to select just the platforms that needs them. */
+  // Linux needs this to support file operation on files larger then 4+GB
+  // But might need better if/def to select just the platforms that needs them.
 
         #ifndef __USE_FILE_OFFSET64
                 #define __USE_FILE_OFFSET64
@@ -150,7 +150,7 @@ typedef long     (ZCALLBACK *tell_file_func)      (voidpf opaque, voidpf stream)
 typedef long     (ZCALLBACK *seek_file_func)      (voidpf opaque, voidpf stream, uLong offset, int origin);
 
 
-/* here is the "old" 32 bits structure structure */
+/* here is the "old" 32 bits structure */
 typedef struct zlib_filefunc_def_s
 {
     open_file_func      zopen_file;
@@ -194,8 +194,8 @@ typedef struct zlib_filefunc64_32_def_s
 
 #define ZREAD64(filefunc,filestream,buf,size)     ((*((filefunc).zfile_func64.zread_file))   ((filefunc).zfile_func64.opaque,filestream,buf,size))
 #define ZWRITE64(filefunc,filestream,buf,size)    ((*((filefunc).zfile_func64.zwrite_file))  ((filefunc).zfile_func64.opaque,filestream,buf,size))
-/*#define ZTELL64(filefunc,filestream)            ((*((filefunc).ztell64_file)) ((filefunc).opaque,filestream))*/
-/*#define ZSEEK64(filefunc,filestream,pos,mode)   ((*((filefunc).zseek64_file)) ((filefunc).opaque,filestream,pos,mode))*/
+//#define ZTELL64(filefunc,filestream)            ((*((filefunc).ztell64_file)) ((filefunc).opaque,filestream))
+//#define ZSEEK64(filefunc,filestream,pos,mode)   ((*((filefunc).zseek64_file)) ((filefunc).opaque,filestream,pos,mode))
 #define ZCLOSE64(filefunc,filestream)             ((*((filefunc).zfile_func64.zclose_file))  ((filefunc).zfile_func64.opaque,filestream))
 #define ZERROR64(filefunc,filestream)             ((*((filefunc).zfile_func64.zerror_file))  ((filefunc).zfile_func64.opaque,filestream))
 
