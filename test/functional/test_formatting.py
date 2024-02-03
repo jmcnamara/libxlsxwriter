@@ -49,6 +49,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_format18(self):
         self.run_exe_test('test_format18')
 
+    def test_format24(self):
+        self.run_exe_test('test_format24')
+
     def test_format50(self):
         self.run_exe_test('test_format50')
 
