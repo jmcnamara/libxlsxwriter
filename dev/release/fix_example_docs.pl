@@ -4,7 +4,8 @@
 # Simple program to arrange the example programs in a user defined order
 # instead of a sorted order. Also add a caption.
 #
-# Copyright 2014-2022, John McNamara, jmcnamara@cpan.org
+# SPDX-License-Identifier: BSD-2-Clause
+# Copyright 2014-2024, John McNamara, jmcnamara@cpan.org.
 #
 use warnings;
 use strict;

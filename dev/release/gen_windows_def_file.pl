@@ -6,7 +6,8 @@
 #
 #    perl dev/release/gen_windows_def_file.pl lib/libxlsxwriter.a
 #
-# Copyright 2014-2022, John McNamara, jmcnamara@cpan.org
+# SPDX-License-Identifier: BSD-2-Clause
+# Copyright 2014-2024, John McNamara, jmcnamara@cpan.org.
 #
 use warnings;
 use strict;

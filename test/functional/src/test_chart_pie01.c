@@ -3,7 +3,8 @@
  *
  * Test to compare output against Excel files.
  *
- * Copyright 2014-2022, John McNamara, jmcnamara@cpan.org
+ * SPDX-License-Identifier: BSD-2-Clause
+ * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org.
  *
  */
 
@@ -26,7 +27,7 @@ int main() {
         for (col = 0; col < 2; col++)
             worksheet_write_number(worksheet, row, col, data[row][col], NULL);
 
-    chart_add_series(chart, 
+    chart_add_series(chart,
          "=Sheet1!$A$1:$A$3",
          "=Sheet1!$B$1:$B$3"
     );

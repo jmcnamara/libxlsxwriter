@@ -3,7 +3,8 @@
  *
  * Test to compare output against Excel files.
  *
- * Copyright 2014-2022, John McNamara, jmcnamara@cpan.org
+ * SPDX-License-Identifier: BSD-2-Clause
+ * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org.
  *
  */
 
@@ -36,7 +37,7 @@ int main() {
     lxw_workbook  *workbook  = workbook_new("test_hyperlink81.xlsx");
     lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
 
-    lxw_image_options options = {.description = "red.png", 
+    lxw_image_options options = {.description = "red.png",
                                  .url = "https://github.com/jmcnamara"};
 
     worksheet_write_url(worksheet, CELL("A1"), "https://github.com/jmcnamara" , NULL);

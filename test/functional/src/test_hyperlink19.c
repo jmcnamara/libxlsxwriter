@@ -3,7 +3,8 @@
  *
  * Test to compare output against Excel files.
  *
- * Copyright 2014-2022, John McNamara, jmcnamara@cpan.org
+ * SPDX-License-Identifier: BSD-2-Clause
+ * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org.
  *
  */
 
@@ -17,7 +18,7 @@ int main() {
     /* This test requires that we check if the cell that the hyperlink refers
      * to is a string. If it isn't be have to add a display attribute. However,
      * looking up the cell is currently too expensive.
-     */ 
+     */
     worksheet_write_url        (worksheet, CELL("A1"), "http://www.perl.com/", NULL);
     worksheet_write_formula_num(worksheet, CELL("A1"), "=1+1", NULL, 2);
 

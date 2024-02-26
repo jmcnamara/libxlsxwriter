@@ -3,7 +3,8 @@
  *
  * Test to compare output against Excel files.
  *
- * Copyright 2014-2022, John McNamara, jmcnamara@cpan.org
+ * SPDX-License-Identifier: BSD-2-Clause
+ * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org.
  *
  */
 
@@ -34,12 +35,12 @@ int main() {
 
     chart_set_high_low_lines(chart, NULL);
 
-    chart_add_series(chart, 
+    chart_add_series(chart,
          "=Sheet1!$A$1:$A$5",
          "=Sheet1!$B$1:$B$5"
     );
 
-    chart_add_series(chart, 
+    chart_add_series(chart,
          "=Sheet1!$A$1:$A$5",
          "=Sheet1!$C$1:$C$5"
     );

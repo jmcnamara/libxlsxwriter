@@ -3,7 +3,8 @@
  *
  * Simple test case fort set_page_view().
  *
- * Copyright 2014-2022, John McNamara, jmcnamara@cpan.org
+ * SPDX-License-Identifier: BSD-2-Clause
+ * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org.
  *
  */
 

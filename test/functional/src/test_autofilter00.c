@@ -3,7 +3,8 @@
  *
  * Test to compare output against Excel files.
  *
- * Copyright 2014-2022, John McNamara, jmcnamara@cpan.org
+ * SPDX-License-Identifier: BSD-2-Clause
+ * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org.
  *
  */
 
@@ -73,7 +74,7 @@ int main() {
         {"South", "Pear",    1000, "December"  },
         {"North", "Grape",   10000, "July"     },
         {"East",  "Grape",   6000, "February"  }
-    }; 
+    };
 
 
     /* Write the column headers. */
@@ -90,6 +91,6 @@ int main() {
         worksheet_write_number(worksheet, i + 1, 2, data[i].volume, NULL);
         worksheet_write_string(worksheet, i + 1, 3, data[i].month,  NULL);
     }
-    
+
     return workbook_close(workbook);
 }

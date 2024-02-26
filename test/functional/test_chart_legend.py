@@ -2,7 +2,8 @@
 #
 # Tests for libxlsxwriter.
 #
-# Copyright 2014-2022, John McNamara, jmcnamara@cpan.org
+# SPDX-License-Identifier: BSD-2-Clause
+# Copyright 2014-2024, John McNamara, jmcnamara@cpan.org.
 #
 
 import base_test_class
@@ -26,4 +27,4 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_chart_legend04(self):
         self.run_exe_test('test_chart_legend04')
 
-   
+
