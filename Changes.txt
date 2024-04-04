@@ -1,6 +1,53 @@
 /**
 @page changes Changes
 
+## 1.1.6 April 4 2024
+
+- Updated vendored version of minizip to v 1.3.0 to include upstream fixes.
+
+  Feature request [#419][gh_419].
+
+  [gh_419]: https://github.com/jmcnamara/libxlsxwriter/issues/419
+
+- Added `quote_prefix` format property.
+
+  Feature request [#385][gh_385].
+
+  [gh_385]: https://github.com/jmcnamara/libxlsxwriter/issues/385
+
+- Added support for signed VBA projects.
+  </p>
+
+- Fix worksheet password hashing algorithm for long passwords. Replace/fix
+  the worksheet protection password algorithm so that is works correctly
+  for strings over 24 chars.
+  </p>
+
+- Fix cmake minizip version check.
+
+  Feature request [#405][gh_405].
+
+  [gh_405]: https://github.com/jmcnamara/libxlsxwriter/issues/405
+
+- Fix for buffer overflow with utf-8 strings in data validation.
+  </p>
+
+- Fix for range in text type conditional format.
+
+  Feature request [#394][gh_394].
+
+  [gh_394]: https://github.com/jmcnamara/libxlsxwriter/issues/394
+
+- Fix 32bit multiply with overflow issue for images.
+
+  Fix multiply with overflow issue when image locations in the worksheet
+  were greater than the u32 max value.
+
+- Added Swift package manager support.
+  </p>
+
+- Added support for building Zig library.
+  </p>
 
 ## 1.1.5 December 30 2022
 
