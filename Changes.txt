@@ -1,6 +1,11 @@
 /**
 @page changes Changes
 
+## 1.1.7 April 5 2024
+
+- Bump `.so` version to 6. This was missed in the previous release.
+
+
 ## 1.1.6 April 4 2024
 
 - Updated vendored version of minizip to v 1.3.0 to include upstream fixes.
@@ -30,13 +35,16 @@
   [gh_405]: https://github.com/jmcnamara/libxlsxwriter/issues/405
 
 - Fix for buffer overflow with utf-8 strings in data validation.
-  </p>
-
-- Fix for range in text type conditional format.
 
   Feature request [#394][gh_394].
 
   [gh_394]: https://github.com/jmcnamara/libxlsxwriter/issues/394
+
+- Fix for range in text type conditional format.
+
+  Feature request [#395][gh_395].
+
+  [gh_395]: https://github.com/jmcnamara/libxlsxwriter/issues/395
 
 - Fix 32bit multiply with overflow issue for images.
 
