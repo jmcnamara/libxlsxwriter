@@ -1,5 +1,4 @@
 const std = @import("std");
-const Path = std.Build.LazyPath;
 
 // Although this function looks imperative, note that its job is to
 // declaratively construct a build graph that will be libcuted by an external
@@ -31,7 +30,7 @@ pub fn build(b: *std.Build) void {
         .version = .{
             .major = 1,
             .minor = 1,
-            .patch = 6,
+            .patch = 7,
         },
     }) else b.addStaticLibrary(.{
         .name = "xlsxwriter",
@@ -41,51 +40,52 @@ pub fn build(b: *std.Build) void {
     lib.pie = true;
     switch (optimize) {
         .Debug, .ReleaseSafe => lib.bundle_compiler_rt = true,
-        else => lib.strip = true,
+        else => lib.root_module.strip = true,
     }
     if (tests)
         lib.defineCMacro("TESTING", null);
-    lib.addCSourceFiles(&.{
-        "src/vml.c",
-        "src/chartsheet.c",
-        "src/theme.c",
-        "src/content_types.c",
-        "src/xmlwriter.c",
-        "src/app.c",
-        "src/styles.c",
-        "src/core.c",
-        "src/comment.c",
-        "src/utility.c",
-        "src/metadata.c",
-        "src/custom.c",
-        "src/hash_table.c",
-        "src/relationships.c",
-        "src/drawing.c",
-        "src/chart.c",
-        "src/shared_strings.c",
-        "src/worksheet.c",
-        "src/format.c",
-        "src/table.c",
-        "src/workbook.c",
-        "src/packager.c",
-    }, cflags);
+    lib.addCSourceFiles(.{
+        .files = &.{
+            "src/vml.c",
+            "src/chartsheet.c",
+            "src/theme.c",
+            "src/content_types.c",
+            "src/xmlwriter.c",
+            "src/app.c",
+            "src/styles.c",
+            "src/core.c",
+            "src/comment.c",
+            "src/utility.c",
+            "src/metadata.c",
+            "src/custom.c",
+            "src/hash_table.c",
+            "src/relationships.c",
+            "src/drawing.c",
+            "src/chart.c",
+            "src/shared_strings.c",
+            "src/worksheet.c",
+            "src/format.c",
+            "src/table.c",
+            "src/workbook.c",
+            "src/packager.c",
+        },
+        .flags = cflags,
+    });
 
     // minizip
     if (minizip) {
-        lib.addCSourceFiles(switch (target.getOsTag()) {
-            .windows => minizip_src ++ [_][]const u8{
-                "third_party/minizip/iowin32.c",
+        lib.addCSourceFiles(.{
+            .files = switch (lib.rootModuleTarget().os.tag) {
+                .windows => minizip_src ++ [_][]const u8{
+                    "third_party/minizip/iowin32.c",
+                },
+                else => minizip_src,
             },
-            else => minizip_src,
-        }, cflags);
+            .flags = cflags,
+        });
     }
 
-    // zig-pkg: download & build zlib (to all targets)
-    const zlib_dep = b.dependency("zlib", .{
-        .optimize = optimize,
-        .target = target,
-    });
-    const zlib = zlib_dep.artifact("z");
+    const zlib = buildZlib(b, .{ target, optimize });
     lib.linkLibrary(zlib);
     lib.installLibraryHeaders(zlib);
 
@@ -97,7 +97,7 @@ pub fn build(b: *std.Build) void {
 
     // dtoa
     if (dtoa)
-        lib.addCSourceFile(.{ .file = Path.relative("third_party/dtoa/emyg_dtoa.c"), .flags = cflags });
+        lib.addCSourceFile(.{ .file = b.path("third_party/dtoa/emyg_dtoa.c"), .flags = cflags });
 
     // tmpfileplus
     if (stdtmpfile)
@@ -105,12 +105,12 @@ pub fn build(b: *std.Build) void {
     else
         lib.defineCMacro("USE_STANDARD_TMPFILE", null);
 
-    lib.addIncludePath(Path.relative("include"));
-    lib.addIncludePath(Path.relative("third_party"));
+    lib.addIncludePath(b.path("include"));
+    lib.addIncludePath(b.path("third_party"));
     lib.linkLibC();
 
     // get headers on include to zig-out/include
-    lib.installHeadersDirectory("include", "");
+    lib.installHeadersDirectory(b.path("include"), "", .{});
 
     // get binaries on zig-cache to zig-out
     b.installArtifact(lib);
@@ -246,13 +246,13 @@ pub fn build(b: *std.Build) void {
 fn buildExe(b: *std.Build, info: BuildInfo) void {
     const exe = b.addExecutable(.{
         .name = info.filename(),
-        .optimize = info.lib.optimize,
-        .target = info.lib.target,
+        .optimize = info.lib.root_module.optimize.?,
+        .target = info.lib.root_module.resolved_target.?,
     });
-    exe.addCSourceFile(.{ .file = Path.relative(info.path), .flags = cflags });
+    exe.addCSourceFile(.{ .file = b.path(info.path), .flags = cflags });
     exe.linkLibrary(info.lib);
-    for (info.lib.include_dirs.items) |include| {
-        exe.include_dirs.append(include) catch {};
+    for (info.lib.root_module.include_dirs.items) |include| {
+        exe.root_module.include_dirs.append(b.allocator, include) catch {};
     }
     exe.linkLibC();
     b.installArtifact(exe);
@@ -273,15 +273,15 @@ fn buildExe(b: *std.Build, info: BuildInfo) void {
 fn buildTest(b: *std.Build, info: BuildInfo) void {
     const exe = b.addExecutable(.{
         .name = info.filename(),
-        .optimize = info.lib.optimize,
-        .target = info.lib.target,
+        .optimize = info.lib.root_module.optimize.?,
+        .target = info.lib.root_module.resolved_target.?,
     });
     exe.defineCMacro("TESTING", null);
-    exe.addCSourceFile(.{ .file = Path.relative(info.path), .flags = cflags });
-    exe.addCSourceFile(.{ .file = Path.relative("test/unit/test_all.c"), .flags = cflags });
-    exe.addIncludePath(Path.relative("test/unit"));
-    for (info.lib.include_dirs.items) |include| {
-        exe.include_dirs.append(include) catch {};
+    exe.addCSourceFile(.{ .file = b.path(info.path), .flags = cflags });
+    exe.addCSourceFile(.{ .file = b.path("test/unit/test_all.c"), .flags = cflags });
+    exe.addIncludePath(b.path("test/unit"));
+    for (info.lib.root_module.include_dirs.items) |include| {
+        exe.root_module.include_dirs.append(b.allocator, include) catch {};
     }
     exe.linkLibrary(info.lib);
     exe.linkLibC();
@@ -322,3 +322,42 @@ const BuildInfo = struct {
         return split.first();
     }
 };
+
+fn buildZlib(b: *std.Build, options: anytype) *std.Build.Step.Compile {
+    const libz = b.addStaticLibrary(.{
+        .name = "z",
+        .target = options[0],
+        .optimize = options[1],
+    });
+    if (b.lazyDependency("zlib", .{
+        .target = options[0],
+        .optimize = options[1],
+    })) |zlib_path| {
+        libz.addIncludePath(zlib_path.path(""));
+        libz.addCSourceFiles(.{
+            .root = zlib_path.path(""),
+            .files = &.{
+                "adler32.c",
+                "crc32.c",
+                "deflate.c",
+                "infback.c",
+                "inffast.c",
+                "inflate.c",
+                "inftrees.c",
+                "trees.c",
+                "zutil.c",
+                "compress.c",
+                "uncompr.c",
+                "gzclose.c",
+                "gzlib.c",
+                "gzread.c",
+                "gzwrite.c",
+            },
+            .flags = cflags,
+        });
+        libz.installHeader(zlib_path.path("zconf.h"), "zconf.h");
+        libz.installHeader(zlib_path.path("zlib.h"), "zlib.h");
+    }
+    libz.linkLibC();
+    return libz;
+}

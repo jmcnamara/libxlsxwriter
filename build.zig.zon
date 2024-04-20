@@ -1,11 +1,18 @@
 .{
     .name = "libxlsxwriter",
-    .version = "1.1.6",
+    .version = "1.1.7",
     .dependencies = .{
         .zlib = .{
-            .url = "https://github.com/kassane/zlib/archive/4a99cc2bfa344c969f086fcb8c5873d80448f3e6.tar.gz",
-            .hash = "12209e851f7e2c6ba2f01de3e11b1771f03e49666065320abd8414aac152bfa75fae",
+            .url = "git+https://github.com/madler/zlib#0f51fb4933fc9ce18199cb2554dacea8033e7fd3",
+            .hash = "12204f12291d6eeb1e05f19d8ab0c7f46c9073fae4c3568dcae7aade149db0b45047",
+            .lazy = true,
         },
+    },
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "Readme.md",
+        "License.txt",
     },
 }
 //syntax tip: zig - anon struct (json-like)
