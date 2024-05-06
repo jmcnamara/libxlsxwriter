@@ -506,8 +506,11 @@ _drawing_write_a_off(lxw_drawing *self, lxw_drawing_object *drawing_object)
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_INT("x", drawing_object->col_absolute);
-    LXW_PUSH_ATTRIBUTES_INT("y", drawing_object->row_absolute);
+
+    /* Use %d to allow for writing uint64_t on ansi 32bit systems. The largest
+       Excel value will fit without losing precision. */
+    LXW_PUSH_ATTRIBUTES_DBL("x", drawing_object->col_absolute);
+    LXW_PUSH_ATTRIBUTES_DBL("y", drawing_object->row_absolute);
 
     lxw_xml_empty_tag(self->file, "a:off", &attributes);
 

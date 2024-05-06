@@ -56,7 +56,7 @@ STAILQ_HEAD(xml_attribute_list, xml_attribute);
 /* Create a new attribute struct to add to a xml_attribute_list. */
 struct xml_attribute *lxw_new_attribute_str(const char *key,
                                             const char *value);
-struct xml_attribute *lxw_new_attribute_int(const char *key, uint64_t value);
+struct xml_attribute *lxw_new_attribute_int(const char *key, int32_t value);
 struct xml_attribute *lxw_new_attribute_dbl(const char *key, double value);
 
 /* Macro to initialize the xml_attribute_list pointers. */

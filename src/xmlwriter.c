@@ -426,18 +426,12 @@ lxw_new_attribute_str(const char *key, const char *value)
 
 /* Create a new integer XML attribute. */
 struct xml_attribute *
-lxw_new_attribute_int(const char *key, uint64_t value)
+lxw_new_attribute_int(const char *key, int32_t value)
 {
     struct xml_attribute *attribute = malloc(sizeof(struct xml_attribute));
 
     LXW_ATTRIBUTE_COPY(attribute->key, key);
-
-#if defined(_MSC_VER)
-    lxw_snprintf(attribute->value, LXW_MAX_ATTRIBUTE_LENGTH, "%lld", value);
-#else
-    lxw_snprintf(attribute->value, LXW_MAX_ATTRIBUTE_LENGTH, "%ld",
-                 (long) value);
-#endif
+    lxw_snprintf(attribute->value, LXW_MAX_ATTRIBUTE_LENGTH, "%d", value);
 
     return attribute;
 }
