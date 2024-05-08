@@ -107,6 +107,9 @@ typedef enum lxw_error {
     /** Function parameter validation error. */
     LXW_ERROR_PARAMETER_VALIDATION,
 
+    /** Worksheet name cannot be blank. */
+    LXW_ERROR_SHEETNAME_IS_BLANK,
+
     /** Worksheet name exceeds Excel's limit of 31 characters. */
     LXW_ERROR_SHEETNAME_LENGTH_EXCEEDED,
 

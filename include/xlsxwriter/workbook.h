@@ -469,6 +469,7 @@ lxw_workbook *workbook_new_opt(const char *filename,
  *
  * The worksheet name must be a valid Excel worksheet name, i.e:
  *
+ * - The name cannot be blank.
  * - The name is less than or equal to 31 UTF-8 characters.
  * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
  * - The name doesn't start or end with an apostrophe.
@@ -511,6 +512,7 @@ lxw_worksheet *workbook_add_worksheet(lxw_workbook *workbook,
  *
  * The chartsheet name must be a valid Excel worksheet name, i.e.:
  *
+ * - The name cannot be blank.
  * - The name is less than or equal to 31 UTF-8 characters.
  * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
  * - The name doesn't start or end with an apostrophe.
@@ -927,6 +929,7 @@ lxw_chartsheet *workbook_get_chartsheet_by_name(lxw_workbook *workbook,
  * This function is used to validate a worksheet or chartsheet name according
  * to the rules used by Excel:
  *
+ * - The name cannot be blank.
  * - The name is less than or equal to 31 UTF-8 characters.
  * - The name doesn't contain any of the characters: ` [ ] : * ? / \ `
  * - The name doesn't start or end with an apostrophe.

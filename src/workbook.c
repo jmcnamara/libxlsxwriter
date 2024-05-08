@@ -2607,6 +2607,13 @@ workbook_unset_default_url_format(lxw_workbook *self)
 lxw_error
 workbook_validate_sheet_name(lxw_workbook *self, const char *sheetname)
 {
+    if (sheetname == NULL)
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+
+    /* Check for blank worksheet name. */
+    if (strlen(sheetname) == 0)
+        return LXW_ERROR_SHEETNAME_IS_BLANK;
+
     /* Check the UTF-8 length of the worksheet name. */
     if (lxw_utf8_strlen(sheetname) > LXW_SHEETNAME_MAX)
         return LXW_ERROR_SHEETNAME_LENGTH_EXCEEDED;

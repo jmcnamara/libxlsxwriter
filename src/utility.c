@@ -40,6 +40,7 @@ char *error_strings[LXW_MAX_ERRNO + 1] = {
     "Feature is not currently supported in this configuration.",
     "NULL function parameter ignored.",
     "Function parameter validation error.",
+    "Worksheet name cannot be blank.",
     "Worksheet name exceeds Excel's limit of 31 characters.",
     "Worksheet name cannot contain invalid characters: '[ ] : * ? / \\'",
     "Worksheet name cannot start or end with an apostrophe.",
