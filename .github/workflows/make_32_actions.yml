@@ -1,0 +1,43 @@
+name: Test Make 32bit build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    name:
+      Make
+    strategy:
+      fail-fast: false
+      matrix:
+        cc:         [gcc, clang]
+        make_flags: ["CFLAGS=-m32",
+                     "CFLAGS=-m32 USE_STANDARD_TMPFILE=1",
+                     "CFLAGS=-m32 USE_DTOA_LIBRARY=1",
+                     "CFLAGS=-m32 USE_NO_MD5=1",
+                     "CFLAGS=-m32 USE_MEM_FILE=1"]
+    runs-on: ubuntu-latest
+    env:
+      CC:     ${{ matrix.cc }}
+      CXX:    ${{ matrix.cc }}
+      CFLAGS: '-Werror'
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+        sudo dpkg --add-architecture i386
+        sudo apt update
+        sudo apt-get -y install gcc-multilib
+        sudo apt-get -y install zlib1g-dev:i386
+
+    - name: make
+      run: ${{ matrix.make_flags }} make V=1
+
+    - name: test functional
+      run: ${{ matrix.make_flags }} make test_functional V=1 -j
+
+    - name: test examples
+      run: ${{ matrix.make_flags }} make examples V=1
