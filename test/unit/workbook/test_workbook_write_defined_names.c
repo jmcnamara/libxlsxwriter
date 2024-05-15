@@ -65,3 +65,28 @@ CTEST(workbook, write_defined_names_sorted) {
 
     lxw_workbook_free(workbook);
 }
+
+/* Test invalid names formats. */
+CTEST(workbook, write_defined_names_invalid) {
+    char* got;
+    char exp[] = "";
+    FILE* testfile = lxw_tmpfile(NULL);
+
+
+    lxw_workbook *workbook = workbook_new(NULL);
+    workbook->file = testfile;
+
+    workbook_add_worksheet(workbook, NULL);
+
+    workbook_define_name(workbook, "", "=123");
+    workbook_define_name(workbook, "Foo", "");
+    workbook_define_name(workbook, "Sheet1!", "=123");
+    workbook_define_name(workbook, "!", "=123");
+
+    _write_defined_names(workbook);
+
+    RUN_XLSX_STREQ(exp, got);
+
+    lxw_workbook_free(workbook);
+}
+

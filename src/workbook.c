@@ -678,6 +678,9 @@ _store_defined_name(lxw_workbook *self, const char *name,
     if (!name || !formula)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
+    if (strlen(name) == 0 || strlen(formula) == 0)
+        return LXW_ERROR_PARAMETER_VALIDATION;
+
     if (lxw_utf8_strlen(name) > LXW_DEFINED_NAME_LENGTH ||
         lxw_utf8_strlen(formula) > LXW_DEFINED_NAME_LENGTH) {
         return LXW_ERROR_128_STRING_LENGTH_EXCEEDED;
@@ -709,6 +712,9 @@ _store_defined_name(lxw_workbook *self, const char *name,
         *tmp_str = '\0';
         tmp_str++;
         worksheet_name = name_copy;
+
+        if (strlen(tmp_str) == 0 || strlen(worksheet_name) == 0)
+            goto mem_error;
 
         /* Remove any worksheet quoting. */
         if (worksheet_name[0] == '\'')
@@ -933,10 +939,21 @@ _populate_range_dimensions(lxw_workbook *self, lxw_series_range *range)
         return;
     }
     else {
+        /* Peek forward to check for empty string. */
+        if (tmp_str[1] == '\0') {
+            range->ignore_cache = LXW_TRUE;
+            return;
+        }
+
         /* Split the formulas into sheetname and row-col data. */
         *tmp_str = '\0';
         tmp_str++;
         sheetname = formula;
+
+        if (strlen(tmp_str) == 0 || strlen(sheetname) == 0) {
+            range->ignore_cache = LXW_TRUE;
+            return;
+        }
 
         /* Remove any worksheet quoting. */
         if (sheetname[0] == '\'')
