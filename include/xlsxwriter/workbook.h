@@ -856,7 +856,7 @@ lxw_error workbook_set_custom_property_datetime(lxw_workbook *workbook,
  * @endcode
  *
  * The rules for names in Excel are explained in the
- * [Microsoft Office documentation](http://office.microsoft.com/en-001/excel-help/define-and-use-names-in-formulas-HA010147120.aspx).
+ * [Microsoft Office documentation](https://support.microsoft.com/en-us/office/define-and-use-names-in-formulas-4d0f13ac-53b7-422e-afd2-abd7ff379c64).
  *
  */
 lxw_error workbook_define_name(lxw_workbook *workbook, const char *name,
