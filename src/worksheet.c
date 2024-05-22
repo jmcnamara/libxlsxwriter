@@ -7493,6 +7493,105 @@ _validate_conditional_cell(lxw_cond_format_obj *cond_format,
     return LXW_NO_ERROR;
 }
 
+/* Check that the correct criteria and used with the correct conditional format. */
+lxw_error
+_validate_conditional_criteria(lxw_cond_format_obj *cond_format)
+{
+    uint8_t criteria_mismatch = LXW_FALSE;
+
+    if (cond_format->type == LXW_CONDITIONAL_TYPE_CELL) {
+        switch (cond_format->criteria) {
+            case LXW_CONDITIONAL_CRITERIA_EQUAL_TO:
+            case LXW_CONDITIONAL_CRITERIA_NOT_EQUAL_TO:
+            case LXW_CONDITIONAL_CRITERIA_GREATER_THAN:
+            case LXW_CONDITIONAL_CRITERIA_LESS_THAN:
+            case LXW_CONDITIONAL_CRITERIA_GREATER_THAN_OR_EQUAL_TO:
+            case LXW_CONDITIONAL_CRITERIA_LESS_THAN_OR_EQUAL_TO:
+            case LXW_CONDITIONAL_CRITERIA_BETWEEN:
+            case LXW_CONDITIONAL_CRITERIA_NOT_BETWEEN:
+                criteria_mismatch = LXW_FALSE;
+                break;
+            default:
+                criteria_mismatch = LXW_TRUE;
+        }
+    }
+    else if (cond_format->type == LXW_CONDITIONAL_TYPE_TIME_PERIOD) {
+        switch (cond_format->criteria) {
+            case LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_YESTERDAY:
+            case LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_TODAY:
+            case LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_TOMORROW:
+            case LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_LAST_7_DAYS:
+            case LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_LAST_WEEK:
+            case LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_THIS_WEEK:
+            case LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_NEXT_WEEK:
+            case LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_LAST_MONTH:
+            case LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_THIS_MONTH:
+            case LXW_CONDITIONAL_CRITERIA_TIME_PERIOD_NEXT_MONTH:
+                criteria_mismatch = LXW_FALSE;
+                break;
+            default:
+                criteria_mismatch = LXW_TRUE;
+        }
+    }
+    else if (cond_format->type == LXW_CONDITIONAL_TYPE_TEXT) {
+        switch (cond_format->criteria) {
+            case LXW_CONDITIONAL_CRITERIA_TEXT_CONTAINING:
+            case LXW_CONDITIONAL_CRITERIA_TEXT_NOT_CONTAINING:
+            case LXW_CONDITIONAL_CRITERIA_TEXT_BEGINS_WITH:
+            case LXW_CONDITIONAL_CRITERIA_TEXT_ENDS_WITH:
+                criteria_mismatch = LXW_FALSE;
+                break;
+            default:
+                criteria_mismatch = LXW_TRUE;
+        }
+    }
+    else if (cond_format->type == LXW_CONDITIONAL_TYPE_AVERAGE) {
+        switch (cond_format->criteria) {
+            case LXW_CONDITIONAL_CRITERIA_AVERAGE_ABOVE:
+            case LXW_CONDITIONAL_CRITERIA_AVERAGE_BELOW:
+            case LXW_CONDITIONAL_CRITERIA_AVERAGE_ABOVE_OR_EQUAL:
+            case LXW_CONDITIONAL_CRITERIA_AVERAGE_BELOW_OR_EQUAL:
+            case LXW_CONDITIONAL_CRITERIA_AVERAGE_1_STD_DEV_ABOVE:
+            case LXW_CONDITIONAL_CRITERIA_AVERAGE_1_STD_DEV_BELOW:
+            case LXW_CONDITIONAL_CRITERIA_AVERAGE_2_STD_DEV_ABOVE:
+            case LXW_CONDITIONAL_CRITERIA_AVERAGE_2_STD_DEV_BELOW:
+            case LXW_CONDITIONAL_CRITERIA_AVERAGE_3_STD_DEV_ABOVE:
+            case LXW_CONDITIONAL_CRITERIA_AVERAGE_3_STD_DEV_BELOW:
+                criteria_mismatch = LXW_FALSE;
+                break;
+            default:
+                criteria_mismatch = LXW_TRUE;
+        }
+    }
+    else if (cond_format->type == LXW_CONDITIONAL_TYPE_TOP
+             || cond_format->type == LXW_CONDITIONAL_TYPE_BOTTOM) {
+        switch (cond_format->criteria) {
+            case LXW_CONDITIONAL_CRITERIA_NONE:
+            case LXW_CONDITIONAL_CRITERIA_TOP_OR_BOTTOM_PERCENT:
+                criteria_mismatch = LXW_FALSE;
+                break;
+            default:
+                criteria_mismatch = LXW_TRUE;
+        }
+    }
+    else {
+        /* Any other conditional type should have a zero criteria. */
+        cond_format->criteria = LXW_CONDITIONAL_CRITERIA_NONE;
+    }
+
+    if (criteria_mismatch) {
+        LXW_WARN_FORMAT2("worksheet_conditional_format_cell()/_range(): "
+                         "LXW_CONDITIONAL_CRITERIA_* = %d is not valid for "
+                         "LXW_CONDITIONAL_TYPE_* = %d", cond_format->criteria,
+                         cond_format->type);
+
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+    else {
+        return LXW_NO_ERROR;
+    }
+}
+
 /*
  * Write the <ignoredErrors> element.
  */
@@ -11064,6 +11163,11 @@ worksheet_conditional_format_range(lxw_worksheet *self, lxw_row_t first_row,
     cond_format->criteria = user_options->criteria;
     cond_format->stop_if_true = user_options->stop_if_true;
     cond_format->type_string = lxw_strdup(type_strings[cond_format->type]);
+
+    /* Check that the criteria matches the conditional type. */
+    err = _validate_conditional_criteria(cond_format);
+    if (err)
+        goto error;
 
     /* Validate the user input for various types of rules. */
     if (user_options->type == LXW_CONDITIONAL_TYPE_CELL
