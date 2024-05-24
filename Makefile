@@ -185,6 +185,11 @@ coverity: clean_src third_party
 	$(Q)$(MAKE) -C src clean
 	$(Q)rm -f  lib/*
 
+# Run address sanitiser.
+address_sanitiser: third_party
+	$(Q)$(MAKE) -C src libxlsxwriter.a CFLAGS="-fsanitize=address -O1 -fsanitize-coverage=trace-pc-guard -fno-omit-frame-pointer -g"
+	$(Q)$(MAKE) -C examples            CFLAGS="-fsanitize=address -O1 -fsanitize-coverage=trace-pc-guard -fno-omit-frame-pointer -g"
+
 # Run gcov coverage analysis.
 gcov: third_party
 	$(Q)$(MAKE) -C src clean
