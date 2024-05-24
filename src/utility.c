@@ -40,7 +40,7 @@ char *error_strings[LXW_MAX_ERRNO + 1] = {
     "Feature is not currently supported in this configuration.",
     "NULL function parameter ignored.",
     "Function parameter validation error.",
-    "Worksheet name cannot be blank.",
+    "Function string parameter is empty.",
     "Worksheet name exceeds Excel's limit of 31 characters.",
     "Worksheet name cannot contain invalid characters: '[ ] : * ? / \\'",
     "Worksheet name cannot start or end with an apostrophe.",
@@ -514,6 +514,16 @@ lxw_str_tolower(char *str)
 
     for (i = 0; str[i]; i++)
         str[i] = tolower(str[i]);
+}
+
+/* Simple check for empty strings. */
+uint8_t
+lxw_str_is_empty(const char *str)
+{
+    if (str[0] == '\0')
+        return 1;
+    else
+        return 0;
 }
 
 /* Create a quoted version of the worksheet name, or return an unmodified

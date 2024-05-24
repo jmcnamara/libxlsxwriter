@@ -221,10 +221,9 @@ double lxw_unixtime_to_excel_date_epoch(int64_t unixtime, uint8_t date_1904);
 
 char *lxw_strdup(const char *str);
 char *lxw_strdup_formula(const char *formula);
-
 size_t lxw_utf8_strlen(const char *str);
-
 void lxw_str_tolower(char *str);
+uint8_t lxw_str_is_empty(const char *str);
 
 /* Define a portable version of strcasecmp(). */
 #ifdef _MSC_VER

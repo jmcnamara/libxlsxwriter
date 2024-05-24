@@ -147,13 +147,13 @@ CTEST(workbook, validate_worksheet_name09) {
     lxw_workbook_free(workbook);
 }
 
-/* Test for blank sheet name. */
+/* Test for empty sheet name. */
 CTEST(workbook, validate_worksheet_name10) {
 
     const char* sheetname = "";
 
     lxw_workbook *workbook = workbook_new(NULL);
-    lxw_error exp = LXW_ERROR_SHEETNAME_IS_BLANK;
+    lxw_error exp = LXW_ERROR_PARAMETER_IS_EMPTY;
     lxw_error got = workbook_validate_sheet_name(workbook, sheetname);
 
     ASSERT_EQUAL(exp, got);

@@ -678,8 +678,8 @@ _store_defined_name(lxw_workbook *self, const char *name,
     if (!name || !formula)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
-    if (strlen(name) == 0 || strlen(formula) == 0)
-        return LXW_ERROR_PARAMETER_VALIDATION;
+    if (lxw_str_is_empty(name) || lxw_str_is_empty(formula))
+        return LXW_ERROR_PARAMETER_IS_EMPTY;
 
     if (lxw_utf8_strlen(name) > LXW_DEFINED_NAME_LENGTH ||
         lxw_utf8_strlen(formula) > LXW_DEFINED_NAME_LENGTH) {
@@ -713,7 +713,7 @@ _store_defined_name(lxw_workbook *self, const char *name,
         tmp_str++;
         worksheet_name = name_copy;
 
-        if (strlen(tmp_str) == 0 || strlen(worksheet_name) == 0)
+        if (lxw_str_is_empty(tmp_str) || lxw_str_is_empty(worksheet_name))
             goto mem_error;
 
         /* Remove any worksheet quoting. */
@@ -939,8 +939,8 @@ _populate_range_dimensions(lxw_workbook *self, lxw_series_range *range)
         return;
     }
     else {
-        /* Peek forward to check for empty string. */
-        if (tmp_str[1] == '\0') {
+        /* Check for empty string. */
+        if (lxw_str_is_empty(tmp_str)) {
             range->ignore_cache = LXW_TRUE;
             return;
         }
@@ -950,7 +950,7 @@ _populate_range_dimensions(lxw_workbook *self, lxw_series_range *range)
         tmp_str++;
         sheetname = formula;
 
-        if (strlen(tmp_str) == 0 || strlen(sheetname) == 0) {
+        if (lxw_str_is_empty(tmp_str) || lxw_str_is_empty(sheetname)) {
             range->ignore_cache = LXW_TRUE;
             return;
         }
@@ -2374,6 +2374,12 @@ workbook_set_custom_property_string(lxw_workbook *self, const char *name,
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
+    if (lxw_str_is_empty(name)) {
+        LXW_WARN_FORMAT("workbook_set_custom_property_string(): "
+                        "parameter 'name' cannot be an empty string.");
+        return LXW_ERROR_PARAMETER_IS_EMPTY;
+    }
+
     if (!value) {
         LXW_WARN_FORMAT("workbook_set_custom_property_string(): "
                         "parameter 'value' cannot be NULL.");
@@ -2421,6 +2427,12 @@ workbook_set_custom_property_number(lxw_workbook *self, const char *name,
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
+    if (lxw_str_is_empty(name)) {
+        LXW_WARN_FORMAT("workbook_set_custom_property_number(): parameter "
+                        "'name' cannot be an empty string.");
+        return LXW_ERROR_PARAMETER_IS_EMPTY;
+    }
+
     if (lxw_utf8_strlen(name) > 255) {
         LXW_WARN_FORMAT("workbook_set_custom_property_number(): parameter "
                         "'name' exceeds Excel length limit of 255.");
@@ -2454,6 +2466,12 @@ workbook_set_custom_property_integer(lxw_workbook *self, const char *name,
         LXW_WARN_FORMAT("workbook_set_custom_property_integer(): parameter "
                         "'name' cannot be NULL.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (lxw_str_is_empty(name)) {
+        LXW_WARN_FORMAT("workbook_set_custom_property_integer(): parameter "
+                        "'name' cannot be an empty string.");
+        return LXW_ERROR_PARAMETER_IS_EMPTY;
     }
 
     if (strlen(name) > 255) {
@@ -2491,6 +2509,12 @@ workbook_set_custom_property_boolean(lxw_workbook *self, const char *name,
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
+    if (lxw_str_is_empty(name)) {
+        LXW_WARN_FORMAT("workbook_set_custom_property_boolean(): parameter "
+                        "'name' cannot be an empty string.");
+        return LXW_ERROR_PARAMETER_IS_EMPTY;
+    }
+
     if (lxw_utf8_strlen(name) > 255) {
         LXW_WARN_FORMAT("workbook_set_custom_property_boolean(): parameter "
                         "'name' exceeds Excel length limit of 255.");
@@ -2524,6 +2548,12 @@ workbook_set_custom_property_datetime(lxw_workbook *self, const char *name,
         LXW_WARN_FORMAT("workbook_set_custom_property_datetime(): parameter "
                         "'name' cannot be NULL.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (lxw_str_is_empty(name)) {
+        LXW_WARN_FORMAT("workbook_set_custom_property_datetime(): parameter "
+                        "'name' cannot be an empty string.");
+        return LXW_ERROR_PARAMETER_IS_EMPTY;
     }
 
     if (lxw_utf8_strlen(name) > 255) {
@@ -2627,9 +2657,9 @@ workbook_validate_sheet_name(lxw_workbook *self, const char *sheetname)
     if (sheetname == NULL)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
-    /* Check for blank worksheet name. */
-    if (strlen(sheetname) == 0)
-        return LXW_ERROR_SHEETNAME_IS_BLANK;
+    /* Check for empty worksheet name. */
+    if (lxw_str_is_empty(sheetname))
+        return LXW_ERROR_PARAMETER_IS_EMPTY;
 
     /* Check the UTF-8 length of the worksheet name. */
     if (lxw_utf8_strlen(sheetname) > LXW_SHEETNAME_MAX)
@@ -2727,6 +2757,12 @@ workbook_set_vba_name(lxw_workbook *self, const char *name)
     if (!name) {
         LXW_WARN("workbook_set_vba_name(): " "name must be specified.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (lxw_str_is_empty(name)) {
+        LXW_WARN_FORMAT("workbook_set_vba_name(): parameter "
+                        "'name' cannot be an empty string.");
+        return LXW_ERROR_PARAMETER_IS_EMPTY;
     }
 
     self->vba_codename = lxw_strdup(name);

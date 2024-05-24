@@ -7944,6 +7944,9 @@ worksheet_write_formula_num(lxw_worksheet *self,
     if (!formula)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
 
+    if (lxw_str_is_empty(formula))
+        return LXW_ERROR_PARAMETER_IS_EMPTY;
+
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
         return err;
@@ -7978,6 +7981,9 @@ worksheet_write_formula_str(lxw_worksheet *self,
 
     if (!formula)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
+
+    if (lxw_str_is_empty(formula))
+        return LXW_ERROR_PARAMETER_IS_EMPTY;
 
     err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
     if (err)
@@ -8043,6 +8049,9 @@ _store_array_formula(lxw_worksheet *self,
 
     if (!formula)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
+
+    if (lxw_str_is_empty(formula))
+        return LXW_ERROR_PARAMETER_IS_EMPTY;
 
     /* Check that row and col are valid and store max and min values. */
     err = _check_dimensions(self, first_row, first_col, LXW_FALSE, LXW_FALSE);
@@ -8669,6 +8678,9 @@ worksheet_write_comment_opt(lxw_worksheet *self,
 
     if (!text)
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
+
+    if (lxw_str_is_empty(text))
+        return LXW_ERROR_PARAMETER_IS_EMPTY;
 
     if (lxw_utf8_strlen(text) > LXW_STR_MAX)
         return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
