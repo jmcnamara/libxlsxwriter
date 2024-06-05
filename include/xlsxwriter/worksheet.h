@@ -4579,9 +4579,9 @@ void worksheet_split_panes_opt(lxw_worksheet *worksheet,
  * @endcode
  *
  */
-void worksheet_set_selection(lxw_worksheet *worksheet,
-                             lxw_row_t first_row, lxw_col_t first_col,
-                             lxw_row_t last_row, lxw_col_t last_col);
+lxw_error worksheet_set_selection(lxw_worksheet *worksheet,
+                                  lxw_row_t first_row, lxw_col_t first_col,
+                                  lxw_row_t last_row, lxw_col_t last_col);
 
 /**
  * @brief Set the first visible cell at the top left of a worksheet.

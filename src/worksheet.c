@@ -9545,7 +9545,7 @@ worksheet_hide(lxw_worksheet *self)
 /*
  * Set which cell or cells are selected in a worksheet.
  */
-void
+lxw_error
 worksheet_set_selection(lxw_worksheet *self,
                         lxw_row_t first_row, lxw_col_t first_col,
                         lxw_row_t last_row, lxw_col_t last_col)
@@ -9553,19 +9553,29 @@ worksheet_set_selection(lxw_worksheet *self,
     lxw_selection *selection;
     lxw_row_t tmp_row;
     lxw_col_t tmp_col;
+    lxw_error err;
     char active_cell[LXW_MAX_CELL_RANGE_LENGTH];
     char sqref[LXW_MAX_CELL_RANGE_LENGTH];
 
     /* Only allow selection to be set once to avoid freeing/re-creating it. */
     if (!STAILQ_EMPTY(self->selections))
-        return;
+        return LXW_ERROR_PARAMETER_VALIDATION;
 
     /* Excel doesn't set a selection for cell A1 since it is the default. */
     if (first_row == 0 && first_col == 0 && last_row == 0 && last_col == 0)
-        return;
+        return LXW_NO_ERROR;
 
     selection = calloc(1, sizeof(lxw_selection));
-    RETURN_VOID_ON_MEM_ERROR(selection);
+    RETURN_ON_MEM_ERROR(selection, LXW_ERROR_MEMORY_MALLOC_FAILED);
+
+    /* Check that row and col are valid without storing. */
+    err = _check_dimensions(self, first_row, first_col, LXW_TRUE, LXW_TRUE);
+    if (err)
+        return err;
+
+    err = _check_dimensions(self, last_row, last_col, LXW_TRUE, LXW_TRUE);
+    if (err)
+        return err;
 
     /* Set the cell range selection. Do this before swapping max/min to  */
     /* allow the selection direction to be reversed. */
@@ -9595,6 +9605,8 @@ worksheet_set_selection(lxw_worksheet *self,
     lxw_strcpy(selection->sqref, sqref);
 
     STAILQ_INSERT_TAIL(self->selections, selection, list_pointers);
+
+    return LXW_NO_ERROR;
 }
 
 /*
