@@ -4,11 +4,10 @@
  *
  * Data validation is a feature of Excel which allows you to restrict the data
  * that a user enters in a cell and to display help and warning messages. It
- * also allows you to restrict input to values in a drop down list.
+ * also allows you to restrict input to values in a dropdown list.
  *
  * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
  */
-
 
 #include "xlsxwriter.h"
 
@@ -152,7 +151,7 @@ int main() {
      */
     worksheet_write_string(worksheet,
                            CELL("A13"),
-                           "Select a value from a drop down list",
+                           "Select a value from a dropdown list",
                            NULL);
 
     const char *list[] = {"open", "high", "close", NULL};
@@ -168,7 +167,7 @@ int main() {
      */
     worksheet_write_string(worksheet,
                            CELL("A15"),
-                           "Select a value from a drop down list (using a cell range)",
+                           "Select a value from a dropdown list (using a cell range)",
                            NULL);
 
     data_validation->validate      = LXW_VALIDATION_TYPE_LIST_FORMULA;
@@ -207,7 +206,7 @@ int main() {
     lxw_datetime datetime3 = {0, 0, 0,  6, 0, 0};
     lxw_datetime datetime4 = {0, 0, 0, 12, 0, 0};
 
-    data_validation->validate         = LXW_VALIDATION_TYPE_DATE;
+    data_validation->validate         = LXW_VALIDATION_TYPE_TIME;
     data_validation->criteria         = LXW_VALIDATION_CRITERIA_BETWEEN;
     data_validation->minimum_datetime = datetime3;
     data_validation->maximum_datetime = datetime4;
