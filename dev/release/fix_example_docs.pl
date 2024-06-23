@@ -35,7 +35,7 @@ my @examples = (
     [ 'merge_range.c',          'Create a merged range of cells' ],
     [ 'merge_rich_string.c',    'Create a merged range with a rich string' ],
     [ 'autofilter.c',           'An example of a worksheet autofilter' ],
-    [ 'data_validate.c',        'Examples of worksheet data validation and drop down lists' ],
+    [ 'data_validate.c',        'Examples of worksheet data validation and dropdown lists' ],
     [ 'conditional_format1.c',  'A simple conditional formatting example' ],
     [ 'conditional_format2.c',  'An advanced conditional formatting example' ],
     [ 'tables.c',               'Example of table to a worksheet.' ],

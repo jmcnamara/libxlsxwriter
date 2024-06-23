@@ -250,7 +250,7 @@ criteria is applied using a cell reference. It is valid for any of the
 
 `value_list`:
 
-The `value_list` parameter is used to set a list of strings for a drop down
+The `value_list` parameter is used to set a list of strings for a dropdown
 list.  The list should be a `NULL` terminated array of char* strings:
 
 @code
@@ -457,13 +457,13 @@ set using `error_message`. It is on by default.
     data_validation->minimum_number   = 0.1;
     data_validation->maximum_number   = 0.5;
 
-    // Select a value from a drop down list.
+    // Select a value from a dropdown list.
     char *list[]                      = {"open", "high", "close", NULL};
 
     data_validation->validate         = LXW_VALIDATION_TYPE_LIST;
     data_validation->value_list       = list;
 
-    // Select a value from a drop down list (using a cell range).
+    // Select a value from a dropdown list (using a cell range).
     data_validation->validate         = LXW_VALIDATION_TYPE_LIST;
     data_validation->value_formula    = "=$E$4:$G$4";
 

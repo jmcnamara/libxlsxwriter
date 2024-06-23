@@ -4,7 +4,7 @@
  *
  * Data validation is a feature of Excel which allows you to restrict the data
  * that a user enters in a cell and to display help and warning messages. It
- * also allows you to restrict input to values in a drop down list.
+ * also allows you to restrict input to values in a dropdown list.
  *
  * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
  */
@@ -28,7 +28,7 @@ void write_worksheet_data(lxw_worksheet *worksheet, lxw_format *format) {
     worksheet_write_number(worksheet, CELL("E3"), 1, NULL);
     worksheet_write_number(worksheet, CELL("F3"), 10, NULL);
 
-    worksheet_write_string(worksheet, CELL("D4"), "List Data", NULL);
+    worksheet_write_string(worksheet, CELL("D4"), "List data", NULL);
     worksheet_write_string(worksheet, CELL("E4"), "open", NULL);
     worksheet_write_string(worksheet, CELL("F4"), "high", NULL);
     worksheet_write_string(worksheet, CELL("G4"), "close", NULL);
@@ -45,7 +45,7 @@ void write_worksheet_data(lxw_worksheet *worksheet, lxw_format *format) {
  */
 int main() {
 
-    lxw_workbook        *workbook  = workbook_new("data_validate1.xlsx");
+    lxw_workbook        *workbook  = workbook_new("data_validate.xlsx");
     lxw_worksheet       *worksheet = workbook_add_worksheet(workbook, NULL);
     lxw_data_validation *data_validation =
         (lxw_data_validation *)calloc(1, sizeof(lxw_data_validation));
@@ -90,10 +90,10 @@ int main() {
      */
     worksheet_write_string(worksheet,
                            CELL("A5"),
-                           "Enter an integer not between 1 and 10 (using cell references)",
+                           "Enter an integer that is not between 1 and 10 (using cell references)",
                            NULL);
 
-    data_validation->validate        = LXW_VALIDATION_TYPE_INTEGER;
+    data_validation->validate        = LXW_VALIDATION_TYPE_INTEGER_FORMULA;
     data_validation->criteria        = LXW_VALIDATION_CRITERIA_NOT_BETWEEN;
     data_validation->minimum_formula = "=E3";
     data_validation->maximum_formula = "=F3";
@@ -152,7 +152,7 @@ int main() {
      */
     worksheet_write_string(worksheet,
                            CELL("A13"),
-                           "Select a value from a drop down list",
+                           "Select a value from a dropdown list",
                            NULL);
 
     const char *list[] = {"open", "high", "close", NULL};
@@ -168,7 +168,7 @@ int main() {
      */
     worksheet_write_string(worksheet,
                            CELL("A15"),
-                           "Select a value from a drop down list (using a cell range)",
+                           "Select a value from a dropdown list (using a cell range)",
                            NULL);
 
     data_validation->validate      = LXW_VALIDATION_TYPE_LIST_FORMULA;
@@ -182,11 +182,11 @@ int main() {
      */
     worksheet_write_string(worksheet,
                            CELL("A17"),
-                           "Enter a date between 1/1/2008 and 12/12/2008",
+                           "Enter a date between 1/1/2024 and 12/12/2024",
                            NULL);
 
-    lxw_datetime datetime1 = {2008,  1,  1, 0, 0, 0};
-    lxw_datetime datetime2 = {2008, 12, 12, 0, 0, 0};
+    lxw_datetime datetime1 = {2024,  1,  1, 0, 0, 0};
+    lxw_datetime datetime2 = {2024, 12, 12, 0, 0, 0};
 
     data_validation->validate         = LXW_VALIDATION_TYPE_DATE;
     data_validation->criteria         = LXW_VALIDATION_CRITERIA_BETWEEN;
@@ -207,7 +207,7 @@ int main() {
     lxw_datetime datetime3 = {0, 0, 0,  6, 0, 0};
     lxw_datetime datetime4 = {0, 0, 0, 12, 0, 0};
 
-    data_validation->validate         = LXW_VALIDATION_TYPE_DATE;
+    data_validation->validate         = LXW_VALIDATION_TYPE_TIME;
     data_validation->criteria         = LXW_VALIDATION_CRITERIA_BETWEEN;
     data_validation->minimum_datetime = datetime3;
     data_validation->maximum_datetime = datetime4;

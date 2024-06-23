@@ -20,7 +20,7 @@ It supports features such as:
 - Defined names.
 - Autofilters.
 - Charts.
-- Data validation and drop down lists.
+- Data validation and dropdown lists.
 - Conditional formatting.
 - Worksheet PNG/JPEG/GIF images.
 - Cell comments.

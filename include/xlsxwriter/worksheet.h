@@ -983,7 +983,7 @@ typedef struct lxw_data_validation {
     const char *value_formula;
 
     /**
-     * This parameter is used to set a list of strings for a drop down list.
+     * This parameter is used to set a list of strings for a dropdown list.
      * The list should be a `NULL` terminated array of char* strings:
      *
      * @code
@@ -3996,7 +3996,7 @@ lxw_error worksheet_merge_range(lxw_worksheet *worksheet, lxw_row_t first_row,
  * The `%worksheet_autofilter()` function allows an autofilter to be added to
  * a worksheet.
  *
- * An autofilter is a way of adding drop down lists to the headers of a 2D
+ * An autofilter is a way of adding dropdown lists to the headers of a 2D
  * range of worksheet data. This allows users to filter the data based on
  * simple criteria so that some data is shown and some is hidden.
  *
