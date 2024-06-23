@@ -3,7 +3,7 @@
  * dynamic arrays. These functions are new to Excel 365. The examples mirror
  * the examples in the Excel documentation on these functions.
  *
- * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org
  *
  */
 

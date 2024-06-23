@@ -2,7 +2,7 @@
  * An example of inserting images into a worksheet using the libxlsxwriter
  * library.
  *
- * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org
  *
  */
 

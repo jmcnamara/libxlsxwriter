@@ -2,7 +2,7 @@
  * An example of turning off worksheet cells errors/warnings using
  * libxlsxwriter.
  *
- * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org
  *
  */
 

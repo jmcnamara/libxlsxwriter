@@ -2,7 +2,7 @@
  * An example of a simple Excel chart using the libxlsxwriter library. This
  * example is used in the "Working with Charts" section of the docs.
  *
- * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org
  *
  */
 

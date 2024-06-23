@@ -2,7 +2,7 @@
  * Example of writing dates and times in Excel using an lxw_datetime struct
  * and date formatting.
  *
- * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org
  *
  */
 

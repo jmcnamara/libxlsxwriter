@@ -4,7 +4,7 @@
  *
  * These include Drop Lines and High-Low Lines.
  *
- * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org
  *
  */
 

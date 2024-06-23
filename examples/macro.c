@@ -10,7 +10,7 @@
  * supported by libxlsxwriter) but that isn't a requirement for adding a macro
  * file to the workbook.
  *
- * Copyright 2014-2021, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org
  */
 
 #include "xlsxwriter.h"
