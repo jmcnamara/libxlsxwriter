@@ -43,6 +43,10 @@ SRCS += $(wildcard vml/test*.c)
 SRCS += $(wildcard comment/test*.c)
 SRCS += $(wildcard metadata/test*.c)
 SRCS += $(wildcard table/test*.c)
+SRCS += $(wildcard rich_value/test*.c)
+SRCS += $(wildcard rich_value_rel/test*.c)
+SRCS += $(wildcard rich_value_types/test*.c)
+SRCS += $(wildcard rich_value_structure/test*.c)
 # End of SRCS
 
 OBJS  = $(patsubst %.c,%.o,$(SRCS))
@@ -80,6 +84,10 @@ all :
 	$(Q)$(MAKE) -C comment
 	$(Q)$(MAKE) -C metadata
 	$(Q)$(MAKE) -C table
+	$(Q)$(MAKE) -C rich_value
+	$(Q)$(MAKE) -C rich_value_rel
+	$(Q)$(MAKE) -C rich_value_types
+	$(Q)$(MAKE) -C rich_value_structure
 # END make all
 
 clean :
@@ -102,6 +110,10 @@ clean :
 	$(Q)$(MAKE) clean -C comment
 	$(Q)$(MAKE) clean -C metadata
 	$(Q)$(MAKE) clean -C table
+	$(Q)$(MAKE) clean -C rich_value
+	$(Q)$(MAKE) clean -C rich_value_rel
+	$(Q)$(MAKE) clean -C rich_value_types
+	$(Q)$(MAKE) clean -C rich_value_structure
 # END make clean
 
 

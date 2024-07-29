@@ -20,6 +20,9 @@
 typedef struct lxw_metadata {
 
     FILE *file;
+    uint8_t has_dynamic_functions;
+    uint8_t has_embedded_images;
+    uint32_t num_embedded_images;
 
 } lxw_metadata;
 

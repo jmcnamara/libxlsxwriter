@@ -391,3 +391,23 @@ lxw_ct_add_metadata(lxw_content_types *self)
     lxw_ct_add_override(self, "/xl/metadata.xml",
                         LXW_APP_DOCUMENT "spreadsheetml.sheetMetadata+xml");
 }
+
+/*
+ * Add the richValue files to the ContentTypes overrides.
+ */
+void
+lxw_ct_add_rich_value(lxw_content_types *self)
+{
+    lxw_ct_add_override(self, "/xl/richData/rdRichValueTypes.xml",
+                        LXW_APP_MSEXCEL "rdrichvaluetypes+xml");
+
+    lxw_ct_add_override(self, "/xl/richData/rdrichvalue.xml",
+                        LXW_APP_MSEXCEL "rdrichvalue+xml");
+
+    lxw_ct_add_override(self, "/xl/richData/rdrichvaluestructure.xml",
+                        LXW_APP_MSEXCEL "rdrichvaluestructure+xml");
+
+    lxw_ct_add_override(self, "/xl/richData/richValueRel.xml",
+                        LXW_APP_MSEXCEL "richvaluerel+xml");
+
+}

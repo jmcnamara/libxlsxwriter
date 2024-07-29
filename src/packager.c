@@ -383,8 +383,42 @@ _write_image_files(lxw_packager *self)
         else
             worksheet = sheet->u.worksheet;
 
-        if (STAILQ_EMPTY(worksheet->image_props))
+        if (STAILQ_EMPTY(worksheet->image_props)
+            && STAILQ_EMPTY(worksheet->embedded_image_props))
             continue;
+
+        STAILQ_FOREACH(object_props, worksheet->embedded_image_props,
+                       list_pointers) {
+
+            if (object_props->is_duplicate)
+                continue;
+
+            lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+                         "xl/media/image%d.%s", index++,
+                         object_props->extension);
+
+            if (!object_props->is_image_buffer) {
+                /* Check that the image file exists and can be opened. */
+                image_stream = lxw_fopen(object_props->filename, "rb");
+                if (!image_stream) {
+                    LXW_WARN_FORMAT1("Error adding image to xlsx file: file "
+                                     "doesn't exist or can't be opened: %s.",
+                                     object_props->filename);
+                    return LXW_ERROR_CREATING_TMPFILE;
+                }
+
+                err = _add_file_to_zip(self, image_stream, filename);
+                fclose(image_stream);
+            }
+            else {
+                err = _add_buffer_to_zip(self,
+                                         object_props->image_buffer,
+                                         object_props->image_buffer_size,
+                                         filename);
+            }
+
+            RETURN_ON_ERROR(err);
+        }
 
         STAILQ_FOREACH(object_props, worksheet->image_props, list_pointers) {
 
@@ -1053,6 +1087,10 @@ _write_metadata_file(lxw_packager *self)
         goto mem_error;
     }
 
+    metadata->has_embedded_images = self->workbook->has_embedded_images;
+    metadata->num_embedded_images = self->workbook->num_embedded_images;
+    metadata->has_dynamic_functions = self->workbook->has_dynamic_functions;
+
     lxw_metadata_assemble_xml_file(metadata);
 
     err = _add_to_zip(self, metadata->file, &buffer, &buffer_size,
@@ -1063,6 +1101,176 @@ _write_metadata_file(lxw_packager *self)
 
 mem_error:
     lxw_metadata_free(metadata);
+
+    return err;
+}
+
+/*
+ * Write the rdrichvalue.xml file.
+ */
+STATIC lxw_error
+_write_rich_value_file(lxw_packager *self)
+{
+    lxw_error err = LXW_NO_ERROR;
+    lxw_rich_value *rich_value;
+    char *buffer = NULL;
+    size_t buffer_size = 0;
+
+    if (!self->workbook->has_embedded_images)
+        return LXW_NO_ERROR;
+
+    rich_value = lxw_rich_value_new();
+    rich_value->workbook = self->workbook;
+
+    if (!rich_value) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
+
+    rich_value->file =
+        lxw_get_filehandle(&buffer, &buffer_size, self->tmpdir);
+    if (!rich_value->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
+
+    lxw_rich_value_assemble_xml_file(rich_value);
+
+    err = _add_to_zip(self, rich_value->file, &buffer, &buffer_size,
+                      "xl/richData/rdrichvalue.xml");
+
+    fclose(rich_value->file);
+    free(buffer);
+
+mem_error:
+    lxw_rich_value_free(rich_value);
+
+    return err;
+}
+
+/*
+ * Write the richValueRel.xml file.
+ */
+STATIC lxw_error
+_write_rich_value_rel_file(lxw_packager *self)
+{
+    lxw_error err = LXW_NO_ERROR;
+    lxw_rich_value_rel *rich_value_rel;
+    char *buffer = NULL;
+    size_t buffer_size = 0;
+
+    if (!self->workbook->has_embedded_images)
+        return LXW_NO_ERROR;
+
+    rich_value_rel = lxw_rich_value_rel_new();
+    rich_value_rel->num_embedded_images = self->workbook->num_embedded_images;
+
+    if (!rich_value_rel) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
+
+    rich_value_rel->file =
+        lxw_get_filehandle(&buffer, &buffer_size, self->tmpdir);
+    if (!rich_value_rel->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
+
+    lxw_rich_value_rel_assemble_xml_file(rich_value_rel);
+
+    err = _add_to_zip(self, rich_value_rel->file, &buffer, &buffer_size,
+                      "xl/richData/richValueRel.xml");
+
+    fclose(rich_value_rel->file);
+    free(buffer);
+
+mem_error:
+    lxw_rich_value_rel_free(rich_value_rel);
+
+    return err;
+}
+
+/*
+ * Write the rdRichValueTypes.xml file.
+ */
+STATIC lxw_error
+_write_rich_value_types_file(lxw_packager *self)
+{
+    lxw_error err = LXW_NO_ERROR;
+    lxw_rich_value_types *rich_value_types;
+    char *buffer = NULL;
+    size_t buffer_size = 0;
+
+    if (!self->workbook->has_embedded_images)
+        return LXW_NO_ERROR;
+
+    rich_value_types = lxw_rich_value_types_new();
+
+    if (!rich_value_types) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
+
+    rich_value_types->file =
+        lxw_get_filehandle(&buffer, &buffer_size, self->tmpdir);
+    if (!rich_value_types->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
+
+    lxw_rich_value_types_assemble_xml_file(rich_value_types);
+
+    err = _add_to_zip(self, rich_value_types->file, &buffer, &buffer_size,
+                      "xl/richData/rdRichValueTypes.xml");
+
+    fclose(rich_value_types->file);
+    free(buffer);
+
+mem_error:
+    lxw_rich_value_types_free(rich_value_types);
+
+    return err;
+}
+
+/*
+ * Write the rdrichvaluestructure.xml file.
+ */
+STATIC lxw_error
+_write_rich_value_structure_file(lxw_packager *self)
+{
+    lxw_error err = LXW_NO_ERROR;
+    lxw_rich_value_structure *rich_value_structure;
+    char *buffer = NULL;
+    size_t buffer_size = 0;
+
+    if (!self->workbook->has_embedded_images)
+        return LXW_NO_ERROR;
+
+    rich_value_structure = lxw_rich_value_structure_new();
+
+    if (!rich_value_structure) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
+
+    rich_value_structure->file =
+        lxw_get_filehandle(&buffer, &buffer_size, self->tmpdir);
+    if (!rich_value_structure->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
+
+    lxw_rich_value_structure_assemble_xml_file(rich_value_structure);
+
+    err = _add_to_zip(self, rich_value_structure->file, &buffer, &buffer_size,
+                      "xl/richData/rdrichvaluestructure.xml");
+
+    fclose(rich_value_structure->file);
+    free(buffer);
+
+mem_error:
+    lxw_rich_value_structure_free(rich_value_structure);
 
     return err;
 }
@@ -1327,6 +1535,9 @@ _write_content_types_file(lxw_packager *self)
     if (workbook->has_metadata)
         lxw_ct_add_metadata(content_types);
 
+    if (workbook->has_embedded_images)
+        lxw_ct_add_rich_value(content_types);
+
     lxw_content_types_assemble_xml_file(content_types);
 
     err = _add_to_zip(self, content_types->file, &buffer, &buffer_size,
@@ -1396,6 +1607,9 @@ _write_workbook_rels_file(lxw_packager *self)
 
     if (workbook->has_metadata)
         lxw_add_document_relationship(rels, "/sheetMetadata", "metadata.xml");
+
+    if (workbook->has_embedded_images)
+        lxw_add_rich_value_relationship(rels);
 
     lxw_relationships_assemble_xml_file(rels);
 
@@ -1716,6 +1930,75 @@ mem_error:
 }
 
 /*
+ * Write the richValueRel.xml.rels files for embedded images.
+ */
+STATIC lxw_error
+_write_rich_value_rels_file(lxw_packager *self)
+{
+    lxw_workbook *workbook = self->workbook;
+    lxw_sheet *sheet;
+    lxw_worksheet *worksheet;
+    lxw_object_properties *object_props;
+
+    lxw_relationships *rels;
+    char *buffer = NULL;
+    size_t buffer_size = 0;
+    char sheetname[LXW_FILENAME_LENGTH] = { 0 };
+    char target[LXW_FILENAME_LENGTH] = { 0 };
+    lxw_error err = LXW_NO_ERROR;
+    uint32_t index = 1;
+
+    if (!workbook->has_embedded_images)
+        return LXW_NO_ERROR;
+
+    rels = lxw_relationships_new();
+
+    rels->file = lxw_get_filehandle(&buffer, &buffer_size, self->tmpdir);
+    if (!rels->file) {
+        lxw_free_relationships(rels);
+        return LXW_ERROR_CREATING_TMPFILE;
+    }
+
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
+
+        if (STAILQ_EMPTY(worksheet->embedded_image_props))
+            continue;
+
+        STAILQ_FOREACH(object_props, worksheet->embedded_image_props,
+                       list_pointers) {
+
+            if (object_props->is_duplicate)
+                continue;
+
+            lxw_snprintf(target, LXW_FILENAME_LENGTH,
+                         "../media/image%d.%s", index++,
+                         object_props->extension);
+
+            lxw_add_document_relationship(rels, "/image", target);
+
+        }
+
+    }
+
+    lxw_snprintf(sheetname, LXW_FILENAME_LENGTH,
+                 "xl/richData/_rels/richValueRel.xml.rels");
+
+    lxw_relationships_assemble_xml_file(rels);
+
+    err = _add_to_zip(self, rels->file, &buffer, &buffer_size, sheetname);
+
+    fclose(rels->file);
+    free(buffer);
+    lxw_free_relationships(rels);
+
+    return err;
+}
+
+/*
  * Write the _rels/.rels xml file.
  */
 STATIC lxw_error
@@ -1952,6 +2235,21 @@ lxw_create_package(lxw_packager *self)
     RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_metadata_file(self);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
+
+    error = _write_rich_value_file(self);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
+
+    error = _write_rich_value_rel_file(self);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
+
+    error = _write_rich_value_types_file(self);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
+
+    error = _write_rich_value_structure_file(self);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
+
+    error = _write_rich_value_rels_file(self);
     RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_app_file(self);

@@ -721,6 +721,7 @@ enum cell_types {
     DYNAMIC_ARRAY_FORMULA_CELL,
     BLANK_CELL,
     BOOLEAN_CELL,
+    ERROR_CELL,
     COMMENT,
     HYPERLINK_URL,
     HYPERLINK_INTERNAL,
@@ -818,6 +819,7 @@ STAILQ_HEAD(lxw_selections, lxw_selection);
 STAILQ_HEAD(lxw_data_validations, lxw_data_val_obj);
 STAILQ_HEAD(lxw_cond_format_list, lxw_cond_format_obj);
 STAILQ_HEAD(lxw_image_props, lxw_object_properties);
+STAILQ_HEAD(lxw_embedded_image_props, lxw_object_properties);
 STAILQ_HEAD(lxw_chart_props, lxw_object_properties);
 STAILQ_HEAD(lxw_comment_objs, lxw_vml_obj);
 STAILQ_HEAD(lxw_table_objs, lxw_table_obj);
@@ -2120,6 +2122,7 @@ typedef struct lxw_worksheet {
     struct lxw_data_validations *data_validations;
     struct lxw_cond_format_hash *conditional_formats;
     struct lxw_image_props *image_props;
+    struct lxw_image_props *embedded_image_props;
     struct lxw_chart_props *chart_data;
     struct lxw_drawing_rel_ids *drawing_rel_ids;
     struct lxw_vml_drawing_rel_ids *vml_drawing_rel_ids;
@@ -2193,7 +2196,7 @@ typedef struct lxw_worksheet {
     uint8_t zoom_scale_normal;
     uint8_t black_white;
     uint8_t num_validations;
-    uint8_t has_dynamic_arrays;
+    uint8_t has_dynamic_functions;
     char *vba_codename;
     uint16_t num_buttons;
 
@@ -3782,6 +3785,34 @@ lxw_error worksheet_insert_image_buffer_opt(lxw_worksheet *worksheet,
                                             const unsigned char *image_buffer,
                                             size_t image_size,
                                             lxw_image_options *options);
+
+/**
+ * @brief TODO
+ *
+ * @param worksheet
+ * @param row
+ * @param col
+ * @param filename
+ * @return lxw_error
+ */
+lxw_error worksheet_embed_image(lxw_worksheet *worksheet,
+                                lxw_row_t row, lxw_col_t col,
+                                const char *filename);
+
+/**
+ * @brief TODO
+ *
+ * @param worksheet
+ * @param row
+ * @param col
+ * @param filename
+ * @param options
+ * @return lxw_error
+ */
+lxw_error worksheet_embed_image_opt(lxw_worksheet *worksheet,
+                                    lxw_row_t row, lxw_col_t col,
+                                    const char *filename,
+                                    lxw_image_options *options);
 
 /**
  * @brief Set the background image for a worksheet.
@@ -5811,6 +5842,10 @@ void lxw_worksheet_write_sheet_protection(lxw_worksheet *worksheet,
 void lxw_worksheet_write_sheet_pr(lxw_worksheet *worksheet);
 void lxw_worksheet_write_page_setup(lxw_worksheet *worksheet);
 void lxw_worksheet_write_header_footer(lxw_worksheet *worksheet);
+
+void worksheet_set_error_cell(lxw_worksheet *worksheet,
+                              lxw_object_properties *object_props,
+                              uint32_t ref_id);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

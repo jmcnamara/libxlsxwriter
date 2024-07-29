@@ -142,6 +142,11 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     GOTO_LABEL_ON_MEM_ERROR(worksheet->image_props, mem_error);
     STAILQ_INIT(worksheet->image_props);
 
+    worksheet->embedded_image_props =
+        calloc(1, sizeof(struct lxw_embedded_image_props));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->embedded_image_props, mem_error);
+    STAILQ_INIT(worksheet->embedded_image_props);
+
     worksheet->chart_data = calloc(1, sizeof(struct lxw_chart_props));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->chart_data, mem_error);
     STAILQ_INIT(worksheet->chart_data);
@@ -368,7 +373,8 @@ _free_cell(lxw_cell *cell)
         return;
 
     if (cell->type != NUMBER_CELL && cell->type != STRING_CELL
-        && cell->type != BLANK_CELL && cell->type != BOOLEAN_CELL) {
+        && cell->type != BLANK_CELL && cell->type != BOOLEAN_CELL
+        && cell->type != ERROR_CELL) {
 
         free((void *) cell->u.string);
     }
@@ -605,6 +611,17 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
         }
 
         free(worksheet->image_props);
+    }
+
+    if (worksheet->embedded_image_props) {
+        while (!STAILQ_EMPTY(worksheet->embedded_image_props)) {
+            object_props = STAILQ_FIRST(worksheet->embedded_image_props);
+            STAILQ_REMOVE_HEAD(worksheet->embedded_image_props,
+                               list_pointers);
+            _free_object_properties(object_props);
+        }
+
+        free(worksheet->embedded_image_props);
     }
 
     if (worksheet->chart_data) {
@@ -985,6 +1002,25 @@ _new_boolean_cell(lxw_row_t row_num, lxw_col_t col_num, int value,
     cell->row_num = row_num;
     cell->col_num = col_num;
     cell->type = BOOLEAN_CELL;
+    cell->format = format;
+    cell->u.number = value;
+
+    return cell;
+}
+
+/*
+ * Create a new worksheet error cell object.
+ */
+STATIC lxw_cell *
+_new_error_cell(lxw_row_t row_num, lxw_col_t col_num, uint32_t value,
+                lxw_format *format)
+{
+    lxw_cell *cell = calloc(1, sizeof(lxw_cell));
+    RETURN_ON_MEM_ERROR(cell, cell);
+
+    cell->row_num = row_num;
+    cell->col_num = col_num;
+    cell->type = ERROR_CELL;
     cell->format = format;
     cell->u.number = value;
 
@@ -4523,6 +4559,15 @@ _write_boolean_cell(lxw_worksheet *self, lxw_cell *cell)
 }
 
 /*
+ * Write out a error worksheet cell.
+ */
+STATIC void
+_write_error_cell(lxw_worksheet *self)
+{
+    lxw_xml_data_element(self->file, "v", "#VALUE!", NULL);
+}
+
+/*
  * Calculate the "spans" attribute of the <row> tag. This is an XLSX
  * optimization and isn't strictly required. However, it makes comparing
  * files easier.
@@ -4650,6 +4695,13 @@ _write_cell(lxw_worksheet *self, lxw_cell *cell, lxw_format *row_format)
         LXW_PUSH_ATTRIBUTES_STR("cm", "1");
         lxw_xml_start_tag(self->file, "c", &attributes);
         _write_array_formula_num_cell(self, cell);
+        lxw_xml_end_tag(self->file, "c");
+    }
+    else if (cell->type == ERROR_CELL) {
+        LXW_PUSH_ATTRIBUTES_STR("t", "e");
+        LXW_PUSH_ATTRIBUTES_DBL("vm", cell->u.number);
+        lxw_xml_start_tag(self->file, "c", &attributes);
+        _write_error_cell(self);
         lxw_xml_end_tag(self->file, "c");
     }
 
@@ -8093,7 +8145,7 @@ _store_array_formula(lxw_worksheet *self,
     _insert_cell(self, first_row, first_col, cell);
 
     if (is_dynamic)
-        self->has_dynamic_arrays = LXW_TRUE;
+        self->has_dynamic_functions = LXW_TRUE;
 
     /* Pad out the rest of the area with formatted zeroes. */
     if (!self->optimize) {
@@ -10592,6 +10644,108 @@ worksheet_insert_image_buffer(lxw_worksheet *self,
 }
 
 /*
+ * Embed an image with options into the worksheet.
+ */
+lxw_error
+worksheet_embed_image_opt(lxw_worksheet *self,
+                          lxw_row_t row_num, lxw_col_t col_num,
+                          const char *filename,
+                          lxw_image_options *user_options)
+{
+    FILE *image_stream;
+    const char *description;
+    lxw_object_properties *object_props;
+    lxw_error err;
+
+    if (!filename) {
+        LXW_WARN("worksheet_embed_image()/_opt(): "
+                 "filename must be specified.");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    /* Check that the image file exists and can be opened. */
+    image_stream = lxw_fopen(filename, "rb");
+    if (!image_stream) {
+        LXW_WARN_FORMAT1("worksheet_embed_image()/_opt(): "
+                         "file doesn't exist or can't be opened: %s.",
+                         filename);
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+
+    /* Use the filename as the default description, like Excel. */
+    description = lxw_basename(filename);
+    if (!description) {
+        LXW_WARN_FORMAT1("worksheet_embed_image()/_opt(): "
+                         "couldn't get basename for file: %s.", filename);
+        fclose(image_stream);
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
+    if (err)
+        return err;
+
+    /* Create a new object to hold the image properties. */
+    object_props = calloc(1, sizeof(lxw_object_properties));
+    if (!object_props) {
+        fclose(image_stream);
+        return LXW_ERROR_MEMORY_MALLOC_FAILED;
+    }
+
+    if (user_options) {
+        object_props->x_offset = user_options->x_offset;
+        object_props->y_offset = user_options->y_offset;
+        object_props->x_scale = user_options->x_scale;
+        object_props->y_scale = user_options->y_scale;
+        object_props->object_position = user_options->object_position;
+        object_props->url = lxw_strdup(user_options->url);
+        object_props->tip = lxw_strdup(user_options->tip);
+        object_props->decorative = user_options->decorative;
+
+        if (user_options->description)
+            description = user_options->description;
+    }
+
+    /* Copy other options or set defaults. */
+    object_props->filename = lxw_strdup(filename);
+    object_props->description = lxw_strdup(description);
+    object_props->stream = image_stream;
+    object_props->row = row_num;
+    object_props->col = col_num;
+
+    if (object_props->x_scale == 0.0)
+        object_props->x_scale = 1;
+
+    if (object_props->y_scale == 0.0)
+        object_props->y_scale = 1;
+
+    if (_get_image_properties(object_props) == LXW_NO_ERROR) {
+        STAILQ_INSERT_TAIL(self->embedded_image_props, object_props,
+                           list_pointers);
+        fclose(image_stream);
+
+        return LXW_NO_ERROR;
+    }
+    else {
+        _free_object_properties(object_props);
+        fclose(image_stream);
+        return LXW_ERROR_IMAGE_DIMENSIONS;
+    }
+
+}
+
+/*
+ * Embed an image into the worksheet.
+ */
+lxw_error
+worksheet_embed_image(lxw_worksheet *self,
+                      lxw_row_t row_num, lxw_col_t col_num,
+                      const char *filename)
+{
+    return worksheet_embed_image_opt(self, row_num, col_num, filename, NULL);
+}
+
+/*
  * Set an image as a worksheet background.
  */
 lxw_error
@@ -11420,4 +11574,19 @@ worksheet_ignore_errors(lxw_worksheet *self, uint8_t type, const char *range)
     self->has_ignore_errors = LXW_TRUE;
 
     return LXW_NO_ERROR;
+}
+
+/*
+ * Write an error cell for versions of Excel that don't support embedded images.
+ */
+void
+worksheet_set_error_cell(lxw_worksheet *self,
+                         lxw_object_properties *object_props, uint32_t ref_id)
+{
+    lxw_row_t row_num = object_props->row;
+    lxw_col_t col_num = object_props->col;
+
+    lxw_cell *cell = _new_error_cell(row_num, col_num, ref_id, NULL);
+    _insert_cell(self, row_num, col_num, cell);
+
 }

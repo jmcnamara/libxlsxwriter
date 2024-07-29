@@ -132,6 +132,10 @@
 -T lxw_repeat_cols
 -T lxw_repeat_rows
 -T lxw_rich_string_tuple
+-T lxw_rich_value
+-T lxw_rich_value_rel
+-T lxw_rich_value_structure
+-T lxw_rich_value_types
 -T lxw_row
 -T lxw_row_col_options
 -T lxw_row_t

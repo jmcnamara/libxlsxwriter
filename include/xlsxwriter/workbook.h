@@ -299,6 +299,7 @@ typedef struct lxw_workbook {
     struct lxw_worksheet_names *worksheet_names;
     struct lxw_chartsheet_names *chartsheet_names;
     struct lxw_image_md5s *image_md5s;
+    struct lxw_image_md5s *embedded_image_md5s;
     struct lxw_image_md5s *header_image_md5s;
     struct lxw_image_md5s *background_md5s;
     struct lxw_charts *charts;
@@ -337,6 +338,10 @@ typedef struct lxw_workbook {
     uint8_t has_vml;
     uint8_t has_comments;
     uint8_t has_metadata;
+    uint8_t has_embedded_images;
+    uint8_t has_dynamic_functions;
+
+    uint32_t num_embedded_images;
 
     lxw_hash_table *used_xf_formats;
     lxw_hash_table *used_dxf_formats;

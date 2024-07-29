@@ -64,6 +64,7 @@ void lxw_ct_add_shared_strings(lxw_content_types *content_types);
 void lxw_ct_add_calc_chain(lxw_content_types *content_types);
 void lxw_ct_add_custom_properties(lxw_content_types *content_types);
 void lxw_ct_add_metadata(lxw_content_types *content_types);
+void lxw_ct_add_rich_value(lxw_content_types *content_types);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING
