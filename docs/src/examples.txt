@@ -145,9 +145,16 @@ Example of using libxlsxwriter to write a workbook file to a memory buffer.
 ##############################################################
 @example image_buffer.c
 
-Example of adding an image to a worksheet from a memory buffer.
+Example of inserting an image in a worksheet from a memory buffer.
 
 @image html image_buffer2.png
+
+##############################################################
+@example embed_image_buffer.c
+
+Example of embedding an image in a worksheet from a memory buffer.
+
+@image html embed_image_buffer.png
 
 ##############################################################
 @example merge_range.c
@@ -210,9 +217,16 @@ formula or formatted collectively.
 ##############################################################
 @example images.c
 
-Example of adding images to a worksheet.
+Example of inserting images in a worksheet.
 
 @image html images.png
+
+##############################################################
+@example embed_images.c
+
+Example of embedding images in a worksheet.
+
+@image html embed_image.png
 
 ##############################################################
 @example headers_footers.c

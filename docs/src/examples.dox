@@ -321,13 +321,29 @@ Example of using libxlsxwriter to write a workbook file to a memory buffer.
 <table  width="600">
 <tr>
   <td>@ref output_buffer.c "&lt;&lt; output_buffer.c"</td>
+  <td align="right">@ref embed_image_buffer.c "embed_image_buffer.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of inserting an image in a worksheet from a memory buffer.
+
+@image html image_buffer2.png
+
+
+
+
+@example embed_image_buffer.c
+
+<table  width="600">
+<tr>
+  <td>@ref image_buffer.c "&lt;&lt; image_buffer.c"</td>
   <td align="right">@ref merge_range.c "merge_range.c &gt;&gt;"</td>
 </tr>
 </table>
 
-Example of adding an image to a worksheet from a memory buffer.
+Example of embedding an image in a worksheet from a memory buffer.
 
-@image html image_buffer2.png
+@image html embed_image_buffer.png
 
 
 
@@ -336,7 +352,7 @@ Example of adding an image to a worksheet from a memory buffer.
 
 <table  width="600">
 <tr>
-  <td>@ref image_buffer.c "&lt;&lt; image_buffer.c"</td>
+  <td>@ref embed_image_buffer.c "&lt;&lt; embed_image_buffer.c"</td>
   <td align="right">@ref merge_rich_string.c "merge_rich_string.c &gt;&gt;"</td>
 </tr>
 </table>
@@ -458,13 +474,29 @@ formula or formatted collectively.
 <table  width="600">
 <tr>
   <td>@ref tables.c "&lt;&lt; tables.c"</td>
+  <td align="right">@ref embed_images.c "embed_images.c &gt;&gt;"</td>
+</tr>
+</table>
+
+Example of inserting images in a worksheet.
+
+@image html images.png
+
+
+
+
+@example embed_images.c
+
+<table  width="600">
+<tr>
+  <td>@ref images.c "&lt;&lt; images.c"</td>
   <td align="right">@ref headers_footers.c "headers_footers.c &gt;&gt;"</td>
 </tr>
 </table>
 
-Example of adding images to a worksheet.
+Example of embedding images in a worksheet.
 
-@image html images.png
+@image html embed_image.png
 
 
 
@@ -473,7 +505,7 @@ Example of adding images to a worksheet.
 
 <table  width="600">
 <tr>
-  <td>@ref images.c "&lt;&lt; images.c"</td>
+  <td>@ref embed_images.c "&lt;&lt; embed_images.c"</td>
   <td align="right">@ref defined_name.c "defined_name.c &gt;&gt;"</td>
 </tr>
 </table>

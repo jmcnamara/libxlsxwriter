@@ -1698,8 +1698,8 @@ typedef struct lxw_filter_rule_obj {
 /**
  * @brief Options for inserted images.
  *
- * Options for modifying images inserted via `worksheet_insert_image_opt()`.
- *
+ * Options for modifying images inserted via `worksheet_insert_image_opt()` and
+ * `worksheet_embed_image_opt()`.
  */
 typedef struct lxw_image_options {
 
@@ -1738,7 +1738,8 @@ typedef struct lxw_image_options {
     /** Add an optional mouseover tip for a hyperlink to the image. */
     const char *tip;
 
-    /** TODO */
+    /** Add an optional format to the cell. Only used with
+     * `worksheet_embed_image_opt()` */
     lxw_format *cell_format;
 
 } lxw_image_options;
@@ -3630,9 +3631,18 @@ lxw_error worksheet_set_column_pixels_opt(lxw_worksheet *worksheet,
  * **Note**:
  * The scaling of a image may be affected if is crosses a row that has its
  * default height changed due to a font that is larger than the default font
- * size or that has text wrapping turned on. To avoid this you should
- * explicitly set the height of the row using `worksheet_set_row()` if it
- * crosses an inserted image. See @ref working_with_object_positioning.
+ * size or that has text wrapping turned on. To avoid this you should explicitly
+ * set the height of the row using `worksheet_set_row()` if it crosses an
+ * inserted image. See @ref working_with_object_positioning.
+ *
+ * **NOTE on SVG files**:
+ * Excel doesn't directly support SVG files in the same way as other image file
+ * formats. It allows SVG to be inserted into a worksheet but converts them to,
+ * and displays them as, PNG files. It stores the original SVG image in the file
+ * so the original format can be retrieved. This removes the file size and
+ * resolution advantage of using SVG files. As such SVG files are not supported
+ * by `libxlsxwriter` since a conversion to the PNG format would be required
+ * and that format is already supported.
  *
  * BMP images are only supported for backward compatibility. In general it is
  * best to avoid BMP images since they aren't compressed. If used, BMP images
@@ -3755,7 +3765,7 @@ lxw_error worksheet_insert_image_buffer(lxw_worksheet *worksheet,
  *
  * The `%worksheet_insert_image_buffer_opt()` function is like
  * `worksheet_insert_image_buffer()` function except that it takes an optional
- * #lxw_image_options struct  * #lxw_image_options struct with the following members/options:
+ * #lxw_image_options struct with the following members/options:
  *
  * - `x_offset`: Offset from the left of the cell in pixels.
  * - `y_offset`: Offset from the top of the cell in pixels.
@@ -3792,27 +3802,58 @@ lxw_error worksheet_insert_image_buffer_opt(lxw_worksheet *worksheet,
                                             lxw_image_options *options);
 
 /**
- * @brief TODO
+ * @brief Embed an image in a worksheet cell.
  *
- * @param worksheet
- * @param row
- * @param col
- * @param filename
- * @return lxw_error
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param filename  The image filename, with path if required.
+ *
+ * @return A #lxw_error code.
+ *
+ * This function can be used to embed a image into a worksheet cell and have the
+ * image automatically scale to the width and height of the cell. The X/Y
+ * scaling of the image is preserved but the size of the image is adjusted to
+ * fit the largest possible width or height depending on the cell dimensions.
+ *
+ * This is the equivalent of Excel's menu option to insert an image using the
+ * option to "Place in Cell" which is only available in Excel 365 versions from
+ * 2023 onwards. For older versions of Excel a `#VALUE!` error is displayed.
+ *
+ * @dontinclude embed_images.c
+ * @skip Change
+ * @until B6
+ *
+ * @image html embed_image.png
+ *
+ * The `worksheet_embed_image_opt()` function takes additional optional
+ * parameters to add urls or format the cell background, see below.
+ *
  */
 lxw_error worksheet_embed_image(lxw_worksheet *worksheet,
                                 lxw_row_t row, lxw_col_t col,
                                 const char *filename);
 
 /**
- * @brief TODO
+ * @brief Embed an image in a worksheet cell, with options.
  *
- * @param worksheet
- * @param row
- * @param col
- * @param filename
- * @param options
- * @return lxw_error
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param filename  The image filename, with path if required.
+ * @param options   Optional image parameters.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_embed_image_opt()` function is like
+ * `worksheet_embed_image()` function except that it takes an optional
+ * #lxw_image_options struct with the following members/options:
+ *
+ * - `description`: Optional description or "Alt text" for the image.
+ * - `decorative`: Optional parameter to mark image as decorative.
+ * - `url`: Add an optional hyperlink to the image.
+ * - `cell_format`: Add a format for the cell behind the embedded image.
+ *
  */
 lxw_error worksheet_embed_image_opt(lxw_worksheet *worksheet,
                                     lxw_row_t row, lxw_col_t col,
@@ -3820,14 +3861,30 @@ lxw_error worksheet_embed_image_opt(lxw_worksheet *worksheet,
                                     lxw_image_options *options);
 
 /**
- * @brief TODO
+ * @brief Embed an image in a worksheet cell, from a memory buffer.
  *
- * @param worksheet
- * @param row
- * @param col
- * @param image_buffer
- * @param image_size
- * @return lxw_error
+ * @param worksheet    Pointer to a lxw_worksheet instance to be updated.
+ * @param row          The zero indexed row number.
+ * @param col          The zero indexed column number.
+ * @param image_buffer Pointer to an array of bytes that holds the image data.
+ * @param image_size   The size of the array of bytes.
+ *
+ * @return A #lxw_error code.
+ *
+ * This function can be used to embed a image into a worksheet from a memory
+ * buffer:
+ *
+ * @dontinclude embed_image_buffer.c
+ * @skip Embed
+ * @until B3
+ *
+ * @image html embed_image_buffer.png
+ *
+ * The buffer should be a pointer to an array of unsigned char data with a
+ * specified size.
+ *
+ * See `worksheet_embed_image()` for details about the supported image
+ * formats, and other image features.
  */
 lxw_error worksheet_embed_image_buffer(lxw_worksheet *worksheet,
                                        lxw_row_t row,
@@ -3836,15 +3893,26 @@ lxw_error worksheet_embed_image_buffer(lxw_worksheet *worksheet,
                                        size_t image_size);
 
 /**
- * @brief TODO
+ * @brief Embed an image in a worksheet cell, from a memory buffer.
  *
- * @param worksheet
- * @param row
- * @param col
- * @param image_buffer
- * @param image_size
- * @param options
- * @return lxw_error
+ * @param worksheet    Pointer to a lxw_worksheet instance to be updated.
+ * @param row          The zero indexed row number.
+ * @param col          The zero indexed column number.
+ * @param image_buffer Pointer to an array of bytes that holds the image data.
+ * @param image_size   The size of the array of bytes.
+ * @param options      Optional image parameters.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_embed_image_buffer_opt()` function is like
+ * `worksheet_embed_image_buffer()` function except that it takes an optional
+ * #lxw_image_options struct with the following members/options:
+ *
+ * - `description`: Optional description or "Alt text" for the image.
+ * - `decorative`: Optional parameter to mark image as decorative.
+ * - `url`: Add an optional hyperlink to the image.
+ * - `cell_format`: Add a format for the cell behind the embedded image.
+ *
  */
 lxw_error worksheet_embed_image_buffer_opt(lxw_worksheet *worksheet,
                                            lxw_row_t row,
