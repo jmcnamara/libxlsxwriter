@@ -137,13 +137,14 @@ lxw_rich_value_write_images(lxw_rich_value *self)
             lxw_snprintf(value, LXW_UINT32_T_LENGTH, "%u", type);
             _rich_value_write_v(self, value);
 
+            if (object_props->description && *object_props->description)
+                _rich_value_write_v(self, object_props->description);
+
             lxw_xml_end_tag(self->file, "rv");
 
             index++;
-
         }
     }
-
 }
 
 /*

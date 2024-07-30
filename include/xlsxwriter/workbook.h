@@ -323,6 +323,7 @@ typedef struct lxw_workbook {
     uint16_t num_format_count;
     uint16_t drawing_count;
     uint16_t comment_count;
+    uint32_t num_embedded_images;
 
     uint16_t font_count;
     uint16_t border_count;
@@ -340,8 +341,7 @@ typedef struct lxw_workbook {
     uint8_t has_metadata;
     uint8_t has_embedded_images;
     uint8_t has_dynamic_functions;
-
-    uint32_t num_embedded_images;
+    uint8_t has_embedded_image_descriptions;
 
     lxw_hash_table *used_xf_formats;
     lxw_hash_table *used_dxf_formats;

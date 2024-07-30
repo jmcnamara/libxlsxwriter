@@ -75,32 +75,15 @@ _rich_value_structure_xml_declaration(lxw_rich_value_structure *self)
  * Write the <k> element.
  */
 STATIC void
-_rich_value_structure_write_k2(lxw_rich_value_structure *self)
+_rich_value_structure_write_k(lxw_rich_value_structure *self, char *name,
+                              char *type)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
 
     LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("n", "CalcOrigin");
-    LXW_PUSH_ATTRIBUTES_STR("t", "i");
-
-    lxw_xml_empty_tag(self->file, "k", &attributes);
-
-    LXW_FREE_ATTRIBUTES();
-}
-
-/*
- * Write the <k> element.
- */
-STATIC void
-_rich_value_structure_write_k1(lxw_rich_value_structure *self)
-{
-    struct xml_attribute_list attributes;
-    struct xml_attribute *attribute;
-
-    LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("n", "_rvRel:LocalImageIdentifier");
-    LXW_PUSH_ATTRIBUTES_STR("t", "i");
+    LXW_PUSH_ATTRIBUTES_STR("n", name);
+    LXW_PUSH_ATTRIBUTES_STR("t", type);
 
     lxw_xml_empty_tag(self->file, "k", &attributes);
 
@@ -122,8 +105,11 @@ _rich_value_structure_write_s(lxw_rich_value_structure *self)
     lxw_xml_start_tag(self->file, "s", &attributes);
 
     /* Write the k element. */
-    _rich_value_structure_write_k1(self);
-    _rich_value_structure_write_k2(self);
+    _rich_value_structure_write_k(self, "_rvRel:LocalImageIdentifier", "i");
+    _rich_value_structure_write_k(self, "CalcOrigin", "i");
+
+    if (self->has_embedded_image_descriptions)
+        _rich_value_structure_write_k(self, "Text", "s");
 
     lxw_xml_end_tag(self->file, "s");
 

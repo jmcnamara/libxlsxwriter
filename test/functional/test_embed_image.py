@@ -39,9 +39,30 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_embed_image07(self):
         self.run_exe_test('test_embed_image07')
 
-    def test_embed_image11(self):
+    def test_embed_image08(self):
+        self.run_exe_test('test_embed_image08')
+
+    def test_embed_image09(self):
+        self.run_exe_test('test_embed_image09')
+
+    def test_embed_image10(self):
+        # Ignore the missing "display" parameter.
+        self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<hyperlink']}
+        self.run_exe_test('test_embed_image10')
+
+    def test_embed_image13(self):
         self.run_exe_test('test_embed_image11')
+    def test_embed_image12(self):
+        self.run_exe_test('test_embed_image12')
 
     @pytest.mark.skipif(os.environ.get('USE_NO_MD5'), reason="compiled without MD5 support")
     def test_embed_image13(self):
         self.run_exe_test('test_embed_image13')
+
+    # Test in-memory image handling.
+    def test_embed_image51(self):
+        self.run_exe_test('test_embed_image51', 'embed_image01.xlsx')
+
+    def test_embed_image52(self):
+        self.run_exe_test('test_embed_image52', 'embed_image08.xlsx')
+

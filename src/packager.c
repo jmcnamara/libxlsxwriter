@@ -1120,12 +1120,12 @@ _write_rich_value_file(lxw_packager *self)
         return LXW_NO_ERROR;
 
     rich_value = lxw_rich_value_new();
-    rich_value->workbook = self->workbook;
-
     if (!rich_value) {
         err = LXW_ERROR_MEMORY_MALLOC_FAILED;
         goto mem_error;
     }
+
+    rich_value->workbook = self->workbook;
 
     rich_value->file =
         lxw_get_filehandle(&buffer, &buffer_size, self->tmpdir);
@@ -1163,12 +1163,12 @@ _write_rich_value_rel_file(lxw_packager *self)
         return LXW_NO_ERROR;
 
     rich_value_rel = lxw_rich_value_rel_new();
-    rich_value_rel->num_embedded_images = self->workbook->num_embedded_images;
-
     if (!rich_value_rel) {
         err = LXW_ERROR_MEMORY_MALLOC_FAILED;
         goto mem_error;
     }
+
+    rich_value_rel->num_embedded_images = self->workbook->num_embedded_images;
 
     rich_value_rel->file =
         lxw_get_filehandle(&buffer, &buffer_size, self->tmpdir);
@@ -1206,7 +1206,6 @@ _write_rich_value_types_file(lxw_packager *self)
         return LXW_NO_ERROR;
 
     rich_value_types = lxw_rich_value_types_new();
-
     if (!rich_value_types) {
         err = LXW_ERROR_MEMORY_MALLOC_FAILED;
         goto mem_error;
@@ -1248,11 +1247,13 @@ _write_rich_value_structure_file(lxw_packager *self)
         return LXW_NO_ERROR;
 
     rich_value_structure = lxw_rich_value_structure_new();
-
     if (!rich_value_structure) {
         err = LXW_ERROR_MEMORY_MALLOC_FAILED;
         goto mem_error;
     }
+
+    rich_value_structure->has_embedded_image_descriptions =
+        self->workbook->has_embedded_image_descriptions;
 
     rich_value_structure->file =
         lxw_get_filehandle(&buffer, &buffer_size, self->tmpdir);

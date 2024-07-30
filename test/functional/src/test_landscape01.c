@@ -1,7 +1,7 @@
 /*****************************************************************************
  * Test cases for libxlsxwriter.
  *
- * Simple test case for TODO.
+ * Test to compare output against Excel files.
  *
  * SPDX-License-Identifier: BSD-2-Clause
  * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org.

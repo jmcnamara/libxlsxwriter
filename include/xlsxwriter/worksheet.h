@@ -1738,6 +1738,9 @@ typedef struct lxw_image_options {
     /** Add an optional mouseover tip for a hyperlink to the image. */
     const char *tip;
 
+    /** TODO */
+    lxw_format *cell_format;
+
 } lxw_image_options;
 
 /**
@@ -1809,6 +1812,7 @@ typedef struct lxw_object_properties {
     char *md5;
     char *image_position;
     uint8_t decorative;
+    lxw_format *format;
 
     STAILQ_ENTRY (lxw_object_properties) list_pointers;
 } lxw_object_properties;
@@ -2255,6 +2259,7 @@ typedef struct lxw_worksheet {
     uint8_t has_header_vml;
     uint8_t has_background_image;
     uint8_t has_buttons;
+    uint8_t storing_embedded_image;
     lxw_rel_tuple *external_vml_comment_link;
     lxw_rel_tuple *external_comment_link;
     lxw_rel_tuple *external_vml_header_link;
@@ -3813,6 +3818,40 @@ lxw_error worksheet_embed_image_opt(lxw_worksheet *worksheet,
                                     lxw_row_t row, lxw_col_t col,
                                     const char *filename,
                                     lxw_image_options *options);
+
+/**
+ * @brief TODO
+ *
+ * @param worksheet
+ * @param row
+ * @param col
+ * @param image_buffer
+ * @param image_size
+ * @return lxw_error
+ */
+lxw_error worksheet_embed_image_buffer(lxw_worksheet *worksheet,
+                                       lxw_row_t row,
+                                       lxw_col_t col,
+                                       const unsigned char *image_buffer,
+                                       size_t image_size);
+
+/**
+ * @brief TODO
+ *
+ * @param worksheet
+ * @param row
+ * @param col
+ * @param image_buffer
+ * @param image_size
+ * @param options
+ * @return lxw_error
+ */
+lxw_error worksheet_embed_image_buffer_opt(lxw_worksheet *worksheet,
+                                           lxw_row_t row,
+                                           lxw_col_t col,
+                                           const unsigned char *image_buffer,
+                                           size_t image_size,
+                                           lxw_image_options *options);
 
 /**
  * @brief Set the background image for a worksheet.

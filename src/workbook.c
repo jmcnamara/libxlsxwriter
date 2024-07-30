@@ -217,7 +217,6 @@ lxw_workbook_free(lxw_workbook *workbook)
         free(workbook->chartsheet_names);
     }
 
-    /* TODO add macro for these RB image frees. */
     if (workbook->image_md5s) {
         for (image_md5 = RB_MIN(lxw_image_md5s, workbook->image_md5s);
              image_md5; image_md5 = next_image_md5) {
@@ -1114,6 +1113,10 @@ _prepare_drawings(lxw_workbook *self)
                        list_pointers) {
 
             _store_image_type(self, object_props->image_type);
+
+            /* Check for images with alt-text. */
+            if (object_props->description)
+                self->has_embedded_image_descriptions = LXW_TRUE;
 
             /* Check for duplicate images and only store the first instance. */
             if (object_props->md5) {
