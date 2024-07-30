@@ -68,6 +68,10 @@ pub fn build(b: *std.Build) void {
             "src/table.c",
             "src/workbook.c",
             "src/packager.c",
+            "src/rich_value.c",
+            "src/rich_value_rel.c",
+            "src/rich_value_structure.c",
+            "src/rich_value_types.c",
         },
         .flags = cflags,
     });
