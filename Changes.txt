@@ -1,6 +1,36 @@
 /**
 @page changes Changes
 
+
+## 1.1.8 July 31 2024
+
+- Added support for embedding images into worksheets with
+  `worksheet_embed_image()`.
+
+  This can be useful if you are building up a spreadsheet of products with a
+  column of images for each product. Embedded images move with the cell so they
+  can be used in worksheet tables or data ranges that will be sorted or
+  filtered.
+
+  This functionality is the equivalent of Excel's menu option to insert an image
+  using the option to "Place in Cell" which is available in Excel 365 versions
+  from 2023 onwards.
+
+- Fixed various issues:
+
+  - [Failure on 32bit architectures #441](https://github.com/jmcnamara/libxlsxwriter/issues/441)
+  - [workbook_validate_sheet_name buffer-overflow #442](https://github.com/jmcnamara/libxlsxwriter/issues/442)
+  - [workbook_add_worksheet does not return a reasonable worksheet #443](https://github.com/jmcnamara/libxlsxwriter/issues/443)
+  - [workbook_define_name stack-buffer-underflow #444](https://github.com/jmcnamara/libxlsxwriter/issues/444)
+  - [workbook_close stack-buffer-overflow #445](https://github.com/jmcnamara/libxlsxwriter/issues/445)
+  - [_store_array_formula heap-buffer-overflow #446](https://github.com/jmcnamara/libxlsxwriter/issues/446)
+  - [worksheet_set_selection stack-buffer-overflow #447](https://github.com/jmcnamara/libxlsxwriter/issues/447)
+
+
+- Note this version is tagged as `v1.1.8` instead of `RELEASE_1.1.8` for better
+  interoperability with Xcode.
+
+
 ## 1.1.7 April 5 2024
 
 - Bump `.so` version to 6. This was missed in the previous release.
