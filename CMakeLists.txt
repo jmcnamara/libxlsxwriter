@@ -208,6 +208,7 @@ if(MSVC AND USE_STATIC_MSVC_RUNTIME)
 endif()
 
 # Configure pkg-config
+find_package(PkgConfig)
 file(READ "include/xlsxwriter.h" ver)
 
 string(REGEX MATCH "LXW_VERSION \"([^\"]+)\"" _ ${ver})
@@ -224,14 +225,24 @@ enable_language(CXX)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # ZLIB
-find_package(ZLIB "1.0" REQUIRED)
-list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
-message("zlib version: " ${ZLIB_VERSION})
+if(PKG_CONFIG_FOUND)
+    pkg_check_modules(ZLIB zlib)
+    list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
+else(NOT ZLIB_FOUND)
+    find_package(ZLIB "1.0" REQUIRED)
+    list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
+    message("zlib version: " ${ZLIB_VERSION})
+endif()
 
 # MINIZIP
-if (USE_SYSTEM_MINIZIP)
-    find_package(MINIZIP "1.0" REQUIRED)
-    list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${MINIZIP_INCLUDE_DIRS})
+if(USE_SYSTEM_MINIZIP)
+    if(PKG_CONFIG_FOUND)
+        pkg_check_modules(MINIZIP minizip)
+        list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${MINIZIP_INCLUDE_DIRS}/..)
+    else(NOT MINIZIP_FOUND)
+        find_package(MINIZIP "1.0" REQUIRED)
+        list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${MINIZIP_INCLUDE_DIRS})
+    endif()
 endif()
 
 # LIBRARY
@@ -274,8 +285,11 @@ if(NOT USE_OPENSSL_MD5 AND NOT USE_NO_MD5)
 endif()
 
 if(USE_OPENSSL_MD5)
-    find_package(OpenSSL REQUIRED)
-    if(OpenSSL_FOUND)
+    if(PKG_CONFIG_FOUND)
+        pkg_check_modules(LIBCRYPTO libcrypto)
+        include_directories(${LIBCRYPTO_INCLUDE_DIRS})
+    else(NOT LIBCRYPTO_FOUND)
+        find_package(OpenSSL REQUIRED)
         include_directories(${OPENSSL_INCLUDE_DIR})
         message(STATUS "OpenSSL version: ${OPENSSL_VERSION}")
     endif()
@@ -294,7 +308,21 @@ target_sources(${PROJECT_NAME}
     PRIVATE ${LXW_SOURCES}
     PUBLIC ${LXW_HEADERS}
 )
-target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LIBRARIES} ${MINIZIP_LIBRARIES} ${LIB_CRYPTO} ${OPENSSL_CRYPTO_LIBRARY})
+if(ZLIB_LDFLAGS)
+    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LDFLAGS})
+else()
+    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LIBRARIES})
+endif()
+if(MINIZIP_LDFLAGS)
+    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${MINIZIP_LDFLAGS})
+else()
+    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${MINIZIP_LIBRARIES})
+endif()
+if(LIBCRYPTO_LDFLAGS)
+    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${LIBCRYPTO_LDFLAGS})
+else()
+    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${LIB_CRYPTO} ${OPENSSL_CRYPTO_LIBRARY})
+endif()
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${LXW_PRIVATE_COMPILE_DEFINITIONS})
 
 # /utf-8 needs VS2015 Update 2 or above.
