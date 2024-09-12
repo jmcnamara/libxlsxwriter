@@ -14,9 +14,7 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0
-      - uses: goto-bus-stop/setup-zig@v2
-        with:
-          version: 0.13.0
+      - uses: mlugg/setup-zig@v1 # default latest-release version
 
       - name: Build Summary
         run: zig build -DBUILD_TESTS -DBUILD_EXAMPLES -DUSE_SYSTEM_MINIZIP --summary all -freference-trace
