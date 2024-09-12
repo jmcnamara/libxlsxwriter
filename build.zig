@@ -1,18 +1,13 @@
 const std = @import("std");
 
-// Although this function looks imperative, note that its job is to
-// declaratively construct a build graph that will be libcuted by an external
-// runner.
-pub fn build(b: *std.Build) void {
-    // Standard target options allows the person running `zig build` to choose
-    // what target to build for. Here we do not override the defaults, which
-    // means any target is allowed, and the default is native. Other options
-    // for restricting supported target set are available.
-    const target = b.standardTargetOptions(.{});
+const xlsxw_version: std.SemanticVersion = .{
+    .major = 1,
+    .minor = 1,
+    .patch = 9,
+};
 
-    // Standard optimization options allow the person running `zig build` to select
-    // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall. Here we do not
-    // set a preferred release mode, allowing the user to decide how to optimize.
+pub fn build(b: *std.Build) void {
+    const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
     const shared = b.option(bool, "SHARED_LIBRARY", "Build the Shared Library [default: false]") orelse false;
@@ -27,11 +22,7 @@ pub fn build(b: *std.Build) void {
         .name = "xlsxwriter",
         .target = target,
         .optimize = optimize,
-        .version = .{
-            .major = 1,
-            .minor = 1,
-            .patch = 7,
-        },
+        .version = xlsxw_version,
     }) else b.addStaticLibrary(.{
         .name = "xlsxwriter",
         .target = target,
@@ -95,17 +86,26 @@ pub fn build(b: *std.Build) void {
 
     // md5
     if (!md5)
-        lib.addCSourceFile(.{ .file = .{ .path = "third_party/md5/md5.c" }, .flags = cflags })
+        lib.addCSourceFile(.{
+            .file = b.path("third_party/md5/md5.c"),
+            .flags = cflags,
+        })
     else
         lib.linkSystemLibrary("crypto");
 
     // dtoa
     if (dtoa)
-        lib.addCSourceFile(.{ .file = b.path("third_party/dtoa/emyg_dtoa.c"), .flags = cflags });
+        lib.addCSourceFile(.{
+            .file = b.path("third_party/dtoa/emyg_dtoa.c"),
+            .flags = cflags,
+        });
 
     // tmpfileplus
     if (stdtmpfile)
-        lib.addCSourceFile(.{ .file = .{ .path = "third_party/tmpfileplus/tmpfileplus.c" }, .flags = cflags })
+        lib.addCSourceFile(.{
+            .file = b.path("third_party/tmpfileplus/tmpfileplus.c"),
+            .flags = cflags,
+        })
     else
         lib.defineCMacro("USE_STANDARD_TMPFILE", null);
 
@@ -253,10 +253,13 @@ fn buildExe(b: *std.Build, info: BuildInfo) void {
         .optimize = info.lib.root_module.optimize.?,
         .target = info.lib.root_module.resolved_target.?,
     });
-    exe.addCSourceFile(.{ .file = b.path(info.path), .flags = cflags });
+    exe.addCSourceFile(.{
+        .file = b.path(info.path),
+        .flags = cflags,
+    });
     exe.linkLibrary(info.lib);
     for (info.lib.root_module.include_dirs.items) |include| {
-        exe.root_module.include_dirs.append(b.allocator, include) catch {};
+        exe.root_module.include_dirs.append(b.allocator, include) catch @panic("OOM");
     }
     exe.linkLibC();
     b.installArtifact(exe);
@@ -281,8 +284,14 @@ fn buildTest(b: *std.Build, info: BuildInfo) void {
         .target = info.lib.root_module.resolved_target.?,
     });
     exe.defineCMacro("TESTING", null);
-    exe.addCSourceFile(.{ .file = b.path(info.path), .flags = cflags });
-    exe.addCSourceFile(.{ .file = b.path("test/unit/test_all.c"), .flags = cflags });
+    exe.addCSourceFile(.{
+        .file = b.path(info.path),
+        .flags = cflags,
+    });
+    exe.addCSourceFile(.{
+        .file = b.path("test/unit/test_all.c"),
+        .flags = cflags,
+    });
     exe.addIncludePath(b.path("test/unit"));
     for (info.lib.root_module.include_dirs.items) |include| {
         exe.root_module.include_dirs.append(b.allocator, include) catch {};
