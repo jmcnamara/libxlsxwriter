@@ -61,5 +61,5 @@ cmake
 
 .vscode
 
-zig-cache/
+*zig-cache/
 zig-out/
