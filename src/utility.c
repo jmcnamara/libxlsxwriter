@@ -252,18 +252,39 @@ lxw_row_t
 lxw_name_to_row(const char *row_str)
 {
     lxw_row_t row_num = 0;
-    const char *p = row_str;
+
+    if (!row_str)
+        return row_num;
 
     /* Skip the column letters and absolute symbol of the A1 cell. */
-    while (p && !isdigit((unsigned char) *p))
-        p++;
+    while (*row_str && !isdigit((unsigned char) *row_str))
+        row_str++;
 
     /* Convert the row part of the A1 cell to a number. */
-    if (p)
-        row_num = atoi(p);
+    if (*row_str)
+        row_num = atoi(row_str);
 
     if (row_num)
-        return row_num - 1;
+        row_num--;
+
+    return row_num;
+}
+
+/*
+ * Convert the second row of an Excel range ref to a zero indexed number.
+ */
+uint32_t
+lxw_name_to_row_2(const char *row_str)
+{
+    if (!row_str)
+        return 0;
+
+    /* Find the : separator in the range. */
+    while (*row_str && *row_str != ':')
+        row_str++;
+
+    if (*row_str)
+        return lxw_name_to_row(++row_str);
     else
         return 0;
 }
@@ -275,34 +296,21 @@ lxw_col_t
 lxw_name_to_col(const char *col_str)
 {
     lxw_col_t col_num = 0;
-    const char *p = col_str;
+
+    if (!col_str)
+        return col_num;
 
     /* Convert leading column letters of A1 cell. Ignore absolute $ marker. */
-    while (p && (isupper((unsigned char) *p) || *p == '$')) {
-        if (*p != '$')
-            col_num = (col_num * 26) + (*p - 'A' + 1);
-        p++;
+    while (*col_str && (isupper((unsigned char) *col_str) || *col_str == '$')) {
+        if (*col_str != '$')
+            col_num = (col_num * 26) + (*col_str - 'A' + 1);
+        col_str++;
     }
 
-    return col_num - 1;
-}
+    if (col_num)
+        col_num--;
 
-/*
- * Convert the second row of an Excel range ref to a zero indexed number.
- */
-uint32_t
-lxw_name_to_row_2(const char *row_str)
-{
-    const char *p = row_str;
-
-    /* Find the : separator in the range. */
-    while (p && *p != ':')
-        p++;
-
-    if (p)
-        return lxw_name_to_row(++p);
-    else
-        return -1;
+    return col_num;
 }
 
 /*
@@ -311,16 +319,17 @@ lxw_name_to_row_2(const char *row_str)
 uint16_t
 lxw_name_to_col_2(const char *col_str)
 {
-    const char *p = col_str;
+    if (!col_str)
+        return 0;
 
     /* Find the : separator in the range. */
-    while (p && *p != ':')
-        p++;
+    while (*col_str && *col_str != ':')
+        col_str++;
 
-    if (p)
-        return lxw_name_to_col(++p);
+    if (*col_str)
+        return lxw_name_to_col(++col_str);
     else
-        return -1;
+        return 0;
 }
 
 /*
