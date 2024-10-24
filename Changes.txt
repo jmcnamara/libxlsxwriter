@@ -1,6 +1,13 @@
 /**
 @page changes Changes
 
+## 1.1.9 October 24 2024
+
+ - Fix minor pointer/value error in `lxw_name_to_row()` and `lxw_name_to_col()`
+   utility functions.
+
+   [gh_459]: https://github.com/jmcnamara/libxlsxwriter/issues/459
+
 
 ## 1.1.8 July 31 2024
 
