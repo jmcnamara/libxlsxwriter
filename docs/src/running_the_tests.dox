@@ -49,9 +49,9 @@ The functional tests can then be run:
 The unit tests test the components of the library at the level of individual
 functions or compilation units.
 
-The unit tests uses the [ctest](http://github.com/bvdberg/ctest) test
-framework. This is included as a header file in the `test/unit` directory
-and doesn't need to be installed.
+The unit tests uses the [ctest](http://github.com/bvdberg/ctest) test framework.
+This is included as a header file in the `test/unit` directory and doesn't need
+to be installed.
 
 The unit tests can then be run as follows:
 
@@ -99,11 +99,20 @@ Then run the tests:
     make test_valgrind
 
 
+@section static_analysis Static Analysis
+
+For Static Analyis Libxlsxwriter uses:
+
+- [Coverity](https://scan.coverity.com/projects/libxlsxwriter).
+- [PVS-Studio](https://pvs-studio.com/en/pvs-studio/?utm_source=website&utm_medium=github&utm_campaign=open_source)
+  \- static analyzer for C, C++, C#, and Java code.
+
+
 @section tests_ci GitHub Actions Continuous Integration
 
 Libxlsxwriter is configured to run all these tests with [GitHub Actions
-Continuous Integration](https://github.com/jmcnamara/libxlsxwriter/actions)
-for each commit.
+Continuous Integration](https://github.com/jmcnamara/libxlsxwriter/actions) for
+each commit.
 
 
 Next: @ref faq
