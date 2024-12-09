@@ -144,7 +144,7 @@ if(MSVC)
     option(USE_STATIC_MSVC_RUNTIME "Use the static runtime library" OFF)
 endif()
 
-if(DEFINED ENV{${ZLIB_ROOT}})
+if(DEFINED ENV{ZLIB_ROOT})
     set(ZLIB_ROOT $ENV{ZLIB_ROOT})
 endif()
 
