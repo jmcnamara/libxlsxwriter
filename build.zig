@@ -34,7 +34,7 @@ pub fn build(b: *std.Build) void {
         else => lib.root_module.strip = true,
     }
     if (tests)
-        lib.defineCMacro("TESTING", null);
+        lib.root_module.addCMacro("TESTING", "");
     lib.addCSourceFiles(.{
         .files = &.{
             "src/vml.c",
@@ -107,7 +107,7 @@ pub fn build(b: *std.Build) void {
             .flags = cflags,
         })
     else
-        lib.defineCMacro("USE_STANDARD_TMPFILE", null);
+        lib.root_module.addCMacro("USE_STANDARD_TMPFILE", "");
 
     lib.addIncludePath(b.path("include"));
     lib.addIncludePath(b.path("third_party"));
@@ -283,7 +283,7 @@ fn buildTest(b: *std.Build, info: BuildInfo) void {
         .optimize = info.lib.root_module.optimize.?,
         .target = info.lib.root_module.resolved_target.?,
     });
-    exe.defineCMacro("TESTING", null);
+    exe.root_module.addCMacro("TESTING", "");
     exe.addCSourceFile(.{
         .file = b.path(info.path),
         .flags = cflags,
