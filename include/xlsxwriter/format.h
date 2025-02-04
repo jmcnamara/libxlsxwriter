@@ -666,6 +666,38 @@ void format_set_font_strikeout(lxw_format *format);
 void format_set_font_script(lxw_format *format, uint8_t style);
 
 /**
+ * @brief Set the Format font family property.
+ *
+ * @param format Pointer to a Format instance.
+ * @param value  The font family index.
+ *
+ * Set the font family. This is usually an integer in the range 1-4. This
+ * function is implemented for completeness but is rarely used in practice.
+ *
+ * @code
+ *     format_set_font_family(format, 178);
+ * @endcode
+ *
+ */
+void format_set_font_family(lxw_format *format, uint8_t value);
+
+/**
+ * @brief Set the Format font character set property.
+ *
+ * @param format Pointer to a Format instance.
+ * @param value  The font character set.
+ *
+ * Set the font character set property. This function is implemented for
+ * completeness but is rarely used in practice.
+ *
+ * @code
+ *     format_set_font_charset(format, 178);
+ * @endcode
+ *
+ */
+void format_set_font_charset(lxw_format *format, uint8_t value);
+
+/**
  * @brief Set the number format for a cell.
  *
  * @param format      Pointer to a Format instance.
@@ -1303,8 +1335,6 @@ void format_set_quote_prefix(lxw_format *format);
 
 void format_set_font_outline(lxw_format *format);
 void format_set_font_shadow(lxw_format *format);
-void format_set_font_family(lxw_format *format, uint8_t value);
-void format_set_font_charset(lxw_format *format, uint8_t value);
 void format_set_font_scheme(lxw_format *format, const char *font_scheme);
 void format_set_font_condense(lxw_format *format);
 void format_set_font_extend(lxw_format *format);
