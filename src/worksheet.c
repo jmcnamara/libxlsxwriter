@@ -1717,9 +1717,11 @@ _expand_table_formula(const char *formula)
 
     ptr = formula;
 
-    while (*ptr++) {
+    while (*ptr) {
         if (*ptr == '@')
             ref_count++;
+
+        ptr++;
     }
 
     if (ref_count == 0) {
