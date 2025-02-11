@@ -1,7 +1,7 @@
 /*
  * An example of setting a worksheet background image with libxlsxwriter.
  *
- * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2025, John McNamara, jmcnamara@cpan.org
  *
  */
 

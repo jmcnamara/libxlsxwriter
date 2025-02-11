@@ -3,7 +3,7 @@
 # Base test class for libxlsxwriter functional tests.
 #
 # SPDX-License-Identifier: BSD-2-Clause
-# Copyright 2014-2024, John McNamara, jmcnamara@cpan.org.
+# Copyright 2014-2025, John McNamara, jmcnamara@cpan.org.
 #
 
 import unittest

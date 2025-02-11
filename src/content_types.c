@@ -4,7 +4,7 @@
  * Used in conjunction with the libxlsxwriter library.
  *
  * SPDX-License-Identifier: BSD-2-Clause
- * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org.
+ * Copyright 2014-2025, John McNamara, jmcnamara@cpan.org.
  *
  */
 

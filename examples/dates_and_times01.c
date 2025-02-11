@@ -6,7 +6,7 @@
  * An easier approach using a lxw_datetime struct is shown in example
  * dates_and_times02.c.
  *
- * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2025, John McNamara, jmcnamara@cpan.org
  *
  */
 

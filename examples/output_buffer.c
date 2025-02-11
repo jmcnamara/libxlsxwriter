@@ -1,7 +1,7 @@
 /*
  * Example of using libxlsxwriter to write a workbook file to a memory buffer.
  *
- * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2025, John McNamara, jmcnamara@cpan.org
  *
  */
 

@@ -6,7 +6,7 @@
  * that a user enters in a cell and to display help and warning messages. It
  * also allows you to restrict input to values in a dropdown list.
  *
- * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2025, John McNamara, jmcnamara@cpan.org
  */
 
 

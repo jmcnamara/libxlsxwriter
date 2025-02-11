@@ -2,7 +2,7 @@
  * An example of creating Excel column charts with data tables using the
  * libxlsxwriter library.
  *
- * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2025, John McNamara, jmcnamara@cpan.org
  *
  */
 

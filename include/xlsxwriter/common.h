@@ -2,7 +2,7 @@
  * libxlsxwriter
  *
  * SPDX-License-Identifier: BSD-2-Clause
- * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org.
+ * Copyright 2014-2025, John McNamara, jmcnamara@cpan.org.
  */
 
 /**
@@ -10,7 +10,7 @@
  *
  * @brief Common functions and defines for the libxlsxwriter library.
  *
- * <!-- Copyright 2014-2024, John McNamara, jmcnamara@cpan.org -->
+ * <!-- Copyright 2014-2025, John McNamara, jmcnamara@cpan.org -->
  *
  */
 #ifndef __LXW_COMMON_H__

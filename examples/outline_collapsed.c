@@ -4,7 +4,7 @@
  * These examples focus mainly on collapsed outlines. See also the outlines.c
  * example program for more general examples.
  *
- * Copyright 2014-2024, John McNamara, jmcnamara@cpan.org
+ * Copyright 2014-2025, John McNamara, jmcnamara@cpan.org
  *
  */
 
