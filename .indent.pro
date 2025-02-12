@@ -41,6 +41,7 @@
 -T SLIST_ENTRY
 -T STAILQ_ENTRY
 -T TAILQ_ENTRY
+-T FILE
 
 /* libxlsxwriter typedefs. */
 -T lxw_app

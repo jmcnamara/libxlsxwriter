@@ -28,16 +28,16 @@ STATIC char *_escape_attributes(struct xml_attribute *attribute);
 
 char *lxw_escape_data(const char *data);
 
-STATIC void _fprint_escaped_attributes(FILE * xmlfile,
+STATIC void _fprint_escaped_attributes(FILE *xmlfile,
                                        struct xml_attribute_list *attributes);
 
-STATIC void _fprint_escaped_data(FILE * xmlfile, const char *data);
+STATIC void _fprint_escaped_data(FILE *xmlfile, const char *data);
 
 /*
  * Write the XML declaration.
  */
 void
-lxw_xml_declaration(FILE * xmlfile)
+lxw_xml_declaration(FILE *xmlfile)
 {
     fprintf(xmlfile, "<?xml version=\"1.0\" "
             "encoding=\"UTF-8\" standalone=\"yes\"?>\n");
@@ -47,7 +47,7 @@ lxw_xml_declaration(FILE * xmlfile)
  * Write an XML start tag with optional attributes.
  */
 void
-lxw_xml_start_tag(FILE * xmlfile,
+lxw_xml_start_tag(FILE *xmlfile,
                   const char *tag, struct xml_attribute_list *attributes)
 {
     fprintf(xmlfile, "<%s", tag);
@@ -62,7 +62,7 @@ lxw_xml_start_tag(FILE * xmlfile,
  * This is a minor speed optimization for elements that don't need encoding.
  */
 void
-lxw_xml_start_tag_unencoded(FILE * xmlfile,
+lxw_xml_start_tag_unencoded(FILE *xmlfile,
                             const char *tag,
                             struct xml_attribute_list *attributes)
 {
@@ -83,7 +83,7 @@ lxw_xml_start_tag_unencoded(FILE * xmlfile,
  * Write an XML end tag.
  */
 void
-lxw_xml_end_tag(FILE * xmlfile, const char *tag)
+lxw_xml_end_tag(FILE *xmlfile, const char *tag)
 {
     fprintf(xmlfile, "</%s>", tag);
 }
@@ -92,7 +92,7 @@ lxw_xml_end_tag(FILE * xmlfile, const char *tag)
  * Write an empty XML tag with optional attributes.
  */
 void
-lxw_xml_empty_tag(FILE * xmlfile,
+lxw_xml_empty_tag(FILE *xmlfile,
                   const char *tag, struct xml_attribute_list *attributes)
 {
     fprintf(xmlfile, "<%s", tag);
@@ -107,7 +107,7 @@ lxw_xml_empty_tag(FILE * xmlfile,
  * This is a minor speed optimization for elements that don't need encoding.
  */
 void
-lxw_xml_empty_tag_unencoded(FILE * xmlfile,
+lxw_xml_empty_tag_unencoded(FILE *xmlfile,
                             const char *tag,
                             struct xml_attribute_list *attributes)
 {
@@ -128,7 +128,7 @@ lxw_xml_empty_tag_unencoded(FILE * xmlfile,
  * Write an XML element containing data with optional attributes.
  */
 void
-lxw_xml_data_element(FILE * xmlfile,
+lxw_xml_data_element(FILE *xmlfile,
                      const char *tag,
                      const char *data, struct xml_attribute_list *attributes)
 {
@@ -147,7 +147,7 @@ lxw_xml_data_element(FILE * xmlfile,
  * Write an XML <si> element for rich strings, without encoding.
  */
 void
-lxw_xml_rich_si_element(FILE * xmlfile, const char *string)
+lxw_xml_rich_si_element(FILE *xmlfile, const char *string)
 {
     fprintf(xmlfile, "<si>%s</si>", string);
 }
@@ -370,7 +370,7 @@ lxw_escape_url_characters(const char *string, uint8_t escape_hash)
 
 /* Write out escaped attributes. */
 STATIC void
-_fprint_escaped_attributes(FILE * xmlfile,
+_fprint_escaped_attributes(FILE *xmlfile,
                            struct xml_attribute_list *attributes)
 {
     struct xml_attribute *attribute;
@@ -397,7 +397,7 @@ _fprint_escaped_attributes(FILE * xmlfile,
 
 /* Write out escaped XML data. */
 STATIC void
-_fprint_escaped_data(FILE * xmlfile, const char *data)
+_fprint_escaped_data(FILE *xmlfile, const char *data)
 {
     /* Escape the data section of the XML element. */
     if (!strpbrk(data, "&<>")) {

@@ -50,13 +50,13 @@
 #include "xlsxwriter/hash_table.h"
 #include "xlsxwriter/utility.h"
 
-STATIC lxw_error _add_file_to_zip(lxw_packager *self, FILE * file,
+STATIC lxw_error _add_file_to_zip(lxw_packager *self, FILE *file,
                                   const char *filename);
 
 STATIC lxw_error _add_buffer_to_zip(lxw_packager *self, const char *buffer,
                                     size_t buffer_size, const char *filename);
 
-STATIC lxw_error _add_to_zip(lxw_packager *self, FILE * file,
+STATIC lxw_error _add_to_zip(lxw_packager *self, FILE *file,
                              char **buffer, size_t *buffer_size,
                              const char *filename);
 
@@ -2055,7 +2055,7 @@ mem_error:
  ****************************************************************************/
 
 STATIC lxw_error
-_add_file_to_zip(lxw_packager *self, FILE * file, const char *filename)
+_add_file_to_zip(lxw_packager *self, FILE *file, const char *filename)
 {
     int16_t error = ZIP_OK;
     size_t size_read;
@@ -2147,7 +2147,7 @@ _add_buffer_to_zip(lxw_packager *self, const char *buffer, size_t buffer_size,
 }
 
 STATIC lxw_error
-_add_to_zip(lxw_packager *self, FILE * file, char **buffer,
+_add_to_zip(lxw_packager *self, FILE *file, char **buffer,
             size_t *buffer_size, const char *filename)
 {
     /* Flush to ensure buffer is updated when using a memory-backed file. */
