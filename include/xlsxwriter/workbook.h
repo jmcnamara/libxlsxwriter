@@ -324,6 +324,8 @@ typedef struct lxw_workbook {
     uint16_t drawing_count;
     uint16_t comment_count;
     uint32_t num_embedded_images;
+    uint16_t window_width;
+    uint16_t window_height;
 
     uint16_t font_count;
     uint16_t border_count;
@@ -1068,6 +1070,24 @@ lxw_error workbook_set_vba_name(lxw_workbook *workbook, const char *name);
  * @image html read_only.png
  */
 void workbook_read_only_recommended(lxw_workbook *workbook);
+
+/**
+ * @brief Set the size of a workbook window.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param width    Width of the window in pixels.
+ * @param height   Height of the window in pixels.
+ *
+ * Set the size of a workbook window. This is generally only useful on macOS
+ * since Microsoft Windows uses the window size from the last time an Excel file
+ * was opened/saved. The default size is 1073 x 644 pixels.
+ *
+ * The resulting pixel sizes may not exactly match the target screen and
+ * resolution since it is based on the original Excel for Windows sizes. Some
+ * trial and error may be required to get an exact size.
+ */
+void workbook_set_size(lxw_workbook *workbook,
+                       uint16_t width, uint16_t height);
 
 void lxw_workbook_free(lxw_workbook *workbook);
 void lxw_workbook_assemble_xml_file(lxw_workbook *workbook);

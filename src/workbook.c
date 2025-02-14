@@ -1630,8 +1630,8 @@ _write_workbook_view(lxw_workbook *self)
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("xWindow", "240");
     LXW_PUSH_ATTRIBUTES_STR("yWindow", "15");
-    LXW_PUSH_ATTRIBUTES_STR("windowWidth", "16095");
-    LXW_PUSH_ATTRIBUTES_STR("windowHeight", "9660");
+    LXW_PUSH_ATTRIBUTES_INT("windowWidth", self->window_width);
+    LXW_PUSH_ATTRIBUTES_INT("windowHeight", self->window_height);
 
     if (self->first_sheet)
         LXW_PUSH_ATTRIBUTES_INT("firstSheet", self->first_sheet);
@@ -1970,6 +1970,8 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     }
 
     workbook->max_url_length = 2079;
+    workbook->window_width = 16095;
+    workbook->window_height = 9660;
 
     return workbook;
 
@@ -2851,4 +2853,19 @@ void
 workbook_read_only_recommended(lxw_workbook *self)
 {
     self->read_only = 2;
+}
+
+/*
+ * Set the size of a workbook window.
+ */
+void
+workbook_set_size(lxw_workbook *workbook, uint16_t width, uint16_t height)
+{
+    /* Convert the width/height to twips at 96 dpi. */
+    if (width)
+        workbook->window_width = width * 1440 / 96;
+
+    if (height)
+        workbook->window_height = height * 1440 / 96;
+
 }
