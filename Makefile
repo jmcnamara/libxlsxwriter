@@ -21,6 +21,14 @@ PYTESTFILES ?= test
 VERSION   = $(shell sed -n -e 's/.*LXW_VERSION \"\(.*\)\"/\1/p'   include/xlsxwriter.h)
 SOVERSION = $(shell sed -n -e 's/.*LXW_SOVERSION \"\(.*\)\"/\1/p' include/xlsxwriter.h)
 
+ENABLED_OPTIONS = zlib
+ifdef USE_SYSTEM_MINIZIP
+    ENABLED_OPTIONS += minizip
+endif
+ifdef USE_OPENSSL_MD5
+	ENABLED_OPTIONS += libcrypto
+endif
+
 .PHONY: docs tags examples third_party
 
 # Build libxlsxwriter.
@@ -164,7 +172,11 @@ install: all
 	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/lib
 	$(Q)cp -R lib/*     $(DESTDIR)$(PREFIX)/lib
 	$(Q)mkdir -p        $(DESTDIR)$(PREFIX)/lib/pkgconfig
-	$(Q)sed -e          's|@PREFIX@|$(PREFIX)|g'  -e 's|@VERSION@|$(VERSION)|g' dev/release/pkg-config.txt > $(DESTDIR)$(PREFIX)/lib/pkgconfig/xlsxwriter.pc
+	$(Q)sed             -e 's|@PREFIX@|$(PREFIX)|g'                   \
+	                    -e 's|@VERSION@|$(VERSION)|g'                 \
+	                    -e 's|@ENABLED_OPTIONS@|$(ENABLED_OPTIONS)|g' \
+	                        dev/release/pkg-config.txt                \
+	                        > $(DESTDIR)$(PREFIX)/lib/pkgconfig/xlsxwriter.pc
 
 # Simpler uninstall.
 uninstall:

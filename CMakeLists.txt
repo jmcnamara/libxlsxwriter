@@ -211,15 +211,27 @@ if(NOT MSVC)
     find_package(PkgConfig)
 endif()
 
-file(READ "include/xlsxwriter.h" ver)
+# Set some variables for the xlsxwriter.pc file and the .so version.
+# ------------------------------------------------------------------
+set(PREFIX ${CMAKE_INSTALL_PREFIX})
 
+file(READ "include/xlsxwriter.h" ver)
 string(REGEX MATCH "LXW_VERSION \"([^\"]+)\"" _ ${ver})
 set(VERSION ${CMAKE_MATCH_1})
 string(REGEX MATCH "LXW_SOVERSION \"([^\"]+)\"" _ ${ver})
 set(SOVERSION ${CMAKE_MATCH_1})
-set(PREFIX ${CMAKE_INSTALL_PREFIX})
 
+set(ENABLED_OPTIONS "zlib")
+if(USE_SYSTEM_MINIZIP)
+    string(APPEND ENABLED_OPTIONS " minizip")
+endif()
+if(USE_OPENSSL_MD5)
+    string(APPEND ENABLED_OPTIONS " libcrypto")
+endif()
+
+# Expand out the xlsxwriter.pc file.
 configure_file(dev/release/pkg-config.txt xlsxwriter.pc @ONLY)
+
 
 # INCLUDES
 # --------
