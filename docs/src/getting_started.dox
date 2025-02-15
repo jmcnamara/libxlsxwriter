@@ -81,7 +81,8 @@ To see a verbose summary of the compilation steps use `V=1`:
 
 With CMake you can build the library as follows:
 
-    cd cmake # Or another sub-directory.
+    mkdir build # Or another sub-directory.
+    cd build
     cmake ..
     cmake --build .
 
@@ -95,7 +96,8 @@ directory and try one of them out:
     make examples
 
     # or CMake:
-    cd cmake
+    mkdir build
+    cd build
     cmake .. -DBUILD_EXAMPLES=ON
     cmake --build .
 
@@ -129,7 +131,8 @@ installation location but actually install to `./staging/usr/third_party`.
 
 With CMake you can install the library as follows:
 
-    cd cmake
+    mkdir build
+    cd build
     cmake ..
     cmake --build . --target install
 
@@ -559,7 +562,8 @@ The compilation options would be used as follows:
     make examples USE_DTOA_LIBRARY=1
 
     # CMake
-    cd cmake
+    mkdir build
+    cd build
     cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES=ON -DUSE_DTOA_LIBRARY=ON
     cmake --build . --config Release
 
@@ -732,7 +736,8 @@ You can compile a universal binary with standard make as follows:
 
 Or with CMake:
 
-    cd cmake
+    mkdir build
+    cd build
     cmake .. -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
     make
 
@@ -762,7 +767,8 @@ be compiled without them by relying on external libraries as follows:
     make USE_OPENSSL_MD5=1 USE_SYSTEM_MINIZIP=1 USE_STANDARD_TMPFILE=1
 
     # CMake:
-    cd cmake
+    mkdir build
+    cd build
     cmake .. -DUSE_OPENSSL_MD5=ON -DUSE_SYSTEM_MINIZIP=ON -DUSE_STANDARD_TMPFILE=ON
     cmake --build .
 

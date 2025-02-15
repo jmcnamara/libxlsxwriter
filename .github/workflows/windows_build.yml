@@ -11,8 +11,8 @@ jobs:
       matrix:
         cmake_flags: ["-DBUILD_EXAMPLES=ON       -DBUILD_TESTS=ON",
                       "-DUSE_DTOA_LIBRARY=ON     -DBUILD_TESTS=ON",
-                      #"-DUSE_SYSTEM_MINIZIP=ON   -DBUILD_TESTS=ON",
-                      #"-DUSE_SYSTEM_MINIZIP=ON   -DUSE_OPENSSL_MD5=ON -DBUILD_TESTS=ON",
+                      "-DUSE_SYSTEM_MINIZIP=ON   -DBUILD_TESTS=ON",
+                      "-DUSE_SYSTEM_MINIZIP=ON   -DUSE_OPENSSL_MD5=ON -DBUILD_TESTS=ON",
                       "-DUSE_OPENSSL_MD5=ON      -DBUILD_TESTS=ON",
                       ]
 
@@ -33,7 +33,8 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       shell: cmd
       run: |
-        cd cmake
+        mkdir build
+        cd build
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
         cmake .. -DCMAKE_BUILD_TYPE=Release ${{ matrix.cmake_flags }} -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake -A x64
 
@@ -41,7 +42,7 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       shell: cmd
       run: |
-        cd cmake
+        cd build
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
         cmake --build . --config Release
 
@@ -49,6 +50,6 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       shell: cmd
       run: |
-        cd cmake
-        copy test\functional\src\Release\*.exe test\functional\src
+        cd build
+        copy test\functional\src\Release\*.* test\functional\src
         pytest -v test/functional

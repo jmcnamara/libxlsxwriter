@@ -204,9 +204,6 @@ endif()
 # -------------------------
 # Configure the compilation
 # -------------------------
-if(NOT MSVC)
-    find_package(PkgConfig)
-endif()
 
 if(USE_SYSTEM_MINIZIP)
     list(APPEND LXW_PRIVATE_COMPILE_DEFINITIONS USE_SYSTEM_MINIZIP)
@@ -307,36 +304,25 @@ enable_language(CXX)
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 # Set the zlib includes.
-if(PKG_CONFIG_FOUND)
-    pkg_check_modules(ZLIB zlib)
-    list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
-endif()
-if(NOT ZLIB_FOUND)
-    find_package(ZLIB "1.0" REQUIRED)
-    list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
-endif()
+find_package(ZLIB "1.2.8" REQUIRED)
+list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${ZLIB_INCLUDE_DIRS})
 
 # Set the minizip includes.
 if(USE_SYSTEM_MINIZIP)
-    if(PKG_CONFIG_FOUND)
+    if(MSVC)
+        find_package(MINIZIP NAMES unofficial-minizip REQUIRED)
+        set(MINIZIP_LIBRARIES unofficial::minizip::minizip)
+    else()
+        find_package(PkgConfig REQUIRED)
         pkg_check_modules(MINIZIP minizip)
         list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${MINIZIP_INCLUDE_DIRS}/..)
-    endif()
-    if(NOT MINIZIP_FOUND)
-        find_package(MINIZIP "1.0" REQUIRED)
-        list(APPEND LXW_PRIVATE_INCLUDE_DIRS ${MINIZIP_INCLUDE_DIRS})
     endif()
 endif()
 
 # Set the openssl includes.
 if(USE_OPENSSL_MD5)
-    if(PKG_CONFIG_FOUND)
-        pkg_check_modules(LIBCRYPTO libcrypto)
-        include_directories(${LIBCRYPTO_INCLUDE_DIRS})
-    else()
-        find_package(OpenSSL REQUIRED)
-        include_directories(${OPENSSL_INCLUDE_DIR})
-    endif()
+    find_package(OpenSSL REQUIRED)
+    include_directories(${OPENSSL_INCLUDE_DIR})
 endif()
 
 # ----------------------------
@@ -398,24 +384,18 @@ add_library(${PROJECT_NAME} "")
 set_target_properties(${PROJECT_NAME} PROPERTIES SOVERSION ${SOVERSION})
 target_sources(${PROJECT_NAME} PRIVATE ${LXW_SOURCES} PUBLIC ${LXW_HEADERS})
 
-if(ZLIB_LDFLAGS)
-    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LDFLAGS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
+
+if(MINIZIP_LINK_LIBRARIES)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${MINIZIP_LINK_LIBRARIES})
 else()
-    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${ZLIB_LIBRARIES})
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${MINIZIP_LIBRARIES})
 endif()
-if(MINIZIP_LDFLAGS)
-    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${MINIZIP_LDFLAGS})
-else()
-    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${MINIZIP_LIBRARIES})
-endif()
-if(LIBCRYPTO_LDFLAGS)
-    target_link_libraries(${PROJECT_NAME} LINK_PUBLIC ${LIBCRYPTO_LDFLAGS})
-else()
-    target_link_libraries(
-        ${PROJECT_NAME}
-        LINK_PUBLIC ${LIB_CRYPTO} ${OPENSSL_CRYPTO_LIBRARY}
-    )
-endif()
+
+target_link_libraries(
+    ${PROJECT_NAME}
+    PRIVATE ${LIB_CRYPTO} ${OPENSSL_CRYPTO_LIBRARY}
+)
 
 target_compile_definitions(
     ${PROJECT_NAME}

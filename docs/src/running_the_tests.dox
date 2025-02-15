@@ -80,7 +80,8 @@ Both functional and unit test can be run together:
 
 You can run the unit and functional tests via CMake as follows:
 
-    cd cmake
+    mkdir build
+    cd build
     cmake .. -DBUILD_TESTS=ON
     cmake --build .
     ctest -V
