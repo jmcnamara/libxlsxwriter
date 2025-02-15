@@ -126,7 +126,10 @@ test_cpp : all
 test_cmake :
 ifneq ($(findstring m32,$(CFLAGS)),m32)
 	$(Q)$(MAKE) -C src clean
-	$(Q)cd cmake; cmake .. -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON; make clean; make; cp libxlsxwriter.a ../src/
+	$(Q)mkdir -p build
+	$(Q)cd build
+	$(Q)cmake .. -DBUILD_TESTS=ON -DBUILD_EXAMPLES=ON
+	$(Q)make clean; make; cp libxlsxwriter.a ../src/
 	$(Q)cmake/xlsxwriter_unit
 	$(Q)$(MAKE) -C test/functional/src
 	$(Q)$(PYTEST) test/functional -v -k $(PYTESTFILES)

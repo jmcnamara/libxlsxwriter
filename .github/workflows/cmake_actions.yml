@@ -36,13 +36,17 @@ jobs:
         sudo apt-get -y install libssl-dev
 
     - name: Configure CMake
-      working-directory: ${{ github.workspace }}/cmake
-      run:  cmake .. -DBUILD_TESTS=ON ${{ matrix.cmake_flags }} -DCMAKE_BUILD_TYPE=Release
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DBUILD_TESTS=ON ${{ matrix.cmake_flags }} -DCMAKE_BUILD_TYPE=Release
 
     - name: Build
-      working-directory: ${{ github.workspace }}/cmake
-      run: cmake --build . --config Release --parallel
+      run: |
+        cd build
+        cmake --build . --config Release --parallel
 
     - name: Test
-      working-directory: ${{ github.workspace }}/cmake
-      run: ctest -C Release -V
+      run: |
+        cd build
+        ctest -C Release -V
