@@ -151,6 +151,7 @@ test_compile :
 # Indent the source files with the .indent.pro settings.
 indent:
 	$(Q)gindent src/*.c include/*.h include/xlsxwriter/*.h
+	$(Q)gersemi --no-warn-about-unknown-commands -i CMakeLists.txt
 
 tags:
 	$(Q)rm -f TAGS
