@@ -1,10 +1,41 @@
 /**
 @page changes Changes
 
+
+## 1.2.1 February 26 2025
+
+- Added the `workbook_set_size()` function to set the size of the window when
+  the file is opened. This is generally only useful on macOS since Microsoft
+  Windows uses the window size from the last time an Excel file was
+  opened/saved. Feature request [#472][gh_472].
+
+  [gh_472]: https://github.com/jmcnamara/libxlsxwriter/issues/472
+
+- Improved the cmake build support for using the `minizip` library.
+  Pull request [#471][gh_471].
+
+  [gh_471]: https://github.com/jmcnamara/libxlsxwriter/issues/471
+
+
+### Packagers:
+
+- This is serial version 1.2.1. This is not a semver version.
+
+- This is shared object library version `libxlsxwriter.so.8`. This should be
+  updated automatically via `make` and `cmake` as part of the build process.
+
+- This version tries to improve the overall `cmake` build process when using
+  minizip via the `-DUSE_SYSTEM_MINIZIP=ON` configuration option.
+
+- Please report any downstream patches back upstream to help improve the overall
+  build process.
+
+
 ## 1.2.0 January 11 2025
 
 - Added `format_set_font_family()` and `format_set_font_charset()` format
   functions to support Middle Eastern and Asian fonts.
+  Feature request [#468][gh_468].
 
   [gh_468]: https://github.com/jmcnamara/libxlsxwriter/issues/468
 
@@ -12,7 +43,7 @@
 ## 1.1.9 October 24 2024
 
  - Fix minor pointer/value error in `lxw_name_to_row()` and `lxw_name_to_col()`
-   utility functions.
+   utility functions. Issue [#459][gh_459].
 
    [gh_459]: https://github.com/jmcnamara/libxlsxwriter/issues/459
 
