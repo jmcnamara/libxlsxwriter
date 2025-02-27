@@ -16,6 +16,7 @@
 
   [gh_471]: https://github.com/jmcnamara/libxlsxwriter/issues/471
 
+- Fix buffer overflow in Table formula expansion.
 
 ### Packagers:
 
