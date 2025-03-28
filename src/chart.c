@@ -103,6 +103,29 @@ _chart_free_data_labels(lxw_chart_series *series)
     free(series->data_labels);
 }
 
+STATIC void
+_chart_free_axis(lxw_chart_axis *axis)
+{
+    if (!axis)
+        return;
+
+    _chart_free_font(axis->num_font);
+    _chart_free_font(axis->title.font);
+    _chart_free_range(axis->title.range);
+
+    free(axis->fill);
+    free(axis->line);
+    free(axis->pattern);
+    free(axis->title.name);
+    free(axis->title.layout);
+    free(axis->num_format);
+    free(axis->default_num_format);
+    free(axis->major_gridlines.line);
+    free(axis->minor_gridlines.line);
+
+    free(axis);
+}
+
 /*
  * Free a series object.
  */
@@ -189,54 +212,30 @@ lxw_chart_free(lxw_chart *chart)
         free(chart->series_list);
     }
 
-    /* X Axis. */
-    if (chart->x_axis) {
-        _chart_free_font(chart->x_axis->title.font);
-        _chart_free_font(chart->x_axis->num_font);
-        _chart_free_range(chart->x_axis->title.range);
-        free(chart->x_axis->title.name);
-        free(chart->x_axis->line);
-        free(chart->x_axis->fill);
-        free(chart->x_axis->pattern);
-        free(chart->x_axis->major_gridlines.line);
-        free(chart->x_axis->minor_gridlines.line);
-        free(chart->x_axis->num_format);
-        free(chart->x_axis->default_num_format);
-        free(chart->x_axis);
-    }
-
-    /* Y Axis. */
-    if (chart->y_axis) {
-        _chart_free_font(chart->y_axis->title.font);
-        _chart_free_font(chart->y_axis->num_font);
-        _chart_free_range(chart->y_axis->title.range);
-        free(chart->y_axis->title.name);
-        free(chart->y_axis->line);
-        free(chart->y_axis->fill);
-        free(chart->y_axis->pattern);
-        free(chart->y_axis->major_gridlines.line);
-        free(chart->y_axis->minor_gridlines.line);
-        free(chart->y_axis->num_format);
-        free(chart->y_axis->default_num_format);
-        free(chart->y_axis);
-    }
+    /* X and Y Axis. */
+    _chart_free_axis(chart->x_axis);
+    _chart_free_axis(chart->y_axis);
 
     /* Chart title. */
     _chart_free_font(chart->title.font);
     _chart_free_range(chart->title.range);
     free(chart->title.name);
+    free(chart->title.layout);
 
     /* Chart legend. */
     _chart_free_font(chart->legend.font);
-    free(chart->delete_series);
+    free(chart->legend.layout);
 
+    free(chart->delete_series);
     free(chart->default_marker);
 
     free(chart->chartarea_line);
     free(chart->chartarea_fill);
     free(chart->chartarea_pattern);
+
     free(chart->plotarea_line);
     free(chart->plotarea_fill);
+    free(chart->plotarea_layout);
     free(chart->plotarea_pattern);
 
     free(chart->drop_lines_line);
@@ -450,6 +449,44 @@ _chart_convert_pattern_args(lxw_chart_pattern *user_pattern)
 }
 
 /*
+ * Create a copy of a user supplied layout.
+ */
+STATIC lxw_chart_layout *
+_chart_convert_layout_args(lxw_chart_layout *user_layout,
+                           enum lxw_chart_layout_type type)
+{
+    lxw_chart_layout *layout = calloc(1, sizeof(struct lxw_chart_layout));
+    RETURN_ON_MEM_ERROR(layout, NULL);
+
+    /* Copy the user supplied properties. */
+    switch (type) {
+        case LXW_CHART_LAYOUT_LEGEND:
+            layout->x = user_layout->x;
+            layout->y = user_layout->y;
+            layout->width = user_layout->width;
+            layout->height = user_layout->height;
+            layout->has_inner = LXW_FALSE;
+            break;
+        case LXW_CHART_LAYOUT_PLOTAREA:
+            layout->x = user_layout->x;
+            layout->y = user_layout->y;
+            layout->width = user_layout->width;
+            layout->height = user_layout->height;
+            layout->has_inner = LXW_TRUE;
+            break;
+        default:
+            layout->x = user_layout->x;
+            layout->y = user_layout->y;
+            layout->width = 0.0;
+            layout->height = 0.0;
+            layout->has_inner = LXW_FALSE;
+            break;
+    }
+
+    return layout;
+}
+
+/*
  * Set a marker type for a series.
  */
 STATIC void
@@ -646,12 +683,100 @@ _chart_write_style(lxw_chart *self)
 }
 
 /*
+ * Write the <c:layoutTarget> element.
+ */
+STATIC void
+_chart_write_layout_target(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "inner");
+
+    lxw_xml_empty_tag(self->file, "c:layoutTarget", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:xMode> and <c:yMode> element.
+ */
+STATIC void
+_chart_write_layout_mode(lxw_chart *self, char *mode)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "edge");
+
+    lxw_xml_empty_tag(self->file, mode, &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the layout dimension elements.
+ */
+STATIC void
+_chart_write_layout_dimension(lxw_chart *self, char *dimension, double value)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_DBL("val", value);
+
+    lxw_xml_empty_tag(self->file, dimension, &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <c:manualLayout> element.
+ */
+STATIC void
+_chart_write_manual_layout(lxw_chart *self, lxw_chart_layout *layout)
+{
+    lxw_xml_start_tag(self->file, "c:manualLayout", NULL);
+
+    /* Write the c:layoutTarget element. */
+    if (layout->has_inner)
+        _chart_write_layout_target(self);
+
+    /* Write the c:xMode and c:yMode elements. */
+    _chart_write_layout_mode(self, "c:xMode");
+    _chart_write_layout_mode(self, "c:yMode");
+
+    /* Write the dimension elements. */
+    _chart_write_layout_dimension(self, "c:x", layout->x);
+    _chart_write_layout_dimension(self, "c:y", layout->y);
+    if (layout->width > 0.0)
+        _chart_write_layout_dimension(self, "c:w", layout->width);
+    if (layout->height > 0.0)
+        _chart_write_layout_dimension(self, "c:h", layout->height);
+
+    lxw_xml_end_tag(self->file, "c:manualLayout");
+}
+
+/*
  * Write the <c:layout> element.
  */
 STATIC void
-_chart_write_layout(lxw_chart *self)
+_chart_write_layout(lxw_chart *self, lxw_chart_layout *layout)
 {
-    lxw_xml_empty_tag(self->file, "c:layout", NULL);
+    if (layout == NULL) {
+        lxw_xml_empty_tag(self->file, "c:layout", NULL);
+    }
+    else {
+        lxw_xml_start_tag(self->file, "c:layout", NULL);
+
+        /* Write the c:manualLayout element. */
+        _chart_write_manual_layout(self, layout);
+
+        lxw_xml_end_tag(self->file, "c:layout");
+    }
 }
 
 /*
@@ -1526,6 +1651,23 @@ _chart_write_tx_rich(lxw_chart *self, char *name, uint8_t is_horizontal,
 }
 
 /*
+ * Write the <c:overlay> element.
+ */
+STATIC void
+_chart_write_overlay(lxw_chart *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "1");
+
+    lxw_xml_empty_tag(self->file, "c:overlay", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <c:title> element for rich strings.
  */
 STATIC void
@@ -1538,7 +1680,11 @@ _chart_write_title_rich(lxw_chart *self, lxw_chart_title *title)
                          title->font);
 
     /* Write the c:layout element. */
-    _chart_write_layout(self);
+    _chart_write_layout(self, title->layout);
+
+    /* Write the c:overlay element. */
+    if (title->has_overlay)
+        _chart_write_overlay(self);
 
     lxw_xml_end_tag(self->file, "c:title");
 }
@@ -1555,7 +1701,11 @@ _chart_write_title_formula(lxw_chart *self, lxw_chart_title *title)
     _chart_write_tx_formula(self, title);
 
     /* Write the c:layout element. */
-    _chart_write_layout(self);
+    _chart_write_layout(self, title->layout);
+
+    /* Write the c:overlay element. */
+    if (title->has_overlay)
+        _chart_write_overlay(self);
 
     /* Write the c:txPr element. */
     _chart_write_tx_pr(self, title->is_horizontal, title->font);
@@ -3694,23 +3844,6 @@ _chart_write_cross_between(lxw_chart *self, uint8_t position)
 }
 
 /*
- * Write the <c:overlay> element.
- */
-STATIC void
-_chart_write_overlay(lxw_chart *self)
-{
-    struct xml_attribute_list attributes;
-    struct xml_attribute *attribute;
-
-    LXW_INIT_ATTRIBUTES();
-    LXW_PUSH_ATTRIBUTES_STR("val", "1");
-
-    lxw_xml_empty_tag(self->file, "c:overlay", &attributes);
-
-    LXW_FREE_ATTRIBUTES();
-}
-
-/*
  * Write the <c:legendPos> element.
  */
 STATIC void
@@ -3796,7 +3929,7 @@ _chart_write_legend(lxw_chart *self)
     }
 
     /* Write the c:layout element. */
-    _chart_write_layout(self);
+    _chart_write_layout(self, self->legend.layout);
 
     if (self->chart_group == LXW_CHART_PIE
         || self->chart_group == LXW_CHART_DOUGHNUT) {
@@ -4737,7 +4870,7 @@ _chart_write_scatter_plot_area(lxw_chart *self)
     lxw_xml_start_tag(self->file, "c:plotArea", NULL);
 
     /* Write the c:layout element. */
-    _chart_write_layout(self);
+    _chart_write_layout(self, self->plotarea_layout);
 
     /* Write subclass chart type elements for primary and secondary axes. */
     self->write_chart_type(self);
@@ -4769,7 +4902,7 @@ _chart_write_pie_plot_area(lxw_chart *self)
     lxw_xml_start_tag(self->file, "c:plotArea", NULL);
 
     /* Write the c:layout element. */
-    _chart_write_layout(self);
+    _chart_write_layout(self, self->plotarea_layout);
 
     /* Write subclass chart type elements for primary and secondary axes. */
     self->write_chart_type(self);
@@ -4790,7 +4923,7 @@ _chart_write_plot_area(lxw_chart *self)
     lxw_xml_start_tag(self->file, "c:plotArea", NULL);
 
     /* Write the c:layout element. */
-    _chart_write_layout(self);
+    _chart_write_layout(self, self->plotarea_layout);
 
     /* Write subclass chart type elements for primary and secondary axes. */
     self->write_chart_type(self);
@@ -6044,6 +6177,22 @@ chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
 }
 
 /*
+ * Set a layout for the chart axis name.
+ */
+void
+chart_axis_set_name_layout(lxw_chart_axis *axis, lxw_chart_layout *layout)
+{
+    if (!layout)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(axis->title.layout);
+
+    axis->title.layout =
+        _chart_convert_layout_args(layout, LXW_CHART_LAYOUT_AXIS_NAME);
+}
+
+/*
  * Set an axis title/name font.
  */
 void
@@ -6445,12 +6594,53 @@ chart_title_off(lxw_chart *self)
 }
 
 /*
+ * Set a layout for the chart title.
+ */
+void
+chart_title_set_layout(lxw_chart *self, lxw_chart_layout *layout)
+{
+    if (!layout)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(self->title.layout);
+
+    self->title.layout =
+        _chart_convert_layout_args(layout, LXW_CHART_LAYOUT_TITLE);
+}
+
+/*
+ * Overlay the chart title on the chart.
+ */
+void
+chart_title_set_overlay(lxw_chart *self, uint8_t overlay)
+{
+    self->title.has_overlay = overlay;
+}
+
+/*
  * Set the chart legend position.
  */
 void
 chart_legend_set_position(lxw_chart *self, uint8_t position)
 {
     self->legend.position = position;
+}
+
+/*
+ * Set a layout for the chart legend.
+ */
+void
+chart_legend_set_layout(lxw_chart *self, lxw_chart_layout *layout)
+{
+    if (!layout)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(self->legend.layout);
+
+    self->legend.layout =
+        _chart_convert_layout_args(layout, LXW_CHART_LAYOUT_LEGEND);
 }
 
 /*
@@ -6582,6 +6772,23 @@ chart_plotarea_set_pattern(lxw_chart *self, lxw_chart_pattern *pattern)
     free(self->plotarea_pattern);
 
     self->plotarea_pattern = _chart_convert_pattern_args(pattern);
+}
+
+/*
+ * Set a layout for the plotarea.
+ */
+void
+chart_plotarea_set_layout(lxw_chart *self, lxw_chart_layout *layout)
+{
+    if (!layout)
+        return;
+
+    /* Free any previously allocated resource. */
+    free(self->plotarea_layout);
+
+    self->plotarea_layout =
+        _chart_convert_layout_args(layout, LXW_CHART_LAYOUT_PLOTAREA);
+
 }
 
 /*

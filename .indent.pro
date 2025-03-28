@@ -70,6 +70,7 @@
 -T lxw_chart_gridline
 -T lxw_chart_label_position
 -T lxw_chart_label_separator
+-T lxw_chart_layout
 -T lxw_chart_legend
 -T lxw_chart_legend_position
 -T lxw_chart_line

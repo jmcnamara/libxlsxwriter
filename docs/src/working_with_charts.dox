@@ -1232,6 +1232,66 @@ The following patterns #lxw_chart_pattern_type can be applied:
 @note If a pattern fill is used on a chart object it overrides the solid fill
       properties of the object.
 
+
+@section chart_layout Chart Layout
+
+Excel allows the user to positions chart objects like axis labels or the legend
+is two ways. The first method is via standard positions such as top, bottom,
+left and right. The `libxlsxwriter` library replicates this via enums such as
+#lxw_chart_axis_label_position and #lxw_chart_legend_position and the associated
+functions that use them.
+
+The second method Excel supports is manual positioning of elements such as the
+chart axis labels, the chart legend, the chart plot area and the chart title.
+The `libxlsxwriter` library replicates this type of positioning via the
+#lxw_chart_layout struct:
+
+@code
+    lxw_chart_layout layout = {
+        .x = 0.13,
+        .y = 0.26,
+        .width = 0.73,
+        .height = 0.57,
+    };
+@endcode
+
+The layout units used by Excel are relative units expressed as a percentage of
+the chart dimensions and are double values in the range `0.0 < x <= 1.0`. Excel
+calculates these dimensions as shown below:
+
+@image html chart_layout.png
+
+With reference to the above figure the layout units are calculated as follows:
+
+```text
+    x = a / W
+    y = b / H
+```
+
+These units are cumbersome and can vary depending on other elements in the chart
+such as text lengths. However, these are the units that are required by Excel to
+allow relative positioning. Some trial and error is generally required.
+
+For the chart `chart_plotarea_set_layout()` and `chart_legend_set_layout()`
+functions you can also set the width and height based on the following
+calculation:
+
+```text
+    width  = w / W
+    height = h / H
+```
+
+For other text based objects the width and height are changed by the font
+dimensions.
+
+The chart functions that support #lxw_chart_layout are:
+
+- `chart_title_set_layout()`
+- `chart_legend_set_layout()`
+- `chart_plotarea_set_layout()`
+- `chart_axis_set_name_layout()`
+
+
 @section ww_charts_limitations Chart Limitations
 
 The following chart features aren't currently supported in libxlsxwriter but

@@ -737,6 +737,70 @@ typedef struct lxw_chart_font {
 
 } lxw_chart_font;
 
+/**
+ * @brief Struct to represent Excel chart element layout dimensions.
+ *
+ * Excel supports manual positioning of elements such as the chart axis labels,
+ * the chart legend, the chart plot area and the chart title. The
+ * `lxw_chart_layout` struct represents the layout dimension for these elements.
+ *
+ * The layout units used by Excel are relative units expressed as a percentage
+ * of the chart dimensions and are double values in the range `0.0 < x <= 1.0`.
+ * Excel calculates these dimensions as shown below:
+ *
+ * @image html chart_layout.png
+ *
+ * With reference to the above figure the layout units are calculated as
+ * follows:
+ *
+ * ```text
+ *     x = a / W
+ *     y = b / H
+ * ```
+ *
+ * These units are cumbersome and can vary depending on other elements in the
+ * chart such as text lengths. However, these are the units that are required by
+ * Excel to allow relative positioning. Some trial and error is generally
+ * required.
+ *
+ * For the chart `chart_plotarea_set_layout()` and `chart_legend_set_layout()`
+ * functions you can also set the width and height based on the following
+ * calculation:
+ *
+ * ```text
+ *     width  = w / W
+ *     height = h / H
+ * ```
+ *
+ * For other text based objects the width and height are changed by the font
+ * dimensions.
+ *
+ * The chart functions that support `lxw_chart_layout` are:
+ *
+ * - `chart_title_set_layout()`
+ * - `chart_legend_set_layout()`
+ * - `chart_plotarea_set_layout()`
+ * - `chart_axis_set_name_layout()`
+ *
+ */
+typedef struct lxw_chart_layout {
+
+    /** The x offset in the range `0.0 < x <= 1.0` */
+    double x;
+
+    /** The y offset in the range `0.0 < y <= 1.0` */
+    double y;
+
+    /** The width of the plotarea or legend in the range `0.0 < x <= 1.0` */
+    double width;
+
+    /** The height of the plotarea or legend in the range `0.0 < x <= 1.0` */
+    double height;
+
+    uint8_t has_inner;
+
+} lxw_chart_layout;
+
 typedef struct lxw_chart_marker {
 
     uint8_t type;
@@ -751,6 +815,7 @@ typedef struct lxw_chart_legend {
 
     lxw_chart_font *font;
     uint8_t position;
+    lxw_chart_layout *layout;
 
 } lxw_chart_legend;
 
@@ -763,12 +828,14 @@ typedef struct lxw_chart_title {
     uint8_t off;
     uint8_t is_horizontal;
     uint8_t ignore_cache;
+    uint8_t has_overlay;
 
     /* We use a range to hold the title formula properties even though it
      * will only have 1 point in order to re-use similar functions.*/
     lxw_series_range *range;
 
     struct lxw_series_data_point data_point;
+    lxw_chart_layout *layout;
 
 } lxw_chart_title;
 
@@ -859,6 +926,13 @@ enum lxw_chart_position {
     LXW_CHART_AXIS_LEFT,
     LXW_CHART_AXIS_TOP,
     LXW_CHART_AXIS_BOTTOM
+};
+
+enum lxw_chart_layout_type {
+    LXW_CHART_LAYOUT_TITLE,
+    LXW_CHART_LAYOUT_LEGEND,
+    LXW_CHART_LAYOUT_PLOTAREA,
+    LXW_CHART_LAYOUT_AXIS_NAME
 };
 
 /**
@@ -1149,8 +1223,10 @@ typedef struct lxw_chart {
     lxw_chart_line *chartarea_line;
     lxw_chart_fill *chartarea_fill;
     lxw_chart_pattern *chartarea_pattern;
+
     lxw_chart_line *plotarea_line;
     lxw_chart_fill *plotarea_fill;
+    lxw_chart_layout *plotarea_layout;
     lxw_chart_pattern *plotarea_pattern;
 
     uint8_t has_drop_lines;
@@ -2504,6 +2580,18 @@ void chart_axis_set_name_range(lxw_chart_axis *axis, const char *sheetname,
                                lxw_row_t row, lxw_col_t col);
 
 /**
+ * @brief Set the manual position of the chart axis name.
+ *
+ * @param axis   A pointer to a chart #lxw_chart_axis object.
+ * @param layout A pointer to a chart #lxw_chart_layout struct.
+ *
+ * This function is used to simulate setting the manual position of a chart
+ * axis name. See @ref chart_layout for more information.
+ */
+void chart_axis_set_name_layout(lxw_chart_axis *axis,
+                                lxw_chart_layout *layout);
+
+/**
  * @brief Set the font properties for a chart axis name.
  *
  * @param axis A pointer to a chart #lxw_chart_axis object.
@@ -3280,6 +3368,25 @@ void chart_title_set_name_font(lxw_chart *chart, lxw_chart_font *font);
 void chart_title_off(lxw_chart *chart);
 
 /**
+ * @brief Set the manual position of the chart title.
+ *
+ * @param chart  Pointer to a lxw_chart instance to be configured.
+ * @param layout A pointer to a chart #lxw_chart_layout struct.
+ *
+ * This function is used to simulate setting the manual position of the chart
+ * title. See @ref chart_layout for more information.
+ */
+void chart_title_set_layout(lxw_chart *chart, lxw_chart_layout *layout);
+
+/**
+ * @brief
+ *
+ * @param chart
+ * @param overlay
+ */
+void chart_title_set_overlay(lxw_chart *chart, uint8_t overlay);
+
+/**
  * @brief Set the position of the chart legend.
  *
  * @param chart    Pointer to a lxw_chart instance to be configured.
@@ -3316,6 +3423,17 @@ void chart_title_off(lxw_chart *chart);
  *
  */
 void chart_legend_set_position(lxw_chart *chart, uint8_t position);
+
+/**
+ * @brief Set the manual layout of the chart legend.
+ *
+ * @param chart  Pointer to a lxw_chart instance to be configured.
+ * @param layout A pointer to a chart #lxw_chart_layout struct.
+ *
+ * This function is used to simulate setting the manual position of the chart
+ * legend. See @ref chart_layout for more information.
+ */
+void chart_legend_set_layout(lxw_chart *chart, lxw_chart_layout *layout);
 
 /**
  * @brief Set the font properties for a chart legend.
@@ -3483,6 +3601,17 @@ void chart_plotarea_set_fill(lxw_chart *chart, lxw_chart_fill *fill);
  * For more information see #lxw_chart_pattern_type and @ref chart_patterns.
  */
 void chart_plotarea_set_pattern(lxw_chart *chart, lxw_chart_pattern *pattern);
+
+/**
+ * @brief Set the manual layout of the chart plotarea.
+ *
+ * @param chart  Pointer to a lxw_chart instance to be configured.
+ * @param layout A pointer to a chart #lxw_chart_layout struct.
+ *
+ * This function is used to simulate setting the manual position of the chart
+ * plotarea. See @ref chart_layout for more information.
+ */
+void chart_plotarea_set_layout(lxw_chart *chart, lxw_chart_layout *layout);
 
 /**
  * @brief Set the chart style type.
