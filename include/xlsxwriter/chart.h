@@ -3379,10 +3379,13 @@ void chart_title_off(lxw_chart *chart);
 void chart_title_set_layout(lxw_chart *chart, lxw_chart_layout *layout);
 
 /**
- * @brief
+ * @brief Allow the chart title to overlay the chart.
  *
- * @param chart
- * @param overlay
+ * @param chart   Pointer to a lxw_chart instance to be configured.
+ * @param overlay Turn off/on the overlay. (0/1)
+ *
+ * This option allows the chart title to overlay the chart when the
+ * `chart_title_set_layout()` function.
  */
 void chart_title_set_overlay(lxw_chart *chart, uint8_t overlay);
 
