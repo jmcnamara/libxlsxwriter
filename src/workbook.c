@@ -737,8 +737,10 @@ _store_defined_name(lxw_workbook *self, const char *name,
         /* Remove any worksheet quoting. */
         if (worksheet_name[0] == '\'')
             worksheet_name++;
-        if (worksheet_name[strlen(worksheet_name) - 1] == '\'')
+        if (strlen(worksheet_name) > 0
+            && worksheet_name[strlen(worksheet_name) - 1] == '\'') {
             worksheet_name[strlen(worksheet_name) - 1] = '\0';
+        }
 
         /* Search for worksheet name to get the equivalent worksheet index. */
         STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
@@ -976,8 +978,9 @@ _populate_range_dimensions(lxw_workbook *self, lxw_series_range *range)
         /* Remove any worksheet quoting. */
         if (sheetname[0] == '\'')
             sheetname++;
-        if (sheetname[strlen(sheetname) - 1] == '\'')
+        if (strlen(sheetname) > 0 && sheetname[strlen(sheetname) - 1] == '\'') {
             sheetname[strlen(sheetname) - 1] = '\0';
+        }
 
         /* Check that the sheetname exists. */
         if (!workbook_get_worksheet_by_name(self, sheetname)) {

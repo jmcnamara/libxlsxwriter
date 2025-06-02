@@ -105,6 +105,19 @@ CTEST(worksheet, bound_checks01) {
     err = worksheet_set_column(worksheet, MAX_COL, 6, 17, NULL);
     ASSERT_EQUAL(LXW_ERROR_WORKSHEET_INDEX_OUT_OF_RANGE, err);
 
+    /* Tests array formula strings. */
+    err = worksheet_write_array_formula(worksheet, 0, 0, 0, 0, "{", NULL);
+    ASSERT_EQUAL(LXW_ERROR_PARAMETER_IS_EMPTY, err);
+
+    err = worksheet_write_array_formula(worksheet, 0, 0, 0, 0, "}", NULL);
+    ASSERT_EQUAL(LXW_ERROR_PARAMETER_IS_EMPTY, err);
+
+    err = worksheet_write_array_formula(worksheet, 0, 0, 0, 0, "{}", NULL);
+    ASSERT_EQUAL(LXW_ERROR_PARAMETER_IS_EMPTY, err);
+
+    err = worksheet_write_array_formula(worksheet, 0, 0, 0, 0, "{=}", NULL);
+    ASSERT_EQUAL(LXW_ERROR_PARAMETER_IS_EMPTY, err);
+
     lxw_worksheet_assemble_xml_file(worksheet);
 
     lxw_worksheet_free(worksheet);

@@ -8127,7 +8127,7 @@ _store_array_formula(lxw_worksheet *self,
 
     /* Copy and trip leading "{=" from formula. */
     if (formula[0] == '{')
-        if (formula[1] == '=')
+        if (strlen(formula) >= 2 && formula[1] == '=')
             formula_copy = lxw_strdup(formula + 2);
         else
             formula_copy = lxw_strdup(formula + 1);
@@ -8135,8 +8135,17 @@ _store_array_formula(lxw_worksheet *self,
         formula_copy = lxw_strdup_formula(formula);
 
     /* Strip trailing "}" from formula. */
-    if (formula_copy[strlen(formula_copy) - 1] == '}')
+    if (strlen(formula_copy) > 0
+        && formula_copy[strlen(formula_copy) - 1] == '}') {
         formula_copy[strlen(formula_copy) - 1] = '\0';
+    }
+
+    /* Check for empty formula that started as {=}. */
+    if (lxw_str_is_empty(formula_copy)) {
+        free(formula_copy);
+        free(range);
+        return LXW_ERROR_PARAMETER_IS_EMPTY;
+    }
 
     /* Create a new array formula cell object. */
     cell = _new_array_formula_cell(first_row, first_col,
