@@ -108,7 +108,7 @@
     datetime->month = _month;                                       \
     datetime->day   = _day;                                         \
                                                                     \
-    got = lxw_datetime_to_excel_date_epoch(datetime, 1);            \
+    got = lxw_datetime_to_excel_date_with_epoch(datetime, 1);            \
                                                                     \
     ASSERT_DBL_NEAR(exp, got);                                      \
     free(datetime);
@@ -132,6 +132,6 @@
     ASSERT_DBL_NEAR(exp, got);
 
 #define TEST_UNIXTIME_1904(_unixtime, exp)                          \
-    got = lxw_unixtime_to_excel_date_epoch(_unixtime, 1);           \
+    got = lxw_unixtime_to_excel_date_with_epoch(_unixtime, 1);           \
     ASSERT_DBL_NEAR(exp, got);
 

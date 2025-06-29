@@ -337,7 +337,8 @@ lxw_name_to_col_2(const char *col_str)
  * or 1904 epoch.
  */
 double
-lxw_datetime_to_excel_date_epoch(lxw_datetime *datetime, uint8_t date_1904)
+lxw_datetime_to_excel_date_with_epoch(lxw_datetime *datetime,
+                                      uint8_t use_1904_epoch)
 {
     int year = datetime->year;
     int month = datetime->month;
@@ -346,8 +347,8 @@ lxw_datetime_to_excel_date_epoch(lxw_datetime *datetime, uint8_t date_1904)
     int min = datetime->min;
     double sec = datetime->sec;
     double seconds;
-    int epoch = date_1904 ? 1904 : 1900;
-    int offset = date_1904 ? 4 : 0;
+    int epoch = use_1904_epoch ? 1904 : 1900;
+    int offset = use_1904_epoch ? 4 : 0;
     int norm = 300;
     int range;
     /* Set month days and check for leap year. */
@@ -358,7 +359,7 @@ lxw_datetime_to_excel_date_epoch(lxw_datetime *datetime, uint8_t date_1904)
 
     /* For times without dates set the default date for the epoch. */
     if (!year) {
-        if (!date_1904) {
+        if (!use_1904_epoch) {
             year = 1899;
             month = 12;
             day = 31;
@@ -374,7 +375,7 @@ lxw_datetime_to_excel_date_epoch(lxw_datetime *datetime, uint8_t date_1904)
     seconds = (hour * 60 * 60 + min * 60 + sec) / (24 * 60 * 60.0);
 
     /* Special cases for Excel dates in the 1900 epoch. */
-    if (!date_1904) {
+    if (!use_1904_epoch) {
         /* Excel 1900 epoch. */
         if (year == 1899 && month == 12 && day == 31)
             return seconds;
@@ -423,7 +424,7 @@ lxw_datetime_to_excel_date_epoch(lxw_datetime *datetime, uint8_t date_1904)
     days -= leap;
 
     /* Adjust for Excel erroneously treating 1900 as a leap year. */
-    if (!date_1904 && days > 59)
+    if (!use_1904_epoch && days > 59)
         days++;
 
     return days + seconds;
@@ -435,7 +436,7 @@ lxw_datetime_to_excel_date_epoch(lxw_datetime *datetime, uint8_t date_1904)
 double
 lxw_datetime_to_excel_datetime(lxw_datetime *datetime)
 {
-    return lxw_datetime_to_excel_date_epoch(datetime, LXW_FALSE);
+    return lxw_datetime_to_excel_date_with_epoch(datetime, LXW_FALSE);
 }
 
 /*
@@ -445,7 +446,7 @@ lxw_datetime_to_excel_datetime(lxw_datetime *datetime)
 double
 lxw_unixtime_to_excel_date(int64_t unixtime)
 {
-    return lxw_unixtime_to_excel_date_epoch(unixtime, LXW_FALSE);
+    return lxw_unixtime_to_excel_date_with_epoch(unixtime, LXW_FALSE);
 }
 
 /*
@@ -453,14 +454,15 @@ lxw_unixtime_to_excel_date(int64_t unixtime)
  * 1900 or 1904 epoch.
  */
 double
-lxw_unixtime_to_excel_date_epoch(int64_t unixtime, uint8_t date_1904)
+lxw_unixtime_to_excel_date_with_epoch(int64_t unixtime,
+                                      uint8_t use_1904_epoch)
 {
     double excel_datetime = 0.0;
-    double epoch = date_1904 ? 24107.0 : 25568.0;
+    double epoch = use_1904_epoch ? 24107.0 : 25568.0;
 
     excel_datetime = epoch + (unixtime / (24 * 60 * 60.0));
 
-    if (!date_1904 && excel_datetime >= 60.0)
+    if (!use_1904_epoch && excel_datetime >= 60.0)
         excel_datetime = excel_datetime + 1.0;
 
     return excel_datetime;

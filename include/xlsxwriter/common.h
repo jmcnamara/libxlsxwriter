@@ -212,9 +212,6 @@ enum lxw_custom_property_types {
 /* GUID string length. */
 #define LXW_GUID_LENGTH           sizeof("{12345678-1234-1234-1234-1234567890AB}\0")
 
-#define LXW_EPOCH_1900            0
-#define LXW_EPOCH_1904            1
-
 #define LXW_UINT32_T_LENGTH       sizeof("4294967296")
 #define LXW_FILENAME_LENGTH       128
 #define LXW_IGNORE                1

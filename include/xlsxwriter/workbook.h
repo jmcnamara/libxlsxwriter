@@ -352,6 +352,8 @@ typedef struct lxw_workbook {
     char *vba_project_signature;
     char *vba_codename;
 
+    uint8_t use_1904_epoch;
+
     lxw_format *default_url_format;
 
 } lxw_workbook;
@@ -1070,6 +1072,27 @@ lxw_error workbook_set_vba_name(lxw_workbook *workbook, const char *name);
  * @image html read_only.png
  */
 void workbook_read_only_recommended(lxw_workbook *workbook);
+
+/**
+ * @brief Set the workbook to use the 1904 epoch.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ *
+ * The `%workbook_use_1904_epoch()` function can be used to set the workbook to
+ * use the 1904 epoch instead of the default 1900 epoch.
+ *
+ * Excel supports two date epochs. The first based on 1900-01-01 is the default
+ * for all Windows versions of Excel and for recent versions of Excel for macOS.
+ * Older versions of Excel for macOS used a 1904-01-01 epoch. The 1904 epoch can
+ * be set for compatibility with older versions of Excel or to work around the
+ * Excel limitation of not being able to handle negative times.
+ *
+ * @code
+ *     workbook_use_1904_epoch(workbook);
+ * @endcode
+ *
+ */
+void workbook_use_1904_epoch(lxw_workbook *workbook);
 
 /**
  * @brief Set the size of a workbook window.
