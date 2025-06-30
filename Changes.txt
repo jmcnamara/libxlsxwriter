@@ -1,6 +1,32 @@
 /**
 @page changes Changes
 
+## Information for Packagers
+
+- This is serial version 1.2.3. This is not a semver version number.
+
+- This is shared object library version `libxlsxwriter.so.10`. This should be
+  updated automatically via `make` and `cmake` as part of the build process.
+
+- Please report any downstream patches back upstream to help improve the overall
+  build process.
+
+
+## 1.2.3 Jun 30 2025
+
+- Added support for handling dates in the Excel 1904 epoch. See
+  `workbook_use_1904_epoch()`.
+
+  Feature request [#483][gh_483].
+
+  [gh_483]: https://github.com/jmcnamara/libxlsxwriter/issues/483
+
+- Fixed undefined behavior bugs in string indexing.
+
+  Issue [#482][gh_482].
+
+  [gh_482]: https://github.com/jmcnamara/libxlsxwriter/issues/482
+
 
 ## 1.2.2 March 29 2025
 
@@ -11,17 +37,6 @@
   Feature request [#477][gh_477].
 
   [gh_477]: https://github.com/jmcnamara/libxlsxwriter/issues/477
-
-
-### Information for Packagers:
-
-- This is shared object library version `libxlsxwriter.so.9`. This should be
-  updated automatically via `make` and `cmake` as part of the build process.
-
-- This is serial version 1.2.2. This is not a semver version number.
-
-- Please report any downstream patches back upstream to help improve the overall
-  build process.
 
 
 ## 1.2.1 February 26 2025

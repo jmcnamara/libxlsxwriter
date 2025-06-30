@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name                  = "libxlsxwriter"
-  s.version               = "1.2.2"
+  s.version               = "1.2.3"
   s.summary               = "Libxlsxwriter: A C library for creating Excel XLSX files."
   s.ios.deployment_target = "12.0"
   s.osx.deployment_target = "10.13"
@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
                             * Worksheet PNG/JPEG/GIF images.
                             * Cell comments.
                             * Support for adding Macros.
-                            * Memory optimisation mode for writing large files.
+                            * Memory optimization mode for writing large files.
                             * Source code available on [GitHub](https://github.com/jmcnamara/libxlsxwriter).
                             * FreeBSD license.
                             * ANSI C.

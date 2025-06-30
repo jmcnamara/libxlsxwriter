@@ -58,3 +58,5 @@ third_party/zlib-1.2.8/zlib.pc
 
 *zig-cache/
 zig-out/
+
+.swiftpm/

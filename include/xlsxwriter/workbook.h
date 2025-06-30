@@ -1087,6 +1087,8 @@ void workbook_read_only_recommended(lxw_workbook *workbook);
  * be set for compatibility with older versions of Excel or to work around the
  * Excel limitation of not being able to handle negative times.
  *
+ * This function should be called before `worksheet_add_worksheet()`.
+ *
  * @code
  *     workbook_use_1904_epoch(workbook);
  * @endcode

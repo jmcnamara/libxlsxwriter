@@ -98,7 +98,7 @@ function check_changefile {
     clear
 
     echo "Latest change in Changes file: "
-    perl -ne '$rev++ if /^##/; exit if $rev > 1; print "    | $_"' Changes.txt
+    perl -ne '$rev++ if /^##/; exit if $rev > 2; print "    | $_"' Changes.txt
 
     echo
     echo -n "Is the Changes file updated?               [y/N]: "
@@ -140,7 +140,7 @@ function check_versions {
             exit 1
         else
             echo "    Updating versions...";
-            perl -i dev/release/update_revison.pl include/xlsxwriter.h libxlsxwriter.podspec
+            perl -i dev/release/update_revision.pl include/xlsxwriter.h libxlsxwriter.podspec
             check_versions
          fi
     fi
@@ -291,7 +291,7 @@ function check_git_status {
         echo -e "Please fix git status.\n";
 
         echo -e "\ngit add -u";
-        git tag -l -n1 | tail -1 | perl -lane 'printf "git commit -m \"Prep for release %s\"\ngit tag \"%s\"\n\n", $F[4], $F[0]' | perl dev/release/update_revison.pl
+        git tag -l -n1 | tail -1 | perl -lane 'printf "git commit -m \"Prep for release %s\"\ngit tag \"%s\"\n\n", $F[4], $F[0]' | perl dev/release/update_revision.pl
         exit 1
     fi
 }
