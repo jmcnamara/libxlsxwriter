@@ -7,6 +7,7 @@
 
 - This is shared object library version `libxlsxwriter.so.10`. This should be
   updated automatically via `make` and `cmake` as part of the build process.
+  This version contains ABI changes since the previous release.
 
 - Please report any downstream patches back upstream to help improve the overall
   build process.
