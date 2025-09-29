@@ -2166,6 +2166,12 @@ workbook_add_chart(lxw_workbook *self, uint8_t type)
 {
     lxw_chart *chart;
 
+    if (type == LXW_CHART_NONE || type > LXW_CHART_RADAR_FILLED) {
+        LXW_WARN_FORMAT1("workbook_add_chart(): invalid chart type: %d",
+                         type);
+        return NULL;
+    }
+
     /* Create a new chart object. */
     chart = lxw_chart_new(type);
 
