@@ -8332,10 +8332,6 @@ worksheet_write_datetime(lxw_worksheet *self,
     if (err)
         return err;
 
-    printf("worksheet_write_datetime(): %d-%02d-%02d - 1904: %d\n",
-           datetime->year, datetime->month, datetime->day,
-           self->use_1904_epoch);
-
     excel_date =
         lxw_datetime_to_excel_date_with_epoch(datetime, self->use_1904_epoch);
 
