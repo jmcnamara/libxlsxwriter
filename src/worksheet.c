@@ -9793,6 +9793,12 @@ worksheet_set_page_view(lxw_worksheet *self)
 void
 worksheet_set_paper(lxw_worksheet *self, uint8_t paper_size)
 {
+    if (paper_size > 118) {
+        LXW_WARN_FORMAT1("worksheet_set_paper(): invalid paper size: %d. "
+                         "Valid range is 0-118", paper_size);
+        return;
+    }
+
     self->paper_size = paper_size;
     self->page_setup_changed = LXW_TRUE;
 }

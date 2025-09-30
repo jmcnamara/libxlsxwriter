@@ -5533,6 +5533,12 @@ chart_series_set_pattern(lxw_chart_series *series, lxw_chart_pattern *pattern)
 void
 chart_series_set_marker_type(lxw_chart_series *series, uint8_t type)
 {
+    if (type > LXW_CHART_MARKER_PLUS) {
+        LXW_WARN_FORMAT1
+            ("chart_series_set_marker_type(): invalid marker type: %d", type);
+        return;
+    }
+
     if (!series->marker) {
         lxw_chart_marker *marker = calloc(1, sizeof(struct lxw_chart_marker));
         RETURN_VOID_ON_MEM_ERROR(marker);
@@ -5548,6 +5554,13 @@ chart_series_set_marker_type(lxw_chart_series *series, uint8_t type)
 void
 chart_series_set_marker_size(lxw_chart_series *series, uint8_t size)
 {
+    if (size < 2 || size > 72) {
+        LXW_WARN_FORMAT1
+            ("chart_series_set_marker_size(): marker size '%d' outside Excel range: 2 <= size <= 72",
+             size);
+        return;
+    }
+
     if (!series->marker) {
         lxw_chart_marker *marker = calloc(1, sizeof(struct lxw_chart_marker));
         RETURN_VOID_ON_MEM_ERROR(marker);
@@ -5774,6 +5787,13 @@ mem_error:
 void
 chart_series_set_labels_separator(lxw_chart_series *series, uint8_t separator)
 {
+    if (separator > LXW_CHART_LABEL_SEPARATOR_SPACE) {
+        LXW_WARN_FORMAT1
+            ("chart_series_set_labels_separator(): invalid label separator: %d",
+             separator);
+        return;
+    }
+
     series->has_labels = LXW_TRUE;
     series->label_separator = separator;
 }
@@ -5784,6 +5804,13 @@ chart_series_set_labels_separator(lxw_chart_series *series, uint8_t separator)
 void
 chart_series_set_labels_position(lxw_chart_series *series, uint8_t position)
 {
+    if (position > LXW_CHART_LABEL_POSITION_BEST_FIT) {
+        LXW_WARN_FORMAT1
+            ("chart_series_set_labels_position(): invalid label position: %d",
+             position);
+        return;
+    }
+
     series->has_labels = LXW_TRUE;
     series->show_labels_value = LXW_TRUE;
 
@@ -5905,6 +5932,13 @@ void
 chart_series_set_trendline(lxw_chart_series *series, uint8_t type,
                            uint8_t value)
 {
+    if (type > LXW_CHART_TRENDLINE_TYPE_AVERAGE) {
+        LXW_WARN_FORMAT1
+            ("chart_series_set_trendline(): invalid trendline type: %d",
+             type);
+        return;
+    }
+
     if (type == LXW_CHART_TRENDLINE_TYPE_POLY
         || type == LXW_CHART_TRENDLINE_TYPE_AVERAGE) {
 
@@ -6336,6 +6370,12 @@ chart_axis_off(lxw_chart_axis *axis)
 void
 chart_axis_set_position(lxw_chart_axis *axis, uint8_t position)
 {
+    if (position > LXW_CHART_AXIS_POSITION_BETWEEN) {
+        LXW_WARN_FORMAT1
+            ("chart_axis_set_position(): invalid position: %d", position);
+        return;
+    }
+
     LXW_WARN_CAT_AND_DATE_AXIS_ONLY("chart_axis_set_position");
 
     axis->position_axis = position;
@@ -6347,6 +6387,13 @@ chart_axis_set_position(lxw_chart_axis *axis, uint8_t position)
 void
 chart_axis_set_label_position(lxw_chart_axis *axis, uint8_t position)
 {
+    if (position > LXW_CHART_AXIS_LABEL_POSITION_NONE) {
+        LXW_WARN_FORMAT1
+            ("chart_axis_set_label_position(): invalid label position: %d",
+             position);
+        return;
+    }
+
     axis->label_position = position;
 }
 
@@ -6393,6 +6440,13 @@ chart_axis_set_log_base(lxw_chart_axis *axis, uint16_t log_base)
 void
 chart_axis_set_major_tick_mark(lxw_chart_axis *axis, uint8_t type)
 {
+    if (type > LXW_CHART_AXIS_TICK_MARK_CROSSING) {
+        LXW_WARN_FORMAT1
+            ("chart_axis_set_major_tick_mark(): invalid tick mark type: %d",
+             type);
+        return;
+    }
+
     axis->major_tick_mark = type;
 }
 
@@ -6402,6 +6456,13 @@ chart_axis_set_major_tick_mark(lxw_chart_axis *axis, uint8_t type)
 void
 chart_axis_set_minor_tick_mark(lxw_chart_axis *axis, uint8_t type)
 {
+    if (type > LXW_CHART_AXIS_TICK_MARK_CROSSING) {
+        LXW_WARN_FORMAT1
+            ("chart_axis_set_minor_tick_mark(): invalid tick mark type: %d",
+             type);
+        return;
+    }
+
     axis->minor_tick_mark = type;
 }
 
@@ -6457,6 +6518,13 @@ chart_axis_set_minor_unit(lxw_chart_axis *axis, double unit)
 void
 chart_axis_set_display_units(lxw_chart_axis *axis, uint8_t units)
 {
+    if (units > LXW_CHART_AXIS_UNITS_TRILLIONS) {
+        LXW_WARN_FORMAT1
+            ("chart_axis_set_display_units(): invalid display units: %d",
+             units);
+        return;
+    }
+
     LXW_WARN_VALUE_AXIS_ONLY("chart_axis_set_display_units");
 
     axis->display_units = units;
@@ -6538,6 +6606,13 @@ chart_axis_minor_gridlines_set_line(lxw_chart_axis *axis,
 void
 chart_axis_set_label_align(lxw_chart_axis *axis, uint8_t align)
 {
+    if (align > LXW_CHART_AXIS_LABEL_ALIGN_RIGHT) {
+        LXW_WARN_FORMAT1
+            ("chart_axis_set_label_align(): invalid label alignment: %d",
+             align);
+        return;
+    }
+
     axis->label_align = align;
 }
 
@@ -6624,6 +6699,13 @@ chart_title_set_overlay(lxw_chart *self, uint8_t overlay)
 void
 chart_legend_set_position(lxw_chart *self, uint8_t position)
 {
+    if (position > LXW_CHART_LEGEND_OVERLAY_TOP_RIGHT) {
+        LXW_WARN_FORMAT1
+            ("chart_legend_set_position(): invalid legend position: %d",
+             position);
+        return;
+    }
+
     self->legend.position = position;
 }
 
@@ -6910,6 +6992,13 @@ chart_set_series_overlap(lxw_chart *self, int8_t overlap)
 void
 chart_show_blanks_as(lxw_chart *self, uint8_t option)
 {
+    if (option > LXW_CHART_BLANKS_AS_CONNECTED) {
+        LXW_WARN_FORMAT1
+            ("chart_show_blanks_as(): invalid blank display option: %d",
+             option);
+        return;
+    }
+
     self->show_blanks_as = option;
 }
 
