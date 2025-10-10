@@ -18,15 +18,14 @@ pub fn build(b: *std.Build) void {
     const md5 = b.option(bool, "USE_OPENSSL_MD5", "Build libxlsxwriter with the OpenSSL MD5 lib [default: off]") orelse false;
     const stdtmpfile = b.option(bool, "USE_STANDARD_TMPFILE", "Use the C standard library's tmpfile() [default: off]") orelse false;
 
-    const lib = if (shared) b.addSharedLibrary(.{
+    const lib = b.addLibrary(.{
         .name = "xlsxwriter",
-        .target = target,
-        .optimize = optimize,
+        .root_module = b.createModule(.{
+            .target = target,
+            .optimize = optimize,
+        }),
+        .linkage = if (shared) .dynamic else .static,
         .version = xlsxw_version,
-    }) else b.addStaticLibrary(.{
-        .name = "xlsxwriter",
-        .target = target,
-        .optimize = optimize,
     });
     lib.pie = true;
     switch (optimize) {
@@ -250,8 +249,10 @@ pub fn build(b: *std.Build) void {
 fn buildExe(b: *std.Build, info: BuildInfo) void {
     const exe = b.addExecutable(.{
         .name = info.filename(),
-        .optimize = info.lib.root_module.optimize.?,
-        .target = info.lib.root_module.resolved_target.?,
+        .root_module = b.createModule(.{
+            .optimize = info.lib.root_module.optimize.?,
+            .target = info.lib.root_module.resolved_target.?,
+        }),
     });
     exe.addCSourceFile(.{
         .file = b.path(info.path),
@@ -280,8 +281,10 @@ fn buildExe(b: *std.Build, info: BuildInfo) void {
 fn buildTest(b: *std.Build, info: BuildInfo) void {
     const exe = b.addExecutable(.{
         .name = info.filename(),
-        .optimize = info.lib.root_module.optimize.?,
-        .target = info.lib.root_module.resolved_target.?,
+        .root_module = b.createModule(.{
+            .optimize = info.lib.root_module.optimize.?,
+            .target = info.lib.root_module.resolved_target.?,
+        }),
     });
     exe.root_module.addCMacro("TESTING", "");
     exe.addCSourceFile(.{
@@ -337,10 +340,12 @@ const BuildInfo = struct {
 };
 
 fn buildZlib(b: *std.Build, options: anytype) *std.Build.Step.Compile {
-    const libz = b.addStaticLibrary(.{
+    const libz = b.addLibrary(.{
         .name = "z",
-        .target = options[0],
-        .optimize = options[1],
+        .root_module = b.createModule(.{
+            .target = options[0],
+            .optimize = options[1],
+        }),
     });
     if (b.lazyDependency("zlib", .{
         .target = options[0],
