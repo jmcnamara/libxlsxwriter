@@ -1,14 +1,16 @@
 const std = @import("std");
-
-const xlsxw_version: std.SemanticVersion = .{
-    .major = 1,
-    .minor = 1,
-    .patch = 9,
-};
+const zon_version = @import("build.zig.zon").version;
 
 pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
+    const options: BuildConfig = .{
+        .target = target,
+        .optimize = optimize,
+    };
+    const xlsxw_version = std.SemanticVersion.parse(zon_version) catch |err| {
+        std.debug.panic("Error: {s}", .{@errorName(err)});
+    };
 
     const shared = b.option(bool, "SHARED_LIBRARY", "Build the Shared Library [default: false]") orelse false;
     const examples = b.option(bool, "BUILD_EXAMPLES", "Build libxlsxwriter examples [default: false]") orelse false;
@@ -20,10 +22,7 @@ pub fn build(b: *std.Build) void {
 
     const lib = b.addLibrary(.{
         .name = "xlsxwriter",
-        .root_module = b.createModule(.{
-            .target = target,
-            .optimize = optimize,
-        }),
+        .root_module = createModule(b, options),
         .linkage = if (shared) .dynamic else .static,
         .version = xlsxw_version,
     });
@@ -79,7 +78,7 @@ pub fn build(b: *std.Build) void {
         });
     }
 
-    const zlib = buildZlib(b, .{ target, optimize });
+    const zlib = buildZlib(b, options);
     lib.linkLibrary(zlib);
     lib.installLibraryHeaders(zlib);
 
@@ -121,42 +120,52 @@ pub fn build(b: *std.Build) void {
     // build examples
     if (examples) {
         buildExe(b, .{
+            .options = options,
             .lib = lib,
             .path = "examples/anatomy.c",
         });
         buildExe(b, .{
+            .options = options,
             .lib = lib,
             .path = "examples/array_formula.c",
         });
         buildExe(b, .{
+            .options = options,
             .lib = lib,
             .path = "examples/autofilter.c",
         });
         buildExe(b, .{
+            .options = options,
             .lib = lib,
             .path = "examples/background.c",
         });
         buildExe(b, .{
+            .options = options,
             .lib = lib,
             .path = "examples/chart_area.c",
         });
         buildExe(b, .{
+            .options = options,
             .lib = lib,
             .path = "examples/chart_column.c",
         });
         buildExe(b, .{
+            .options = options,
             .lib = lib,
             .path = "examples/data_validate.c",
         });
         buildExe(b, .{
+            .options = options,
             .lib = lib,
             .path = "examples/hello.c",
         });
         buildExe(b, .{
+            .options = options,
             .lib = lib,
             .path = "examples/watermark.c",
         });
         buildExe(b, .{
+            .options = options,
             .lib = lib,
             .path = "examples/worksheet_protection.c",
         });
@@ -164,95 +173,112 @@ pub fn build(b: *std.Build) void {
     // build tests
     if (tests) {
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/app/test_app.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/chart/test_chart.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/chartsheet/test_chartsheet.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/content_types/test_content_types.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/content_types/test_content_types_write_default.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/content_types/test_content_types_write_override.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/relationships/test_relationships.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/app/test_app_xml_declaration.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/relationships/test_relationships_xml_declaration.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/custom/test_custom_xml_declaration.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/metadata/test_metadata_xml_declaration.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/core/test_core_xml_declaration.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/sst/test_shared_strings.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/workbook/test_workbook.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/xmlwriter/test_xmlwriter.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/table/test_table01.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/table/test_table02.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/table/test_table03.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/table/test_table04.c",
         });
         buildTest(b, .{
+            .options = options,
             .lib = lib,
             .path = "test/unit/styles/test_styles_write_border.c",
         });
     }
 }
 
-fn buildExe(b: *std.Build, info: BuildInfo) void {
+fn buildExe(b: *std.Build, info: BuildExec) void {
     const exe = b.addExecutable(.{
         .name = info.filename(),
-        .root_module = b.createModule(.{
-            .optimize = info.lib.root_module.optimize.?,
-            .target = info.lib.root_module.resolved_target.?,
-        }),
+        .root_module = createModule(b, info.options),
     });
     exe.addCSourceFile(.{
         .file = b.path(info.path),
@@ -278,13 +304,10 @@ fn buildExe(b: *std.Build, info: BuildInfo) void {
     run_step.dependOn(&run_cmd.step);
 }
 
-fn buildTest(b: *std.Build, info: BuildInfo) void {
+fn buildTest(b: *std.Build, info: BuildExec) void {
     const exe = b.addExecutable(.{
         .name = info.filename(),
-        .root_module = b.createModule(.{
-            .optimize = info.lib.root_module.optimize.?,
-            .target = info.lib.root_module.resolved_target.?,
-        }),
+        .root_module = createModule(b, info.options),
     });
     exe.root_module.addCMacro("TESTING", "");
     exe.addCSourceFile(.{
@@ -296,10 +319,10 @@ fn buildTest(b: *std.Build, info: BuildInfo) void {
         .flags = cflags,
     });
     exe.addIncludePath(b.path("test/unit"));
-    for (info.lib.root_module.include_dirs.items) |include| {
-        exe.root_module.include_dirs.append(b.allocator, include) catch {};
-    }
     exe.linkLibrary(info.lib);
+    for (info.lib.root_module.include_dirs.items) |include| {
+        exe.root_module.include_dirs.append(b.allocator, include) catch @panic("OOM");
+    }
     exe.linkLibC();
     b.installArtifact(exe);
 
@@ -316,6 +339,13 @@ fn buildTest(b: *std.Build, info: BuildInfo) void {
     run_step.dependOn(&run_cmd.step);
 }
 
+fn createModule(b: *std.Build, options: BuildConfig) *std.Build.Module {
+    return b.createModule(.{
+        .target = options.target,
+        .optimize = options.optimize,
+    });
+}
+
 const cflags = &.{
     "-std=c89",
     "-Wall",
@@ -329,27 +359,29 @@ const minizip_src: []const []const u8 = &.{
     "third_party/minizip/zip.c",
 };
 
-const BuildInfo = struct {
+const BuildExec = struct {
+    options: BuildConfig,
     lib: *std.Build.Step.Compile,
     path: []const u8,
 
-    fn filename(self: BuildInfo) []const u8 {
+    fn filename(self: BuildExec) []const u8 {
         var split = std.mem.splitSequence(u8, std.fs.path.basename(self.path), ".");
         return split.first();
     }
 };
+const BuildConfig = struct {
+    target: std.Build.ResolvedTarget,
+    optimize: std.builtin.OptimizeMode,
+};
 
-fn buildZlib(b: *std.Build, options: anytype) *std.Build.Step.Compile {
+fn buildZlib(b: *std.Build, options: BuildConfig) *std.Build.Step.Compile {
     const libz = b.addLibrary(.{
         .name = "z",
-        .root_module = b.createModule(.{
-            .target = options[0],
-            .optimize = options[1],
-        }),
+        .root_module = createModule(b, options),
     });
     if (b.lazyDependency("zlib", .{
-        .target = options[0],
-        .optimize = options[1],
+        .target = options.target,
+        .optimize = options.optimize,
     })) |zlib_path| {
         libz.addIncludePath(zlib_path.path(""));
         libz.addCSourceFiles(.{
