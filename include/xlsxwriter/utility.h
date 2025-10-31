@@ -213,6 +213,30 @@ double lxw_datetime_to_excel_date_with_epoch(lxw_datetime *datetime,
                                              uint8_t use_1904_epoch);
 
 /**
+ * @brief Validate a #lxw_datetime struct.
+ *
+ * Validates a #lxw_datetime struct to ensure its fields are within acceptable
+ * ranges for Excel dates and times.
+ *
+ * The members of the #lxw_datetime struct and the range of their values are:
+ *
+ * Member   | Value
+ * -------- | -----------
+ * year     | 1900 - 9999
+ * month    | 1 - 12
+ * day      | 1 - 31
+ * hour     | 0 - 23
+ * min      | 0 - 59
+ * sec      | 0 - 59.999
+ *
+ * @param datetime A pointer to a #lxw_datetime struct.
+ *
+ * @return A #lxw_error code. Either #LXW_NO_ERROR or
+ *         #LXW_ERROR_DATETIME_VALIDATION if a field is out of range.
+ */
+lxw_error lxw_datetime_validate(lxw_datetime *datetime);
+
+/**
  * @brief Converts a unix datetime to an Excel datetime number.
  *
  * @param unixtime Unix time (seconds since 1970-01-01)

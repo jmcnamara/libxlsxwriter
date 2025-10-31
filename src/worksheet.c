@@ -8334,6 +8334,10 @@ worksheet_write_datetime(lxw_worksheet *self,
     if (err)
         return err;
 
+    err = lxw_datetime_validate(datetime);
+    if (err)
+        return err;
+
     excel_date =
         lxw_datetime_to_excel_date_with_epoch(datetime, self->use_1904_epoch);
 

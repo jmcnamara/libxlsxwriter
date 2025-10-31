@@ -13,6 +13,7 @@
 #include "xlsxwriter/utility.h"
 #include "xlsxwriter/packager.h"
 #include "xlsxwriter/hash_table.h"
+#include "xlsxwriter/hash_table.h"
 
 STATIC int _worksheet_name_cmp(lxw_worksheet_name *name1,
                                lxw_worksheet_name *name2);
@@ -2657,6 +2658,10 @@ workbook_set_custom_property_datetime(lxw_workbook *self, const char *name,
         LXW_WARN_FORMAT("workbook_set_custom_property_datetime(): parameter "
                         "'datetime' cannot be NULL.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (lxw_datetime_validate(datetime) != LXW_NO_ERROR) {
+        return LXW_ERROR_DATETIME_VALIDATION;
     }
 
     /* Create a struct to hold the custom property. */
