@@ -354,8 +354,7 @@ file(GLOB_RECURSE LXW_HEADERS RELATIVE include *.h)
 # If not using the system minizip, add the vendored minizip source files.
 if(NOT USE_SYSTEM_MINIZIP)
     list(
-        APPEND
-        LXW_SOURCES
+        APPEND LXW_SOURCES
         third_party/minizip/ioapi.c
         third_party/minizip/zip.c
     )
