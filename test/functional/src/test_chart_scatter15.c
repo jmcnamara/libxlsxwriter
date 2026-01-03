@@ -28,7 +28,7 @@ int main() {
     worksheet_write_number(worksheet, 2, 0, 3,   NULL);
     worksheet_write_number(worksheet, 2, 1, 30,  NULL);
 
-    chart_add_series(chart, "=Sheet1!$A$2:$A$3", "=Sheet1!$B$2:$B$3");
+    chart_add_series(chart, "=Sheet1!$A$2:$A$3", "=Sheet1!$B$2:$B$3", 0);
 
     lxw_chart_font font1 = {.italic = LXW_TRUE, .baseline = -1};
     chart_axis_set_name_range(chart->x_axis, "Sheet1", 0, 0);

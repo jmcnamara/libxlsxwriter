@@ -36,12 +36,12 @@ int main() {
     chart_add_series(chart,
          "=Sheet1!$A$1:$A$5",
          "=Sheet1!$B$1:$B$5"
-    );
+    , 0);
 
     chart_add_series(chart,
          "=Sheet1!$A$1:$A$5",
          "=Sheet1!$C$1:$C$5"
-    );
+    , 0);
 
     lxw_chart_line up_line   = {.color = LXW_COLOR_YELLOW};
     lxw_chart_fill up_fill   = {.color = LXW_COLOR_RED};

@@ -36,7 +36,7 @@ int main() {
     worksheet_write_string(worksheet, CELL("D1"), "foo" , NULL);
     worksheet_write_string(worksheet, CELL("D2"), "bar" , NULL);
 
-    lxw_chart_series *series = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
+    lxw_chart_series *series = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5", 0);
 
 
     lxw_chart_data_label data_label1 = {.value = "123"};
@@ -56,8 +56,8 @@ int main() {
 
     chart_series_set_labels_custom(series, data_labels);
 
-    chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5");
-    chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
+    chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5", 0);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

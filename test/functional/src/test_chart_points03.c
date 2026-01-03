@@ -21,7 +21,7 @@ int main() {
     worksheet_write_number(worksheet, 1, 0, 5, NULL);
     worksheet_write_number(worksheet, 2, 0, 4, NULL);
 
-    lxw_chart_series *series = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$3");
+    lxw_chart_series *series = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$3", 0);
 
 
     lxw_chart_fill fill1 = {.color = 0xFF0000};

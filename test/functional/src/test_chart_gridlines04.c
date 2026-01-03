@@ -33,9 +33,9 @@ int main() {
         for (col = 0; col < 3; col++)
             worksheet_write_number(worksheet, row, col, data[row][col], NULL);
 
-    chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
-    chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5");
-    chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
+    chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5", 0);
 
     chart_axis_major_gridlines_set_visible(chart->y_axis, LXW_FALSE);
 

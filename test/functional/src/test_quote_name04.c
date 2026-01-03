@@ -29,7 +29,7 @@ int main()
 
     lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_PIE);
 
-    lxw_chart_series *series = chart_add_series(chart, NULL, NULL);
+    lxw_chart_series *series = chart_add_series(chart, NULL, NULL, 0);
     chart_series_set_values(series, sheetname, 0, 0, 4, 0);
     chart_series_set_name_range(series, sheetname, 0, 0);
 

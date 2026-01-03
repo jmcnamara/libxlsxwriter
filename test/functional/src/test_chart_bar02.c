@@ -36,8 +36,8 @@ int main() {
 
     worksheet_write_string(worksheet1, CELL("A1"), "Foo" , NULL);
 
-    chart_add_series(chart, "Sheet2!$A$1:$A$5", "Sheet2!$B$1:$B$5");
-    chart_add_series(chart, "Sheet2!$A$1:$A$5", "Sheet2!$C$1:$C$5");
+    chart_add_series(chart, "Sheet2!$A$1:$A$5", "Sheet2!$B$1:$B$5", 0);
+    chart_add_series(chart, "Sheet2!$A$1:$A$5", "Sheet2!$C$1:$C$5", 0);
 
 
     worksheet_insert_chart(worksheet2, CELL("E9"), chart);

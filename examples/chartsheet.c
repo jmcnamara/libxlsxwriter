@@ -53,14 +53,14 @@ int main() {
     lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_BAR);
 
     /* Add the first series to the chart. */
-    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7", 0);
 
     /* Set the name for the series instead of the default "Series 1". */
     chart_series_set_name(series, "=Sheet1!$B$1");
 
     /* Add a second series but leave the categories and values undefined. They
      * can be defined later using the alternative syntax shown below.  */
-    series = chart_add_series(chart, NULL, NULL);
+    series = chart_add_series(chart, NULL, NULL, 0);
 
     /* Configure the series using a syntax that is easier to define programmatically. */
     chart_series_set_categories(series, "Sheet1", 1, 0, 6, 0); /* "=Sheet1!$A$2:$A$7" */

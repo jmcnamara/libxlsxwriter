@@ -25,7 +25,7 @@ int main() {
     worksheet_write_number(worksheet, CELL("A2"), 1,       NULL);
     worksheet_write_number(worksheet, CELL("B2"), 2,       NULL);
 
-    chart_add_series(chart, "=Sheet1!$A$1:$B$1", "=Sheet1!$A$2:$B$2");
+    chart_add_series(chart, "=Sheet1!$A$1:$B$1", "=Sheet1!$A$2:$B$2", 0);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

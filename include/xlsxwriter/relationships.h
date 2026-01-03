@@ -62,6 +62,7 @@ void lxw_add_worksheet_relationship(lxw_relationships *self, const char *type,
                                     const char *target,
                                     const char *target_mode);
 void lxw_add_rich_value_relationship(lxw_relationships *self);
+void lxw_add_feature_property_bag_relationship(lxw_relationships *self);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

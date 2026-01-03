@@ -37,9 +37,9 @@ int main()
     worksheet_set_portrait(worksheet);
     worksheet->vertical_dpi = 200;
 
-    lxw_chart_series *series1 = chart_add_series(chart, NULL, NULL);
-    lxw_chart_series *series2 = chart_add_series(chart, NULL, NULL);
-    lxw_chart_series *series3 = chart_add_series(chart, NULL, NULL);
+    lxw_chart_series *series1 = chart_add_series(chart, NULL, NULL, 0);
+    lxw_chart_series *series2 = chart_add_series(chart, NULL, NULL, 0);
+    lxw_chart_series *series3 = chart_add_series(chart, NULL, NULL, 0);
 
     chart_series_set_values(series1, sheetname, 0, 0, 4, 0);
     chart_series_set_values(series2, sheetname, 0, 1, 4, 1);

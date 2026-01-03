@@ -26,7 +26,7 @@ int main() {
     worksheet_write_number(worksheet, 3, 0, 20000000, NULL);
     worksheet_write_number(worksheet, 4, 0, 10000000, NULL);
 
-    chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
+    chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5", 0);
 
     chart_axis_set_display_units(chart->y_axis, LXW_CHART_AXIS_UNITS_TRILLIONS);
     chart_axis_set_display_units_visible(chart->y_axis, LXW_FALSE);

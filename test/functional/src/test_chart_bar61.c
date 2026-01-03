@@ -33,8 +33,8 @@ int main() {
         for (col = 0; col < 3; col++)
             worksheet_write_number(worksheet, row, col, data[row][col] , NULL);
 
-    lxw_chart_series *series1 = chart_add_series(chart, NULL, NULL);
-    lxw_chart_series *series2 = chart_add_series(chart, NULL, NULL);
+    lxw_chart_series *series1 = chart_add_series(chart, NULL, NULL, 0);
+    lxw_chart_series *series2 = chart_add_series(chart, NULL, NULL, 0);
 
 
     chart_series_set_categories(series1, "Sheet1", 0, 0, 4, 0);

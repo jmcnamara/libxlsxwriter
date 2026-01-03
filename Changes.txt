@@ -3,14 +3,90 @@
 
 ## Information for Packagers
 
-- This is serial version 1.2.3. This is not a semver version number.
+- This is serial version 1.2.4. This is not a semver version number.
 
-- This is shared object library version `libxlsxwriter.so.10`. This should be
+- This is shared object library version `libxlsxwriter.so.11`. This should be
   updated automatically via `make` and `cmake` as part of the build process.
-  This version contains ABI changes since the previous release.
 
 - Please report any downstream patches back upstream to help improve the overall
   build process.
+
+
+## 1.2.4 January 2 2026
+
+- Added support for secondary Y axis in charts. Series can be assigned to a
+  secondary Y axis using an optional fourth parameter to `chart_add_series()`.
+  Secondary axes are accessible via the `chart->x2_axis` and `chart->y2_axis`
+  pointers, and all existing `chart_axis_set_*()` functions work with these
+  secondary axis pointers. The API is backward compatible with existing code.
+
+- Added support for combined charts via `chart_combine()`. Combined charts
+  allow overlaying two different chart types (e.g., Column + Line, Bar + Line,
+  Area + Column) on the same plot area. For combined charts with secondary
+  axes, set `chart->is_secondary = LXW_TRUE` on the secondary chart.
+
+- Added `chart_set_series_gap_y2()` and `chart_set_series_overlap_y2()` to set
+  the gap and overlap for series on a secondary Y axis in Bar/Column charts.
+
+- Added support for Stock charts via `LXW_CHART_STOCK`. Stock charts display
+  High-Low-Close (HLC) or Open-High-Low-Close (OHLC) data. Default series
+  formatting is applied automatically (line with no fill, appropriate markers).
+  Stock charts support hi-low lines, drop lines, and up-down bars.
+
+- Added `LXW_CHART_MARKER_DOT` marker type used by Stock charts.
+
+- Added support for gradient fills in chart series, plotarea, and chartarea.
+  New functions: `chart_series_set_gradient()`, `chart_plotarea_set_gradient()`,
+  and `chart_chartarea_set_gradient()`. Supports linear, radial, rectangular,
+  and path gradient types with 2-10 color stops.
+
+- Added support for textboxes via `worksheet_insert_textbox()` and
+  `worksheet_insert_textbox_opt()`. Textboxes allow inserting text with a
+  rectangular shape into a worksheet. The optional `lxw_textbox_options`
+  struct allows setting width, height, offsets, scale, and description.
+
+- Added new chart examples:
+  - `chart_stock.c`: Demonstrates stock chart creation with High-Low-Close data.
+  - `chart_pareto.c`: Shows how to create a Pareto chart using combined Column
+    and Line charts with a secondary Y axis.
+  - `chart_gauge.c`: Demonstrates creating a gauge chart by combining Doughnut
+    and Pie charts with custom point colors.
+  - `chart_gradient.c`: Shows how to apply gradient fills to chart series
+    and the plot area.
+
+- Added `textbox.c` example demonstrating textbox insertion.
+
+- Added support for sparklines via `worksheet_add_sparkline()`. Sparklines are
+  mini-charts that fit in a single cell to show data trends at a glance. The
+  `lxw_sparkline_options` struct allows configuring:
+  - Sparkline type: line, column, or win/loss
+  - Predefined styles (0-35)
+  - Point markers: high, low, negative, first, last, and all markers
+  - Custom colors for series, markers, and axis
+  - Axis options: min, max, date axis, reverse, show hidden data
+  Added new example:
+  - `sparklines.c`: Demonstrates creating different sparkline types with
+    various options and custom colors.
+
+- Added support for chart date axis via `chart_axis_set_date_axis()`. This
+  enables date-based X axis on charts with automatic date formatting. Related
+  functions for configuring time units:
+  - `chart_axis_set_major_unit_type()`: Set major time unit (days/months/years)
+  - `chart_axis_set_minor_unit_type()`: Set minor time unit (days/months/years)
+
+- Added autofit helper utility functions for calculating column widths based
+  on string content:
+  - `lxw_pixel_width()`: Calculate pixel width of a string (Calibri 11 font)
+  - `lxw_autofit_width()`: Calculate column width suitable for
+    `worksheet_set_column()`
+  Note: Excel does not store autofit information in files; these functions
+  help users calculate appropriate column widths programmatically.
+
+- Added support for inserting checkboxes in worksheet cells via
+  `worksheet_insert_checkbox()`. Checkboxes are a feature of Excel 365
+  from 2024 onwards. They are boolean values displayed as interactive
+  checkboxes in cells. Added new example:
+  - `checkbox.c`: Demonstrates inserting checkboxes with different states.
 
 
 ## 1.2.3 Jun 30 2025

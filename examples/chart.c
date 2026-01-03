@@ -40,9 +40,9 @@ int main() {
     /* Configure the chart. In simplest case we just add some value data
      * series. The NULL categories will default to 1 to 5 like in Excel.
      */
-    chart_add_series(chart, NULL, "Sheet1!$A$1:$A$5");
-    chart_add_series(chart, NULL, "Sheet1!$B$1:$B$5");
-    chart_add_series(chart, NULL, "Sheet1!$C$1:$C$5");
+    chart_add_series(chart, NULL, "Sheet1!$A$1:$A$5", 0);
+    chart_add_series(chart, NULL, "Sheet1!$B$1:$B$5", 0);
+    chart_add_series(chart, NULL, "Sheet1!$C$1:$C$5", 0);
 
 
     lxw_chart_font font = {.bold = LXW_EXPLICIT_FALSE, .color = LXW_COLOR_BLUE};

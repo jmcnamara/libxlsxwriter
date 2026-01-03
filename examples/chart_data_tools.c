@@ -60,8 +60,8 @@ int main() {
     chart_title_set_name(chart, "Chart with High-Low Lines");
 
     /* Add the first series to the chart. */
-    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
-    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7", 0);
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7", 0);
 
     /* Add high-low lines to the chart. */
     chart_set_high_low_lines(chart, NULL);
@@ -79,8 +79,8 @@ int main() {
     chart_title_set_name(chart, "Chart with Drop Lines");
 
     /* Add the first series to the chart. */
-    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
-    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7", 0);
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7", 0);
 
     /* Add drop lines to the chart. */
     chart_set_drop_lines(chart, NULL);
@@ -98,8 +98,8 @@ int main() {
     chart_title_set_name(chart, "Chart with Up-Down bars");
 
     /* Add the first series to the chart. */
-    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
-    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7", 0);
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7", 0);
 
     /* Add Up-Down bars to the chart. */
     chart_set_up_down_bars(chart);
@@ -117,8 +117,8 @@ int main() {
     chart_title_set_name(chart, "Chart with Up-Down bars");
 
     /* Add the first series to the chart. */
-    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
-    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7", 0);
+    chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7", 0);
 
     /* Add Up-Down bars to the chart, with formatting. */
     lxw_chart_line line      = {.color = LXW_COLOR_BLACK};
@@ -140,8 +140,8 @@ int main() {
     chart_title_set_name(chart, "Chart with Data Labels and Markers");
 
     /* Add the first series to the chart. */
-    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
-    chart_add_series(         chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7", 0);
+    chart_add_series(         chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7", 0);
 
     /* Add series markers. */
     chart_series_set_marker_type(series, LXW_CHART_MARKER_CIRCLE);
@@ -162,8 +162,8 @@ int main() {
     chart_title_set_name(chart, "Chart with Error Bars");
 
     /* Add the first series to the chart. */
-    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
-    chart_add_series(         chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7", 0);
+    chart_add_series(         chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7", 0);
 
     /* Add error bars to show Standard Error. */
     chart_series_set_error_bars(series->y_error_bars,
@@ -185,8 +185,8 @@ int main() {
     chart_title_set_name(chart, "Chart with a Trendline");
 
     /* Add the first series to the chart. */
-    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7");
-    chart_add_series(         chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$B$2:$B$7", 0);
+    chart_add_series(         chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7", 0);
 
     /* Add a polynomial trendline. */
     lxw_chart_line poly_line = {.color     = LXW_COLOR_GRAY,

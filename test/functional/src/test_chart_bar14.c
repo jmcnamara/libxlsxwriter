@@ -49,15 +49,15 @@ int main() {
 
     worksheet_write_url(worksheet2, CELL("A6"), "http://www.perl.com/" , NULL);
 
-    chart_add_series(chart3, NULL, "=Sheet2!$A$1:$A$5");
-    chart_add_series(chart3, NULL, "=Sheet2!$B$1:$B$5");
-    chart_add_series(chart3, NULL, "=Sheet2!$C$1:$C$5");
+    chart_add_series(chart3, NULL, "=Sheet2!$A$1:$A$5", 0);
+    chart_add_series(chart3, NULL, "=Sheet2!$B$1:$B$5", 0);
+    chart_add_series(chart3, NULL, "=Sheet2!$C$1:$C$5", 0);
 
-    chart_add_series(chart1, NULL, "=Sheet2!$A$1:$A$5");
-    chart_add_series(chart1, NULL, "=Sheet2!$B$1:$B$5");
-    chart_add_series(chart1, NULL, "=Sheet2!$C$1:$C$5");
+    chart_add_series(chart1, NULL, "=Sheet2!$A$1:$A$5", 0);
+    chart_add_series(chart1, NULL, "=Sheet2!$B$1:$B$5", 0);
+    chart_add_series(chart1, NULL, "=Sheet2!$C$1:$C$5", 0);
 
-    chart_add_series(chart2, NULL, "=Sheet2!$A$1:$A$5");
+    chart_add_series(chart2, NULL, "=Sheet2!$A$1:$A$5", 0);
 
     worksheet_insert_chart(worksheet2, CELL("E9"), chart1);
     worksheet_insert_chart(worksheet2, CELL("F25"), chart2);

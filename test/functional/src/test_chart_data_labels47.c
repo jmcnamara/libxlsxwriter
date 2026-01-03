@@ -33,7 +33,7 @@ int main() {
         for (col = 0; col < 3; col++)
             worksheet_write_number(worksheet, row, col, data[row][col], NULL);
 
-    lxw_chart_series *series = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
+    lxw_chart_series *series = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5", 0);
 
     lxw_chart_line line = {.color = LXW_COLOR_RED};
     lxw_chart_font font = {.bold = LXW_TRUE, .italic = LXW_TRUE, .color = LXW_COLOR_RED, .baseline = -1};
@@ -44,8 +44,8 @@ int main() {
 
     chart_series_set_labels_custom(series, data_labels);
 
-    chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5");
-    chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
+    chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5", 0);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

@@ -44,12 +44,12 @@ int main() {
     lxw_chart_series *series1 = chart_add_series(chart1,
          "=Sheet1!$A$1:$A$5",
          "=Sheet1!$B$1:$B$5"
-    );
+    , 0);
 
     lxw_chart_series *series2 = chart_add_series(chart1,
          "=Sheet1!$A$1:$A$5",
          "=Sheet1!$C$1:$C$5"
-    );
+    , 0);
 
     worksheet_insert_chart(worksheet1, CELL("E9"), chart1);
 
@@ -57,12 +57,12 @@ int main() {
     lxw_chart_series *series3 = chart_add_series(chart2,
          "=Sheet2!$A$1:$A$5",
          "=Sheet2!$B$1:$B$5"
-    );
+    , 0);
 
     lxw_chart_series *series4 = chart_add_series(chart2,
          "=Sheet2!$A$1:$A$5",
          "=Sheet2!$C$1:$C$5"
-    );
+    , 0);
 
     worksheet_insert_chart(worksheet2, CELL("E9"), chart2);
 

@@ -142,8 +142,8 @@ CTEST(chart, chart01) {
     lxw_chart *chart = lxw_chart_new(LXW_CHART_BAR);
     chart->file = testfile;
 
-    series1 = chart_add_series(chart, NULL, "Sheet1!$A$1:$A$5");
-    series2 = chart_add_series(chart, NULL, "Sheet1!$B$1:$B$5");
+    series1 = chart_add_series(chart, NULL, "Sheet1!$A$1:$A$5", 0);
+    series2 = chart_add_series(chart, NULL, "Sheet1!$B$1:$B$5", 0);
 
     lxw_chart_add_data_cache(series1->values, data[0], 5, 3, 0);
     lxw_chart_add_data_cache(series2->values, data[0], 5, 3, 1);

@@ -1188,6 +1188,34 @@ _write_protection(lxw_styles *self, lxw_format *format)
 }
 
 /*
+ * Write the xfComplement <extLst> elements for checkbox formats.
+ */
+STATIC void
+_write_xf_format_extensions(lxw_styles *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    lxw_xml_start_tag(self->file, "extLst", NULL);
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("uri", "{C7286773-470A-42A8-94C5-96B5CB345126}");
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:xfpb",
+        "http://schemas.microsoft.com/office/spreadsheetml/2022/featurepropertybag");
+
+    lxw_xml_start_tag(self->file, "ext", &attributes);
+    LXW_FREE_ATTRIBUTES();
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("i", "0");
+    lxw_xml_empty_tag(self->file, "xfpb:xfComplement", &attributes);
+    LXW_FREE_ATTRIBUTES();
+
+    lxw_xml_end_tag(self->file, "ext");
+    lxw_xml_end_tag(self->file, "extLst");
+}
+
+/*
  * Write the <xf> element.
  */
 STATIC void
@@ -1198,6 +1226,7 @@ _write_xf(lxw_styles *self, lxw_format *format)
     uint8_t has_protection = (!format->locked) | format->hidden;
     uint8_t has_alignment = _has_alignment(format);
     uint8_t apply_alignment = _apply_alignment(format);
+    uint8_t has_checkbox = format->checkbox;
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_INT("numFmtId", format->num_format_index);
@@ -1232,7 +1261,7 @@ _write_xf(lxw_styles *self, lxw_format *format)
         LXW_PUSH_ATTRIBUTES_STR("applyProtection", "1");
 
     /* Write XF with sub-elements if required. */
-    if (has_alignment || has_protection) {
+    if (has_alignment || has_protection || has_checkbox) {
         lxw_xml_start_tag(self->file, "xf", &attributes);
 
         if (has_alignment)
@@ -1240,6 +1269,9 @@ _write_xf(lxw_styles *self, lxw_format *format)
 
         if (has_protection)
             _write_protection(self, format);
+
+        if (has_checkbox)
+            _write_xf_format_extensions(self);
 
         lxw_xml_end_tag(self->file, "xf");
     }

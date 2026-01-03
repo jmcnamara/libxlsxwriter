@@ -36,12 +36,12 @@ int main() {
     chart_add_series(chart,
          "=Sheet1!$A$1:$A$5",
          "=Sheet1!$B$1:$B$5"
-    );
+    , 0);
 
     chart_add_series(chart,
          "=Sheet1!$A$1:$A$5",
          "=Sheet1!$C$1:$C$5"
-    );
+    , 0);
 
     chart_axis_major_gridlines_set_visible(chart->x_axis, LXW_TRUE);
     chart_axis_major_gridlines_set_visible(chart->y_axis, LXW_FALSE);

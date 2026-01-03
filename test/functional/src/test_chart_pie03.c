@@ -30,7 +30,7 @@ int main() {
     chart_add_series(chart,
          "=Sheet1!$A$1:$A$3",
          "=Sheet1!$B$1:$B$3"
-    );
+    , 0);
 
     int16_t series[] = {1, -1};
     chart_legend_delete_series(chart, series);

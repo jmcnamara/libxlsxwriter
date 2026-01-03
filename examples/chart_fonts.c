@@ -27,7 +27,7 @@ int main() {
     lxw_chart *chart = workbook_add_chart(workbook, LXW_CHART_LINE);
 
     /* Configure the chart. */
-    chart_add_series(chart, NULL, "Sheet1!$A$1:$A$6");
+    chart_add_series(chart, NULL, "Sheet1!$A$1:$A$6", 0);
 
     /* Create some fonts to use in the chart.  */
     lxw_chart_font font1 = {.name = "Calibri", .color = LXW_COLOR_BLUE};

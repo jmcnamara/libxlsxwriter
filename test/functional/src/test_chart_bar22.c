@@ -50,17 +50,17 @@ int main() {
     chart_add_series(chart,
          "=Sheet1!$A$2:$A$5",
          "=Sheet1!$B$2:$B$5"
-    );
+    , 0);
 
     chart_add_series(chart,
          "=Sheet1!$A$2:$A$5",
          "=Sheet1!$C$2:$C$5"
-    );
+    , 0);
 
     chart_add_series(chart,
          "=Sheet1!$A$2:$A$5",
          "=Sheet1!$D$2:$D$5"
-    );
+    , 0);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

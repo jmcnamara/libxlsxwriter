@@ -2,7 +2,7 @@
     .name = .libxlsxwriter,
     .version = "1.1.9",
     .fingerprint = 0xa28d9a85f22fad0e,
-    .minimum_zig_version = "0.15.1",
+    .minimum_zig_version = "0.14.0",
     .dependencies = .{
         .zlib = .{
             .url = "git+https://github.com/madler/zlib#v1.3.1",

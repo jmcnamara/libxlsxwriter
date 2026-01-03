@@ -438,6 +438,8 @@ typedef struct lxw_format {
 
     uint8_t quote_prefix;
 
+    uint8_t checkbox;
+
     STAILQ_ENTRY (lxw_format) list_pointers;
 } lxw_format;
 
@@ -1332,6 +1334,26 @@ void format_set_diag_color(lxw_format *format, lxw_color_t color);
  *
  */
 void format_set_quote_prefix(lxw_format *format);
+
+/**
+ * @brief Set the checkbox property for a cell format.
+ *
+ * @param format Pointer to a Format instance.
+ *
+ * Set the checkbox property of a format. This allows a boolean value to be
+ * displayed as a checkbox in Excel. It is generally easier to create a
+ * checkbox using the worksheet_insert_checkbox() function which
+ * automatically sets this property.
+ *
+ * @code
+ *     lxw_format *checkbox_format = workbook_add_format(workbook);
+ *     format_set_checkbox(checkbox_format);
+ *
+ *     worksheet_write_boolean(worksheet, 0, 0, 1, checkbox_format);
+ * @endcode
+ *
+ */
+void format_set_checkbox(lxw_format *format);
 
 void format_set_font_outline(lxw_format *format);
 void format_set_font_shadow(lxw_format *format);

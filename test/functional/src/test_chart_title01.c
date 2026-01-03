@@ -35,7 +35,7 @@ int main() {
         for (col = 0; col < 3; col++)
             worksheet_write_number(worksheet, row, col, data[row][col], NULL);
 
-    series = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
+    series = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5", 0);
 
     chart_series_set_name(series, "Foo");
     chart_title_off(chart);
