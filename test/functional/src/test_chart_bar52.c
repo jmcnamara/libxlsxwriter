@@ -36,8 +36,8 @@ int main() {
 
     worksheet_write_string(worksheet1, CELL("A1"), "Foo" , NULL);
 
-    lxw_chart_series *series1 = chart_add_series(chart, "Sheet2!$A$1:$A$5", "Sheet2!$B$1:$B$5");
-    lxw_chart_series *series2 = chart_add_series(chart, "Sheet2!$A$1:$A$5", "Sheet2!$C$1:$C$5");
+    lxw_chart_series *series1 = chart_add_series(chart, "Sheet2!$A$1:$A$5", "Sheet2!$B$1:$B$5", 0);
+    lxw_chart_series *series2 = chart_add_series(chart, "Sheet2!$A$1:$A$5", "Sheet2!$C$1:$C$5", 0);
 
     /* Add cache data for testing. */
     lxw_chart_add_data_cache(series1->categories, data[0], 5, 3, 0);

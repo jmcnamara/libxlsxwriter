@@ -23,7 +23,7 @@ int main() {
     worksheet_write_number(worksheet, 4, 0, 7, NULL);
     worksheet_write_number(worksheet, 5, 0, 4, NULL);
 
-    lxw_chart_series *series = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$6");
+    lxw_chart_series *series = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$6", 0);
 
     lxw_chart_line line1 = {.color     = LXW_COLOR_RED,
                             .dash_type = LXW_CHART_LINE_DASH_SQUARE_DOT};

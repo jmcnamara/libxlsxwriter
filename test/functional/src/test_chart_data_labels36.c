@@ -30,7 +30,7 @@ int main() {
             worksheet_write_number(worksheet, row, col, data[row][col], NULL);
 
 
-    lxw_chart_series *series1 = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
+    lxw_chart_series *series1 = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5", 0);
 
     lxw_chart_font font = {.name = "Consolas", .pitch_family = 49, .charset = 0, .baseline = -1};
     lxw_chart_line line = {.color = LXW_COLOR_RED};

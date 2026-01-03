@@ -31,14 +31,14 @@ int main() {
         for (col = 0; col < 8; col++)
             worksheet_write_number(worksheet, row, col, data[row][col], NULL);
 
-    chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$3");
-    chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$3");
-    chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$3");
-    chart_add_series(chart, NULL, "=Sheet1!$D$1:$D$3");
-    chart_add_series(chart, NULL, "=Sheet1!$E$1:$E$3");
-    chart_add_series(chart, NULL, "=Sheet1!$F$1:$F$3");
-    chart_add_series(chart, NULL, "=Sheet1!$G$1:$G$3");
-    chart_add_series(chart, NULL, "=Sheet1!$H$1:$H$3");
+    chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$3", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$3", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$3", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$D$1:$D$3", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$E$1:$E$3", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$F$1:$F$3", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$G$1:$G$3", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$H$1:$H$3", 0);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

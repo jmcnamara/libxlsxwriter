@@ -35,9 +35,9 @@ int main() {
 
     worksheet_write_string(worksheet, CELL("A7"), "Pear" , NULL);
 
-                                chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
-    lxw_chart_series *series2 = chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5");
-    lxw_chart_series *series3 = chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
+                                chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5", 0);
+    lxw_chart_series *series2 = chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5", 0);
+    lxw_chart_series *series3 = chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5", 0);
 
     chart_series_set_name(series2, "Apple");
     chart_series_set_name(series3, "=Sheet1!$A$7");

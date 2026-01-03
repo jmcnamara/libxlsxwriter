@@ -54,7 +54,7 @@ int main() {
     chart = workbook_add_chart(workbook, LXW_CHART_DOUGHNUT);
 
     /* Add the first series to the chart. */
-    series = chart_add_series(chart, "=Sheet1!$A$2:$A$4", "=Sheet1!$B$2:$B$4");
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$4", "=Sheet1!$B$2:$B$4", 0);
 
     /* Set the name for the series instead of the default "Series 1". */
     chart_series_set_name(series, "Doughnut sales data");
@@ -75,7 +75,7 @@ int main() {
     chart = workbook_add_chart(workbook, LXW_CHART_DOUGHNUT);
 
     /* Add the first series to the chart. */
-    series = chart_add_series(chart, "=Sheet1!$A$2:$A$4", "=Sheet1!$B$2:$B$4");
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$4", "=Sheet1!$B$2:$B$4", 0);
 
     /* Set the name for the series instead of the default "Series 1". */
     chart_series_set_name(series, "Doughnut sales data");
@@ -112,7 +112,7 @@ int main() {
     chart = workbook_add_chart(workbook, LXW_CHART_DOUGHNUT);
 
     /* Add the first series to the chart. */
-    series = chart_add_series(chart, "=Sheet1!$A$2:$A$4", "=Sheet1!$B$2:$B$4");
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$4", "=Sheet1!$B$2:$B$4", 0);
 
     /* Set the name for the series instead of the default "Series 1". */
     chart_series_set_name(series, "Doughnut sales data");
@@ -135,7 +135,7 @@ int main() {
     chart = workbook_add_chart(workbook, LXW_CHART_DOUGHNUT);
 
     /* Add the first series to the chart. */
-    series = chart_add_series(chart, "=Sheet1!$A$2:$A$4", "=Sheet1!$B$2:$B$4");
+    series = chart_add_series(chart, "=Sheet1!$A$2:$A$4", "=Sheet1!$B$2:$B$4", 0);
 
     /* Set the name for the series instead of the default "Series 1". */
     chart_series_set_name(series, "Doughnut sales data");

@@ -30,7 +30,7 @@ int main() {
     chart_add_series(chart,
          "=Sheet1!$A$1:$A$3",
          "=Sheet1!$B$1:$B$3"
-    );
+    , 0);
 
     lxw_chart_font font1 = {.bold = LXW_TRUE, .italic = LXW_TRUE, .baseline = -1};
     chart_legend_set_font(chart, &font1);

@@ -267,3 +267,15 @@ lxw_add_rich_value_relationship(lxw_relationships *self)
                       NULL);
 
 }
+
+/*
+ * Add a featurePropertyBag relationship to workbook .rels xml files.
+ */
+void
+lxw_add_feature_property_bag_relationship(lxw_relationships *self)
+{
+    _add_relationship(self,
+                      "http://schemas.microsoft.com/office/2022/11/relationships/",
+                      "FeaturePropertyBag",
+                      "featurePropertyBag/featurePropertyBag.xml", NULL);
+}

@@ -59,7 +59,7 @@ int main() {
 
     /* Add a data series to the chart. */
     lxw_chart_series *series = chart_add_series(chart, "=Sheet1!$A$2:$A$7",
-                                                       "=Sheet1!$B$2:$B$7");
+                                                       "=Sheet1!$B$2:$B$7", 0);
 
     /* Add the series data labels. */
     chart_series_set_labels(series);
@@ -81,7 +81,7 @@ int main() {
 
     /* Add a data series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$2:$A$7",
-                                     "=Sheet1!$B$2:$B$7");
+                                     "=Sheet1!$B$2:$B$7", 0);
 
     /* Add the series data labels. */
     chart_series_set_labels(series);
@@ -106,7 +106,7 @@ int main() {
 
     /* Add a data series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$2:$A$7",
-                                     "=Sheet1!$B$2:$B$7");
+                                     "=Sheet1!$B$2:$B$7", 0);
 
     /* Add the series data labels. */
     chart_series_set_labels(series);
@@ -131,7 +131,7 @@ int main() {
 
     /* Add a data series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$2:$A$7",
-                                     "=Sheet1!$B$2:$B$7");
+                                     "=Sheet1!$B$2:$B$7", 0);
 
     /* Add the series data labels. */
     chart_series_set_labels(series);
@@ -160,7 +160,7 @@ int main() {
 
     /* Add a data series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$2:$A$7",
-                                     "=Sheet1!$B$2:$B$7");
+                                     "=Sheet1!$B$2:$B$7", 0);
 
     /* Add the series data labels. */
     chart_series_set_labels(series);
@@ -204,7 +204,7 @@ int main() {
 
     /* Add a data series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$2:$A$7",
-                                     "=Sheet1!$B$2:$B$7");
+                                     "=Sheet1!$B$2:$B$7", 0);
 
     /* Add the series data labels. */
     chart_series_set_labels(series);
@@ -248,7 +248,7 @@ int main() {
 
     /* Add a data series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$2:$A$7",
-                                     "=Sheet1!$B$2:$B$7");
+                                     "=Sheet1!$B$2:$B$7", 0);
 
     lxw_chart_font font2 = {.color = LXW_COLOR_RED};
 
@@ -296,7 +296,7 @@ int main() {
 
     /* Add a data series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$2:$A$7",
-                                     "=Sheet1!$B$2:$B$7");
+                                     "=Sheet1!$B$2:$B$7", 0);
 
     /* Add the series data labels. */
     chart_series_set_labels(series);
@@ -339,7 +339,7 @@ int main() {
 
     /* Add a data series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$2:$A$7",
-                                     "=Sheet1!$B$2:$B$7");
+                                     "=Sheet1!$B$2:$B$7", 0);
 
     /* Add the series data labels. */
     chart_series_set_labels(series);

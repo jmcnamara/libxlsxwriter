@@ -23,6 +23,11 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_chart_column03(self):
         self.run_exe_test('test_chart_column03')
 
+    def test_chart_column04(self):
+        self.ignore_elements = {'xl/workbook.xml': ['<fileVersion', '<calcPr'],
+                                'xl/charts/chart1.xml': ['<c:crosses', '<c:tickLblPos', '<c:axPos']}
+        self.run_exe_test('test_chart_column04')
+
     def test_chart_column05(self):
         self.run_exe_test('test_chart_column05')
 

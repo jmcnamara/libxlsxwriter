@@ -213,30 +213,6 @@ double lxw_datetime_to_excel_date_with_epoch(lxw_datetime *datetime,
                                              uint8_t use_1904_epoch);
 
 /**
- * @brief Validate a #lxw_datetime struct.
- *
- * Validates a #lxw_datetime struct to ensure its fields are within acceptable
- * ranges for Excel dates and times.
- *
- * The members of the #lxw_datetime struct and the range of their values are:
- *
- * Member   | Value
- * -------- | -----------
- * year     | 1900 - 9999
- * month    | 1 - 12
- * day      | 1 - 31
- * hour     | 0 - 23
- * min      | 0 - 59
- * sec      | 0 - 59.999
- *
- * @param datetime A pointer to a #lxw_datetime struct.
- *
- * @return A #lxw_error code. Either #LXW_NO_ERROR or
- *         #LXW_ERROR_DATETIME_VALIDATION if a field is out of range.
- */
-lxw_error lxw_datetime_validate(lxw_datetime *datetime);
-
-/**
  * @brief Converts a unix datetime to an Excel datetime number.
  *
  * @param unixtime Unix time (seconds since 1970-01-01)
@@ -299,6 +275,47 @@ int lxw_sprintf_dbl(char *data, double number);
 #endif
 
 uint16_t lxw_hash_password(const char *password);
+
+/**
+ * @brief Calculate the pixel width of a string based on character widths.
+ *
+ * @param string The string to calculate width for.
+ *
+ * @return The pixel width of the string using Calibri 11 font metrics.
+ *         Returns 0 if the string is NULL or empty.
+ *         Unhandled characters (including UTF-8) default to width 8.
+ *
+ * This function is useful for calculating column widths when implementing
+ * autofit-like functionality. Excel stores column widths, not autofit state,
+ * so applications must calculate widths themselves.
+ *
+ * Example:
+ * @code
+ *     uint16_t pixels = lxw_pixel_width("Hello World");
+ *     double width = lxw_autofit_width("Hello World");
+ *     worksheet_set_column(worksheet, 0, 0, width, NULL);
+ * @endcode
+ */
+uint16_t lxw_pixel_width(const char *string);
+
+/**
+ * @brief Calculate the column width required to autofit a string.
+ *
+ * @param string The string to calculate width for.
+ *
+ * @return The column width in Excel character units, suitable for use with
+ *         worksheet_set_column(). Returns 0 if the string is NULL or empty.
+ *
+ * This function calculates the pixel width of the string, adds 7 pixels of
+ * padding (as Excel does), and converts to column units.
+ *
+ * Example:
+ * @code
+ *     double width = lxw_autofit_width("Hello World");
+ *     worksheet_set_column(worksheet, 0, 0, width, NULL);
+ * @endcode
+ */
+double lxw_autofit_width(const char *string);
 
 /* *INDENT-OFF* */
 #ifdef __cplusplus

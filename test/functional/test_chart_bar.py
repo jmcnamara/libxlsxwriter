@@ -77,6 +77,11 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_chart_bar22(self):
         self.run_exe_test('test_chart_bar22')
 
+    def test_chart_bar24(self):
+        self.ignore_elements = {'xl/workbook.xml': ['<fileVersion', '<calcPr'],
+                                'xl/charts/chart1.xml': ['<c:crosses', '<c:tickLblPos', '<c:axPos']}
+        self.run_exe_test('test_chart_bar24')
+
     # 23 is a duplicate of 22 without explicit cache data.
 
     # Some of the following tests use the same target excel files as the tests

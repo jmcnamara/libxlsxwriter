@@ -110,9 +110,6 @@ typedef enum lxw_error {
     /** Function string parameter is empty. */
     LXW_ERROR_PARAMETER_IS_EMPTY,
 
-    /** A #lxw_datetime parameter has a validation error. */
-    LXW_ERROR_DATETIME_VALIDATION,
-
     /** Worksheet name exceeds Excel's limit of 31 characters. */
     LXW_ERROR_SHEETNAME_LENGTH_EXCEEDED,
 

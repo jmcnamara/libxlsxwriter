@@ -36,12 +36,12 @@ int main() {
     chart_add_series(chart,
          "=Sheet1!$A$1:$A$5",
          "=Sheet1!$B$1:$B$5"
-    );
+    , 0);
 
     chart_add_series(chart,
          "=Sheet1!$A$1:$A$5",
          "=Sheet1!$C$1:$C$5"
-    );
+    , 0);
 
     chart_axis_set_major_unit(chart->x_axis, 3);
     chart_axis_set_minor_unit(chart->x_axis, 1);

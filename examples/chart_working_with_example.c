@@ -29,7 +29,7 @@ int main() {
     chart = workbook_add_chart(workbook, LXW_CHART_LINE);
 
     /* Configure the chart. */
-    series = chart_add_series(chart, NULL, "Sheet1!$A$1:$A$6");
+    series = chart_add_series(chart, NULL, "Sheet1!$A$1:$A$6", 0);
 
     (void)series; /* Do something with series in the real examples. */
 

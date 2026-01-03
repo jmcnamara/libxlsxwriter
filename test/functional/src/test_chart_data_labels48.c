@@ -38,9 +38,9 @@ int main() {
     lxw_chart_data_label *data_labels1[] = {&data_label1, NULL};
     lxw_chart_data_label *data_labels2[] = {&data_label2, NULL};
 
-    lxw_chart_series *series1 = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
-    lxw_chart_series *series2 = chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5");
-    chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
+    lxw_chart_series *series1 = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5", 0);
+    lxw_chart_series *series2 = chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5", 0);
 
     chart_series_set_labels(series1);
     chart_series_set_labels(series2);

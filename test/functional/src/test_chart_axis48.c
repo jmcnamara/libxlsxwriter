@@ -35,9 +35,9 @@ int main() {
 
     worksheet_write_string(worksheet, CELL("D1"), "Foo" , NULL);
 
-    chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
-    chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5");
-    chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5");
+    chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$C$1:$C$5", 0);
 
     lxw_chart_font font1 = {.rotation = 360, .baseline = -1};
 

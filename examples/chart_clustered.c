@@ -71,15 +71,15 @@ int main() {
      */
     chart_add_series(chart,
                      "=Sheet1!$A$2:$B$6",
-                     "=Sheet1!$C$2:$C$6");
+                     "=Sheet1!$C$2:$C$6", 0);
 
     chart_add_series(chart,
                      "=Sheet1!$A$2:$B$6",
-                     "=Sheet1!$D$2:$D$6");
+                     "=Sheet1!$D$2:$D$6", 0);
 
     chart_add_series(chart,
                      "=Sheet1!$A$2:$B$6",
-                     "=Sheet1!$E$2:$E$6");
+                     "=Sheet1!$E$2:$E$6", 0);
 
     /* Set an Excel chart style. */
     chart_set_style(chart, 37);

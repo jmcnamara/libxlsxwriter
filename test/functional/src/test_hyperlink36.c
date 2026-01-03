@@ -23,7 +23,7 @@ int main() {
 
     worksheet_insert_image_opt(worksheet, CELL("E9"), "images/red.png", &options);
 
-    chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$2");
+    chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$2", 0);
 
     worksheet_insert_chart(worksheet, CELL("E12"), chart);
 

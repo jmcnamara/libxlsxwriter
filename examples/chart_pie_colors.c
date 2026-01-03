@@ -35,7 +35,7 @@ int main() {
 
     /* Add the data series to the chart. */
     series = chart_add_series(chart, "=Sheet1!$A$1:$A$2",
-                                     "=Sheet1!$B$1:$B$2");
+                                     "=Sheet1!$B$1:$B$2", 0);
 
     /* Create some fills for the chart points/segments. */
     lxw_chart_fill red_fill     = {.color = LXW_COLOR_RED  };

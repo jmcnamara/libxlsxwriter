@@ -41,6 +41,7 @@
 #include "rich_value_rel.h"
 #include "rich_value_types.h"
 #include "rich_value_structure.h"
+#include "feature_property_bag.h"
 
 #define LXW_ZIP_BUFFER_SIZE (16384)
 

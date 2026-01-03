@@ -57,6 +57,7 @@ lxw_free_drawing_object(lxw_drawing_object *drawing_object)
 
     free(drawing_object->description);
     free(drawing_object->tip);
+    free(drawing_object->text);
 
     free(drawing_object);
 }
@@ -604,6 +605,325 @@ _drawing_write_pic(lxw_drawing *self, uint32_t index,
 }
 
 /*
+ * Write the <xdr:cNvSpPr> element for textbox shapes.
+ */
+STATIC void
+_drawing_write_c_nv_sp_pr_textbox(lxw_drawing *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("txBox", 1);
+
+    lxw_xml_empty_tag(self->file, "xdr:cNvSpPr", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <xdr:nvSpPr> element for shapes.
+ */
+STATIC void
+_drawing_write_nv_sp_pr(lxw_drawing *self, uint32_t index,
+                        lxw_drawing_object *drawing_object)
+{
+    lxw_xml_start_tag(self->file, "xdr:nvSpPr", NULL);
+
+    /* Write the xdr:cNvPr element. */
+    _drawing_write_c_nv_pr(self, "TextBox", index, drawing_object);
+
+    /* Write the xdr:cNvSpPr element. */
+    _drawing_write_c_nv_sp_pr_textbox(self);
+
+    lxw_xml_end_tag(self->file, "xdr:nvSpPr");
+}
+
+/*
+ * Write the <a:prstGeom> element for shapes.
+ */
+STATIC void
+_drawing_write_a_prst_geom_rect(lxw_drawing *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("prst", "rect");
+
+    lxw_xml_start_tag(self->file, "a:prstGeom", &attributes);
+
+    lxw_xml_empty_tag(self->file, "a:avLst", NULL);
+
+    lxw_xml_end_tag(self->file, "a:prstGeom");
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <xdr:spPr> element for shapes.
+ */
+STATIC void
+_drawing_write_sp_pr_shape(lxw_drawing *self,
+                           lxw_drawing_object *drawing_object)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    lxw_xml_start_tag(self->file, "xdr:spPr", NULL);
+
+    /* Write the a:xfrm element. */
+    _drawing_write_a_xfrm(self, drawing_object);
+
+    /* Write the a:prstGeom element. */
+    _drawing_write_a_prst_geom_rect(self);
+
+    /* Write the a:solidFill element with scheme color. */
+    lxw_xml_start_tag(self->file, "a:solidFill", NULL);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "lt1");
+    lxw_xml_empty_tag(self->file, "a:schemeClr", &attributes);
+    LXW_FREE_ATTRIBUTES();
+    lxw_xml_end_tag(self->file, "a:solidFill");
+
+    /* Write the a:ln element with line styling. */
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("w", 9525);
+    LXW_PUSH_ATTRIBUTES_STR("cmpd", "sng");
+    lxw_xml_start_tag(self->file, "a:ln", &attributes);
+    LXW_FREE_ATTRIBUTES();
+
+    /* Write line solid fill with shaded scheme color. */
+    lxw_xml_start_tag(self->file, "a:solidFill", NULL);
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "lt1");
+    lxw_xml_start_tag(self->file, "a:schemeClr", &attributes);
+    LXW_FREE_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("val", 50000);
+    lxw_xml_empty_tag(self->file, "a:shade", &attributes);
+    LXW_FREE_ATTRIBUTES();
+    lxw_xml_end_tag(self->file, "a:schemeClr");
+    lxw_xml_end_tag(self->file, "a:solidFill");
+
+    lxw_xml_end_tag(self->file, "a:ln");
+
+    lxw_xml_end_tag(self->file, "xdr:spPr");
+}
+
+/*
+ * Write the <a:t> element for text.
+ */
+STATIC void
+_drawing_write_a_t(lxw_drawing *self, const char *text)
+{
+    lxw_xml_data_element(self->file, "a:t", text, NULL);
+}
+
+/*
+ * Write the <a:rPr> element for text run properties.
+ */
+STATIC void
+_drawing_write_a_r_pr(lxw_drawing *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("lang", "en-US");
+    LXW_PUSH_ATTRIBUTES_INT("sz", 1100);
+
+    lxw_xml_empty_tag(self->file, "a:rPr", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <a:r> element for text run.
+ */
+STATIC void
+_drawing_write_a_r(lxw_drawing *self, const char *text)
+{
+    lxw_xml_start_tag(self->file, "a:r", NULL);
+
+    /* Write the a:rPr element. */
+    _drawing_write_a_r_pr(self);
+
+    /* Write the a:t element. */
+    _drawing_write_a_t(self, text);
+
+    lxw_xml_end_tag(self->file, "a:r");
+}
+
+/*
+ * Write the <a:pPr> element for paragraph properties.
+ */
+STATIC void
+_drawing_write_a_p_pr(lxw_drawing *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("algn", "l");
+
+    lxw_xml_empty_tag(self->file, "a:pPr", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <a:p> element for paragraph.
+ */
+STATIC void
+_drawing_write_a_p_textbox(lxw_drawing *self, const char *text)
+{
+    lxw_xml_start_tag(self->file, "a:p", NULL);
+
+    /* Write the a:r element. */
+    _drawing_write_a_r(self, text);
+
+    lxw_xml_end_tag(self->file, "a:p");
+}
+
+/*
+ * Write the <a:bodyPr> element for text body properties.
+ */
+STATIC void
+_drawing_write_a_body_pr(lxw_drawing *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("wrap", "square");
+    LXW_PUSH_ATTRIBUTES_INT("rtlCol", 0);
+    LXW_PUSH_ATTRIBUTES_STR("anchor", "t");
+
+    lxw_xml_empty_tag(self->file, "a:bodyPr", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <xdr:txBody> element for textbox.
+ */
+STATIC void
+_drawing_write_tx_body(lxw_drawing *self, const char *text)
+{
+    lxw_xml_start_tag(self->file, "xdr:txBody", NULL);
+
+    /* Write the a:bodyPr element. */
+    _drawing_write_a_body_pr(self);
+
+    /* Write the a:lstStyle element. */
+    lxw_xml_empty_tag(self->file, "a:lstStyle", NULL);
+
+    /* Write the a:p element. */
+    _drawing_write_a_p_textbox(self, text);
+
+    lxw_xml_end_tag(self->file, "xdr:txBody");
+}
+
+/*
+ * Write the <xdr:style> element for shapes.
+ */
+STATIC void
+_drawing_write_style(lxw_drawing *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    lxw_xml_start_tag(self->file, "xdr:style", NULL);
+
+    /* Write the a:lnRef element. */
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("idx", 0);
+    lxw_xml_start_tag(self->file, "a:lnRef", &attributes);
+    LXW_FREE_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("r", 0);
+    LXW_PUSH_ATTRIBUTES_INT("g", 0);
+    LXW_PUSH_ATTRIBUTES_INT("b", 0);
+    lxw_xml_empty_tag(self->file, "a:scrgbClr", &attributes);
+    LXW_FREE_ATTRIBUTES();
+    lxw_xml_end_tag(self->file, "a:lnRef");
+
+    /* Write the a:fillRef element. */
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("idx", 0);
+    lxw_xml_start_tag(self->file, "a:fillRef", &attributes);
+    LXW_FREE_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("r", 0);
+    LXW_PUSH_ATTRIBUTES_INT("g", 0);
+    LXW_PUSH_ATTRIBUTES_INT("b", 0);
+    lxw_xml_empty_tag(self->file, "a:scrgbClr", &attributes);
+    LXW_FREE_ATTRIBUTES();
+    lxw_xml_end_tag(self->file, "a:fillRef");
+
+    /* Write the a:effectRef element. */
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("idx", 0);
+    lxw_xml_start_tag(self->file, "a:effectRef", &attributes);
+    LXW_FREE_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_INT("r", 0);
+    LXW_PUSH_ATTRIBUTES_INT("g", 0);
+    LXW_PUSH_ATTRIBUTES_INT("b", 0);
+    lxw_xml_empty_tag(self->file, "a:scrgbClr", &attributes);
+    LXW_FREE_ATTRIBUTES();
+    lxw_xml_end_tag(self->file, "a:effectRef");
+
+    /* Write the a:fontRef element. */
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("idx", "minor");
+    lxw_xml_start_tag(self->file, "a:fontRef", &attributes);
+    LXW_FREE_ATTRIBUTES();
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("val", "dk1");
+    lxw_xml_empty_tag(self->file, "a:schemeClr", &attributes);
+    LXW_FREE_ATTRIBUTES();
+    lxw_xml_end_tag(self->file, "a:fontRef");
+
+    lxw_xml_end_tag(self->file, "xdr:style");
+}
+
+/*
+ * Write the <xdr:sp> element for shapes.
+ */
+STATIC void
+_drawing_write_sp(lxw_drawing *self, uint32_t index,
+                  lxw_drawing_object *drawing_object)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("macro", "");
+    LXW_PUSH_ATTRIBUTES_STR("textlink", "");
+
+    lxw_xml_start_tag(self->file, "xdr:sp", &attributes);
+
+    /* Write the xdr:nvSpPr element. */
+    _drawing_write_nv_sp_pr(self, index, drawing_object);
+
+    /* Write the xdr:spPr element. */
+    _drawing_write_sp_pr_shape(self, drawing_object);
+
+    /* Write the xdr:style element. */
+    _drawing_write_style(self);
+
+    /* Write the xdr:txBody element if there is text. */
+    if (drawing_object->text)
+        _drawing_write_tx_body(self, drawing_object->text);
+
+    lxw_xml_end_tag(self->file, "xdr:sp");
+
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
  * Write the <xdr:clientData> element.
  */
 STATIC void
@@ -842,10 +1162,9 @@ _drawing_write_two_cell_anchor(lxw_drawing *self, uint32_t index,
         /* Write the xdr:pic element. */
         _drawing_write_pic(self, index, drawing_object);
     }
-    else {
-        /* Write the xdr:sp element for shapes. */
-        /* _drawing_write_sp(self, index, col_absolute, row_absolute, width,
-           height,  shape); */
+    else if (drawing_object->type == LXW_DRAWING_SHAPE) {
+        /* Write the xdr:sp element for shapes/textboxes. */
+        _drawing_write_sp(self, index, drawing_object);
     }
 
     /* Write the xdr:clientData element. */

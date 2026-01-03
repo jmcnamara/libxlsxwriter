@@ -48,9 +48,9 @@ int main() {
     lxw_row_col_options col_hidden = {.hidden = LXW_TRUE};
     worksheet_set_column_opt(worksheet, COLS("F:F"), LXW_DEF_COL_WIDTH, NULL, &col_hidden);
 
-    chart_add_series(chart, NULL, "=Sheet1!$A$2:$A$6");
-    chart_add_series(chart, NULL, "=Sheet1!$B$2:$B$6");
-    chart_add_series(chart, NULL, "=Sheet1!$C$2:$C$6");
+    chart_add_series(chart, NULL, "=Sheet1!$A$2:$A$6", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$B$2:$B$6", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$C$2:$C$6", 0);
 
     lxw_chart_options chart_options = {.object_position = LXW_OBJECT_MOVE_DONT_SIZE};
     worksheet_insert_chart_opt(worksheet, CELL("E9"), chart, &chart_options);

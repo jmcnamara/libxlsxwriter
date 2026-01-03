@@ -1277,6 +1277,48 @@ mem_error:
 }
 
 /*
+ * Write the featurePropertyBag.xml file.
+ */
+STATIC lxw_error
+_write_feature_property_bag_file(lxw_packager *self)
+{
+    lxw_error err = LXW_NO_ERROR;
+    lxw_feature_property_bag *feature_property_bag;
+    char *buffer = NULL;
+    size_t buffer_size = 0;
+
+    if (!self->workbook->has_feature_property_bags)
+        return LXW_NO_ERROR;
+
+    feature_property_bag = lxw_feature_property_bag_new();
+
+    if (!feature_property_bag) {
+        err = LXW_ERROR_MEMORY_MALLOC_FAILED;
+        goto mem_error;
+    }
+
+    feature_property_bag->file =
+        lxw_get_filehandle(&buffer, &buffer_size, self->tmpdir);
+    if (!feature_property_bag->file) {
+        err = LXW_ERROR_CREATING_TMPFILE;
+        goto mem_error;
+    }
+
+    lxw_feature_property_bag_assemble_xml_file(feature_property_bag);
+
+    err = _add_to_zip(self, feature_property_bag->file, &buffer, &buffer_size,
+                      "xl/featurePropertyBag/featurePropertyBag.xml");
+
+    fclose(feature_property_bag->file);
+    free(buffer);
+
+mem_error:
+    lxw_feature_property_bag_free(feature_property_bag);
+
+    return err;
+}
+
+/*
  * Write the custom.xml file.
  */
 STATIC lxw_error
@@ -1539,6 +1581,9 @@ _write_content_types_file(lxw_packager *self)
     if (workbook->has_embedded_images)
         lxw_ct_add_rich_value(content_types);
 
+    if (workbook->has_feature_property_bags)
+        lxw_ct_add_feature_property_bag(content_types);
+
     lxw_content_types_assemble_xml_file(content_types);
 
     err = _add_to_zip(self, content_types->file, &buffer, &buffer_size,
@@ -1611,6 +1656,9 @@ _write_workbook_rels_file(lxw_packager *self)
 
     if (workbook->has_embedded_images)
         lxw_add_rich_value_relationship(rels);
+
+    if (workbook->has_feature_property_bags)
+        lxw_add_feature_property_bag_relationship(rels);
 
     lxw_relationships_assemble_xml_file(rels);
 
@@ -2248,6 +2296,9 @@ lxw_create_package(lxw_packager *self)
     RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_rich_value_structure_file(self);
+    RETURN_AND_ZIPCLOSE_ON_ERROR(error);
+
+    error = _write_feature_property_bag_file(self);
     RETURN_AND_ZIPCLOSE_ON_ERROR(error);
 
     error = _write_rich_value_rels_file(self);

@@ -30,7 +30,7 @@ int main() {
     chart_add_series(chart,
          "=Sheet1!$A$1:$A$3",
          "=Sheet1!$B$1:$B$3"
-    );
+    , 0);
 
 
     lxw_chart_line line1 = {.dash_type = LXW_CHART_LINE_DASH_LONG_DASH, .color = 0xFFFF00};
