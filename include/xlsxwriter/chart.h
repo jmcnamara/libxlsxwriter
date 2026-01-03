@@ -735,6 +735,7 @@ typedef enum lxw_chart_gradient_fill_type {
 
     /** Path gradient fill. */
     LXW_CHART_GRADIENT_FILL_PATH
+
 } lxw_chart_gradient_fill_type;
 
 /** Maximum number of gradient stops. */
@@ -1461,7 +1462,8 @@ void lxw_chart_assemble_xml_file(lxw_chart *chart);
  */
 lxw_chart_series *chart_add_series_impl(lxw_chart *chart,
                                         const char *categories,
-                                        const char *values, uint8_t y2_axis);
+                                        const char *values,
+                                        uint8_t y2_axis);
 
 /**
  * @brief Macro wrapper for chart_add_series_impl with optional y2_axis parameter.
@@ -1707,7 +1709,7 @@ void chart_series_set_pattern(lxw_chart_series *series,
  * For more information see #lxw_chart_gradient_fill_type and @ref chart_gradient_fills.
  */
 void chart_series_set_gradient(lxw_chart_series *series,
-                               lxw_chart_gradient_fill * gradient);
+                               lxw_chart_gradient_fill *gradient);
 
 /**
  * @brief Set the data marker type for a series.
@@ -3812,7 +3814,7 @@ void chart_chartarea_set_pattern(lxw_chart *chart,
  * For more information see #lxw_chart_gradient_fill_type.
  */
 void chart_chartarea_set_gradient(lxw_chart *chart,
-                                  lxw_chart_gradient_fill * gradient);
+                                  lxw_chart_gradient_fill *gradient);
 
 /**
  * @brief Set the line properties for a plotarea.
@@ -3885,7 +3887,7 @@ void chart_plotarea_set_pattern(lxw_chart *chart, lxw_chart_pattern *pattern);
  * For more information see #lxw_chart_gradient_fill_type.
  */
 void chart_plotarea_set_gradient(lxw_chart *chart,
-                                 lxw_chart_gradient_fill * gradient);
+                                 lxw_chart_gradient_fill *gradient);
 
 /**
  * @brief Set the manual layout of the chart plotarea.

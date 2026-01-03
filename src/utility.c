@@ -41,6 +41,7 @@ char *error_strings[LXW_MAX_ERRNO + 1] = {
     "NULL function parameter ignored.",
     "Function parameter validation error.",
     "Function string parameter is empty.",
+    "A lxw_datetime parameter has a validation error.",
     "Worksheet name exceeds Excel's limit of 31 characters.",
     "Worksheet name cannot contain invalid characters: '[ ] : * ? / \\'",
     "Worksheet name cannot start or end with an apostrophe.",
@@ -333,6 +334,72 @@ lxw_name_to_col_2(const char *col_str)
 }
 
 /*
+ * Validate a lxw_datetime struct.
+ */
+lxw_error
+lxw_datetime_validate(lxw_datetime *datetime)
+{
+    if (!datetime)
+        return LXW_ERROR_DATETIME_VALIDATION;
+
+    /*
+     * Excel uses the year 1900 as the default epoch but it uses 1899-12-31 as
+     * the 0 date and internally we use the 0-0-0 date for time only values.
+     */
+    if (datetime->year < 1900 &&
+        !(datetime->year == 0 &&
+          datetime->month == 0 && datetime->day == 0) &&
+        !(datetime->year == 1899 &&
+          datetime->month == 12 && datetime->day == 31)) {
+
+        LXW_WARN_FORMAT1("lxw_datetime_validate(): invalid year: %d. "
+                         "Valid range is 1900-9999.", datetime->year);
+
+        return LXW_ERROR_DATETIME_VALIDATION;
+    }
+
+    if (datetime->year > 9999) {
+        LXW_WARN_FORMAT1("lxw_datetime_validate(): invalid year: %d. "
+                         "Valid range is 1900-9999.", datetime->year);
+        return LXW_ERROR_DATETIME_VALIDATION;
+    }
+
+    if (datetime->year != 0) {
+        if (datetime->month < 1 || datetime->month > 12) {
+            LXW_WARN_FORMAT1("lxw_datetime_validate(): invalid month: %d. "
+                             "Valid range is 1-12.", datetime->month);
+            return LXW_ERROR_DATETIME_VALIDATION;
+        }
+
+        if (datetime->day < 1 || datetime->day > 31) {
+            LXW_WARN_FORMAT1("lxw_datetime_validate(): invalid day: %d. "
+                             "Valid range is 1-31.", datetime->day);
+            return LXW_ERROR_DATETIME_VALIDATION;
+        }
+    }
+
+    if (datetime->hour < 0 || datetime->hour > 23) {
+        LXW_WARN_FORMAT1("lxw_datetime_validate(): invalid hour: %d. "
+                         "Valid range is 0-23.", datetime->hour);
+        return LXW_ERROR_DATETIME_VALIDATION;
+    }
+
+    if (datetime->min < 0 || datetime->min > 59) {
+        LXW_WARN_FORMAT1("lxw_datetime_validate(): invalid minute: %d. "
+                         "Valid range is 0-59.", datetime->min);
+        return LXW_ERROR_DATETIME_VALIDATION;
+    }
+
+    if (datetime->sec < 0.0 || datetime->sec >= 60.0) {
+        LXW_WARN_FORMAT1("lxw_datetime_validate(): invalid seconds: %.3f. "
+                         "Valid range is 0.0-59.999.", datetime->sec);
+        return LXW_ERROR_DATETIME_VALIDATION;
+    }
+
+    return LXW_NO_ERROR;
+}
+
+/*
  * Convert a lxw_datetime struct to an Excel serial date, with a 1900
  * or 1904 epoch.
  */
@@ -356,6 +423,9 @@ lxw_datetime_to_excel_date_with_epoch(lxw_datetime *datetime,
     int leap = 0;
     int days = 0;
     int i;
+
+    if (lxw_datetime_validate(datetime) != LXW_NO_ERROR)
+        return 0.0;
 
     /* For times without dates set the default date for the epoch. */
     if (!year) {
@@ -688,101 +758,101 @@ lxw_hash_password(const char *password)
  * Unhandled characters (including UTF-8) default to width 8.
  */
 static const uint8_t char_widths[95] = {
-    3,                          /* space */
-    5,                          /* ! */
-    6,                          /* " */
-    7,                          /* # */
-    7,                          /* $ */
-    11,                         /* % */
-    10,                         /* & */
-    3,                          /* ' */
-    5,                          /* ( */
-    5,                          /* ) */
-    7,                          /* * */
-    7,                          /* + */
-    4,                          /* , */
-    5,                          /* - */
-    4,                          /* . */
-    6,                          /* / */
-    7,                          /* 0 */
-    7,                          /* 1 */
-    7,                          /* 2 */
-    7,                          /* 3 */
-    7,                          /* 4 */
-    7,                          /* 5 */
-    7,                          /* 6 */
-    7,                          /* 7 */
-    7,                          /* 8 */
-    7,                          /* 9 */
-    4,                          /* : */
-    4,                          /* ; */
-    7,                          /* < */
-    7,                          /* = */
-    7,                          /* > */
-    7,                          /* ? */
-    13,                         /* @ */
-    9,                          /* A */
-    8,                          /* B */
-    8,                          /* C */
-    9,                          /* D */
-    7,                          /* E */
-    7,                          /* F */
-    9,                          /* G */
-    9,                          /* H */
-    4,                          /* I */
-    5,                          /* J */
-    8,                          /* K */
-    6,                          /* L */
-    12,                         /* M */
-    10,                         /* N */
-    10,                         /* O */
-    8,                          /* P */
-    10,                         /* Q */
-    8,                          /* R */
-    7,                          /* S */
-    7,                          /* T */
-    9,                          /* U */
-    9,                          /* V */
-    13,                         /* W */
-    8,                          /* X */
-    7,                          /* Y */
-    7,                          /* Z */
-    5,                          /* [ */
-    6,                          /* backslash */
-    5,                          /* ] */
-    7,                          /* ^ */
-    7,                          /* _ */
-    4,                          /* ` */
-    7,                          /* a */
-    8,                          /* b */
-    6,                          /* c */
-    8,                          /* d */
-    8,                          /* e */
-    5,                          /* f */
-    7,                          /* g */
-    8,                          /* h */
-    4,                          /* i */
-    4,                          /* j */
-    7,                          /* k */
-    4,                          /* l */
-    12,                         /* m */
-    8,                          /* n */
-    8,                          /* o */
-    8,                          /* p */
-    8,                          /* q */
-    5,                          /* r */
-    6,                          /* s */
-    5,                          /* t */
-    8,                          /* u */
-    7,                          /* v */
-    11,                         /* w */
-    7,                          /* x */
-    7,                          /* y */
-    6,                          /* z */
-    5,                          /* { */
-    7,                          /* | */
-    5,                          /* } */
-    7                           /* ~ */
+    3,  /* space */
+    5,  /* ! */
+    6,  /* " */
+    7,  /* # */
+    7,  /* $ */
+    11, /* % */
+    10, /* & */
+    3,  /* ' */
+    5,  /* ( */
+    5,  /* ) */
+    7,  /* * */
+    7,  /* + */
+    4,  /* , */
+    5,  /* - */
+    4,  /* . */
+    6,  /* / */
+    7,  /* 0 */
+    7,  /* 1 */
+    7,  /* 2 */
+    7,  /* 3 */
+    7,  /* 4 */
+    7,  /* 5 */
+    7,  /* 6 */
+    7,  /* 7 */
+    7,  /* 8 */
+    7,  /* 9 */
+    4,  /* : */
+    4,  /* ; */
+    7,  /* < */
+    7,  /* = */
+    7,  /* > */
+    7,  /* ? */
+    13, /* @ */
+    9,  /* A */
+    8,  /* B */
+    8,  /* C */
+    9,  /* D */
+    7,  /* E */
+    7,  /* F */
+    9,  /* G */
+    9,  /* H */
+    4,  /* I */
+    5,  /* J */
+    8,  /* K */
+    6,  /* L */
+    12, /* M */
+    10, /* N */
+    10, /* O */
+    8,  /* P */
+    10, /* Q */
+    8,  /* R */
+    7,  /* S */
+    7,  /* T */
+    9,  /* U */
+    9,  /* V */
+    13, /* W */
+    8,  /* X */
+    7,  /* Y */
+    7,  /* Z */
+    5,  /* [ */
+    6,  /* backslash */
+    5,  /* ] */
+    7,  /* ^ */
+    7,  /* _ */
+    4,  /* ` */
+    7,  /* a */
+    8,  /* b */
+    6,  /* c */
+    8,  /* d */
+    8,  /* e */
+    5,  /* f */
+    7,  /* g */
+    8,  /* h */
+    4,  /* i */
+    4,  /* j */
+    7,  /* k */
+    4,  /* l */
+    12, /* m */
+    8,  /* n */
+    8,  /* o */
+    8,  /* p */
+    8,  /* q */
+    5,  /* r */
+    6,  /* s */
+    5,  /* t */
+    8,  /* u */
+    7,  /* v */
+    11, /* w */
+    7,  /* x */
+    7,  /* y */
+    6,  /* z */
+    5,  /* { */
+    7,  /* | */
+    5,  /* } */
+    7   /* ~ */
 };
 
 /*
@@ -819,7 +889,7 @@ lxw_autofit_width(const char *string)
 {
     uint16_t pixels;
     double width;
-    const double max_digit_width = 7.0; /* For Calibri 11 */
+    const double max_digit_width = 7.0;  /* For Calibri 11 */
     const double padding = 5.0;
 
     if (string == NULL || *string == '\0')

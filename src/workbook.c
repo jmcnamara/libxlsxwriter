@@ -1272,8 +1272,7 @@ _prepare_drawings(lxw_workbook *self)
 
         /* Prepare worksheet textboxes. */
         STAILQ_FOREACH(object_props, worksheet->textbox_data, list_pointers) {
-            lxw_worksheet_prepare_textbox(worksheet, drawing_id,
-                                          object_props);
+            lxw_worksheet_prepare_textbox(worksheet, drawing_id, object_props);
         }
 
         /* Prepare worksheet header/footer images. */
@@ -2207,6 +2206,12 @@ workbook_add_chart(lxw_workbook *self, uint8_t type)
 {
     lxw_chart *chart;
 
+    if (type == LXW_CHART_NONE || type > LXW_CHART_STOCK) {
+        LXW_WARN_FORMAT1("workbook_add_chart(): invalid chart type: %d",
+                         type);
+        return NULL;
+    }
+
     /* Create a new chart object. */
     chart = lxw_chart_new(type);
 
@@ -2695,6 +2700,10 @@ workbook_set_custom_property_datetime(lxw_workbook *self, const char *name,
         LXW_WARN_FORMAT("workbook_set_custom_property_datetime(): parameter "
                         "'datetime' cannot be NULL.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (lxw_datetime_validate(datetime) != LXW_NO_ERROR) {
+        return LXW_ERROR_DATETIME_VALIDATION;
     }
 
     /* Create a struct to hold the custom property. */

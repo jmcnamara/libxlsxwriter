@@ -2983,7 +2983,8 @@ lxw_error worksheet_write_boolean(lxw_worksheet *worksheet,
  *
  */
 lxw_error worksheet_insert_checkbox(lxw_worksheet *worksheet,
-                                    lxw_row_t row, lxw_col_t col, int value);
+                                    lxw_row_t row, lxw_col_t col,
+                                    int value);
 
 /**
  * @brief Write a formatted blank worksheet cell.
@@ -4154,7 +4155,7 @@ lxw_error worksheet_insert_textbox(lxw_worksheet *worksheet,
 lxw_error worksheet_insert_textbox_opt(lxw_worksheet *worksheet,
                                        lxw_row_t row, lxw_col_t col,
                                        const char *text,
-                                       lxw_textbox_options * user_options);
+                                       lxw_textbox_options *user_options);
 
 /**
  * @brief Merge a range of cells.
@@ -4651,7 +4652,7 @@ lxw_error worksheet_add_table(lxw_worksheet *worksheet, lxw_row_t first_row,
  */
 lxw_error worksheet_add_sparkline(lxw_worksheet *worksheet,
                                   lxw_row_t row, lxw_col_t col,
-                                  lxw_sparkline_options * options);
+                                  lxw_sparkline_options *options);
 
  /**
   * @brief Make a worksheet the active, i.e., visible worksheet.

@@ -39,10 +39,8 @@ extern "C" {
 /* *INDENT-ON* */
 
 lxw_feature_property_bag *lxw_feature_property_bag_new(void);
-void lxw_feature_property_bag_free(lxw_feature_property_bag
-                                   *feature_property_bag);
-void lxw_feature_property_bag_assemble_xml_file(lxw_feature_property_bag
-                                                *self);
+void lxw_feature_property_bag_free(lxw_feature_property_bag *feature_property_bag);
+void lxw_feature_property_bag_assemble_xml_file(lxw_feature_property_bag *self);
 
 /* Declarations required for unit testing. */
 #ifdef TESTING

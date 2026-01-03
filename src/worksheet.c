@@ -7293,8 +7293,7 @@ _worksheet_write_sparkline_color(lxw_worksheet *self, const char *tag,
  * Write the <x14:sparklineGroup> element.
  */
 STATIC void
-_worksheet_write_sparkline_group(lxw_worksheet *self,
-                                 lxw_sparkline *sparkline)
+_worksheet_write_sparkline_group(lxw_worksheet *self, lxw_sparkline *sparkline)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;
@@ -8647,7 +8646,8 @@ worksheet_write_boolean(lxw_worksheet *self,
  */
 lxw_error
 worksheet_insert_checkbox(lxw_worksheet *self,
-                          lxw_row_t row_num, lxw_col_t col_num, int value)
+                          lxw_row_t row_num, lxw_col_t col_num,
+                          int value)
 {
     lxw_cell *cell;
     lxw_error err;
@@ -9917,8 +9917,7 @@ worksheet_add_sparkline(lxw_worksheet *self, lxw_row_t row, lxw_col_t col,
     char location[LXW_MAX_CELL_NAME_LENGTH];
 
     if (!user_options) {
-        LXW_WARN
-            ("worksheet_add_sparkline(): options parameter cannot be NULL");
+        LXW_WARN("worksheet_add_sparkline(): options parameter cannot be NULL");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
@@ -9985,7 +9984,7 @@ worksheet_add_sparkline(lxw_worksheet *self, lxw_row_t row, lxw_col_t col,
 
     sparkline->weight = user_options->weight;
     if (sparkline->weight == 0.0)
-        sparkline->weight = 0.75;       /* Default line weight */
+        sparkline->weight = 0.75;  /* Default line weight */
 
     if (user_options->date_axis) {
         sparkline->date_axis = lxw_strdup(user_options->date_axis);
