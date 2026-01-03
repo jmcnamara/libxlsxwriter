@@ -324,10 +324,10 @@ lxw_chart_new(uint8_t type)
     chart->y_axis->axis_position = LXW_CHART_AXIS_LEFT;
 
     /* Set the default secondary axis positions and properties. */
-    chart->x2_axis->axis_position = LXW_CHART_AXIS_BOTTOM;  /* Same as primary X axis */
+    chart->x2_axis->axis_position = LXW_CHART_AXIS_BOTTOM;      /* Same as primary X axis */
     chart->y2_axis->axis_position = LXW_CHART_AXIS_RIGHT;
     chart->x2_axis->hidden = LXW_TRUE;  /* Secondary X axis hidden by default */
-    chart->y2_axis->crossing_max = LXW_TRUE;  /* Secondary Y axis crosses at max */
+    chart->y2_axis->crossing_max = LXW_TRUE;    /* Secondary Y axis crosses at max */
 
     /* Set the default axis number formats. */
     _chart_axis_set_default_num_format(chart->x_axis, "General");
@@ -511,7 +511,8 @@ _chart_convert_gradient_args(lxw_chart_gradient_fill *user_gradient)
     gradient->angle = user_gradient->angle;
 
     /* Set default angle for linear gradients. */
-    if (gradient->type == LXW_CHART_GRADIENT_FILL_LINEAR && gradient->angle == 0)
+    if (gradient->type == LXW_CHART_GRADIENT_FILL_LINEAR
+        && gradient->angle == 0)
         gradient->angle = 90;
 
     for (i = 0; i < gradient->num_stops; i++) {
@@ -2301,7 +2302,8 @@ _chart_write_a_grad_fill(lxw_chart *self, lxw_chart_gradient_fill *gradient)
  */
 STATIC void
 _chart_write_sp_pr_with_gradient(lxw_chart *self, lxw_chart_line *line,
-                                 lxw_chart_fill *fill, lxw_chart_pattern *pattern,
+                                 lxw_chart_fill *fill,
+                                 lxw_chart_pattern *pattern,
                                  lxw_chart_gradient_fill *gradient)
 {
     if (!line && !fill && !pattern && !gradient)
@@ -5573,12 +5575,13 @@ _chart_write_stock_chart(lxw_chart *self, uint8_t primary_axes)
     uint16_t index = 0;
 
     /* Default line for stock chart series (width 2.25, noFill). */
-    lxw_chart_line default_line = {.width = 2.25, .none = LXW_TRUE};
+    lxw_chart_line default_line = {.width = 2.25,.none = LXW_TRUE };
 
     /* Default markers for stock chart series. */
-    lxw_chart_marker default_marker_none = {.type = LXW_CHART_MARKER_NONE};
+    lxw_chart_marker default_marker_none = {.type = LXW_CHART_MARKER_NONE };
     lxw_chart_marker default_marker_dot = {.type = LXW_CHART_MARKER_DOT,
-                                            .size = 3};
+        .size = 3
+    };
 
     /* Check if there are any series for this axis type. */
     STAILQ_FOREACH(series, self->series_list, list_pointers) {
@@ -5878,8 +5881,10 @@ _chart_write_scatter_plot_area(lxw_chart *self)
     }
 
     /* Write the c:spPr element for the plotarea formatting. */
-    _chart_write_sp_pr_with_gradient(self, self->plotarea_line, self->plotarea_fill,
-                                     self->plotarea_pattern, self->plotarea_gradient);
+    _chart_write_sp_pr_with_gradient(self, self->plotarea_line,
+                                     self->plotarea_fill,
+                                     self->plotarea_pattern,
+                                     self->plotarea_gradient);
 
     lxw_xml_end_tag(self->file, "c:plotArea");
 }
@@ -5908,8 +5913,10 @@ _chart_write_pie_plot_area(lxw_chart *self)
     }
 
     /* Write the c:spPr element for the plotarea formatting. */
-    _chart_write_sp_pr_with_gradient(self, self->plotarea_line, self->plotarea_fill,
-                                     self->plotarea_pattern, self->plotarea_gradient);
+    _chart_write_sp_pr_with_gradient(self, self->plotarea_line,
+                                     self->plotarea_fill,
+                                     self->plotarea_pattern,
+                                     self->plotarea_gradient);
 
     lxw_xml_end_tag(self->file, "c:plotArea");
 }
@@ -5979,8 +5986,10 @@ _chart_write_stock_plot_area(lxw_chart *self)
     _chart_write_d_table(self);
 
     /* Write the c:spPr element for the plotarea formatting. */
-    _chart_write_sp_pr_with_gradient(self, self->plotarea_line, self->plotarea_fill,
-                                     self->plotarea_pattern, self->plotarea_gradient);
+    _chart_write_sp_pr_with_gradient(self, self->plotarea_line,
+                                     self->plotarea_fill,
+                                     self->plotarea_pattern,
+                                     self->plotarea_gradient);
 
     lxw_xml_end_tag(self->file, "c:plotArea");
 }
@@ -6063,8 +6072,10 @@ _chart_write_plot_area(lxw_chart *self)
     _chart_write_d_table(self);
 
     /* Write the c:spPr element for the plotarea formatting. */
-    _chart_write_sp_pr_with_gradient(self, self->plotarea_line, self->plotarea_fill,
-                                     self->plotarea_pattern, self->plotarea_gradient);
+    _chart_write_sp_pr_with_gradient(self, self->plotarea_line,
+                                     self->plotarea_fill,
+                                     self->plotarea_pattern,
+                                     self->plotarea_gradient);
 
     lxw_xml_end_tag(self->file, "c:plotArea");
 }
@@ -6424,8 +6435,10 @@ lxw_chart_assemble_xml_file(lxw_chart *self)
     _chart_write_chart(self);
 
     /* Write the c:spPr element for the chartarea formatting. */
-    _chart_write_sp_pr_with_gradient(self, self->chartarea_line, self->chartarea_fill,
-                                     self->chartarea_pattern, self->chartarea_gradient);
+    _chart_write_sp_pr_with_gradient(self, self->chartarea_line,
+                                     self->chartarea_fill,
+                                     self->chartarea_pattern,
+                                     self->chartarea_gradient);
 
     /* Write the c:printSettings element. */
     if (!self->is_chartsheet)
@@ -6468,15 +6481,14 @@ lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
  * Add a series to the chart.
  */
 lxw_chart_series *
-chart_add_series_impl(lxw_chart *self, const char *categories, const char *values,
-                      uint8_t y2_axis)
+chart_add_series_impl(lxw_chart *self, const char *categories,
+                      const char *values, uint8_t y2_axis)
 {
     lxw_chart_series *series;
 
     /* Scatter charts require categories and values. */
     if (self->chart_group == LXW_CHART_SCATTER && values && !categories) {
-        LXW_WARN("chart_add_series(): scatter charts must have "
-                 "'categories' and 'values'");  /* Keep user-facing name */
+        LXW_WARN("chart_add_series(): scatter charts must have " "'categories' and 'values'");  /* Keep user-facing name */
 
         return NULL;
     }
@@ -7952,7 +7964,8 @@ chart_chartarea_set_pattern(lxw_chart *self, lxw_chart_pattern *pattern)
  * Set a gradient fill type for the chartarea.
  */
 void
-chart_chartarea_set_gradient(lxw_chart *self, lxw_chart_gradient_fill *gradient)
+chart_chartarea_set_gradient(lxw_chart *self,
+                             lxw_chart_gradient_fill *gradient)
 {
     if (!gradient)
         return;
@@ -8012,7 +8025,8 @@ chart_plotarea_set_pattern(lxw_chart *self, lxw_chart_pattern *pattern)
  * Set a gradient fill type for the plotarea.
  */
 void
-chart_plotarea_set_gradient(lxw_chart *self, lxw_chart_gradient_fill *gradient)
+chart_plotarea_set_gradient(lxw_chart *self,
+                            lxw_chart_gradient_fill *gradient)
 {
     if (!gradient)
         return;
@@ -8193,9 +8207,9 @@ chart_set_series_overlap_y2(lxw_chart *self, int8_t overlap)
     if (overlap >= -100 && overlap <= 100)
         self->overlap_y2 = overlap;
     else
-        LXW_WARN_FORMAT1("chart_set_series_overlap_y2(): Chart series overlap "
-                         "'%d' outside Excel range: -100 <= overlap <= 100",
-                         overlap);
+        LXW_WARN_FORMAT1
+            ("chart_set_series_overlap_y2(): Chart series overlap "
+             "'%d' outside Excel range: -100 <= overlap <= 100", overlap);
 }
 
 /*

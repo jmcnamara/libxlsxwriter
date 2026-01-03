@@ -664,7 +664,8 @@ _drawing_write_a_prst_geom_rect(lxw_drawing *self)
  * Write the <xdr:spPr> element for shapes.
  */
 STATIC void
-_drawing_write_sp_pr_shape(lxw_drawing *self, lxw_drawing_object *drawing_object)
+_drawing_write_sp_pr_shape(lxw_drawing *self,
+                           lxw_drawing_object *drawing_object)
 {
     struct xml_attribute_list attributes;
     struct xml_attribute *attribute;

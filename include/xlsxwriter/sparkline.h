@@ -160,7 +160,7 @@ typedef struct lxw_sparkline_options {
 /* Internal sparkline structure with resolved values */
 typedef struct lxw_sparkline {
 
-    STAILQ_ENTRY(lxw_sparkline) list_pointers;
+    STAILQ_ENTRY (lxw_sparkline) list_pointers;
 
     char *range;
     lxw_row_t row;

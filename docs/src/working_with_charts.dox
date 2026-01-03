@@ -1294,7 +1294,10 @@ The chart functions that support #lxw_chart_layout are:
 
 @section ww_charts_limitations Chart Limitations
 
-All chart features in the original Excel specification are supported.
+The following chart features aren't currently supported in libxlsxwriter but
+will be in time. See the [GitHub Chart Feature Requests][1].
+
+[1]: https://github.com/jmcnamara/libxlsxwriter/issues
 
 
 Next: @ref working_with_object_positioning

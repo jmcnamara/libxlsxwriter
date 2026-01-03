@@ -1201,7 +1201,7 @@ _write_xf_format_extensions(lxw_styles *self)
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("uri", "{C7286773-470A-42A8-94C5-96B5CB345126}");
     LXW_PUSH_ATTRIBUTES_STR("xmlns:xfpb",
-        "http://schemas.microsoft.com/office/spreadsheetml/2022/featurepropertybag");
+                            "http://schemas.microsoft.com/office/spreadsheetml/2022/featurepropertybag");
 
     lxw_xml_start_tag(self->file, "ext", &attributes);
     LXW_FREE_ATTRIBUTES();

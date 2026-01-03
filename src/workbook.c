@@ -1272,7 +1272,8 @@ _prepare_drawings(lxw_workbook *self)
 
         /* Prepare worksheet textboxes. */
         STAILQ_FOREACH(object_props, worksheet->textbox_data, list_pointers) {
-            lxw_worksheet_prepare_textbox(worksheet, drawing_id, object_props);
+            lxw_worksheet_prepare_textbox(worksheet, drawing_id,
+                                          object_props);
         }
 
         /* Prepare worksheet header/footer images. */

@@ -78,7 +78,7 @@ _write_feature_property_bags(lxw_feature_property_bag *self)
 
     LXW_INIT_ATTRIBUTES();
     LXW_PUSH_ATTRIBUTES_STR("xmlns",
-        "http://schemas.microsoft.com/office/spreadsheetml/2022/featurepropertybag");
+                            "http://schemas.microsoft.com/office/spreadsheetml/2022/featurepropertybag");
 
     lxw_xml_start_tag(self->file, "FeaturePropertyBags", &attributes);
 
