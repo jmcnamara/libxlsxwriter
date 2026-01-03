@@ -83,7 +83,7 @@ CFLAGS += -DUSE_FMEMOPEN
 endif
 
 # Flags passed to compiler.
-CFLAGS   += -g $(OPT_LEVEL) -Wall -Wextra -Wstrict-prototypes -pedantic -ansi
+CFLAGS   += -g $(OPT_LEVEL) -Wall -Wextra -Wstrict-prototypes -pedantic -std=c99
 
 # Ignore icc remarks about inlining limits.
 ifeq ($(CC),icc)
