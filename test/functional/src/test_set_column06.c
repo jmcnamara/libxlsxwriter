@@ -47,9 +47,9 @@ int main() {
     worksheet_set_row_opt(worksheet, 12, LXW_DEF_ROW_HEIGHT, NULL, &options);
     worksheet_set_column_opt(worksheet, COLS("F:F"), LXW_DEF_COL_WIDTH, NULL, &options);
 
-    chart_add_series(chart, NULL, "=Sheet1!$A$2:$A$6");
-    chart_add_series(chart, NULL, "=Sheet1!$B$2:$B$6");
-    chart_add_series(chart, NULL, "=Sheet1!$C$2:$C$6");
+    chart_add_series(chart, NULL, "=Sheet1!$A$2:$A$6", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$B$2:$B$6", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$C$2:$C$6", 0);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

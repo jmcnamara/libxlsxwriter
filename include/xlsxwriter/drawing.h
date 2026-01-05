@@ -32,6 +32,42 @@ enum image_types {
     LXW_IMAGE_GIF
 };
 
+/**
+ * @brief Options for inserted textboxes.
+ *
+ */
+typedef struct lxw_textbox_options {
+
+    /** Width of the textbox in pixels. Default is 192. */
+    uint32_t width;
+
+    /** Height of the textbox in pixels. Default is 120. */
+    uint32_t height;
+
+    /** X offset from the cell in pixels. Default is 0. */
+    int32_t x_offset;
+
+    /** Y offset from the cell in pixels. Default is 0. */
+    int32_t y_offset;
+
+    /** X scale of the textbox. Default is 1.0. */
+    double x_scale;
+
+    /** Y scale of the textbox. Default is 1.0. */
+    double y_scale;
+
+    /** Object position/anchor: #lxw_object_position. Default is
+        LXW_OBJECT_MOVE_AND_SIZE. */
+    uint8_t object_position;
+
+    /** Alt text description of the textbox. */
+    const char *description;
+
+    /** Mark textbox as decorative. */
+    uint8_t decorative;
+
+} lxw_textbox_options;
+
 /* Coordinates used in a drawing object. */
 typedef struct lxw_drawing_coords {
     uint32_t col;
@@ -56,6 +92,7 @@ typedef struct lxw_drawing_object {
     char *description;
     char *tip;
     uint8_t decorative;
+    char *text;
 
     STAILQ_ENTRY (lxw_drawing_object) list_pointers;
 

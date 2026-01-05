@@ -343,6 +343,7 @@ typedef struct lxw_workbook {
     uint8_t has_metadata;
     uint8_t has_embedded_images;
     uint8_t has_dynamic_functions;
+    uint8_t has_feature_property_bags;
     uint8_t has_embedded_image_descriptions;
 
     lxw_hash_table *used_xf_formats;
@@ -355,6 +356,8 @@ typedef struct lxw_workbook {
     uint8_t use_1904_epoch;
 
     lxw_format *default_url_format;
+
+    lxw_format *checkbox_format;
 
 } lxw_workbook;
 

@@ -411,3 +411,14 @@ lxw_ct_add_rich_value(lxw_content_types *self)
                         LXW_APP_MSEXCEL "richvaluerel+xml");
 
 }
+
+/*
+ * Add the featurePropertyBag file to the ContentTypes overrides.
+ */
+void
+lxw_ct_add_feature_property_bag(lxw_content_types *self)
+{
+    lxw_ct_add_override(self,
+                        "/xl/featurePropertyBag/featurePropertyBag.xml",
+                        LXW_APP_MSEXCEL "featurepropertybag+xml");
+}

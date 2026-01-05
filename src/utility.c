@@ -41,7 +41,7 @@ char *error_strings[LXW_MAX_ERRNO + 1] = {
     "NULL function parameter ignored.",
     "Function parameter validation error.",
     "Function string parameter is empty.",
-    "Datetime struct parameter has an invalid field value.",
+    "A lxw_datetime parameter has a validation error.",
     "Worksheet name exceeds Excel's limit of 31 characters.",
     "Worksheet name cannot contain invalid characters: '[ ] : * ? / \\'",
     "Worksheet name cannot start or end with an apostrophe.",
@@ -333,6 +333,9 @@ lxw_name_to_col_2(const char *col_str)
         return 0;
 }
 
+/*
+ * Validate a lxw_datetime struct.
+ */
 lxw_error
 lxw_datetime_validate(lxw_datetime *datetime)
 {
@@ -747,6 +750,163 @@ lxw_hash_password(const char *password)
     hash ^= 0xCE4B;
 
     return hash;
+}
+
+/*
+ * Character widths for Calibri 11 font, used for autofit calculations.
+ * Index 0 = space (ASCII 32), through index 94 = tilde (ASCII 126).
+ * Unhandled characters (including UTF-8) default to width 8.
+ */
+static const uint8_t char_widths[95] = {
+    3,                          /* space */
+    5,                          /* ! */
+    6,                          /* " */
+    7,                          /* # */
+    7,                          /* $ */
+    11,                         /* % */
+    10,                         /* & */
+    3,                          /* ' */
+    5,                          /* ( */
+    5,                          /* ) */
+    7,                          /* * */
+    7,                          /* + */
+    4,                          /* , */
+    5,                          /* - */
+    4,                          /* . */
+    6,                          /* / */
+    7,                          /* 0 */
+    7,                          /* 1 */
+    7,                          /* 2 */
+    7,                          /* 3 */
+    7,                          /* 4 */
+    7,                          /* 5 */
+    7,                          /* 6 */
+    7,                          /* 7 */
+    7,                          /* 8 */
+    7,                          /* 9 */
+    4,                          /* : */
+    4,                          /* ; */
+    7,                          /* < */
+    7,                          /* = */
+    7,                          /* > */
+    7,                          /* ? */
+    13,                         /* @ */
+    9,                          /* A */
+    8,                          /* B */
+    8,                          /* C */
+    9,                          /* D */
+    7,                          /* E */
+    7,                          /* F */
+    9,                          /* G */
+    9,                          /* H */
+    4,                          /* I */
+    5,                          /* J */
+    8,                          /* K */
+    6,                          /* L */
+    12,                         /* M */
+    10,                         /* N */
+    10,                         /* O */
+    8,                          /* P */
+    10,                         /* Q */
+    8,                          /* R */
+    7,                          /* S */
+    7,                          /* T */
+    9,                          /* U */
+    9,                          /* V */
+    13,                         /* W */
+    8,                          /* X */
+    7,                          /* Y */
+    7,                          /* Z */
+    5,                          /* [ */
+    6,                          /* backslash */
+    5,                          /* ] */
+    7,                          /* ^ */
+    7,                          /* _ */
+    4,                          /* ` */
+    7,                          /* a */
+    8,                          /* b */
+    6,                          /* c */
+    8,                          /* d */
+    8,                          /* e */
+    5,                          /* f */
+    7,                          /* g */
+    8,                          /* h */
+    4,                          /* i */
+    4,                          /* j */
+    7,                          /* k */
+    4,                          /* l */
+    12,                         /* m */
+    8,                          /* n */
+    8,                          /* o */
+    8,                          /* p */
+    8,                          /* q */
+    5,                          /* r */
+    6,                          /* s */
+    5,                          /* t */
+    8,                          /* u */
+    7,                          /* v */
+    11,                         /* w */
+    7,                          /* x */
+    7,                          /* y */
+    6,                          /* z */
+    5,                          /* { */
+    7,                          /* | */
+    5,                          /* } */
+    7                           /* ~ */
+};
+
+/*
+ * Calculate the pixel width of a string based on character widths.
+ */
+uint16_t
+lxw_pixel_width(const char *string)
+{
+    uint16_t length = 0;
+    unsigned char c;
+
+    if (string == NULL || *string == '\0')
+        return 0;
+
+    while ((c = (unsigned char) *string++) != '\0') {
+        /* Check if character is in the printable ASCII range (32-126) */
+        if (c >= 32 && c <= 126) {
+            length += char_widths[c - 32];
+        }
+        else {
+            /* Default width for non-ASCII characters (UTF-8, etc.) */
+            length += 8;
+        }
+    }
+
+    return length;
+}
+
+/*
+ * Calculate the column width required to autofit a string.
+ */
+double
+lxw_autofit_width(const char *string)
+{
+    uint16_t pixels;
+    double width;
+    const double max_digit_width = 7.0; /* For Calibri 11 */
+    const double padding = 5.0;
+
+    if (string == NULL || *string == '\0')
+        return 0.0;
+
+    /* Get pixel width and add 7 pixels padding like Excel */
+    pixels = lxw_pixel_width(string) + 7;
+
+    /* Convert pixels to column width using Excel's formula */
+    if (pixels <= 12) {
+        width = (double) pixels / (max_digit_width + padding);
+    }
+    else {
+        width = ((double) pixels - padding) / max_digit_width;
+    }
+
+    return width;
 }
 
 /* Make a simple portable version of fopen() for Windows. */

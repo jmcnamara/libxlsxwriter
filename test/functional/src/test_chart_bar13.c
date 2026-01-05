@@ -46,13 +46,13 @@ int main() {
         for (col = 0; col < 3; col++)
             worksheet_write_number(worksheet1, row, col, data[row][col], NULL);
 
-    chart_add_series(chart1, NULL, "=Sheet1!$A$1:$A$5");
-    chart_add_series(chart1, NULL, "=Sheet1!$B$1:$B$5");
-    chart_add_series(chart1, NULL, "=Sheet1!$C$1:$C$5");
+    chart_add_series(chart1, NULL, "=Sheet1!$A$1:$A$5", 0);
+    chart_add_series(chart1, NULL, "=Sheet1!$B$1:$B$5", 0);
+    chart_add_series(chart1, NULL, "=Sheet1!$C$1:$C$5", 0);
 
-    chart_add_series(chart2, NULL, "=Sheet1!$A$1:$A$5");
-    chart_add_series(chart2, NULL, "=Sheet1!$B$1:$B$5");
-    chart_add_series(chart2, NULL, "=Sheet1!$C$1:$C$5");
+    chart_add_series(chart2, NULL, "=Sheet1!$A$1:$A$5", 0);
+    chart_add_series(chart2, NULL, "=Sheet1!$B$1:$B$5", 0);
+    chart_add_series(chart2, NULL, "=Sheet1!$C$1:$C$5", 0);
 
     chartsheet_set_chart(chartsheet1, chart1);
     chartsheet_set_chart(chartsheet2, chart2);

@@ -156,7 +156,10 @@ typedef enum lxw_chart_type {
     LXW_CHART_RADAR_WITH_MARKERS,
 
     /** Radar chart - filled. */
-    LXW_CHART_RADAR_FILLED
+    LXW_CHART_RADAR_FILLED,
+
+    /** Stock chart. */
+    LXW_CHART_STOCK
 } lxw_chart_type;
 
 /**
@@ -266,7 +269,10 @@ typedef enum lxw_chart_marker_type {
     LXW_CHART_MARKER_CIRCLE,
 
     /** Plus (+) marker type. */
-    LXW_CHART_MARKER_PLUS
+    LXW_CHART_MARKER_PLUS,
+
+    /** Dot marker type. */
+    LXW_CHART_MARKER_DOT
 } lxw_chart_marker_type;
 
 /**
@@ -485,7 +491,13 @@ typedef enum lxw_chart_axis_type {
     LXW_CHART_AXIS_TYPE_X,
 
     /** Chart Y axis. */
-    LXW_CHART_AXIS_TYPE_Y
+    LXW_CHART_AXIS_TYPE_Y,
+
+    /** Chart secondary X axis. */
+    LXW_CHART_AXIS_TYPE_X2,
+
+    /** Chart secondary Y axis. */
+    LXW_CHART_AXIS_TYPE_Y2
 } lxw_chart_axis_type;
 
 enum lxw_chart_subtype {
@@ -607,6 +619,21 @@ typedef enum lxw_chart_axis_tick_mark {
     LXW_CHART_AXIS_TICK_MARK_CROSSING
 } lxw_chart_tick_mark;
 
+/**
+ * @brief Time units for date axis major/minor units.
+ */
+typedef enum lxw_chart_axis_time_unit {
+
+    /** Time unit: Days. The default. */
+    LXW_CHART_AXIS_TIME_UNIT_DAYS,
+
+    /** Time unit: Months. */
+    LXW_CHART_AXIS_TIME_UNIT_MONTHS,
+
+    /** Time unit: Years. */
+    LXW_CHART_AXIS_TIME_UNIT_YEARS
+} lxw_chart_axis_time_unit;
+
 typedef struct lxw_series_range {
     char *formula;
     char *sheetname;
@@ -691,6 +718,51 @@ typedef struct lxw_chart_pattern {
     uint8_t type;
 
 } lxw_chart_pattern;
+
+/**
+ * @brief Gradient fill types for chart elements.
+ */
+typedef enum lxw_chart_gradient_fill_type {
+
+    /** Linear gradient fill. */
+    LXW_CHART_GRADIENT_FILL_LINEAR,
+
+    /** Radial gradient fill. */
+    LXW_CHART_GRADIENT_FILL_RADIAL,
+
+    /** Rectangular gradient fill. */
+    LXW_CHART_GRADIENT_FILL_RECTANGULAR,
+
+    /** Path gradient fill. */
+    LXW_CHART_GRADIENT_FILL_PATH
+} lxw_chart_gradient_fill_type;
+
+/** Maximum number of gradient stops. */
+#define LXW_CHART_GRADIENT_MAX_STOPS 10
+
+/**
+ * @brief Struct to represent a chart gradient fill.
+ *
+ * See @ref chart_gradient_fills.
+ */
+typedef struct lxw_chart_gradient_fill {
+
+    /** The gradient fill type. See #lxw_chart_gradient_fill_type. */
+    uint8_t type;
+
+    /** Array of gradient colors. See @ref working_with_colors. */
+    lxw_color_t colors[LXW_CHART_GRADIENT_MAX_STOPS];
+
+    /** Array of gradient stop positions (0-100). */
+    uint8_t positions[LXW_CHART_GRADIENT_MAX_STOPS];
+
+    /** Number of gradient stops (2-10). */
+    uint8_t num_stops;
+
+    /** Angle for linear gradients (0-359). Default is 90. */
+    uint16_t angle;
+
+} lxw_chart_gradient_fill;
 
 /**
  * @brief Struct to represent a chart font.
@@ -1040,6 +1112,7 @@ typedef struct lxw_chart_series {
     lxw_chart_line *line;
     lxw_chart_fill *fill;
     lxw_chart_pattern *pattern;
+    lxw_chart_gradient_fill *gradient;
     lxw_chart_marker *marker;
     lxw_chart_point *points;
     lxw_chart_custom_label *data_labels;
@@ -1065,6 +1138,7 @@ typedef struct lxw_chart_series {
     lxw_chart_line *label_line;
     lxw_chart_fill *label_fill;
     lxw_chart_pattern *label_pattern;
+    lxw_chart_gradient_fill *label_gradient;
 
     lxw_series_error_bars *x_error_bars;
     lxw_series_error_bars *y_error_bars;
@@ -1082,6 +1156,10 @@ typedef struct lxw_chart_series {
     char *trendline_name;
     lxw_chart_line *trendline_line;
     double trendline_intercept;
+
+    /* Secondary axis flags. */
+    uint8_t x2_axis;
+    uint8_t y2_axis;
 
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
 
@@ -1140,6 +1218,8 @@ typedef struct lxw_chart_axis {
     double major_unit;
     uint8_t has_minor_unit;
     double minor_unit;
+    uint8_t major_unit_type;
+    uint8_t minor_unit_type;
 
     uint16_t interval_unit;
     uint16_t interval_tick;
@@ -1170,7 +1250,7 @@ typedef struct lxw_chart {
     uint8_t subtype;
     uint16_t series_index;
 
-    void (*write_chart_type)(struct lxw_chart *);
+    void (*write_chart_type)(struct lxw_chart *, uint8_t primary_axes);
     void (*write_plot_area)(struct lxw_chart *);
 
     /**
@@ -1185,6 +1265,18 @@ typedef struct lxw_chart {
      */
     lxw_chart_axis *y_axis;
 
+    /**
+     * A pointer to the chart secondary x2_axis object which can be used in
+     * functions that configure the secondary X axis.
+     */
+    lxw_chart_axis *x2_axis;
+
+    /**
+     * A pointer to the chart secondary y2_axis object which can be used in
+     * functions that configure the secondary Y axis.
+     */
+    lxw_chart_axis *y2_axis;
+
     lxw_chart_title title;
 
     uint32_t id;
@@ -1193,6 +1285,10 @@ typedef struct lxw_chart {
     uint32_t axis_id_3;
     uint32_t axis_id_4;
 
+    uint8_t has_secondary_axis;
+    struct lxw_chart *combined;
+    uint8_t is_secondary;
+
     uint8_t in_use;
     uint8_t chart_group;
     uint8_t cat_has_num_fmt;
@@ -1200,6 +1296,7 @@ typedef struct lxw_chart {
 
     uint8_t has_horiz_cat_axis;
     uint8_t has_horiz_val_axis;
+    uint8_t date_category;
 
     uint8_t style_id;
     uint16_t rotation;
@@ -1223,11 +1320,13 @@ typedef struct lxw_chart {
     lxw_chart_line *chartarea_line;
     lxw_chart_fill *chartarea_fill;
     lxw_chart_pattern *chartarea_pattern;
+    lxw_chart_gradient_fill *chartarea_gradient;
 
     lxw_chart_line *plotarea_line;
     lxw_chart_fill *plotarea_fill;
     lxw_chart_layout *plotarea_layout;
     lxw_chart_pattern *plotarea_pattern;
+    lxw_chart_gradient_fill *plotarea_gradient;
 
     uint8_t has_drop_lines;
     lxw_chart_line *drop_lines_line;
@@ -1278,6 +1377,8 @@ void lxw_chart_assemble_xml_file(lxw_chart *chart);
  * @param chart      Pointer to a lxw_chart instance to be configured.
  * @param categories The range of categories in the data series.
  * @param values     The range of values in the data series.
+ * @param y2_axis    (Optional) Set to 1 (LXW_TRUE) to plot the series on the
+ *                   secondary Y axis. Defaults to 0 (primary axis) if omitted.
  *
  * @return A lxw_chart_series object pointer.
  *
@@ -1289,7 +1390,11 @@ void lxw_chart_assemble_xml_file(lxw_chart *chart);
  * used to set the categories and values of the series:
  *
  * @code
+ *     // Add series on primary Y axis (y2_axis parameter is optional).
  *     chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$C$2:$C$7");
+ *
+ *     // Add series on secondary Y axis (explicit y2_axis = 1).
+ *     chart_add_series(chart, "=Sheet1!$A$2:$A$7", "=Sheet1!$D$2:$D$7", 1);
  * @endcode
  *
  *
@@ -1308,6 +1413,10 @@ void lxw_chart_assemble_xml_file(lxw_chart *chart);
  *  - `values`: This is the most important property of a series and is the
  *    only mandatory option for every chart object. This parameter links the
  *    chart with the worksheet data that it displays.
+ *
+ *  - `y2_axis`: (Optional) Set to 1 to plot the series on the secondary Y
+ *    axis (Y2). Defaults to 0 (primary axis) if omitted. The secondary axis
+ *    appears on the right side of the chart and can have a different scale.
  *
  * The `categories` and `values` should be a string formula like
  * `"=Sheet1!$A$2:$A$7"` in the same way it is represented in Excel. This is
@@ -1350,9 +1459,30 @@ void lxw_chart_assemble_xml_file(lxw_chart *chart);
  * @endcode
  *
  */
-lxw_chart_series *chart_add_series(lxw_chart *chart,
-                                   const char *categories,
-                                   const char *values);
+lxw_chart_series *chart_add_series_impl(lxw_chart *chart,
+                                        const char *categories,
+                                        const char *values, uint8_t y2_axis);
+
+/**
+ * @brief Macro wrapper for chart_add_series_impl with optional y2_axis parameter.
+ *
+ * This macro provides backward compatibility by defaulting y2_axis to 0
+ * (primary axis) when not specified.
+ *
+ * Usage:
+ * @code
+ *     // 3 arguments (y2_axis defaults to 0):
+ *     chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
+ *
+ *     // 4 arguments (explicit y2_axis):
+ *     chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5", 1);
+ * @endcode
+ */
+#define chart_add_series(...) \
+    _LXW_CHART_ADD_SERIES(__VA_ARGS__, 0)
+
+#define _LXW_CHART_ADD_SERIES(chart, categories, values, y2_axis, ...) \
+    chart_add_series_impl((chart), (categories), (values), (y2_axis))
 
 /**
  * @brief Set a series "categories" range using row and column values.
@@ -1554,6 +1684,30 @@ void chart_series_set_invert_if_negative(lxw_chart_series *series);
  */
 void chart_series_set_pattern(lxw_chart_series *series,
                               lxw_chart_pattern *pattern);
+
+/**
+ * @brief Set the gradient fill properties for a chart series.
+ *
+ * @param series   A series object created via `chart_add_series()`.
+ * @param gradient A #lxw_chart_gradient_fill struct.
+ *
+ * Set the gradient fill properties of a chart series:
+ *
+ * @code
+ *     lxw_chart_gradient_fill gradient = {
+ *         .type = LXW_CHART_GRADIENT_FILL_LINEAR,
+ *         .colors = {0x963735, 0xF1DCDB},
+ *         .num_stops = 2,
+ *         .angle = 90
+ *     };
+ *
+ *     chart_series_set_gradient(series, &gradient);
+ * @endcode
+ *
+ * For more information see #lxw_chart_gradient_fill_type and @ref chart_gradient_fills.
+ */
+void chart_series_set_gradient(lxw_chart_series *series,
+                               lxw_chart_gradient_fill * gradient);
 
 /**
  * @brief Set the data marker type for a series.
@@ -2494,17 +2648,51 @@ void chart_series_set_error_bars_line(lxw_series_error_bars *error_bars,
                                       lxw_chart_line *line);
 
 /**
+ * @brief Combine two charts into a single combined chart.
+ *
+ * @param chart          Pointer to the primary lxw_chart instance.
+ * @param combined_chart Pointer to the secondary lxw_chart to combine.
+ *
+ * The `%chart_combine()` function is used to combine two charts into a
+ * single chart, often with a shared category axis but different value axes.
+ * This is useful for showing two different data series with different
+ * scales on the same chart.
+ *
+ * @code
+ *     // Create primary and secondary charts.
+ *     lxw_chart *column_chart = workbook_add_chart(workbook, LXW_CHART_COLUMN);
+ *     lxw_chart *line_chart   = workbook_add_chart(workbook, LXW_CHART_LINE);
+ *
+ *     // Add data series to each chart.
+ *     chart_add_series(column_chart, NULL, "=Sheet1!$A$1:$A$5", 0);
+ *     chart_add_series(line_chart, NULL, "=Sheet1!$B$1:$B$5", 1);  // Secondary axis
+ *
+ *     // Combine the charts.
+ *     chart_combine(column_chart, line_chart);
+ *
+ *     // Insert the combined chart into the worksheet.
+ *     worksheet_insert_chart(worksheet, CELL("E2"), column_chart);
+ * @endcode
+ *
+ * Note: Only the primary chart should be inserted into the worksheet.
+ * The secondary chart is managed internally.
+ */
+void chart_combine(lxw_chart *chart, lxw_chart *combined_chart);
+
+/**
  * @brief           Get an axis pointer from a chart.
  *
  * @param chart     Pointer to a lxw_chart instance to be configured.
- * @param axis_type The axis type (X or Y): #lxw_chart_axis_type.
+ * @param axis_type The axis type (X, Y, X2 or Y2): #lxw_chart_axis_type.
  *
  * The `%chart_axis_get()` function returns a pointer to a chart axis based
  * on the  #lxw_chart_axis_type:
  *
  * @code
- *     lxw_chart_axis *x_axis = chart_axis_get(chart, LXW_CHART_AXIS_TYPE_X);
- *     lxw_chart_axis *y_axis = chart_axis_get(chart, LXW_CHART_AXIS_TYPE_Y);
+ *     lxw_chart_axis *x_axis  = chart_axis_get(chart, LXW_CHART_AXIS_TYPE_X);
+ *     lxw_chart_axis *y_axis  = chart_axis_get(chart, LXW_CHART_AXIS_TYPE_Y);
+ *     lxw_chart_axis *x2_axis = chart_axis_get(chart, LXW_CHART_AXIS_TYPE_X2);
+ *     lxw_chart_axis *y2_axis = chart_axis_get(chart, LXW_CHART_AXIS_TYPE_Y2);
  *
  *     // Use the axis pointer in other functions.
  *     chart_axis_major_gridlines_set_visible(x_axis, LXW_TRUE);
@@ -3122,6 +3310,74 @@ void chart_axis_set_major_unit(lxw_chart_axis *axis, double unit);
 void chart_axis_set_minor_unit(lxw_chart_axis *axis, double unit);
 
 /**
+ * @brief Set the category axis as a date axis.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ *
+ * Set the category axis type as a date axis. A date axis is similar to a
+ * category axis but it displays dates in chronological order rather than
+ * just as equal categories.
+ *
+ * @code
+ *     chart_axis_set_date_axis(chart->x_axis);
+ * @endcode
+ *
+ * This is often used with min/max, major/minor unit settings:
+ *
+ * @code
+ *     chart_axis_set_date_axis(chart->x_axis);
+ *     chart_axis_set_min(chart->x_axis, 41275);  // Date serial number
+ *     chart_axis_set_max(chart->x_axis, 41282);  // Date serial number
+ *     chart_axis_set_major_unit(chart->x_axis, 1);
+ *     chart_axis_set_major_unit_type(chart->x_axis, LXW_CHART_AXIS_TIME_UNIT_DAYS);
+ * @endcode
+ *
+ * **Axis types**: This function is applicable to category axes only.
+ *                 See @ref ww_charts_axes.
+ */
+void chart_axis_set_date_axis(lxw_chart_axis *axis);
+
+/**
+ * @brief Set the time unit type for the major unit of a date axis.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param type The time unit type: #lxw_chart_axis_time_unit.
+ *
+ * Set the time unit type for the major units of a date axis. The default is
+ * LXW_CHART_AXIS_TIME_UNIT_DAYS.
+ *
+ * @code
+ *     chart_axis_set_date_axis(chart->x_axis);
+ *     chart_axis_set_major_unit(chart->x_axis, 1);
+ *     chart_axis_set_major_unit_type(chart->x_axis, LXW_CHART_AXIS_TIME_UNIT_MONTHS);
+ * @endcode
+ *
+ * **Axis types**: This function is applicable to date axes only.
+ *                 See @ref ww_charts_axes.
+ */
+void chart_axis_set_major_unit_type(lxw_chart_axis *axis, uint8_t type);
+
+/**
+ * @brief Set the time unit type for the minor unit of a date axis.
+ *
+ * @param axis A pointer to a chart #lxw_chart_axis object.
+ * @param type The time unit type: #lxw_chart_axis_time_unit.
+ *
+ * Set the time unit type for the minor units of a date axis. The default is
+ * LXW_CHART_AXIS_TIME_UNIT_DAYS.
+ *
+ * @code
+ *     chart_axis_set_date_axis(chart->x_axis);
+ *     chart_axis_set_minor_unit(chart->x_axis, 1);
+ *     chart_axis_set_minor_unit_type(chart->x_axis, LXW_CHART_AXIS_TIME_UNIT_DAYS);
+ * @endcode
+ *
+ * **Axis types**: This function is applicable to date axes only.
+ *                 See @ref ww_charts_axes.
+ */
+void chart_axis_set_minor_unit_type(lxw_chart_axis *axis, uint8_t type);
+
+/**
  * @brief Set the display units for a value axis.
  *
  * @param axis  A pointer to a chart #lxw_chart_axis object.
@@ -3546,6 +3802,19 @@ void chart_chartarea_set_pattern(lxw_chart *chart,
                                  lxw_chart_pattern *pattern);
 
 /**
+ * @brief Set the gradient fill properties for a chart area.
+ *
+ * @param chart    Pointer to a lxw_chart instance to be configured.
+ * @param gradient A #lxw_chart_gradient_fill struct.
+ *
+ * Set the gradient fill properties of a chart area.
+ *
+ * For more information see #lxw_chart_gradient_fill_type.
+ */
+void chart_chartarea_set_gradient(lxw_chart *chart,
+                                  lxw_chart_gradient_fill * gradient);
+
+/**
  * @brief Set the line properties for a plotarea.
  *
  * @param chart Pointer to a lxw_chart instance to be configured.
@@ -3604,6 +3873,19 @@ void chart_plotarea_set_fill(lxw_chart *chart, lxw_chart_fill *fill);
  * For more information see #lxw_chart_pattern_type and @ref chart_patterns.
  */
 void chart_plotarea_set_pattern(lxw_chart *chart, lxw_chart_pattern *pattern);
+
+/**
+ * @brief Set the gradient fill properties for a chart plotarea.
+ *
+ * @param chart    Pointer to a lxw_chart instance to be configured.
+ * @param gradient A #lxw_chart_gradient_fill struct.
+ *
+ * Set the gradient fill properties of a chart plotarea.
+ *
+ * For more information see #lxw_chart_gradient_fill_type.
+ */
+void chart_plotarea_set_gradient(lxw_chart *chart,
+                                 lxw_chart_gradient_fill * gradient);
 
 /**
  * @brief Set the manual layout of the chart plotarea.
@@ -3866,6 +4148,50 @@ void chart_set_series_overlap(lxw_chart *chart, int8_t overlap);
  * This option is only available for Bar/Column charts.
  */
 void chart_set_series_gap(lxw_chart *chart, uint16_t gap);
+
+/**
+ * @brief Set the overlap between series in a Bar/Column chart for the
+ *        secondary axis.
+ *
+ * @param chart   Pointer to a lxw_chart instance to be configured.
+ * @param overlap The overlap between the series. -100 to 100.
+ *
+ * The `%chart_set_series_overlap_y2()` function sets the overlap between
+ * series in Bar and Column charts for the secondary axis. It is identical
+ * to `chart_set_series_overlap()` but applies to the secondary Y axis.
+ *
+ * @code
+ *     chart_set_series_overlap_y2(chart, -27);
+ * @endcode
+ *
+ * The overlap value must be in the range `-100 <= overlap <= 100`.
+ * The default value is 0.
+ *
+ * This option is only available for Bar/Column charts with a secondary axis.
+ */
+void chart_set_series_overlap_y2(lxw_chart *chart, int8_t overlap);
+
+/**
+ * @brief Set the gap between series in a Bar/Column chart for the
+ *        secondary axis.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ * @param gap   The gap between the series. 0 to 500.
+ *
+ * The `%chart_set_series_gap_y2()` function sets the gap between series in
+ * Bar and Column charts for the secondary axis. It is identical to
+ * `chart_set_series_gap()` but applies to the secondary Y axis.
+ *
+ * @code
+ *     chart_set_series_gap_y2(chart, 251);
+ * @endcode
+ *
+ * The gap value must be in the range `0 <= gap <= 500`. The default value
+ * is 150.
+ *
+ * This option is only available for Bar/Column charts with a secondary axis.
+ */
+void chart_set_series_gap_y2(lxw_chart *chart, uint16_t gap);
 
 /**
  * @brief Set the option for displaying blank data in a chart.

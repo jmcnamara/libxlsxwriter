@@ -13,7 +13,6 @@
 #include "xlsxwriter/utility.h"
 #include "xlsxwriter/packager.h"
 #include "xlsxwriter/hash_table.h"
-#include "xlsxwriter/hash_table.h"
 
 STATIC int _worksheet_name_cmp(lxw_worksheet_name *name1,
                                lxw_worksheet_name *name2);
@@ -300,8 +299,8 @@ lxw_workbook_set_default_xf_indices(lxw_workbook *self)
 
     STAILQ_FOREACH(format, self->formats, list_pointers) {
 
-        /* Skip the hyperlink format. */
-        if (index != 1)
+        /* Skip the hyperlink format (index 1) and checkbox format (index 2). */
+        if (index != 1 && index != 2)
             lxw_format_get_xf_index(format);
 
         index++;
@@ -1038,6 +1037,8 @@ _add_chart_cache_data(lxw_workbook *self)
         _populate_range(self, chart->title.range);
         _populate_range(self, chart->x_axis->title.range);
         _populate_range(self, chart->y_axis->title.range);
+        _populate_range(self, chart->x2_axis->title.range);
+        _populate_range(self, chart->y2_axis->title.range);
 
         if (STAILQ_EMPTY(chart->series_list))
             continue;
@@ -1050,6 +1051,31 @@ _add_chart_cache_data(lxw_workbook *self)
             for (i = 0; i < series->data_label_count; i++) {
                 lxw_chart_custom_label *data_label = &series->data_labels[i];
                 _populate_range(self, data_label->range);
+            }
+        }
+
+        /* Also populate data for combined charts. */
+        if (chart->combined) {
+            lxw_chart *combined = chart->combined;
+
+            _populate_range(self, combined->title.range);
+            _populate_range(self, combined->x_axis->title.range);
+            _populate_range(self, combined->y_axis->title.range);
+            _populate_range(self, combined->x2_axis->title.range);
+            _populate_range(self, combined->y2_axis->title.range);
+
+            if (!STAILQ_EMPTY(combined->series_list)) {
+                STAILQ_FOREACH(series, combined->series_list, list_pointers) {
+                    _populate_range(self, series->categories);
+                    _populate_range(self, series->values);
+                    _populate_range(self, series->title.range);
+
+                    for (i = 0; i < series->data_label_count; i++) {
+                        lxw_chart_custom_label *data_label =
+                            &series->data_labels[i];
+                        _populate_range(self, data_label->range);
+                    }
+                }
             }
         }
     }
@@ -1106,6 +1132,7 @@ _prepare_drawings(lxw_workbook *self)
         if (STAILQ_EMPTY(worksheet->image_props)
             && STAILQ_EMPTY(worksheet->embedded_image_props)
             && STAILQ_EMPTY(worksheet->chart_data)
+            && STAILQ_EMPTY(worksheet->textbox_data)
             && !worksheet->has_header_vml && !worksheet->has_background_image) {
             continue;
         }
@@ -1241,6 +1268,12 @@ _prepare_drawings(lxw_workbook *self)
             if (object_props->chart)
                 STAILQ_INSERT_TAIL(self->ordered_charts, object_props->chart,
                                    ordered_list_pointers);
+        }
+
+        /* Prepare worksheet textboxes. */
+        STAILQ_FOREACH(object_props, worksheet->textbox_data, list_pointers) {
+            lxw_worksheet_prepare_textbox(worksheet, drawing_id,
+                                          object_props);
         }
 
         /* Prepare worksheet header/footer images. */
@@ -1968,6 +2001,12 @@ workbook_new_opt(const char *filename, lxw_workbook_options *options)
     format_set_hyperlink(format);
     workbook->default_url_format = format;
 
+    /* Add the default checkbox format. */
+    format = workbook_add_format(workbook);
+    GOTO_LABEL_ON_MEM_ERROR(format, mem_error);
+    format_set_checkbox(format);
+    workbook->checkbox_format = format;
+
     if (options) {
         workbook->options.constant_memory = options->constant_memory;
         workbook->options.tmpdir = lxw_strdup(options->tmpdir);
@@ -2039,6 +2078,7 @@ workbook_add_worksheet(lxw_workbook *self, const char *sheetname)
     init_data.first_sheet = &self->first_sheet;
     init_data.tmpdir = self->options.tmpdir;
     init_data.default_url_format = self->default_url_format;
+    init_data.checkbox_format = self->checkbox_format;
     init_data.max_url_length = self->max_url_length;
     init_data.use_1904_epoch = self->use_1904_epoch;
 
@@ -2167,7 +2207,7 @@ workbook_add_chart(lxw_workbook *self, uint8_t type)
 {
     lxw_chart *chart;
 
-    if (type == LXW_CHART_NONE || type > LXW_CHART_RADAR_FILLED) {
+    if (type == LXW_CHART_NONE || type > LXW_CHART_STOCK) {
         LXW_WARN_FORMAT1("workbook_add_chart(): invalid chart type: %d",
                          type);
         return NULL;
@@ -2247,6 +2287,9 @@ workbook_close(lxw_workbook *self)
             self->has_metadata = LXW_TRUE;
             self->has_embedded_images = LXW_TRUE;
         }
+
+        if (worksheet->has_checkboxes)
+            self->has_feature_property_bags = LXW_TRUE;
     }
 
     /* Set workbook and worksheet VBA codenames if a macro has been added. */

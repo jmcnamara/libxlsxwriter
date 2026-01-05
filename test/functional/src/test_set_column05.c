@@ -51,9 +51,9 @@ int main() {
 
     worksheet_write_blank(worksheet, CELL("F13"), bold_italic);
 
-    chart_add_series(chart, NULL, "=Sheet1!$A$2:$A$6");
-    chart_add_series(chart, NULL, "=Sheet1!$B$2:$B$6");
-    chart_add_series(chart, NULL, "=Sheet1!$C$2:$C$6");
+    chart_add_series(chart, NULL, "=Sheet1!$A$2:$A$6", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$B$2:$B$6", 0);
+    chart_add_series(chart, NULL, "=Sheet1!$C$2:$C$6", 0);
 
     worksheet_insert_chart(worksheet, CELL("E9"), chart);
 

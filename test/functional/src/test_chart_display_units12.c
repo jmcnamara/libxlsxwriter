@@ -35,7 +35,7 @@ int main() {
     chart_add_series(chart,
          "=Sheet1!$A$1:$A$5",
          "=Sheet1!$B$1:$B$5"
-    );
+    , 0);
 
     chart_axis_set_display_units(chart->y_axis, LXW_CHART_AXIS_UNITS_HUNDREDS);
     chart_axis_set_display_units_visible(chart->y_axis, LXW_FALSE);

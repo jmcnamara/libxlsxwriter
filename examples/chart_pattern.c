@@ -37,8 +37,8 @@ int main() {
     chart = workbook_add_chart(workbook, LXW_CHART_COLUMN);
 
     /* Configure the chart. */
-    lxw_chart_series *series1 = chart_add_series(chart, NULL, "Sheet1!$A$2:$A$5");
-    lxw_chart_series *series2 = chart_add_series(chart, NULL, "Sheet1!$B$2:$B$5");
+    lxw_chart_series *series1 = chart_add_series(chart, NULL, "Sheet1!$A$2:$A$5", 0);
+    lxw_chart_series *series2 = chart_add_series(chart, NULL, "Sheet1!$B$2:$B$5", 0);
 
     chart_series_set_name(series1, "=Sheet1!$A$1");
     chart_series_set_name(series2, "=Sheet1!$B$1");

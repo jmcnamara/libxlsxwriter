@@ -151,6 +151,10 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     GOTO_LABEL_ON_MEM_ERROR(worksheet->chart_data, mem_error);
     STAILQ_INIT(worksheet->chart_data);
 
+    worksheet->textbox_data = calloc(1, sizeof(struct lxw_textbox_props));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->textbox_data, mem_error);
+    STAILQ_INIT(worksheet->textbox_data);
+
     worksheet->comment_objs = calloc(1, sizeof(struct lxw_comment_objs));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->comment_objs, mem_error);
     STAILQ_INIT(worksheet->comment_objs);
@@ -175,6 +179,10 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     worksheet->table_objs = calloc(1, sizeof(struct lxw_table_objs));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->table_objs, mem_error);
     STAILQ_INIT(worksheet->table_objs);
+
+    worksheet->sparklines = calloc(1, sizeof(struct lxw_sparklines));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->sparklines, mem_error);
+    STAILQ_INIT(worksheet->sparklines);
 
     worksheet->external_hyperlinks = calloc(1, sizeof(struct lxw_rel_tuples));
     GOTO_LABEL_ON_MEM_ERROR(worksheet->external_hyperlinks, mem_error);
@@ -293,6 +301,7 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
         worksheet->active_sheet = init_data->active_sheet;
         worksheet->first_sheet = init_data->first_sheet;
         worksheet->default_url_format = init_data->default_url_format;
+        worksheet->checkbox_format = init_data->checkbox_format;
         worksheet->max_url_length = init_data->max_url_length;
         worksheet->use_1904_epoch = init_data->use_1904_epoch;
     }
@@ -427,6 +436,7 @@ _free_object_properties(lxw_object_properties *object_property)
     free(object_property->image_buffer);
     free(object_property->md5);
     free(object_property->image_position);
+    free(object_property->text);
     free(object_property);
     object_property = NULL;
 }
@@ -635,6 +645,16 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
         free(worksheet->chart_data);
     }
 
+    if (worksheet->textbox_data) {
+        while (!STAILQ_EMPTY(worksheet->textbox_data)) {
+            object_props = STAILQ_FIRST(worksheet->textbox_data);
+            STAILQ_REMOVE_HEAD(worksheet->textbox_data, list_pointers);
+            _free_object_properties(object_props);
+        }
+
+        free(worksheet->textbox_data);
+    }
+
     /* Just free the list. The list objects are freed from the RB tree. */
     free(worksheet->comment_objs);
 
@@ -676,6 +696,20 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
         }
 
         free(worksheet->table_objs);
+    }
+
+    if (worksheet->sparklines) {
+        lxw_sparkline *sparkline;
+        while (!STAILQ_EMPTY(worksheet->sparklines)) {
+            sparkline = STAILQ_FIRST(worksheet->sparklines);
+            STAILQ_REMOVE_HEAD(worksheet->sparklines, list_pointers);
+            free(sparkline->range);
+            free(sparkline->location);
+            free(sparkline->date_axis);
+            free(sparkline);
+        }
+
+        free(worksheet->sparklines);
     }
 
     if (worksheet->data_validations) {
@@ -3007,15 +3041,13 @@ _worksheet_position_object_pixels(lxw_worksheet *self,
         height = height + y1;
 
     /* Subtract the underlying cell widths to find the end cell. */
-    while (width >= _worksheet_size_col(self, col_end, anchor)
-           && col_end < LXW_COL_MAX) {
+    while (width >= _worksheet_size_col(self, col_end, anchor)) {
         width -= _worksheet_size_col(self, col_end, anchor);
         col_end++;
     }
 
     /* Subtract the underlying cell heights to find the end cell. */
-    while (height >= _worksheet_size_row(self, row_end, anchor)
-           && row_end < LXW_ROW_MAX) {
+    while (height >= _worksheet_size_row(self, row_end, anchor)) {
         height -= _worksheet_size_row(self, row_end, anchor);
         row_end++;
     }
@@ -3693,6 +3725,83 @@ lxw_worksheet_prepare_chart(lxw_worksheet *self,
     GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
 
     STAILQ_INSERT_TAIL(self->drawing_links, relationship, list_pointers);
+
+    return;
+
+mem_error:
+    if (relationship) {
+        free(relationship->type);
+        free(relationship->target);
+        free(relationship->target_mode);
+        free(relationship);
+    }
+}
+
+/*
+ * Set up a textbox in the worksheet.
+ */
+void
+lxw_worksheet_prepare_textbox(lxw_worksheet *self,
+                              uint32_t drawing_id,
+                              lxw_object_properties *object_props)
+{
+    lxw_drawing_object *drawing_object;
+    lxw_rel_tuple *relationship;
+    double width;
+    double height;
+    char filename[LXW_FILENAME_LENGTH];
+
+    if (!self->drawing) {
+        self->drawing = lxw_drawing_new();
+        RETURN_VOID_ON_MEM_ERROR(self->drawing);
+        self->drawing->embedded = LXW_TRUE;
+
+        relationship = calloc(1, sizeof(lxw_rel_tuple));
+        RETURN_VOID_ON_MEM_ERROR(relationship);
+
+        relationship->type = lxw_strdup("/drawing");
+        GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
+
+        lxw_snprintf(filename, LXW_FILENAME_LENGTH,
+                     "../drawings/drawing%d.xml", drawing_id);
+
+        relationship->target = lxw_strdup(filename);
+        GOTO_LABEL_ON_MEM_ERROR(relationship->target, mem_error);
+
+        STAILQ_INSERT_TAIL(self->external_drawing_links, relationship,
+                           list_pointers);
+    }
+
+    drawing_object = calloc(1, sizeof(lxw_drawing_object));
+    RETURN_VOID_ON_MEM_ERROR(drawing_object);
+
+    drawing_object->anchor = LXW_OBJECT_MOVE_AND_SIZE;
+    if (object_props->object_position)
+        drawing_object->anchor = object_props->object_position;
+
+    drawing_object->type = LXW_DRAWING_SHAPE;
+    drawing_object->description = lxw_strdup(object_props->description);
+    drawing_object->tip = NULL;
+    drawing_object->rel_index = 0;
+    drawing_object->url_rel_index = 0;
+    drawing_object->decorative = object_props->decorative;
+    drawing_object->text = lxw_strdup(object_props->text);
+
+    /* Scale to user scale. */
+    width = object_props->width * object_props->x_scale;
+    height = object_props->height * object_props->y_scale;
+
+    /* Convert to the nearest pixel. */
+    object_props->width = width;
+    object_props->height = height;
+
+    _worksheet_position_object_emus(self, object_props, drawing_object);
+
+    /* Convert from pixels to emus. */
+    drawing_object->width = (uint32_t) (0.5 + width * 9525);
+    drawing_object->height = (uint32_t) (0.5 + height * 9525);
+
+    lxw_add_drawing_object(self->drawing, drawing_object);
 
     return;
 
@@ -7157,6 +7266,218 @@ _worksheet_write_conditional_formatting_2010(lxw_worksheet *self, lxw_cond_forma
 }
 
 /*
+ * Write a sparkline color element like <x14:colorSeries>.
+ * Color of 0 (LXW_COLOR_UNSET) means "not set, use default".
+ */
+STATIC void
+_worksheet_write_sparkline_color(lxw_worksheet *self, const char *tag,
+                                 lxw_color_t color)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char rgb_str[LXW_ATTR_32];
+
+    /* 0 means not set, use Excel's default for this style. */
+    if (color == 0)
+        return;
+
+    lxw_snprintf(rgb_str, LXW_ATTR_32, "FF%06X", color & LXW_COLOR_MASK);
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("rgb", rgb_str);
+    lxw_xml_empty_tag(self->file, tag, &attributes);
+    LXW_FREE_ATTRIBUTES();
+}
+
+/*
+ * Write the <x14:sparklineGroup> element.
+ */
+STATIC void
+_worksheet_write_sparkline_group(lxw_worksheet *self,
+                                 lxw_sparkline *sparkline)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    char double_str[LXW_ATTR_32];
+
+    LXW_INIT_ATTRIBUTES();
+
+    /* Write manualMax if custom max. */
+    if (sparkline->max_axis_type == LXW_SPARKLINE_AXIS_CUSTOM) {
+        lxw_sprintf_dbl(double_str, sparkline->max);
+        LXW_PUSH_ATTRIBUTES_STR("manualMax", double_str);
+    }
+
+    /* Write manualMin if custom min. */
+    if (sparkline->min_axis_type == LXW_SPARKLINE_AXIS_CUSTOM) {
+        lxw_sprintf_dbl(double_str, sparkline->min);
+        LXW_PUSH_ATTRIBUTES_STR("manualMin", double_str);
+    }
+
+    /* Write lineWeight (default is 0.75 but we always write if non-default). */
+    if (sparkline->weight != 0.75) {
+        lxw_sprintf_dbl(double_str, sparkline->weight);
+        LXW_PUSH_ATTRIBUTES_STR("lineWeight", double_str);
+    }
+
+    /* Write type (line is default, so only write column or win/loss). */
+    if (sparkline->type == LXW_SPARKLINE_COLUMN) {
+        LXW_PUSH_ATTRIBUTES_STR("type", "column");
+    }
+    else if (sparkline->type == LXW_SPARKLINE_WIN_LOSS) {
+        LXW_PUSH_ATTRIBUTES_STR("type", "stacked");
+    }
+
+    /* Write dateAxis if date axis data is present. */
+    if (sparkline->date_axis) {
+        LXW_PUSH_ATTRIBUTES_STR("dateAxis", "1");
+    }
+
+    /* Write displayEmptyCellsAs. */
+    if (sparkline->empty_cells == LXW_SPARKLINE_EMPTY_CELLS_ZERO) {
+        LXW_PUSH_ATTRIBUTES_STR("displayEmptyCellsAs", "zero");
+    }
+    else if (sparkline->empty_cells == LXW_SPARKLINE_EMPTY_CELLS_SPAN) {
+        LXW_PUSH_ATTRIBUTES_STR("displayEmptyCellsAs", "span");
+    }
+
+    /* Write markers. */
+    if (sparkline->markers) {
+        LXW_PUSH_ATTRIBUTES_STR("markers", "1");
+    }
+
+    /* Write high. */
+    if (sparkline->high_point) {
+        LXW_PUSH_ATTRIBUTES_STR("high", "1");
+    }
+
+    /* Write low. */
+    if (sparkline->low_point) {
+        LXW_PUSH_ATTRIBUTES_STR("low", "1");
+    }
+
+    /* Write first. */
+    if (sparkline->first_point) {
+        LXW_PUSH_ATTRIBUTES_STR("first", "1");
+    }
+
+    /* Write last. */
+    if (sparkline->last_point) {
+        LXW_PUSH_ATTRIBUTES_STR("last", "1");
+    }
+
+    /* Write negative. */
+    if (sparkline->negative_points) {
+        LXW_PUSH_ATTRIBUTES_STR("negative", "1");
+    }
+
+    /* Write displayXAxis. */
+    if (sparkline->show_axis) {
+        LXW_PUSH_ATTRIBUTES_STR("displayXAxis", "1");
+    }
+
+    /* Write displayHidden. */
+    if (sparkline->show_hidden) {
+        LXW_PUSH_ATTRIBUTES_STR("displayHidden", "1");
+    }
+
+    /* Write minAxisType. */
+    if (sparkline->min_axis_type == LXW_SPARKLINE_AXIS_GROUP) {
+        LXW_PUSH_ATTRIBUTES_STR("minAxisType", "group");
+    }
+    else if (sparkline->min_axis_type == LXW_SPARKLINE_AXIS_CUSTOM) {
+        LXW_PUSH_ATTRIBUTES_STR("minAxisType", "custom");
+    }
+
+    /* Write maxAxisType. */
+    if (sparkline->max_axis_type == LXW_SPARKLINE_AXIS_GROUP) {
+        LXW_PUSH_ATTRIBUTES_STR("maxAxisType", "group");
+    }
+    else if (sparkline->max_axis_type == LXW_SPARKLINE_AXIS_CUSTOM) {
+        LXW_PUSH_ATTRIBUTES_STR("maxAxisType", "custom");
+    }
+
+    /* Write rightToLeft. */
+    if (sparkline->reverse) {
+        LXW_PUSH_ATTRIBUTES_STR("rightToLeft", "1");
+    }
+
+    lxw_xml_start_tag(self->file, "x14:sparklineGroup", &attributes);
+
+    LXW_FREE_ATTRIBUTES();
+
+    /* Write colors. */
+    _worksheet_write_sparkline_color(self, "x14:colorSeries",
+                                     sparkline->series_color);
+    _worksheet_write_sparkline_color(self, "x14:colorNegative",
+                                     sparkline->negative_color);
+
+    /* Write the colorAxis element (always black FF000000). */
+    {
+        struct xml_attribute_list attributes;
+        struct xml_attribute *attribute;
+        LXW_INIT_ATTRIBUTES();
+        LXW_PUSH_ATTRIBUTES_STR("rgb", "FF000000");
+        lxw_xml_empty_tag(self->file, "x14:colorAxis", &attributes);
+        LXW_FREE_ATTRIBUTES();
+    }
+
+    _worksheet_write_sparkline_color(self, "x14:colorMarkers",
+                                     sparkline->markers_color);
+    _worksheet_write_sparkline_color(self, "x14:colorFirst",
+                                     sparkline->first_color);
+    _worksheet_write_sparkline_color(self, "x14:colorLast",
+                                     sparkline->last_color);
+    _worksheet_write_sparkline_color(self, "x14:colorHigh",
+                                     sparkline->high_color);
+    _worksheet_write_sparkline_color(self, "x14:colorLow",
+                                     sparkline->low_color);
+
+    /* Write date axis formula if present. */
+    if (sparkline->date_axis) {
+        lxw_xml_data_element(self->file, "xm:f", sparkline->date_axis, NULL);
+    }
+
+    /* Write the sparklines container. */
+    lxw_xml_start_tag(self->file, "x14:sparklines", NULL);
+
+    /* Write the sparkline element. */
+    lxw_xml_start_tag(self->file, "x14:sparkline", NULL);
+    lxw_xml_data_element(self->file, "xm:f", sparkline->range, NULL);
+    lxw_xml_data_element(self->file, "xm:sqref", sparkline->location, NULL);
+    lxw_xml_end_tag(self->file, "x14:sparkline");
+
+    lxw_xml_end_tag(self->file, "x14:sparklines");
+    lxw_xml_end_tag(self->file, "x14:sparklineGroup");
+}
+
+/*
+ * Write the <extLst> element for sparklines.
+ */
+STATIC void
+_worksheet_write_ext_list_sparklines(lxw_worksheet *self)
+{
+    struct xml_attribute_list attributes;
+    struct xml_attribute *attribute;
+    lxw_sparkline *sparkline;
+    char xmlns_xm[] = "http://schemas.microsoft.com/office/excel/2006/main";
+
+    _worksheet_write_ext(self, "{05C60535-1F16-4fd2-B633-F4F36F0B64E0}");
+
+    LXW_INIT_ATTRIBUTES();
+    LXW_PUSH_ATTRIBUTES_STR("xmlns:xm", xmlns_xm);
+    lxw_xml_start_tag(self->file, "x14:sparklineGroups", &attributes);
+    LXW_FREE_ATTRIBUTES();
+
+    STAILQ_FOREACH(sparkline, self->sparklines, list_pointers) {
+        _worksheet_write_sparkline_group(self, sparkline);
+    }
+
+    lxw_xml_end_tag(self->file, "x14:sparklineGroups");
+    lxw_xml_end_tag(self->file, "ext");
+}
+
+/*
  * Write the <extLst> element for Excel 2010 conditional formatting data bars.
  */
 STATIC void
@@ -7187,12 +7508,16 @@ _worksheet_write_ext_list_data_bars(lxw_worksheet *self)
 STATIC void
 _worksheet_write_ext_list(lxw_worksheet *self)
 {
-    if (self->data_bar_2010_index == 0)
+    if (self->data_bar_2010_index == 0 && !self->has_sparklines)
         return;
 
     lxw_xml_start_tag(self->file, "extLst", NULL);
 
-    _worksheet_write_ext_list_data_bars(self);
+    if (self->data_bar_2010_index > 0)
+        _worksheet_write_ext_list_data_bars(self);
+
+    if (self->has_sparklines)
+        _worksheet_write_ext_list_sparklines(self);
 
     lxw_xml_end_tag(self->file, "extLst");
 }
@@ -8318,6 +8643,30 @@ worksheet_write_boolean(lxw_worksheet *self,
 }
 
 /*
+ * Write a checkbox to a cell in Excel.
+ */
+lxw_error
+worksheet_insert_checkbox(lxw_worksheet *self,
+                          lxw_row_t row_num, lxw_col_t col_num, int value)
+{
+    lxw_cell *cell;
+    lxw_error err;
+
+    err = _check_dimensions(self, row_num, col_num, LXW_FALSE, LXW_FALSE);
+    if (err)
+        return err;
+
+    cell = _new_boolean_cell(row_num, col_num, value ? 1 : 0,
+                             self->checkbox_format);
+
+    _insert_cell(self, row_num, col_num, cell);
+
+    self->has_checkboxes = LXW_TRUE;
+
+    return LXW_NO_ERROR;
+}
+
+/*
  * Write a date and or time to a cell in Excel.
  */
 lxw_error
@@ -8334,9 +8683,9 @@ worksheet_write_datetime(lxw_worksheet *self,
     if (err)
         return err;
 
-    err = lxw_datetime_validate(datetime);
-    if (err)
-        return err;
+    printf("worksheet_write_datetime(): %d-%02d-%02d - 1904: %d\n",
+           datetime->year, datetime->month, datetime->day,
+           self->use_1904_epoch);
 
     excel_date =
         lxw_datetime_to_excel_date_with_epoch(datetime, self->use_1904_epoch);
@@ -9557,6 +9906,104 @@ error:
 }
 
 /*
+ * Add a sparkline to the worksheet.
+ */
+lxw_error
+worksheet_add_sparkline(lxw_worksheet *self, lxw_row_t row, lxw_col_t col,
+                        lxw_sparkline_options *user_options)
+{
+    lxw_sparkline *sparkline;
+    lxw_error err;
+    char location[LXW_MAX_CELL_NAME_LENGTH];
+
+    if (!user_options) {
+        LXW_WARN
+            ("worksheet_add_sparkline(): options parameter cannot be NULL");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (!user_options->range || user_options->range[0] == '\0') {
+        LXW_WARN("worksheet_add_sparkline(): range parameter is required");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    /* Check that row and column are valid. */
+    err = _check_dimensions(self, row, col, LXW_FALSE, LXW_FALSE);
+    if (err)
+        return err;
+
+    /* Create sparkline object. */
+    sparkline = calloc(1, sizeof(lxw_sparkline));
+    RETURN_ON_MEM_ERROR(sparkline, LXW_ERROR_MEMORY_MALLOC_FAILED);
+
+    /* Copy required range. */
+    sparkline->range = lxw_strdup(user_options->range);
+    if (!sparkline->range) {
+        free(sparkline);
+        return LXW_ERROR_MEMORY_MALLOC_FAILED;
+    }
+
+    /* Set location from row/col. */
+    lxw_rowcol_to_cell(location, row, col);
+    sparkline->location = lxw_strdup(location);
+    if (!sparkline->location) {
+        free(sparkline->range);
+        free(sparkline);
+        return LXW_ERROR_MEMORY_MALLOC_FAILED;
+    }
+
+    sparkline->row = row;
+    sparkline->col = col;
+
+    /* Copy options. */
+    sparkline->type = user_options->type;
+    sparkline->style = user_options->style;
+    sparkline->high_point = user_options->high_point;
+    sparkline->low_point = user_options->low_point;
+    sparkline->negative_points = user_options->negative_points;
+    sparkline->first_point = user_options->first_point;
+    sparkline->last_point = user_options->last_point;
+    sparkline->markers = user_options->markers;
+
+    sparkline->series_color = user_options->series_color;
+    sparkline->negative_color = user_options->negative_color;
+    sparkline->markers_color = user_options->markers_color;
+    sparkline->first_color = user_options->first_color;
+    sparkline->last_color = user_options->last_color;
+    sparkline->high_color = user_options->high_color;
+    sparkline->low_color = user_options->low_color;
+
+    sparkline->min = user_options->min;
+    sparkline->max = user_options->max;
+    sparkline->min_axis_type = user_options->min_axis_type;
+    sparkline->max_axis_type = user_options->max_axis_type;
+
+    sparkline->show_axis = user_options->show_axis;
+    sparkline->reverse = user_options->reverse;
+    sparkline->show_hidden = user_options->show_hidden;
+    sparkline->empty_cells = user_options->empty_cells;
+
+    sparkline->weight = user_options->weight;
+    if (sparkline->weight == 0.0)
+        sparkline->weight = 0.75;       /* Default line weight */
+
+    if (user_options->date_axis) {
+        sparkline->date_axis = lxw_strdup(user_options->date_axis);
+        if (!sparkline->date_axis) {
+            free(sparkline->range);
+            free(sparkline->location);
+            free(sparkline);
+            return LXW_ERROR_MEMORY_MALLOC_FAILED;
+        }
+    }
+
+    STAILQ_INSERT_TAIL(self->sparklines, sparkline, list_pointers);
+    self->has_sparklines = LXW_TRUE;
+
+    return LXW_NO_ERROR;
+}
+
+/*
  * Set this worksheet as a selected worksheet, i.e. the worksheet has its tab
  * highlighted.
  */
@@ -9795,12 +10242,6 @@ worksheet_set_page_view(lxw_worksheet *self)
 void
 worksheet_set_paper(lxw_worksheet *self, uint8_t paper_size)
 {
-    if (paper_size > 118) {
-        LXW_WARN_FORMAT1("worksheet_set_paper(): invalid paper size: %d. "
-                         "Valid range is 0-118", paper_size);
-        return;
-    }
-
     self->paper_size = paper_size;
     self->page_setup_changed = LXW_TRUE;
 }
@@ -11137,6 +11578,79 @@ worksheet_insert_chart(lxw_worksheet *self,
                        lxw_row_t row_num, lxw_col_t col_num, lxw_chart *chart)
 {
     return worksheet_insert_chart_opt(self, row_num, col_num, chart, NULL);
+}
+
+/*
+ * Insert a textbox into the worksheet, with options.
+ */
+lxw_error
+worksheet_insert_textbox_opt(lxw_worksheet *self,
+                             lxw_row_t row_num, lxw_col_t col_num,
+                             const char *text,
+                             lxw_textbox_options *user_options)
+{
+    lxw_object_properties *object_props;
+
+    if (!text) {
+        LXW_WARN("worksheet_insert_textbox()/_opt(): "
+                 "text must be specified.");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    /* Create a new object to hold the textbox properties. */
+    object_props = calloc(1, sizeof(lxw_object_properties));
+    RETURN_ON_MEM_ERROR(object_props, LXW_ERROR_MEMORY_MALLOC_FAILED);
+
+    if (user_options) {
+        object_props->x_offset = user_options->x_offset;
+        object_props->y_offset = user_options->y_offset;
+        object_props->x_scale = user_options->x_scale;
+        object_props->y_scale = user_options->y_scale;
+        object_props->object_position = user_options->object_position;
+        object_props->description = lxw_strdup(user_options->description);
+        object_props->decorative = user_options->decorative;
+
+        if (user_options->width)
+            object_props->width = user_options->width;
+        if (user_options->height)
+            object_props->height = user_options->height;
+    }
+
+    /* Copy other options or set defaults. */
+    object_props->row = row_num;
+    object_props->col = col_num;
+    object_props->text = lxw_strdup(text);
+    object_props->is_textbox = LXW_TRUE;
+
+    /* Default textbox size is 192 x 120 pixels. */
+    if (object_props->width == 0)
+        object_props->width = 192;
+
+    if (object_props->height == 0)
+        object_props->height = 120;
+
+    if (object_props->x_scale == 0.0)
+        object_props->x_scale = 1;
+
+    if (object_props->y_scale == 0.0)
+        object_props->y_scale = 1;
+
+    STAILQ_INSERT_TAIL(self->textbox_data, object_props, list_pointers);
+
+    self->has_textboxes = LXW_TRUE;
+
+    return LXW_NO_ERROR;
+}
+
+/*
+ * Insert a textbox into the worksheet.
+ */
+lxw_error
+worksheet_insert_textbox(lxw_worksheet *self,
+                         lxw_row_t row_num, lxw_col_t col_num,
+                         const char *text)
+{
+    return worksheet_insert_textbox_opt(self, row_num, col_num, text, NULL);
 }
 
 /*

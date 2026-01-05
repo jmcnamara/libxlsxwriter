@@ -56,6 +56,7 @@
 #include "styles.h"
 #include "utility.h"
 #include "relationships.h"
+#include "sparkline.h"
 
 #define LXW_ROW_MAX                 1048576
 #define LXW_COL_MAX                 16384
@@ -821,6 +822,7 @@ STAILQ_HEAD(lxw_cond_format_list, lxw_cond_format_obj);
 STAILQ_HEAD(lxw_image_props, lxw_object_properties);
 STAILQ_HEAD(lxw_embedded_image_props, lxw_object_properties);
 STAILQ_HEAD(lxw_chart_props, lxw_object_properties);
+STAILQ_HEAD(lxw_textbox_props, lxw_object_properties);
 STAILQ_HEAD(lxw_comment_objs, lxw_vml_obj);
 STAILQ_HEAD(lxw_table_objs, lxw_table_obj);
 
@@ -1814,6 +1816,8 @@ typedef struct lxw_object_properties {
     char *image_position;
     uint8_t decorative;
     lxw_format *format;
+    char *text;
+    uint8_t is_textbox;
 
     STAILQ_ENTRY (lxw_object_properties) list_pointers;
 } lxw_object_properties;
@@ -2129,6 +2133,7 @@ typedef struct lxw_worksheet {
     struct lxw_image_props *image_props;
     struct lxw_image_props *embedded_image_props;
     struct lxw_chart_props *chart_data;
+    struct lxw_textbox_props *textbox_data;
     struct lxw_drawing_rel_ids *drawing_rel_ids;
     struct lxw_vml_drawing_rel_ids *vml_drawing_rel_ids;
     struct lxw_comment_objs *comment_objs;
@@ -2136,6 +2141,8 @@ typedef struct lxw_worksheet {
     struct lxw_comment_objs *button_objs;
     struct lxw_table_objs *table_objs;
     uint16_t table_count;
+    struct lxw_sparklines *sparklines;
+    uint8_t has_sparklines;
 
     lxw_row_t dim_rowmin;
     lxw_row_t dim_rowmax;
@@ -2254,6 +2261,7 @@ typedef struct lxw_worksheet {
 
     lxw_drawing *drawing;
     lxw_format *default_url_format;
+    lxw_format *checkbox_format;
 
     uint8_t has_vml;
     uint8_t has_comments;
@@ -2287,6 +2295,9 @@ typedef struct lxw_worksheet {
 
     uint8_t use_1904_epoch;
 
+    uint8_t has_checkboxes;
+    uint8_t has_textboxes;
+
     uint16_t excel_version;
 
     lxw_object_properties **header_footer_objs[LXW_HEADER_FOOTER_OBJS_MAX];
@@ -2319,6 +2330,7 @@ typedef struct lxw_worksheet_init_data {
     const char *quoted_name;
     const char *tmpdir;
     lxw_format *default_url_format;
+    lxw_format *checkbox_format;
     uint16_t max_url_length;
     uint8_t use_1904_epoch;
 
@@ -2942,6 +2954,36 @@ lxw_error worksheet_write_url_opt(lxw_worksheet *worksheet,
 lxw_error worksheet_write_boolean(lxw_worksheet *worksheet,
                                   lxw_row_t row, lxw_col_t col,
                                   int value, lxw_format *format);
+
+/**
+ * @brief Write a checkbox to a worksheet cell.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param value     The checkbox state: 0 = unchecked, non-zero = checked.
+ *
+ * @return A #lxw_error code.
+ *
+ * Insert a checkbox into a worksheet cell. The `value` parameter can be
+ * 0 for an unchecked checkbox or any non-zero value for a checked checkbox:
+ *
+ * @code
+ *     // Insert an unchecked checkbox in cell A1.
+ *     worksheet_insert_checkbox(worksheet, 0, 0, 0);
+ *
+ *     // Insert a checked checkbox in cell A2.
+ *     worksheet_insert_checkbox(worksheet, 1, 0, 1);
+ * @endcode
+ *
+ * @image html checkbox01.png
+ *
+ * Note: Checkbox is a feature introduced in Excel 365 and may not work
+ * in older versions of Excel.
+ *
+ */
+lxw_error worksheet_insert_checkbox(lxw_worksheet *worksheet,
+                                    lxw_row_t row, lxw_col_t col, int value);
 
 /**
  * @brief Write a formatted blank worksheet cell.
@@ -4059,6 +4101,62 @@ lxw_error worksheet_insert_chart_opt(lxw_worksheet *worksheet,
                                      lxw_chart_options *user_options);
 
 /**
+ * @brief Insert a textbox object into a worksheet.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param text      The text string to display in the textbox.
+ *
+ * @return A #lxw_error code.
+ *
+ * This function can be used to insert a textbox into a worksheet:
+ *
+ * @code
+ *     worksheet_insert_textbox(worksheet, 1, 1, "This is a textbox");
+ * @endcode
+ *
+ * The default textbox size is 192 x 120 pixels (approximately 3 columns x 6
+ * rows). The size and position of the textbox can be modified using the
+ * `worksheet_insert_textbox_opt()` function and the #lxw_textbox_options
+ * struct.
+ *
+ */
+lxw_error worksheet_insert_textbox(lxw_worksheet *worksheet,
+                                   lxw_row_t row, lxw_col_t col,
+                                   const char *text);
+
+/**
+ * @brief Insert a textbox object into a worksheet, with options.
+ *
+ * @param worksheet    Pointer to a lxw_worksheet instance to be updated.
+ * @param row          The zero indexed row number.
+ * @param col          The zero indexed column number.
+ * @param text         The text string to display in the textbox.
+ * @param user_options Optional textbox parameters.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_insert_textbox_opt()` function is like
+ * `worksheet_insert_textbox()` function except that it takes an optional
+ * #lxw_textbox_options struct to set the size and position of the textbox:
+ *
+ * @code
+ *    lxw_textbox_options options = {.width = 256, .height = 100};
+ *
+ *    worksheet_insert_textbox_opt(worksheet, 1, 1, "A textbox", &options);
+ *
+ * @endcode
+ *
+ * The #lxw_textbox_options struct is defined in drawing.h.
+ *
+ */
+lxw_error worksheet_insert_textbox_opt(lxw_worksheet *worksheet,
+                                       lxw_row_t row, lxw_col_t col,
+                                       const char *text,
+                                       lxw_textbox_options * user_options);
+
+/**
  * @brief Merge a range of cells.
  *
  * @param worksheet Pointer to a lxw_worksheet instance to be updated.
@@ -4516,6 +4614,44 @@ lxw_error worksheet_insert_button(lxw_worksheet *worksheet, lxw_row_t row,
 lxw_error worksheet_add_table(lxw_worksheet *worksheet, lxw_row_t first_row,
                               lxw_col_t first_col, lxw_row_t last_row,
                               lxw_col_t last_col, lxw_table_options *options);
+
+/**
+ * @brief Add a sparkline to a worksheet cell.
+ *
+ * @param worksheet Pointer to a lxw_worksheet instance to be updated.
+ * @param row       The zero indexed row number.
+ * @param col       The zero indexed column number.
+ * @param options   A #lxw_sparkline_options struct to define the sparkline.
+ *
+ * @return A #lxw_error code.
+ *
+ * The `%worksheet_add_sparkline()` function is used to add a sparkline to a
+ * worksheet cell. Sparklines are small charts that fit in a single cell and
+ * allow you to show trends in data at a glance.
+ *
+ * @code
+ *     lxw_sparkline_options options = {
+ *         .range = "Sheet1!A1:E1",
+ *         .type = LXW_SPARKLINE_COLUMN,
+ *     };
+ *
+ *     worksheet_add_sparkline(worksheet, 0, 5, &options);
+ * @endcode
+ *
+ * The `range` parameter is required and specifies the data range that the
+ * sparkline will display. It should be a string like "Sheet1!A1:E1".
+ *
+ * The `type` parameter specifies the sparkline type: #LXW_SPARKLINE_LINE
+ * (default), #LXW_SPARKLINE_COLUMN, or #LXW_SPARKLINE_WIN_LOSS.
+ *
+ * The `style` parameter specifies one of 36 predefined styles (0-35).
+ *
+ * See @ref sparkline.h for all available options.
+ *
+ */
+lxw_error worksheet_add_sparkline(lxw_worksheet *worksheet,
+                                  lxw_row_t row, lxw_col_t col,
+                                  lxw_sparkline_options * options);
 
  /**
   * @brief Make a worksheet the active, i.e., visible worksheet.
@@ -5925,6 +6061,10 @@ void lxw_worksheet_prepare_chart(lxw_worksheet *worksheet,
                                  uint32_t chart_ref_id, uint32_t drawing_id,
                                  lxw_object_properties *object_props,
                                  uint8_t is_chartsheet);
+
+void lxw_worksheet_prepare_textbox(lxw_worksheet *worksheet,
+                                   uint32_t drawing_id,
+                                   lxw_object_properties *object_props);
 
 uint32_t lxw_worksheet_prepare_vml_objects(lxw_worksheet *worksheet,
                                            uint32_t vml_data_id,

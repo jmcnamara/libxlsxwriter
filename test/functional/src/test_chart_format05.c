@@ -36,12 +36,12 @@ int main() {
     lxw_chart_series *series = chart_add_series(chart,
          "=Sheet1!$A$1:$A$5",
          "=Sheet1!$B$1:$B$5"
-    );
+    , 0);
 
     chart_add_series(chart,
          "=Sheet1!$A$1:$A$5",
          "=Sheet1!$C$1:$C$5"
-    );
+    , 0);
 
 
     chart_series_set_marker_type(series, LXW_CHART_MARKER_AUTOMATIC);
