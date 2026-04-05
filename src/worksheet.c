@@ -1492,13 +1492,13 @@ lxw_basename(const char *path)
 size_t
 _validation_list_length(const char **list)
 {
-    uint8_t i = 0;
+    size_t i = 0;
     size_t length = 0;
 
     if (!list || !list[0])
         return 0;
 
-    while (list[i] && length < LXW_VALIDATION_MAX_STRING_LENGTH) {
+    while (list[i]) {
         /* Include commas in the length. */
         length += 1 + lxw_utf8_strlen(list[i]);
         i++;
@@ -1515,7 +1515,7 @@ _validation_list_length(const char **list)
 char *
 _validation_list_to_csv(const char **list)
 {
-    uint8_t i = 0;
+    size_t i = 0;
     char *str;
 
     /* Create a buffer for the concatenated, and quoted, string. */
