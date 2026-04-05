@@ -589,10 +589,10 @@ lxw_utf8_strlen(const char *str)
 void
 lxw_str_tolower(char *str)
 {
-    int i;
+    size_t i;
 
     for (i = 0; str[i]; i++)
-        str[i] = tolower(str[i]);
+        str[i] = tolower((unsigned char) str[i]);
 }
 
 /* Simple check for empty strings. */
