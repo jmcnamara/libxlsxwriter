@@ -221,6 +221,7 @@ lxw_rowcol_to_formula_abs(char *formula, const char *sheetname,
     char *quoted_name = lxw_quote_sheetname(sheetname);
 
     strncpy(formula, quoted_name, LXW_MAX_FORMULA_RANGE_LENGTH - 1);
+    formula[LXW_MAX_FORMULA_RANGE_LENGTH - 1] = '\0';
     free(quoted_name);
 
     /* Get the end of the sheetname. */
