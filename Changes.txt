@@ -13,6 +13,42 @@
   build process.
 
 
+## 1.2.5 (unreleased)
+
+- Fixed a heap buffer overflow in `worksheet_data_validation_cell()` and
+  `worksheet_data_validation_range()` when a validation list contained 256 or
+  more items. The internal `_validation_list_length()` helper used a `uint8_t`
+  loop counter and an early-exit guard that caused it to under-count long
+  lists, returning 255 for a list whose true combined length was 511
+  characters. The caller's length check therefore passed, and
+  `_validation_list_to_csv()` was invoked. That function also used a `uint8_t`
+  counter which wrapped to 0 after processing 255 items, creating an infinite
+  loop that overflowed the 1023-byte output buffer.
+
+  Both counters changed to `size_t`; the early-exit guard removed from
+  `_validation_list_length()` so the actual total length is always returned.
+
+- Fixed quadratic memory over-allocation in `worksheet_add_table()` when
+  default column headers are generated. `_set_default_table_columns()`
+  called `calloc(num_cols, sizeof(lxw_table_column))` inside a loop that ran
+  `num_cols` times, allocating `num_cols` structs per slot when only one was
+  needed. Total allocation grew as `num_cols²`. At Excel's 16,384-column
+  limit this exceeds 10 GB, causing `calloc` to fail and the function to
+  return `LXW_ERROR_MEMORY_MALLOC_FAILED`.
+
+- Fixed a missing null terminator after `strncpy` in
+  `lxw_rowcol_to_formula_abs()`. If the quoted sheet name were exactly
+  `LXW_MAX_FORMULA_RANGE_LENGTH - 1` bytes the buffer would not be
+  null-terminated and the immediately following `strlen()` call would read
+  past the end of the buffer. Not reachable with valid sheet names (capped
+  at 31 characters), but fixed defensively.
+
+- Fixed undefined behavior in `lxw_str_tolower()`: loop counter changed from
+  `int` to `size_t` (correct type for string indexing), and the `tolower()`
+  argument now carries the required `(unsigned char)` cast to avoid undefined
+  behavior on bytes with the high bit set.
+
+
 ## 1.2.4 Jan 6 2026
 
 - Added validation of `lxw_datetime` fields to ensure that they are
