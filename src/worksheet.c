@@ -1689,7 +1689,7 @@ _set_default_table_columns(lxw_table_obj *table_obj)
     for (i = 0; i < num_cols; i++) {
         lxw_snprintf(col_name, LXW_ATTR_32, "Column%d", i + 1);
 
-        column = calloc(num_cols, sizeof(lxw_table_column));
+        column = calloc(1, sizeof(lxw_table_column));
         RETURN_ON_MEM_ERROR(column, LXW_ERROR_MEMORY_MALLOC_FAILED);
 
         header = lxw_strdup(col_name);
