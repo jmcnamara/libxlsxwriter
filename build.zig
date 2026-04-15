@@ -33,7 +33,7 @@ pub fn build(b: *std.Build) void {
     }
     if (tests)
         lib.root_module.addCMacro("TESTING", "");
-    lib.addCSourceFiles(.{
+    lib.root_module.addCSourceFiles(.{
         .files = &.{
             "src/vml.c",
             "src/chartsheet.c",
@@ -67,7 +67,7 @@ pub fn build(b: *std.Build) void {
 
     // minizip
     if (minizip) {
-        lib.addCSourceFiles(.{
+        lib.root_module.addCSourceFiles(.{
             .files = switch (lib.rootModuleTarget().os.tag) {
                 .windows => minizip_src ++ [_][]const u8{
                     "third_party/minizip/iowin32.c",
@@ -79,37 +79,37 @@ pub fn build(b: *std.Build) void {
     }
 
     const zlib = buildZlib(b, options);
-    lib.linkLibrary(zlib);
+    lib.root_module.linkLibrary(zlib);
     lib.installLibraryHeaders(zlib);
 
     // md5
     if (!md5)
-        lib.addCSourceFile(.{
+        lib.root_module.addCSourceFile(.{
             .file = b.path("third_party/md5/md5.c"),
             .flags = cflags,
         })
     else
-        lib.linkSystemLibrary("crypto");
+        lib.root_module.linkSystemLibrary("crypto", .{});
 
     // dtoa
     if (dtoa)
-        lib.addCSourceFile(.{
+        lib.root_module.addCSourceFile(.{
             .file = b.path("third_party/dtoa/emyg_dtoa.c"),
             .flags = cflags,
         });
 
     // tmpfileplus
     if (stdtmpfile)
-        lib.addCSourceFile(.{
+        lib.root_module.addCSourceFile(.{
             .file = b.path("third_party/tmpfileplus/tmpfileplus.c"),
             .flags = cflags,
         })
     else
         lib.root_module.addCMacro("USE_STANDARD_TMPFILE", "");
 
-    lib.addIncludePath(b.path("include"));
-    lib.addIncludePath(b.path("third_party"));
-    lib.linkLibC();
+    lib.root_module.addIncludePath(b.path("include"));
+    lib.root_module.addIncludePath(b.path("third_party"));
+    lib.root_module.link_libc = true;
 
     // get headers on include to zig-out/include
     lib.installHeadersDirectory(b.path("include"), "", .{});
@@ -280,15 +280,15 @@ fn buildExe(b: *std.Build, info: BuildExec) void {
         .name = info.filename(),
         .root_module = createModule(b, info.options),
     });
-    exe.addCSourceFile(.{
+    exe.root_module.addCSourceFile(.{
         .file = b.path(info.path),
         .flags = cflags,
     });
-    exe.linkLibrary(info.lib);
+    exe.root_module.linkLibrary(info.lib);
     for (info.lib.root_module.include_dirs.items) |include| {
         exe.root_module.include_dirs.append(b.allocator, include) catch @panic("OOM");
     }
-    exe.linkLibC();
+    exe.root_module.link_libc = true;
     b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);
@@ -310,20 +310,20 @@ fn buildTest(b: *std.Build, info: BuildExec) void {
         .root_module = createModule(b, info.options),
     });
     exe.root_module.addCMacro("TESTING", "");
-    exe.addCSourceFile(.{
+    exe.root_module.addCSourceFile(.{
         .file = b.path(info.path),
         .flags = cflags,
     });
-    exe.addCSourceFile(.{
+    exe.root_module.addCSourceFile(.{
         .file = b.path("test/unit/test_all.c"),
         .flags = cflags,
     });
-    exe.addIncludePath(b.path("test/unit"));
-    exe.linkLibrary(info.lib);
+    exe.root_module.addIncludePath(b.path("test/unit"));
+    exe.root_module.linkLibrary(info.lib);
     for (info.lib.root_module.include_dirs.items) |include| {
         exe.root_module.include_dirs.append(b.allocator, include) catch @panic("OOM");
     }
-    exe.linkLibC();
+    exe.root_module.link_libc = true;
     b.installArtifact(exe);
 
     const run_cmd = b.addRunArtifact(exe);
@@ -383,8 +383,8 @@ fn buildZlib(b: *std.Build, options: BuildConfig) *std.Build.Step.Compile {
         .target = options.target,
         .optimize = options.optimize,
     })) |zlib_path| {
-        libz.addIncludePath(zlib_path.path(""));
-        libz.addCSourceFiles(.{
+        libz.root_module.addIncludePath(zlib_path.path(""));
+        libz.root_module.addCSourceFiles(.{
             .root = zlib_path.path(""),
             .files = &.{
                 "adler32.c",
@@ -408,6 +408,6 @@ fn buildZlib(b: *std.Build, options: BuildConfig) *std.Build.Step.Compile {
         libz.installHeader(zlib_path.path("zconf.h"), "zconf.h");
         libz.installHeader(zlib_path.path("zlib.h"), "zlib.h");
     }
-    libz.linkLibC();
+    libz.root_module.link_libc = true;
     return libz;
 }
