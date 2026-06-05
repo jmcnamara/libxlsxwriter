@@ -1,0 +1,48 @@
+/*****************************************************************************
+ * Test cases for libxlsxwriter.
+ *
+ * Test to compare output against Excel files.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ * Copyright 2014-2026, John McNamara, jmcnamara@cpan.org.
+ *
+ */
+
+#include "xlsxwriter.h"
+
+int main() {
+
+    lxw_workbook  *workbook  = workbook_new("test_chart_combined07.xlsx");
+    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+    lxw_chart     *chart1    = workbook_add_chart(workbook, LXW_CHART_COLUMN);
+    lxw_chart     *chart2    = workbook_add_chart(workbook, LXW_CHART_SCATTER);
+
+    /* For testing, copy the randomly generated axis ids in the target file. */
+    chart1->axis_id_1 = 81267328;
+    chart1->axis_id_2 = 81297792;
+    chart2->axis_id_1 = 81267328;
+    chart2->axis_id_2 = 81297792;
+
+    uint8_t data[5][3] = {
+        {2, 20, 5},
+        {3, 25, 10},
+        {4, 10, 15},
+        {5, 10, 10},
+        {6, 20, 5}
+    };
+
+    int row, col;
+    for (row = 0; row < 5; row++)
+        for (col = 0; col < 3; col++)
+            worksheet_write_number(worksheet, row, col, data[row][col], NULL);
+
+    chart_add_series(chart1, "=Sheet1!$A$1:$A$5", "=Sheet1!$B$1:$B$5");
+
+    chart_add_series(chart2, "=Sheet1!$A$1:$A$5", "=Sheet1!$C$1:$C$5");
+
+    chart_combine(chart1, chart2);
+
+    worksheet_insert_chart(worksheet, CELL("E9"), chart1);
+
+    return workbook_close(workbook);
+}

@@ -22,3 +22,11 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_chart_gap03(self):
         self.run_exe_test('test_chart_gap03')
+
+    def test_chart_gap04(self):
+        self.ignore_elements = {'xl/workbook.xml': ['<fileVersion', '<calcPr']}
+        self.run_exe_test('test_chart_gap04')
+
+    def test_chart_gap05(self):
+        self.ignore_elements = {'xl/workbook.xml': ['<fileVersion', '<calcPr']}
+        self.run_exe_test('test_chart_gap05')

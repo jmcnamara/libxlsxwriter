@@ -1030,6 +1030,7 @@ STATIC void
 _add_chart_cache_data(lxw_workbook *self)
 {
     lxw_chart *chart;
+    lxw_chart *combined;
     lxw_chart_series *series;
     uint16_t i;
 
@@ -1039,17 +1040,31 @@ _add_chart_cache_data(lxw_workbook *self)
         _populate_range(self, chart->x_axis->title.range);
         _populate_range(self, chart->y_axis->title.range);
 
-        if (STAILQ_EMPTY(chart->series_list))
-            continue;
+        if (!STAILQ_EMPTY(chart->series_list)) {
+            STAILQ_FOREACH(series, chart->series_list, list_pointers) {
+                _populate_range(self, series->categories);
+                _populate_range(self, series->values);
+                _populate_range(self, series->title.range);
 
-        STAILQ_FOREACH(series, chart->series_list, list_pointers) {
-            _populate_range(self, series->categories);
-            _populate_range(self, series->values);
-            _populate_range(self, series->title.range);
+                for (i = 0; i < series->data_label_count; i++) {
+                    lxw_chart_custom_label *data_label = &series->data_labels[i];
+                    _populate_range(self, data_label->range);
+                }
+            }
+        }
 
-            for (i = 0; i < series->data_label_count; i++) {
-                lxw_chart_custom_label *data_label = &series->data_labels[i];
-                _populate_range(self, data_label->range);
+        /* Also populate cache data for combined charts. */
+        combined = chart->combined;
+        if (combined && !STAILQ_EMPTY(combined->series_list)) {
+            STAILQ_FOREACH(series, combined->series_list, list_pointers) {
+                _populate_range(self, series->categories);
+                _populate_range(self, series->values);
+                _populate_range(self, series->title.range);
+
+                for (i = 0; i < series->data_label_count; i++) {
+                    lxw_chart_custom_label *data_label = &series->data_labels[i];
+                    _populate_range(self, data_label->range);
+                }
             }
         }
     }

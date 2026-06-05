@@ -485,7 +485,13 @@ typedef enum lxw_chart_axis_type {
     LXW_CHART_AXIS_TYPE_X,
 
     /** Chart Y axis. */
-    LXW_CHART_AXIS_TYPE_Y
+    LXW_CHART_AXIS_TYPE_Y,
+
+    /** Chart secondary X axis. */
+    LXW_CHART_AXIS_TYPE_X2,
+
+    /** Chart secondary Y axis. */
+    LXW_CHART_AXIS_TYPE_Y2
 } lxw_chart_axis_type;
 
 enum lxw_chart_subtype {
@@ -1083,6 +1089,8 @@ typedef struct lxw_chart_series {
     lxw_chart_line *trendline_line;
     double trendline_intercept;
 
+    uint8_t use_secondary_axis;
+
     STAILQ_ENTRY (lxw_chart_series) list_pointers;
 
 } lxw_chart_series;
@@ -1185,6 +1193,18 @@ typedef struct lxw_chart {
      */
     lxw_chart_axis *y_axis;
 
+    /**
+     * A pointer to the chart x2_axis object which can be used in functions
+     * that configures the secondary X axis.
+     */
+    lxw_chart_axis *x2_axis;
+
+    /**
+     * A pointer to the chart y2_axis object which can be used in functions
+     * that configures the secondary Y axis.
+     */
+    lxw_chart_axis *y2_axis;
+
     lxw_chart_title title;
 
     uint32_t id;
@@ -1255,6 +1275,10 @@ typedef struct lxw_chart {
 
     uint8_t default_label_position;
     uint8_t is_protected;
+    uint8_t is_secondary;
+    uint8_t has_secondary_axis;
+
+    struct lxw_chart *combined;
 
     STAILQ_ENTRY (lxw_chart) ordered_list_pointers;
     STAILQ_ENTRY (lxw_chart) list_pointers;
@@ -1742,6 +1766,26 @@ lxw_error chart_series_set_points(lxw_chart_series *series,
  *
  */
 void chart_series_set_smooth(lxw_chart_series *series, uint8_t smooth);
+
+/**
+ * @brief Set a series to use the secondary axis.
+ *
+ * @param series A series object created via `chart_add_series()`.
+ *
+ * The `%chart_series_set_secondary_axis()` function is used to set a series
+ * to use a secondary Y axis. This is useful for displaying series with
+ * different scales on the same chart.
+ *
+ * @code
+ *     lxw_chart_series *series1 = chart_add_series(chart, NULL, "=Sheet1!$A$1:$A$5");
+ *     lxw_chart_series *series2 = chart_add_series(chart, NULL, "=Sheet1!$B$1:$B$5");
+ *
+ *     // Set the second series to use the secondary axis.
+ *     chart_series_set_secondary_axis(series2);
+ * @endcode
+ *
+ */
+void chart_series_set_secondary_axis(lxw_chart_series *series);
 
 /**
  * @brief Add data labels to a chart series.
@@ -3868,6 +3912,40 @@ void chart_set_series_overlap(lxw_chart *chart, int8_t overlap);
 void chart_set_series_gap(lxw_chart *chart, uint16_t gap);
 
 /**
+ * @brief Set the overlap between series in a Bar/Column chart for the
+ *        secondary axis.
+ *
+ * @param chart   Pointer to a lxw_chart instance to be configured.
+ * @param overlap The overlap between the series. -100 to 100.
+ *
+ * The `%chart_set_y2_series_overlap()` function sets the overlap between
+ * series plotted on the secondary axis in Bar and Column charts.
+ *
+ * The overlap value must be in the range `-100 <= overlap <= 100`.
+ * The default value is 0.
+ *
+ * This option is only available for Bar/Column charts.
+ */
+void chart_set_y2_series_overlap(lxw_chart *chart, int8_t overlap);
+
+/**
+ * @brief Set the gap between series in a Bar/Column chart for the
+ *        secondary axis.
+ *
+ * @param chart Pointer to a lxw_chart instance to be configured.
+ * @param gap   The gap between the series.  0 to 500.
+ *
+ * The `%chart_set_y2_series_gap()` function sets the gap between series
+ * plotted on the secondary axis in Bar and Column charts.
+ *
+ * The gap value must be in the range `0 <= gap <= 500`. The default value
+ * is 150.
+ *
+ * This option is only available for Bar/Column charts.
+ */
+void chart_set_y2_series_gap(lxw_chart *chart, uint16_t gap);
+
+/**
  * @brief Set the option for displaying blank data in a chart.
  *
  * @param chart    Pointer to a lxw_chart instance to be configured.
@@ -3943,6 +4021,40 @@ void chart_set_rotation(lxw_chart *chart, uint16_t rotation);
  *
  */
 void chart_set_hole_size(lxw_chart *chart, uint8_t size);
+
+/**
+ * @brief Create a combination chart by combining two chart types.
+ *
+ * @param chart   Pointer to the primary chart.
+ * @param chart2  Pointer to the secondary chart to be combined.
+ *
+ * The `chart_combine()` function is used to combine two different chart types
+ * into a single combination chart:
+ *
+ * @code
+ *     // Create the primary chart (Column).
+ *     lxw_chart *chart1 = workbook_add_chart(workbook, LXW_CHART_COLUMN);
+ *
+ *     // Create the secondary chart (Line) to be combined.
+ *     lxw_chart *chart2 = workbook_add_chart(workbook, LXW_CHART_LINE);
+ *
+ *     // Add series to each chart.
+ *     chart_add_series(chart1, NULL, "=Sheet1!$A$1:$A$5");
+ *     chart_add_series(chart2, NULL, "=Sheet1!$B$1:$B$5");
+ *
+ *     // Combine the two charts.
+ *     chart_combine(chart1, chart2);
+ *
+ *     // Insert the combined chart.
+ *     worksheet_insert_chart(worksheet, CELL("E9"), chart1);
+ * @endcode
+ *
+ * The secondary chart can be placed on a secondary axis using
+ * chart_series_set_secondary_axis() to differentiate data more clearly.
+ *
+ * See @ref chart_combined.
+ */
+void chart_combine(lxw_chart *chart, lxw_chart *chart2);
 
 lxw_error lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
                                    uint16_t rows, uint8_t cols, uint8_t col);
