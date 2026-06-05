@@ -32,6 +32,10 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_chart_scatter06(self):
         self.run_exe_test('test_chart_scatter06')
 
+    def test_chart_scatter07(self):
+        self.ignore_elements = {'xl/workbook.xml': ['<fileVersion', '<calcPr']}
+        self.run_exe_test('test_chart_scatter07')
+
     def test_chart_scatter09(self):
         self.run_exe_test('test_chart_scatter09')
 

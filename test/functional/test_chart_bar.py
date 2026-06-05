@@ -79,6 +79,10 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     # 23 is a duplicate of 22 without explicit cache data.
 
+    def test_chart_bar24(self):
+        self.ignore_elements = {'xl/workbook.xml': ['<fileVersion', '<calcPr']}
+        self.run_exe_test('test_chart_bar24')
+
     # Some of the following tests use the same target excel files as the tests
     # above but test variations of the interface.
 

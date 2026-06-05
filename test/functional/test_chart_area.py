@@ -26,5 +26,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_chart_area05(self):
         self.run_exe_test('test_chart_area05')
 
+    def test_chart_area04(self):
+        self.ignore_elements = {'xl/workbook.xml': ['<fileVersion', '<calcPr']}
+        self.run_exe_test('test_chart_area04')
+
     def test_chart_area06(self):
         self.run_exe_test('test_chart_area06')
