@@ -2724,6 +2724,133 @@ workbook_get_chartsheet_by_name(lxw_workbook *self, const char *name)
 }
 
 /*
+ * Rename a worksheet. The worksheet is looked up by old_name (case
+ * insensitive) and given new_name. The worksheet is temporarily detached
+ * from the RB tree of names so that validating new_name doesn't treat the
+ * worksheet's own name as a collision, which also permits a case-only rename
+ * such as "Sheet1" to "sheet1".
+ */
+lxw_error
+workbook_rename_worksheet(lxw_workbook *self, const char *old_name,
+                          const char *new_name)
+{
+    lxw_worksheet_name lookup;
+    lxw_worksheet_name *node;
+    lxw_error error;
+
+    if (old_name == NULL || new_name == NULL)
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+
+    /* Find the worksheet name node by its current name. */
+    lookup.name = old_name;
+    node = RB_FIND(lxw_worksheet_names, self->worksheet_names, &lookup);
+
+    if (!node)
+        return LXW_ERROR_SHEETNAME_NOT_FOUND;
+
+    /* Detach the node before validating new_name. */
+    RB_REMOVE(lxw_worksheet_names, self->worksheet_names, node);
+
+    error = workbook_validate_sheet_name(self, new_name);
+    if (error) {
+        RB_INSERT(lxw_worksheet_names, self->worksheet_names, node);
+        return error;
+    }
+
+    /* The worksheet name and the RB node name share a single allocation (see
+     * workbook_add_worksheet) so free it once and reassign both pointers to
+     * the new allocation to preserve that invariant. */
+    free((void *) node->worksheet->name);
+    free((void *) node->worksheet->quoted_name);
+
+    node->worksheet->name = lxw_strdup(new_name);
+    node->worksheet->quoted_name = lxw_quote_sheetname(new_name);
+    node->name = node->worksheet->name;
+
+    RB_INSERT(lxw_worksheet_names, self->worksheet_names, node);
+
+    return LXW_NO_ERROR;
+}
+
+/*
+ * Remove a worksheet from the workbook. The worksheet is looked up by name
+ * (case insensitive), detached from the name tree and the worksheet and sheet
+ * lists, and freed. The remaining sheets are renumbered so their indexes stay
+ * contiguous and the active/first sheet positions are shifted past the removed
+ * sheet so they keep pointing at the same sheet.
+ */
+lxw_error
+workbook_remove_worksheet(lxw_workbook *self, const char *name)
+{
+    lxw_worksheet_name lookup;
+    lxw_worksheet_name *node;
+    lxw_worksheet *worksheet;
+    lxw_sheet *sheet;
+    uint16_t removed_index;
+    uint16_t new_index;
+
+    if (name == NULL)
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+
+    /* Find the worksheet name node by name. */
+    lookup.name = name;
+    node = RB_FIND(lxw_worksheet_names, self->worksheet_names, &lookup);
+
+    if (!node)
+        return LXW_ERROR_SHEETNAME_NOT_FOUND;
+
+    worksheet = node->worksheet;
+    removed_index = worksheet->index;
+
+    /* Remove the node from the name tree and free it. The name string it
+     * points at is owned by the worksheet and is freed by
+     * lxw_worksheet_free(). */
+    RB_REMOVE(lxw_worksheet_names, self->worksheet_names, node);
+    free(node);
+
+    /* Remove the worksheet from the worksheets list. */
+    STAILQ_REMOVE(self->worksheets, worksheet, lxw_worksheet, list_pointers);
+
+    /* Find, remove and free the lxw_sheet wrapper from the combined sheets
+     * list. */
+    STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
+        if (!sheet->is_chartsheet && sheet->u.worksheet == worksheet)
+            break;
+    }
+    STAILQ_REMOVE(self->sheets, sheet, lxw_sheet, list_pointers);
+    free(sheet);
+
+    self->num_worksheets--;
+    self->num_sheets--;
+
+    /* Renumber the remaining sheets so their indexes stay contiguous. */
+    new_index = 0;
+    STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            sheet->u.chartsheet->index = new_index;
+        else
+            sheet->u.worksheet->index = new_index;
+        new_index++;
+    }
+
+    /* Shift the active/first sheet positions past the removed sheet, or reset
+     * them if the removed sheet was the active/first one. */
+    if (self->active_sheet > removed_index)
+        self->active_sheet--;
+    else if (self->active_sheet == removed_index)
+        self->active_sheet = 0;
+
+    if (self->first_sheet > removed_index)
+        self->first_sheet--;
+    else if (self->first_sheet == removed_index)
+        self->first_sheet = 0;
+
+    lxw_worksheet_free(worksheet);
+
+    return LXW_NO_ERROR;
+}
+
+/*
  * Get the default URL format.
  */
 lxw_format *

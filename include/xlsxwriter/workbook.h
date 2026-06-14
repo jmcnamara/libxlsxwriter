@@ -928,6 +928,54 @@ lxw_chartsheet *workbook_get_chartsheet_by_name(lxw_workbook *workbook,
                                                 const char *name);
 
 /**
+ * @brief Rename a worksheet.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param old_name The current name of the worksheet to rename.
+ * @param new_name The new name to give the worksheet.
+ *
+ * @return A #lxw_error.
+ *
+ * This function renames an existing worksheet. The lookup of `old_name` and
+ * the check for a duplicate `new_name` are case insensitive, like the other
+ * worksheet name functions.
+ *
+ * @code
+ *     lxw_error err = workbook_rename_worksheet(workbook, "Sheet1", "Data");
+ * @endcode
+ *
+ * Renaming should be carried out before the worksheet is referenced by
+ * formulas, defined names or charts in other worksheets.
+ *
+ */
+lxw_error workbook_rename_worksheet(lxw_workbook *workbook,
+                                    const char *old_name,
+                                    const char *new_name);
+
+/**
+ * @brief Remove a worksheet from the workbook.
+ *
+ * @param workbook Pointer to a lxw_workbook instance.
+ * @param name     The name of the worksheet to remove.
+ *
+ * @return A #lxw_error.
+ *
+ * This function removes a previously added worksheet from the workbook and
+ * frees the associated `lxw_worksheet` object. The lookup of `name` is case
+ * insensitive.
+ *
+ * @code
+ *     lxw_error err = workbook_remove_worksheet(workbook, "Sheet1");
+ * @endcode
+ *
+ * @note The worksheet object must not be used after it is removed. Removing a
+ * worksheet that is referenced by formulas, defined names or charts in other
+ * worksheets will leave those references dangling.
+ *
+ */
+lxw_error workbook_remove_worksheet(lxw_workbook *workbook, const char *name);
+
+/**
  * @brief Validate a worksheet or chartsheet name.
  *
  * @param workbook  Pointer to a lxw_workbook instance.
