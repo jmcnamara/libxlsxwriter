@@ -11092,6 +11092,15 @@ worksheet_insert_chart_opt(lxw_worksheet *self,
 
             return LXW_ERROR_PARAMETER_VALIDATION;
         }
+
+        if (chart->chart_group == LXW_CHART_SCATTER
+            && !series->categories->formula
+            && !series->categories->sheetname) {
+            LXW_WARN("worksheet_insert_chart()/_opt(): scatter charts must "
+                     "have a 'categories' series.");
+
+            return LXW_ERROR_PARAMETER_VALIDATION;
+        }
     }
 
     /* Create a new object to hold the chart image properties. */
