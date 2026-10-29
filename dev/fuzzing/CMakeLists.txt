@@ -16,8 +16,12 @@ add_executable(xlsx_fuzzer xlsx_fuzzer.cpp)
 target_link_libraries(xlsx_fuzzer PRIVATE ${PROJECT_NAME} $ENV{LIB_FUZZING_ENGINE})
 target_compile_features(xlsx_fuzzer PRIVATE cxx_std_17)
 
+add_executable(worksheet_api_fuzzer worksheet_api_fuzzer.cpp)
+target_link_libraries(worksheet_api_fuzzer PRIVATE ${PROJECT_NAME} $ENV{LIB_FUZZING_ENGINE})
+target_compile_features(worksheet_api_fuzzer PRIVATE cxx_std_17)
+
 if (DEFINED ENV{OUT})
-    install(TARGETS xlsx_fuzzer DESTINATION $ENV{OUT})
+    install(TARGETS xlsx_fuzzer worksheet_api_fuzzer DESTINATION $ENV{OUT})
 else ()
     message(WARNING "Cannot install if $OUT is not defined!")
 endif ()
