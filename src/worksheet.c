@@ -232,6 +232,11 @@ lxw_worksheet_new(lxw_worksheet_init_data *init_data)
     GOTO_LABEL_ON_MEM_ERROR(worksheet->conditional_formats, mem_error);
     RB_INIT(worksheet->conditional_formats);
 
+    worksheet->conditional_format_order =
+        calloc(1, sizeof(struct lxw_cond_format_order));
+    GOTO_LABEL_ON_MEM_ERROR(worksheet->conditional_format_order, mem_error);
+    STAILQ_INIT(worksheet->conditional_format_order);
+
     /* Initialize the worksheet dimensions. */
     worksheet->dim_rowmax = 0;
     worksheet->dim_colmax = 0;
@@ -781,6 +786,9 @@ lxw_worksheet_free(lxw_worksheet *worksheet)
 
         free(worksheet->conditional_formats);
     }
+
+    /* The elements in this list are freed with the RB tree above. */
+    free(worksheet->conditional_format_order);
 
     _free_relationship(worksheet->external_vml_comment_link);
     _free_relationship(worksheet->external_comment_link);
@@ -4378,6 +4386,10 @@ _store_conditional_format_object(lxw_worksheet *self,
         RB_INSERT(lxw_cond_format_hash, self->conditional_formats,
                   new_hash_element);
 
+        /* Also store the order that the ranges are added in. */
+        STAILQ_INSERT_TAIL(self->conditional_format_order, new_hash_element,
+                           list_pointers);
+
     }
 
     return LXW_NO_ERROR;
@@ -6916,15 +6928,10 @@ STATIC void
 _worksheet_write_conditional_formats(lxw_worksheet *self)
 {
     lxw_cond_format_hash_element *element;
-    lxw_cond_format_hash_element *next_element;
 
-    for (element = RB_MIN(lxw_cond_format_hash, self->conditional_formats);
-         element; element = next_element) {
-
+    /* Write the ranges in the order that they were added in. */
+    STAILQ_FOREACH(element, self->conditional_format_order, list_pointers) {
         _worksheet_write_conditional_formatting(self, element);
-
-        next_element =
-            RB_NEXT(lxw_cond_format_hash, self->conditional_formats, element);
     }
 }
 
@@ -7165,18 +7172,13 @@ STATIC void
 _worksheet_write_ext_list_data_bars(lxw_worksheet *self)
 {
     lxw_cond_format_hash_element *element;
-    lxw_cond_format_hash_element *next_element;
 
     _worksheet_write_ext(self, "{78C0D931-6437-407d-A8EE-F0AAD7539E65}");
     lxw_xml_start_tag(self->file, "x14:conditionalFormattings", NULL);
 
-    for (element = RB_MIN(lxw_cond_format_hash, self->conditional_formats);
-         element; element = next_element) {
-
+    /* Write the ranges in the order that they were added in. */
+    STAILQ_FOREACH(element, self->conditional_format_order, list_pointers) {
         _worksheet_write_conditional_formatting_2010(self, element);
-
-        next_element =
-            RB_NEXT(lxw_cond_format_hash, self->conditional_formats, element);
     }
 
     lxw_xml_end_tag(self->file, "x14:conditionalFormattings");

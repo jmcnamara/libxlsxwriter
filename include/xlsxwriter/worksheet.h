@@ -818,6 +818,7 @@ STAILQ_HEAD(lxw_merged_ranges, lxw_merged_range);
 STAILQ_HEAD(lxw_selections, lxw_selection);
 STAILQ_HEAD(lxw_data_validations, lxw_data_val_obj);
 STAILQ_HEAD(lxw_cond_format_list, lxw_cond_format_obj);
+STAILQ_HEAD(lxw_cond_format_order, lxw_cond_format_hash_element);
 STAILQ_HEAD(lxw_image_props, lxw_object_properties);
 STAILQ_HEAD(lxw_embedded_image_props, lxw_object_properties);
 STAILQ_HEAD(lxw_chart_props, lxw_object_properties);
@@ -1380,6 +1381,7 @@ typedef struct lxw_cond_format_hash_element {
     struct lxw_cond_format_list *cond_formats;
 
     RB_ENTRY (lxw_cond_format_hash_element) tree_pointers;
+    STAILQ_ENTRY (lxw_cond_format_hash_element) list_pointers;
 } lxw_cond_format_hash_element;
 
 /**
@@ -2126,6 +2128,7 @@ typedef struct lxw_worksheet {
     struct lxw_selections *selections;
     struct lxw_data_validations *data_validations;
     struct lxw_cond_format_hash *conditional_formats;
+    struct lxw_cond_format_order *conditional_format_order;
     struct lxw_image_props *image_props;
     struct lxw_image_props *embedded_image_props;
     struct lxw_chart_props *chart_data;

@@ -64,3 +64,16 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
 
     def test_cond_format17(self):
         self.run_exe_test('test_cond_format17')
+
+    def test_cond_format19(self):
+        self.run_exe_test('test_cond_format19')
+
+    def test_cond_format21(self):
+        self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageSetup']}
+        self.run_exe_test('test_cond_format21')
+
+    def test_cond_format22(self):
+        self.run_exe_test('test_cond_format22')
+
+    def test_cond_format23(self):
+        self.run_exe_test('test_cond_format23')
