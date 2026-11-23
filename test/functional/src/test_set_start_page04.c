@@ -1,0 +1,24 @@
+/*****************************************************************************
+ * Test cases for libxlsxwriter.
+ *
+ * Test to compare output against Excel files.
+ *
+ * SPDX-License-Identifier: BSD-2-Clause
+ * Copyright 2014-2026, John McNamara, jmcnamara@cpan.org.
+ *
+ */
+
+#include "xlsxwriter.h"
+
+int main() {
+
+    lxw_workbook  *workbook  = workbook_new("test_set_start_page04.xlsx");
+    lxw_worksheet *worksheet = workbook_add_worksheet(workbook, NULL);
+
+    worksheet_set_start_page(worksheet, 2);
+    worksheet->vertical_dpi = 200;
+
+    worksheet_write_string(worksheet, CELL("A1"), "Foo" , NULL);
+
+    return workbook_close(workbook);
+}

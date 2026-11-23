@@ -10273,6 +10273,7 @@ void
 worksheet_set_start_page(lxw_worksheet *self, uint16_t start_page)
 {
     self->page_start = start_page;
+    self->page_setup_changed = LXW_TRUE;
 }
 
 /*

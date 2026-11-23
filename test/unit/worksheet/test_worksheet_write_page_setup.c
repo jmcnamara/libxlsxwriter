@@ -99,3 +99,39 @@ CTEST(worksheet, write_page_setup05) {
 
     lxw_worksheet_free(worksheet);
 }
+
+
+/* Test the _write_page_setup() method. With set_start_page() only. */
+CTEST(worksheet, write_page_setup06) {
+    char* got;
+    char exp[] = "<pageSetup firstPageNumber=\"3\" orientation=\"portrait\" useFirstPageNumber=\"1\"/>";
+    FILE* testfile = lxw_tmpfile(NULL);
+
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
+    worksheet->file = testfile;
+
+    worksheet_set_start_page(worksheet, 3);
+    _worksheet_write_page_setup(worksheet);
+
+    RUN_XLSX_STREQ(exp, got);
+
+    lxw_worksheet_free(worksheet);
+}
+
+
+/* Test the _write_page_setup() method. With set_start_page(1) only. */
+CTEST(worksheet, write_page_setup07) {
+    char* got;
+    char exp[] = "<pageSetup orientation=\"portrait\" useFirstPageNumber=\"1\"/>";
+    FILE* testfile = lxw_tmpfile(NULL);
+
+    lxw_worksheet *worksheet = lxw_worksheet_new(NULL);
+    worksheet->file = testfile;
+
+    worksheet_set_start_page(worksheet, 1);
+    _worksheet_write_page_setup(worksheet);
+
+    RUN_XLSX_STREQ(exp, got);
+
+    lxw_worksheet_free(worksheet);
+}

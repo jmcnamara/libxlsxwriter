@@ -25,3 +25,7 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_set_start_page03(self):
         self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins']}
         self.run_exe_test('test_set_start_page03')
+
+    def test_set_start_page04(self):
+        self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins']}
+        self.run_exe_test('test_set_start_page04')
