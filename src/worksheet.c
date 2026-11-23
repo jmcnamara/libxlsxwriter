@@ -9841,6 +9841,28 @@ worksheet_set_margins(lxw_worksheet *self, double left, double right,
 }
 
 /*
+ * Free the left, center and right image objects for a header or footer and
+ * reset the pointers so that they aren't used after being freed.
+ */
+STATIC void
+_worksheet_free_header_footer_images(lxw_worksheet *self, uint8_t first)
+{
+    uint8_t i;
+
+    for (i = first; i < first + 3; i++) {
+        _free_object_properties(*self->header_footer_objs[i]);
+        *self->header_footer_objs[i] = NULL;
+    }
+
+    /* Reset the VML flag if there are no remaining header/footer images. */
+    self->has_header_vml = LXW_FALSE;
+    for (i = 0; i < LXW_HEADER_FOOTER_OBJS_MAX; i++) {
+        if (*self->header_footer_objs[i])
+            self->has_header_vml = LXW_TRUE;
+    }
+}
+
+/*
  * Set the page header caption and options.
  */
 lxw_error
@@ -9900,10 +9922,6 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
         return LXW_ERROR_PARAMETER_VALIDATION;
     }
 
-    /* Free any previous header string so we can overwrite it. */
-    free(self->header);
-    self->header = NULL;
-
     if (options) {
         /* Ensure there are enough images to match the placeholders. There is
          * a potential bug where there are sufficient images but in the wrong
@@ -9924,12 +9942,14 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
             free(tmp_header);
             return LXW_ERROR_PARAMETER_VALIDATION;
         }
+    }
 
-        /* Free any existing header image objects. */
-        _free_object_properties(self->header_left_object_props);
-        _free_object_properties(self->header_center_object_props);
-        _free_object_properties(self->header_right_object_props);
+    /* Free any previous header string and images so we can overwrite them. */
+    free(self->header);
+    self->header = NULL;
+    _worksheet_free_header_footer_images(self, HEADER_LEFT);
 
+    if (options) {
         if (options->margin > 0.0)
             self->margin_header = options->margin;
 
@@ -10024,10 +10044,6 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
         return LXW_ERROR_PARAMETER_VALIDATION;
     }
 
-    /* Free any previous footer string so we can overwrite it. */
-    free(self->footer);
-    self->footer = NULL;
-
     if (options) {
         /* Ensure there are enough images to match the placeholders. There is
          * a potential bug where there are sufficient images but in the wrong
@@ -10048,12 +10064,14 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
             free(tmp_footer);
             return LXW_ERROR_PARAMETER_VALIDATION;
         }
+    }
 
-        /* Free any existing footer image objects. */
-        _free_object_properties(self->footer_left_object_props);
-        _free_object_properties(self->footer_center_object_props);
-        _free_object_properties(self->footer_right_object_props);
+    /* Free any previous footer string and images so we can overwrite them. */
+    free(self->footer);
+    self->footer = NULL;
+    _worksheet_free_header_footer_images(self, FOOTER_LEFT);
 
+    if (options) {
         if (options->margin > 0.0)
             self->margin_footer = options->margin;
 

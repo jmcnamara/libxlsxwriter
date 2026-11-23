@@ -121,3 +121,15 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     # Manually modified version of test_header_image05 so margins can be compared.
     def test_header_image55(self):
         self.run_exe_test('test_header_image55')
+
+    def test_header_image56(self):
+        self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins', '<pageSetup']}
+        self.run_exe_test('test_header_image56', 'header_image02.xlsx')
+
+    def test_header_image57(self):
+        self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageMargins', '<pageSetup']}
+        self.run_exe_test('test_header_image57', 'header_image05.xlsx')
+
+    def test_header_image58(self):
+        self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageSetup']}
+        self.run_exe_test('test_header_image58', 'header04.xlsx')
