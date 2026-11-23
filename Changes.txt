@@ -31,6 +31,9 @@
 
   [gh_523]: https://github.com/jmcnamara/libxlsxwriter/issues/523
 
+- Fixed string length checks to use UTF-16 lengths instead of UTF-8 lengths, to
+  align with Excel. Characters above U+FFFF, such as emojis, now count as 2.
+
 
 ## 1.2.4 Jan 6 2026
 

@@ -174,3 +174,42 @@ CTEST(workbook, validate_worksheet_name11) {
 
     lxw_workbook_free(workbook);
 }
+
+/* Test a sheet name at the limit, where characters above U+FFFF, such as
+ * emojis, count as 2 since Excel's limit is in UTF-16 units. */
+CTEST(workbook, validate_worksheet_name12) {
+
+    char sheetname[LXW_MAX_SHEETNAME_LENGTH] = {0};
+    int i;
+
+    for (i = 0; i < 15; i++)
+        strcat(sheetname, "\xF0\x9F\x98\x80");
+    strcat(sheetname, "a");
+
+    lxw_workbook *workbook = workbook_new(NULL);
+    lxw_error exp = LXW_NO_ERROR;
+    lxw_error got = workbook_validate_sheet_name(workbook, sheetname);
+
+    ASSERT_EQUAL(exp, got);
+
+    lxw_workbook_free(workbook);
+}
+
+/* Test a sheet name that is too long, where characters above U+FFFF, such as
+ * emojis, count as 2 since Excel's limit is in UTF-16 units. */
+CTEST(workbook, validate_worksheet_name13) {
+
+    char sheetname[LXW_MAX_SHEETNAME_LENGTH] = {0};
+    int i;
+
+    for (i = 0; i < 16; i++)
+        strcat(sheetname, "\xF0\x9F\x98\x80");
+
+    lxw_workbook *workbook = workbook_new(NULL);
+    lxw_error exp = LXW_ERROR_SHEETNAME_LENGTH_EXCEEDED;
+    lxw_error got = workbook_validate_sheet_name(workbook, sheetname);
+
+    ASSERT_EQUAL(exp, got);
+
+    lxw_workbook_free(workbook);
+}

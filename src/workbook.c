@@ -700,8 +700,8 @@ _store_defined_name(lxw_workbook *self, const char *name,
     if (lxw_str_is_empty(name) || lxw_str_is_empty(formula))
         return LXW_ERROR_PARAMETER_IS_EMPTY;
 
-    if (lxw_utf8_strlen(name) > LXW_DEFINED_NAME_LENGTH ||
-        lxw_utf8_strlen(formula) > LXW_DEFINED_NAME_LENGTH) {
+    if (lxw_utf16_strlen(name) > LXW_DEFINED_NAME_LENGTH ||
+        lxw_utf16_strlen(formula) > LXW_DEFINED_NAME_LENGTH) {
         return LXW_ERROR_128_STRING_LENGTH_EXCEEDED;
     }
 
@@ -2482,13 +2482,13 @@ workbook_set_custom_property_string(lxw_workbook *self, const char *name,
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
-    if (lxw_utf8_strlen(name) > 255) {
+    if (lxw_utf16_strlen(name) > 255) {
         LXW_WARN_FORMAT("workbook_set_custom_property_string(): parameter "
                         "'name' exceeds Excel length limit of 255.");
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
     }
 
-    if (lxw_utf8_strlen(value) > 255) {
+    if (lxw_utf16_strlen(value) > 255) {
         LXW_WARN_FORMAT("workbook_set_custom_property_string(): parameter "
                         "'value' exceeds Excel length limit of 255.");
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
@@ -2529,7 +2529,7 @@ workbook_set_custom_property_number(lxw_workbook *self, const char *name,
         return LXW_ERROR_PARAMETER_IS_EMPTY;
     }
 
-    if (lxw_utf8_strlen(name) > 255) {
+    if (lxw_utf16_strlen(name) > 255) {
         LXW_WARN_FORMAT("workbook_set_custom_property_number(): parameter "
                         "'name' exceeds Excel length limit of 255.");
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
@@ -2611,7 +2611,7 @@ workbook_set_custom_property_boolean(lxw_workbook *self, const char *name,
         return LXW_ERROR_PARAMETER_IS_EMPTY;
     }
 
-    if (lxw_utf8_strlen(name) > 255) {
+    if (lxw_utf16_strlen(name) > 255) {
         LXW_WARN_FORMAT("workbook_set_custom_property_boolean(): parameter "
                         "'name' exceeds Excel length limit of 255.");
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
@@ -2652,7 +2652,7 @@ workbook_set_custom_property_datetime(lxw_workbook *self, const char *name,
         return LXW_ERROR_PARAMETER_IS_EMPTY;
     }
 
-    if (lxw_utf8_strlen(name) > 255) {
+    if (lxw_utf16_strlen(name) > 255) {
         LXW_WARN_FORMAT("workbook_set_custom_property_datetime(): parameter "
                         "'name' exceeds Excel length limit of 255.");
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
@@ -2762,7 +2762,7 @@ workbook_validate_sheet_name(lxw_workbook *self, const char *sheetname)
         return LXW_ERROR_PARAMETER_IS_EMPTY;
 
     /* Check the UTF-8 length of the worksheet name. */
-    if (lxw_utf8_strlen(sheetname) > LXW_SHEETNAME_MAX)
+    if (lxw_utf16_strlen(sheetname) > LXW_SHEETNAME_MAX)
         return LXW_ERROR_SHEETNAME_LENGTH_EXCEEDED;
 
     /* Check that the worksheet name doesn't contain invalid characters. */

@@ -1508,7 +1508,7 @@ _validation_list_length(const char **list)
 
     while (list[i]) {
         /* Include commas in the length. */
-        length += 1 + lxw_utf8_strlen(list[i]);
+        length += 1 + lxw_utf16_strlen(list[i]);
         i++;
     }
 
@@ -1791,7 +1791,7 @@ _set_custom_table_columns(lxw_table_obj *table_obj,
             return LXW_NO_ERROR;
 
         if (user_column->header) {
-            if (lxw_utf8_strlen(user_column->header) > 255) {
+            if (lxw_utf16_strlen(user_column->header) > 255) {
                 LXW_WARN_FORMAT("worksheet_add_table(): column parameter "
                                 "'header' exceeds Excel length limit of 255.");
                 return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
@@ -1993,7 +1993,7 @@ _check_table_name(lxw_table_options *user_options)
     name = user_options->name;
 
     /* Check table name length. */
-    if (lxw_utf8_strlen(name) > 255) {
+    if (lxw_utf16_strlen(name) > 255) {
         LXW_WARN_FORMAT("worksheet_add_table(): "
                         "Table name exceeds Excel's limit of 255.");
         return LXW_ERROR_255_STRING_LENGTH_EXCEEDED;
@@ -3484,7 +3484,7 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
         }
 
         /* Check if URL exceeds Excel's length limit. */
-        if (lxw_utf8_strlen(url) > self->max_url_length) {
+        if (lxw_utf16_strlen(url) > self->max_url_length) {
             LXW_WARN_FORMAT2("worksheet_insert_image()/_opt(): URL exceeds "
                              "Excel's allowable length of %d characters: %s",
                              self->max_url_length, url);
@@ -7984,7 +7984,7 @@ worksheet_write_string(lxw_worksheet *self,
     if (err)
         return err;
 
-    if (lxw_utf8_strlen(string) > LXW_STR_MAX)
+    if (lxw_utf16_strlen(string) > LXW_STR_MAX)
         return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
 
     if (!self->optimize) {
@@ -8559,7 +8559,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
     }
 
     /* Check if URL exceeds Excel's length limit. */
-    if (lxw_utf8_strlen(url_copy) > self->max_url_length) {
+    if (lxw_utf16_strlen(url_copy) > self->max_url_length) {
         LXW_WARN_FORMAT2("worksheet_write_url()/_opt(): URL exceeds "
                          "Excel's allowable length of %d characters: %s",
                          self->max_url_length, url_copy);
@@ -8724,7 +8724,7 @@ worksheet_write_rich_string(lxw_worksheet *self,
     /* Close the temp file. */
     fclose(tmpfile);
 
-    if (lxw_utf8_strlen(rich_string) > LXW_STR_MAX) {
+    if (lxw_utf16_strlen(rich_string) > LXW_STR_MAX) {
         free((void *) rich_string);
         return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
     }
@@ -8788,7 +8788,7 @@ worksheet_write_comment_opt(lxw_worksheet *self,
     if (lxw_str_is_empty(text))
         return LXW_ERROR_PARAMETER_IS_EMPTY;
 
-    if (lxw_utf8_strlen(text) > LXW_STR_MAX)
+    if (lxw_utf16_strlen(text) > LXW_STR_MAX)
         return LXW_ERROR_MAX_STRING_LENGTH_EXCEEDED;
 
     comment = calloc(1, sizeof(lxw_vml_obj));
@@ -9908,7 +9908,7 @@ worksheet_set_header_opt(lxw_worksheet *self, const char *string,
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
-    if (lxw_utf8_strlen(string) > LXW_HEADER_FOOTER_MAX) {
+    if (lxw_utf16_strlen(string) > LXW_HEADER_FOOTER_MAX) {
         LXW_WARN_FORMAT("worksheet_set_header_opt/footer_opt(): "
                         "header/footer string exceeds Excel's limit of "
                         "255 characters.");
@@ -10030,7 +10030,7 @@ worksheet_set_footer_opt(lxw_worksheet *self, const char *string,
         return LXW_ERROR_NULL_PARAMETER_IGNORED;
     }
 
-    if (lxw_utf8_strlen(string) > LXW_HEADER_FOOTER_MAX) {
+    if (lxw_utf16_strlen(string) > LXW_HEADER_FOOTER_MAX) {
         LXW_WARN_FORMAT("worksheet_set_header_opt/footer_opt(): "
                         "header/footer string exceeds Excel's limit of "
                         "255 characters.");
@@ -11281,7 +11281,7 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
 
     /* Check Excel limitations on input strings. */
     if (validation->input_title) {
-        length = lxw_utf8_strlen(validation->input_title);
+        length = lxw_utf16_strlen(validation->input_title);
         if (length > LXW_VALIDATION_MAX_TITLE_LENGTH) {
             LXW_WARN_FORMAT1("worksheet_data_validation_cell()/_range(): "
                              "input_title length > Excel limit of %d.",
@@ -11291,7 +11291,7 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
     }
 
     if (validation->error_title) {
-        length = lxw_utf8_strlen(validation->error_title);
+        length = lxw_utf16_strlen(validation->error_title);
         if (length > LXW_VALIDATION_MAX_TITLE_LENGTH) {
             LXW_WARN_FORMAT1("worksheet_data_validation_cell()/_range(): "
                              "error_title length > Excel limit of %d.",
@@ -11301,7 +11301,7 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
     }
 
     if (validation->input_message) {
-        length = lxw_utf8_strlen(validation->input_message);
+        length = lxw_utf16_strlen(validation->input_message);
         if (length > LXW_VALIDATION_MAX_STRING_LENGTH) {
             LXW_WARN_FORMAT1("worksheet_data_validation_cell()/_range(): "
                              "input_message length > Excel limit of %d.",
@@ -11311,7 +11311,7 @@ worksheet_data_validation_range(lxw_worksheet *self, lxw_row_t first_row,
     }
 
     if (validation->error_message) {
-        length = lxw_utf8_strlen(validation->error_message);
+        length = lxw_utf16_strlen(validation->error_message);
         if (length > LXW_VALIDATION_MAX_STRING_LENGTH) {
             LXW_WARN_FORMAT1("worksheet_data_validation_cell()/_range(): "
                              "error_message length > Excel limit of %d.",

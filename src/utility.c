@@ -584,6 +584,28 @@ lxw_utf8_strlen(const char *str)
     return char_count;
 }
 
+/* Get the length of a UTF-8 string in UTF-16 units to match Excel's string
+ * length limits where characters above U+FFFF, such as emojis, count as 2.
+ * These are encoded in UTF-8 with a 4 byte sequence. */
+size_t
+lxw_utf16_strlen(const char *str)
+{
+    size_t byte_count = 0;
+    size_t char_count = 0;
+
+    while (str[byte_count]) {
+        if ((str[byte_count] & 0xc0) != 0x80)
+            char_count++;
+
+        if ((str[byte_count] & 0xf8) == 0xf0)
+            char_count++;
+
+        byte_count++;
+    }
+
+    return char_count;
+}
+
 /* Simple tolower() for strings. */
 void
 lxw_str_tolower(char *str)
