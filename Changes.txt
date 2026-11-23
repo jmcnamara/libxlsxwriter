@@ -23,6 +23,14 @@
 
   [gh_520]: https://github.com/jmcnamara/libxlsxwriter/issues/520
 
+- Fixed issue where a worksheet with only embedded, background or
+  header/footer images caused images and charts on later worksheets to
+  reference a non-existent drawing file.
+
+  Issue [#523][gh_523].
+
+  [gh_523]: https://github.com/jmcnamara/libxlsxwriter/issues/523
+
 
 ## 1.2.4 Jan 6 2026
 

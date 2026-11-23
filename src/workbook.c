@@ -1110,7 +1110,11 @@ _prepare_drawings(lxw_workbook *self)
             continue;
         }
 
-        drawing_id++;
+        /* Only increment the drawing id for objects that are written to a
+         * drawing part not embedded, background or header/footer images. */
+        if (!STAILQ_EMPTY(worksheet->image_props)
+            || !STAILQ_EMPTY(worksheet->chart_data))
+            drawing_id++;
 
         /* Prepare embedded worksheet images. */
         STAILQ_FOREACH(object_props, worksheet->embedded_image_props,
