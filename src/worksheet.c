@@ -1885,6 +1885,28 @@ _write_column_formula(lxw_worksheet *self, lxw_row_t first_row,
         worksheet_write_formula(self, row, col, formula, format);
 }
 
+/*
+ * Apply a table column format to any cells already written in the column's
+ * data rows. This overrides any existing cell format.
+ */
+STATIC void
+_update_table_column_format(lxw_worksheet *self, lxw_row_t first_row,
+                            lxw_row_t last_row, lxw_col_t col,
+                            lxw_format *format)
+{
+    lxw_row_t row_num;
+    lxw_row *row;
+    lxw_cell *cell;
+
+    for (row_num = first_row; row_num <= last_row; row_num++) {
+        row = lxw_worksheet_find_row(self, row_num);
+        cell = lxw_worksheet_find_cell_in_row(row, col);
+
+        if (cell)
+            cell->format = format;
+    }
+}
+
 /* Set the defaults for table columns in worksheet_add_table(). */
 void
 _write_table_column_data(lxw_worksheet *self, lxw_table_obj *table_obj)
@@ -1924,6 +1946,10 @@ _write_table_column_data(lxw_worksheet *self, lxw_table_obj *table_obj)
         if (column->formula)
             _write_column_formula(self, first_data_row, last_data_row, col,
                                   column);
+
+        if (column->format)
+            _update_table_column_format(self, first_data_row, last_data_row,
+                                        col, column->format);
     }
 }
 

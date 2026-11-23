@@ -1408,7 +1408,11 @@ typedef struct lxw_table_column {
     /** Set the format for the column header.  */
     lxw_format *header_format;
 
-    /** Set the format for the data rows in the column.  */
+    /** Set the format for the data rows in the column. This is applied to
+     *  data written to the column before the table is added, overriding any
+     *  existing cell format, and to the column formula and total function
+     *  cells written by the table. Data written after the table is added
+     *  needs to have the format applied explicitly. */
     lxw_format *format;
 
     /** Set the formula value for the column total (not generally required). */

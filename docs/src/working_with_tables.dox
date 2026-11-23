@@ -362,8 +362,8 @@ This is similar to setting the `result` property in
 `worksheet_write_formula_num()`. See also @ref ww_formulas_results.
 
 Formatting can also be applied to columns using the `format` and to the header
-using `header_format` (although you will also need to add it to the data in
-the column, see the next section):
+using `header_format`. The column `format` is also applied to any data already
+written in the column, see the next section:
 
 @code
     lxw_table_column col1 = {.header         = "Product",
@@ -402,16 +402,25 @@ the column, see the next section):
 Standard libxlsxwriter lxw_format objects are used for this formatting.
 However, they should be limited to numerical formats for the columns and
 simple formatting like text wrap for the headers. Overriding other table
-formatting may produce inconsistent results. You will also need to apply the
-same format to any data you write to the column in the table, see the next
-section.
+formatting may produce inconsistent results.
+
+The column `format` is applied to any data written to the column before the
+table is added, and it overrides any existing format for those cells. Data
+written to the column after the table is added needs to have the format applied
+explicitly, see the next section.
 
 
 @section ww_tables_data Adding data to the table
 
 Once you create a worksheet table you will also need to fill in the data in
 the rows and columns. This is done with the standard worksheet write()
-functions. For example the data in the examples above was written as follows:
+functions.
+
+The data can be written before or after the table is added. If it is written
+before then any column `format` is applied to it automatically. If it is
+written after, as in the example below, the format needs to be applied to the
+data explicitly. For example the data in the examples above was written as
+follows:
 
 @code
     worksheet_write_string(worksheet, 3, 1, "Apples",  NULL);

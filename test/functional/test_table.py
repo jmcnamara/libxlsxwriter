@@ -65,6 +65,10 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
     def test_table14(self):
         self.run_exe_test('test_table14')
 
+    # Test table column formats applied to data written before the table.
+    def test_table51(self):
+        self.run_exe_test('test_table51', 'table14.xlsx')
+
     def test_table15(self):
         self.run_exe_test('test_table15')
 

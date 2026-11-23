@@ -13,6 +13,17 @@
   build process.
 
 
+## 1.2.5 - In progress
+
+- Table column formats set via `lxw_table_column.format` are now applied to
+  data written to the column before the table is added with
+  `worksheet_add_table()`.
+
+  Issue [#520][gh_520].
+
+  [gh_520]: https://github.com/jmcnamara/libxlsxwriter/issues/520
+
+
 ## 1.2.4 Jan 6 2026
 
 - Added validation of `lxw_datetime` fields to ensure that they are
