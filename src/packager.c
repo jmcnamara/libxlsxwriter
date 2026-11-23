@@ -377,15 +377,13 @@ _write_image_files(lxw_packager *self)
     char filename[LXW_FILENAME_LENGTH] = { 0 };
     uint32_t index = 1;
 
+    /* Write the embedded images first, for all worksheets, to match the
+     * image ids set in workbook _prepare_drawings(). */
     STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
         if (sheet->is_chartsheet)
             continue;
         else
             worksheet = sheet->u.worksheet;
-
-        if (STAILQ_EMPTY(worksheet->image_props)
-            && STAILQ_EMPTY(worksheet->embedded_image_props))
-            continue;
 
         STAILQ_FOREACH(object_props, worksheet->embedded_image_props,
                        list_pointers) {
@@ -419,6 +417,14 @@ _write_image_files(lxw_packager *self)
 
             RETURN_ON_ERROR(err);
         }
+    }
+
+    /* Write the other worksheet images. */
+    STAILQ_FOREACH(sheet, workbook->sheets, list_pointers) {
+        if (sheet->is_chartsheet)
+            continue;
+        else
+            worksheet = sheet->u.worksheet;
 
         STAILQ_FOREACH(object_props, worksheet->image_props, list_pointers) {
 

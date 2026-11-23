@@ -50,14 +50,18 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
         self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<hyperlink']}
         self.run_exe_test('test_embed_image10')
 
-    def test_embed_image13(self):
+    def test_embed_image11(self):
         self.run_exe_test('test_embed_image11')
+
     def test_embed_image12(self):
         self.run_exe_test('test_embed_image12')
 
     @pytest.mark.skipif(os.environ.get('USE_NO_MD5'), reason="compiled without MD5 support")
     def test_embed_image13(self):
         self.run_exe_test('test_embed_image13')
+
+    def test_embed_image14(self):
+        self.run_exe_test('test_embed_image14')
 
     # Test in-memory image handling.
     def test_embed_image51(self):

@@ -1093,30 +1093,16 @@ _prepare_drawings(lxw_workbook *self)
     lxw_image_md5 *found_duplicate_image = NULL;
     uint8_t i;
 
+    /* Prepare the embedded images first, for all worksheets, so that they
+     * have the image ids 1 to N. These ids are also used as the index for
+     * the cell metadata and rich value relationships, which only count
+     * embedded images. */
     STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
-        if (sheet->is_chartsheet) {
-            worksheet = sheet->u.chartsheet->worksheet;
-            is_chartsheet = LXW_TRUE;
-        }
-        else {
-            worksheet = sheet->u.worksheet;
-            is_chartsheet = LXW_FALSE;
-        }
-
-        if (STAILQ_EMPTY(worksheet->image_props)
-            && STAILQ_EMPTY(worksheet->embedded_image_props)
-            && STAILQ_EMPTY(worksheet->chart_data)
-            && !worksheet->has_header_vml && !worksheet->has_background_image) {
+        if (sheet->is_chartsheet)
             continue;
-        }
 
-        /* Only increment the drawing id for objects that are written to a
-         * drawing part not embedded, background or header/footer images. */
-        if (!STAILQ_EMPTY(worksheet->image_props)
-            || !STAILQ_EMPTY(worksheet->chart_data))
-            drawing_id++;
+        worksheet = sheet->u.worksheet;
 
-        /* Prepare embedded worksheet images. */
         STAILQ_FOREACH(object_props, worksheet->embedded_image_props,
                        list_pointers) {
 
@@ -1157,6 +1143,29 @@ _prepare_drawings(lxw_workbook *self)
 
             worksheet_set_error_cell(worksheet, object_props, ref_id);
         }
+    }
+
+    STAILQ_FOREACH(sheet, self->sheets, list_pointers) {
+        if (sheet->is_chartsheet) {
+            worksheet = sheet->u.chartsheet->worksheet;
+            is_chartsheet = LXW_TRUE;
+        }
+        else {
+            worksheet = sheet->u.worksheet;
+            is_chartsheet = LXW_FALSE;
+        }
+
+        if (STAILQ_EMPTY(worksheet->image_props)
+            && STAILQ_EMPTY(worksheet->chart_data)
+            && !worksheet->has_header_vml && !worksheet->has_background_image) {
+            continue;
+        }
+
+        /* Only increment the drawing id for objects that are written to a
+         * drawing part not embedded, background or header/footer images. */
+        if (!STAILQ_EMPTY(worksheet->image_props)
+            || !STAILQ_EMPTY(worksheet->chart_data))
+            drawing_id++;
 
         /* Prepare background images. */
         if (worksheet->has_background_image) {

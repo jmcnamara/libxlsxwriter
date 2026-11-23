@@ -47,6 +47,13 @@
   display string. These URL schemes are now only matched at the start of the
   URL.
 
+- Fixed issue where an embedded image in a workbook with other images on an
+  earlier worksheet had an incorrect cell metadata index and image relationship.
+
+  Issue [#524][gh_524].
+
+  [gh_524]: https://github.com/jmcnamara/libxlsxwriter/issues/524
+
 
 ## 1.2.4 Jan 6 2026
 
