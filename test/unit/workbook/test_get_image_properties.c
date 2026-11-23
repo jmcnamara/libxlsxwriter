@@ -13,20 +13,28 @@
 
 /* Helper function to open a test image file. The unit tests are normally run
  * from the test/unit directory but may also be run from an individual test
- * directory such as test/unit/workbook, so try both relative paths. */
+ * directory such as test/unit/workbook, or from the project root (as with
+ * CMake/ctest), so try each relative path. */
 static FILE *
 _open_test_image(const char *filename)
 {
+    const char *dirs[] = {
+        "../functional/src/images",
+        "../../functional/src/images",
+        "test/functional/src/images",
+    };
     char path[256];
     FILE *stream;
+    size_t i;
 
-    lxw_snprintf(path, sizeof(path), "../functional/src/images/%s", filename);
-    stream = lxw_fopen(path, "rb");
-    if (stream)
-        return stream;
+    for (i = 0; i < sizeof(dirs) / sizeof(dirs[0]); i++) {
+        lxw_snprintf(path, sizeof(path), "%s/%s", dirs[i], filename);
+        stream = lxw_fopen(path, "rb");
+        if (stream)
+            return stream;
+    }
 
-    lxw_snprintf(path, sizeof(path), "../../functional/src/images/%s", filename);
-    return lxw_fopen(path, "rb");
+    return NULL;
 }
 
 

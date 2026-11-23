@@ -10,14 +10,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
 
     - name: Install dependencies
       run: |
         sudo apt-get -y install indent
         sudo ln -s /usr/bin/indent /usr/bin/gindent
         python -m pip install --upgrade pip
-        pip install gersemi
+        pip install gersemi==0.29.2
 
     - name: Make indent
       run: |
