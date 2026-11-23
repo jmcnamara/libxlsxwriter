@@ -1981,7 +1981,7 @@ lxw_error
 _check_table_name(lxw_table_options *user_options)
 {
     const char *name;
-    char *ptr;
+    const char *ptr;
     char first[2] = { 0, 0 };
 
     if (!user_options)
@@ -8447,13 +8447,11 @@ worksheet_write_url_opt(lxw_worksheet *self,
     err = LXW_ERROR_MEMORY_MALLOC_FAILED;
 
     /* Set the URI scheme from internal links. */
-    found_string = strstr(url, "internal:");
-    if (found_string)
+    if (strstr(url, "internal:"))
         link_type = HYPERLINK_INTERNAL;
 
     /* Set the URI scheme from external links. */
-    found_string = strstr(url, "external:");
-    if (found_string)
+    if (strstr(url, "external:"))
         link_type = HYPERLINK_EXTERNAL;
 
     if (string) {
@@ -8463,8 +8461,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
     else {
         if (link_type == HYPERLINK_URL) {
             /* Strip the mailto header. */
-            found_string = strstr(url, "mailto:");
-            if (found_string)
+            if (strstr(url, "mailto:"))
                 string_copy = lxw_strdup(url + sizeof("mailto"));
             else
                 string_copy = lxw_strdup(url);
