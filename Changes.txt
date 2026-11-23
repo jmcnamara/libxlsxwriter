@@ -41,6 +41,12 @@
 
   [gh_526]: https://github.com/jmcnamara/libxlsxwriter/issues/526
 
+- Fixed an issue where URLs that contained `internal:`, `external:` or
+  `mailto:` after the start of the URL, for example in a query string, were
+  treated as internal or external links, which gave an incorrect link and
+  display string. These URL schemes are now only matched at the start of the
+  URL.
+
 
 ## 1.2.4 Jan 6 2026
 

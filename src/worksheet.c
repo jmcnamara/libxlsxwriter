@@ -1055,6 +1055,22 @@ _new_comment_cell(lxw_row_t row_num, lxw_col_t col_num,
 }
 
 /*
+ * Get the hyperlink type from the URL scheme prefix. Links without an
+ * "internal:" or "external:" prefix are treated as standard URLs.
+ */
+STATIC enum cell_types
+_get_hyperlink_type(const char *url)
+{
+    if (strncmp(url, "internal:", sizeof("internal:") - 1) == 0)
+        return HYPERLINK_INTERNAL;
+
+    if (strncmp(url, "external:", sizeof("external:") - 1) == 0)
+        return HYPERLINK_EXTERNAL;
+
+    return HYPERLINK_URL;
+}
+
+/*
  * Create a new worksheet hyperlink cell object.
  */
 STATIC lxw_cell *
@@ -3424,12 +3440,7 @@ lxw_worksheet_prepare_image(lxw_worksheet *self,
         GOTO_LABEL_ON_MEM_ERROR(relationship->type, mem_error);
 
         /* Check the link type. Default to external hyperlinks. */
-        if (strstr(url, "internal:"))
-            link_type = HYPERLINK_INTERNAL;
-        else if (strstr(url, "external:"))
-            link_type = HYPERLINK_EXTERNAL;
-        else
-            link_type = HYPERLINK_URL;
+        link_type = _get_hyperlink_type(url);
 
         /* Set the relationship object for each type of link. */
         if (link_type == HYPERLINK_INTERNAL) {
@@ -8446,13 +8457,8 @@ worksheet_write_url_opt(lxw_worksheet *self,
     /* Reset default error condition. */
     err = LXW_ERROR_MEMORY_MALLOC_FAILED;
 
-    /* Set the URI scheme from internal links. */
-    if (strstr(url, "internal:"))
-        link_type = HYPERLINK_INTERNAL;
-
-    /* Set the URI scheme from external links. */
-    if (strstr(url, "external:"))
-        link_type = HYPERLINK_EXTERNAL;
+    /* Set the link type from the URI scheme. */
+    link_type = _get_hyperlink_type(url);
 
     if (string) {
         string_copy = lxw_strdup(string);
@@ -8461,7 +8467,7 @@ worksheet_write_url_opt(lxw_worksheet *self,
     else {
         if (link_type == HYPERLINK_URL) {
             /* Strip the mailto header. */
-            if (strstr(url, "mailto:"))
+            if (strncmp(url, "mailto:", sizeof("mailto:") - 1) == 0)
                 string_copy = lxw_strdup(url + sizeof("mailto"));
             else
                 string_copy = lxw_strdup(url);

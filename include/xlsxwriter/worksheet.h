@@ -5969,6 +5969,8 @@ void worksheet_set_error_cell(lxw_worksheet *worksheet,
 
 STATIC void _worksheet_xml_declaration(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_worksheet(lxw_worksheet *worksheet);
+STATIC enum cell_types _get_hyperlink_type(const char *url);
+STATIC void _worksheet_write_hyperlinks(lxw_worksheet *self);
 STATIC void _worksheet_write_dimension(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_view(lxw_worksheet *worksheet);
 STATIC void _worksheet_write_sheet_views(lxw_worksheet *worksheet);
