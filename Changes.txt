@@ -57,6 +57,15 @@
 - Fixed an issue where a worksheet with both a background image and a worksheet
   image has the images reversed.
 
+- Fixed a crash in `workbook_close()` for a scatter chart series without
+  categories, where the series ranges were set with
+  `chart_series_set_values()`. `worksheet_insert_chart()` and
+  `chartsheet_set_chart()` now return an error for this case.
+
+  Issue [#525][gh_525].
+
+  [gh_525]: https://github.com/jmcnamara/libxlsxwriter/issues/525
+
 
 ## 1.2.4 Jan 6 2026
 
