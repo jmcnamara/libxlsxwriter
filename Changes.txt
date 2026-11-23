@@ -54,6 +54,9 @@
 
   [gh_524]: https://github.com/jmcnamara/libxlsxwriter/issues/524
 
+- Fixed an issue where a worksheet with both a background image and a worksheet
+  image has the images reversed.
+
 
 ## 1.2.4 Jan 6 2026
 

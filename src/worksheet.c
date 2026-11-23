@@ -3625,7 +3625,10 @@ lxw_worksheet_prepare_background(lxw_worksheet *self,
     lxw_rel_tuple *relationship = NULL;
     char filename[LXW_FILENAME_LENGTH];
 
-    STAILQ_INSERT_TAIL(self->image_props, object_props, list_pointers);
+    /* Add the background image before any worksheet images, which are already
+     * in the list, so that the image files are written in the same order as
+     * the image ids, where the background image comes first. */
+    STAILQ_INSERT_HEAD(self->image_props, object_props, list_pointers);
 
     relationship = calloc(1, sizeof(lxw_rel_tuple));
     RETURN_VOID_ON_MEM_ERROR(relationship);

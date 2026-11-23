@@ -39,6 +39,9 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
         self.ignore_elements = {'xl/worksheets/sheet1.xml': ['<pageSetup']}
         self.run_exe_test('test_background07')
 
+    def test_background08(self):
+        self.run_exe_test('test_background08')
+
     # Same as background02 except with an image buffer.
     def test_background52(self):
         self.run_exe_test('test_background52', 'background02.xlsx')
