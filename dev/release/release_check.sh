@@ -170,6 +170,7 @@ function check_docs {
         else
             echo "    Building docs...";
             make docs
+            open docs/html/changes.html
             check_docs
          fi
     fi
@@ -308,7 +309,7 @@ clear
 gen_umbrella_file
 check_pod_spec
 clear
-update_pod_repo
+#update_pod_repo
 check_versions
 check_git_status
 

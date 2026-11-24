@@ -3,17 +3,56 @@
 
 ## Information for Packagers
 
-- This is serial version 1.2.4. This is not a semver version number.
+- This version contains ABI changes since the previous release.
+  The shared object library version is 12, i.e., `libxlsxwriter.so.12`, which
+  is updated automatically via `make` and `cmake` as part of the build process.
 
-- This is shared object library version `libxlsxwriter.so.11`. This should be
-  updated automatically via `make` and `cmake` as part of the build process.
-  This version contains ABI changes since the previous release.
+- The serial version is v1.2.5. This is not a semver version number.
 
 - Please report any downstream patches back upstream to help improve the overall
   build process.
 
 
-## 1.2.5 - In progress
+## 1.2.5 November 24 2026
+
+- Updated `build.zig` to support Zig 0.16.0.
+
+- Fixed an issue where BMP images stored as top-down DIBs, with a negative
+  height, weren't handled correctly.
+
+- Fixed a heap overflow and infinite loop in `worksheet_data_validation_cell()`
+  and `worksheet_data_validation_range()` when a `value_list` contained 256 or
+  more items.
+
+  Issue [#512][gh_512].
+
+  [gh_512]: https://github.com/jmcnamara/libxlsxwriter/issues/512
+
+- Fixed excessive, quadratic, memory allocation for default column headers in
+  `worksheet_add_table()`, particularly for wide tables.
+
+  Issue [#513][gh_513].
+
+  [gh_513]: https://github.com/jmcnamara/libxlsxwriter/issues/513
+
+- Fixed conditional format rule priorities when a range is repeated after a
+  different range. The priorities now follow the order that the rules were
+  added in.
+
+- Fixed issue where `worksheet_set_start_page()` had no effect unless another
+  page setup function was also called.
+
+  Issue [#519][gh_519].
+
+  [gh_519]: https://github.com/jmcnamara/libxlsxwriter/issues/519
+
+- Fixed a use-after-free in `workbook_close()` when a header or footer with
+  images was replaced by a second call to `worksheet_set_header_opt()` or
+  `worksheet_set_footer_opt()` that used fewer images.
+
+  Issue [#532][gh_532].
+
+  [gh_532]: https://github.com/jmcnamara/libxlsxwriter/issues/532
 
 - Table column formats set via `lxw_table_column.format` are now applied to
   data written to the column before the table is added with

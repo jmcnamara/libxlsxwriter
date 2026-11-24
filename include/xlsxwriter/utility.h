@@ -272,7 +272,7 @@ double lxw_unixtime_to_excel_date_with_epoch(int64_t unixtime,
 
 char *lxw_strdup(const char *str);
 char *lxw_strdup_formula(const char *formula);
-/* Note, the utft-8 length check is deprecated in favor of lxw_utf16_strlen()
+/* Note, the utf-8 length check is deprecated in favor of lxw_utf16_strlen()
  * which correctly handles characters above U+FFFF like Excel.
  */
 size_t lxw_utf8_strlen(const char *str);

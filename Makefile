@@ -295,13 +295,13 @@ release: releasecheck
 	@echo "Pushing updated docs ..."
 	$(Q)make -C ../libxlsxwriter.github.io release
 
-	@echo
-	@echo "Pushing the cocoapod ..."
-	$(Q)pod trunk push libxlsxwriter.podspec --use-libraries
+#	@echo
+#	@echo "Pushing the cocoapod ..."
+#	$(Q)pod trunk push libxlsxwriter.podspec --use-libraries
 
 	@echo
 	@echo "Finished. Opening files."
 	$(Q)open https://libxlsxwriter.github.io/changes.html
-	$(Q)open https://cocoadocs.org/docsets/libxlsxwriter
+#	$(Q)open https://cocoadocs.org/docsets/libxlsxwriter
 	$(Q)open https://github.com/jmcnamara/libxlsxwriter
 	$(Q)open https://github.com/jmcnamara/libxlsxwriter/releases
