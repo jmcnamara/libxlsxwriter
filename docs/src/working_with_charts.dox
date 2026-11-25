@@ -333,10 +333,24 @@ The error bar types that be used are:
 - #LXW_CHART_ERROR_BAR_TYPE_FIXED: Fixed value.
 - #LXW_CHART_ERROR_BAR_TYPE_PERCENTAGE: Percentage.
 - #LXW_CHART_ERROR_BAR_TYPE_STD_DEV: Standard deviation(s).
+- #LXW_CHART_ERROR_BAR_TYPE_CUSTOM: Custom values from worksheet ranges.
 
-@note Custom error bars are not currently supported.
+Custom error bars can be set from separate worksheet ranges for positive and
+negative values. Provide a range formula (with or without a leading `=`) for
+each side that is required. Each range should contain one numeric value per
+data point. The values in the negative range are magnitudes and should not be
+negative.
 
-All error bar types, apart from Standard error, should have a valid
+@code
+    chart_series_set_error_bars_custom(series->y_error_bars,
+                                       "Sheet1!$C$1:$C$5",
+                                       "Sheet1!$D$1:$D$5");
+@endcode
+
+Either range can be NULL when only one side is required. The direction setting
+controls which side or sides are displayed.
+
+All error bar types, apart from Standard error and Custom, should have a valid
 value to set the error range:
 
 @code

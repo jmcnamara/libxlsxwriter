@@ -1083,7 +1083,7 @@ Chart 2 is a column chart with default data table with legend keys:
 <table  width="600">
 <tr>
   <td>@ref chart_data_table.c "&lt;&lt; chart_data_table.c"</td>
-  <td align="right">@ref chart_data_labels.c "chart_data_labels.c &gt;&gt;"</td>
+  <td align="right">@ref chart_error_bars.c "chart_error_bars.c &gt;&gt;"</td>
 </tr>
 </table>
 
@@ -1106,7 +1106,7 @@ Chart 4: chart with formatted Up-down bars.
 Chart 5: chart with markers and data labels.
 @image html chart_data_tools8.png
 
-Chart 6: chart with error bars.
+Chart 6: chart with standard error bars.
 @image html chart_data_tools3.png
 
 Chart 7: chart with a trendline.
@@ -1116,11 +1116,26 @@ Chart 7: chart with a trendline.
 
 
 
-@example chart_data_labels.c
+@example chart_error_bars.c
 
 <table  width="600">
 <tr>
   <td>@ref chart_data_tools.c "&lt;&lt; chart_data_tools.c"</td>
+  <td align="right">@ref chart_data_labels.c "chart_data_labels.c &gt;&gt;"</td>
+</tr>
+</table>
+
+This example adds asymmetric custom error bars to a scatter chart. The
+positive and negative magnitudes are read from separate worksheet ranges.
+
+
+
+
+@example chart_data_labels.c
+
+<table  width="600">
+<tr>
+  <td>@ref chart_error_bars.c "&lt;&lt; chart_error_bars.c"</td>
   <td align="right">@ref chart_fonts.c "chart_fonts.c &gt;&gt;"</td>
 </tr>
 </table>
