@@ -4028,6 +4028,8 @@ void chart_set_hole_size(lxw_chart *chart, uint8_t size);
  * @param chart   Pointer to the primary chart.
  * @param chart2  Pointer to the secondary chart to be combined.
  *
+ * @return A #lxw_error code.
+ *
  * The `chart_combine()` function is used to combine two different chart types
  * into a single combination chart:
  *
@@ -4054,7 +4056,7 @@ void chart_set_hole_size(lxw_chart *chart, uint8_t size);
  *
  * See @ref chart_combined.
  */
-void chart_combine(lxw_chart *chart, lxw_chart *chart2);
+lxw_error chart_combine(lxw_chart *chart, lxw_chart *chart2);
 
 lxw_error lxw_chart_add_data_cache(lxw_series_range *range, uint8_t *data,
                                    uint16_t rows, uint8_t cols, uint8_t col);

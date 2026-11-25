@@ -36,8 +36,6 @@ class TestCompareXLSXFiles(base_test_class.XLSXBaseTest):
             'xl/charts/chart1.xml': [
                 '<c:dispBlanksAs',
                 '<c:tickLblPos',
-                '<c:crosses',
-                '<c:axPos',
             ]
         }
         self.run_exe_test('test_chart_combined05')

@@ -2143,6 +2143,33 @@ _chart_has_secondary_axis(lxw_chart *self)
 }
 
 /*
+ * Check if a series belongs to the axis group, primary or secondary, that is
+ * currently being written.
+ */
+STATIC uint8_t
+_chart_series_on_current_axis(lxw_chart *self, lxw_chart_series *series)
+{
+    return !self->is_secondary == !series->use_secondary_axis;
+}
+
+/*
+ * Check if the chart has any series for the axis group, primary or
+ * secondary, that is currently being written.
+ */
+STATIC uint8_t
+_chart_has_series_on_current_axis(lxw_chart *self)
+{
+    lxw_chart_series *series;
+
+    STAILQ_FOREACH(series, self->series_list, list_pointers) {
+        if (_chart_series_on_current_axis(self, series))
+            return LXW_TRUE;
+    }
+
+    return LXW_FALSE;
+}
+
+/*
  * Write the <c:axId> element.
  */
 STATIC void
@@ -4654,10 +4681,12 @@ _chart_write_val_axis_secondary(lxw_chart *self)
 }
 
 /*
- * Write the secondary <c:catAx> element.
+ * Write the secondary <c:catAx> element. The axis properties come from the
+ * chart that owns the secondary axes, which may be the combined chart, but
+ * some of the element defaults depend on the primary chart type.
  */
 STATIC void
-_chart_write_cat_axis_secondary(lxw_chart *self)
+_chart_write_cat_axis_secondary(lxw_chart *self, uint8_t primary_chart_group)
 {
     lxw_xml_start_tag(self->file, "c:catAx", NULL);
 
@@ -4687,10 +4716,12 @@ _chart_write_cat_axis_secondary(lxw_chart *self)
     /* Write the c:crossAx element. */
     _chart_write_cross_axis(self, self->axis_id_4);
 
-    /* Write the c:crosses element. Only for LINE/COLUMN charts with hidden labels. */
-    if ((self->chart_group == LXW_CHART_LINE ||
-         self->chart_group == LXW_CHART_COLUMN) &&
-        self->x2_axis->label_position == LXW_CHART_AXIS_LABEL_POSITION_NONE)
+    /* Write the c:crosses element. Excel omits it if the labels are visible
+     * or if the primary chart is a Bar or Area chart. */
+    if (primary_chart_group != LXW_CHART_BAR
+        && primary_chart_group != LXW_CHART_AREA
+        && self->x2_axis->label_position ==
+        LXW_CHART_AXIS_LABEL_POSITION_NONE)
         _chart_write_crosses(self, self->y2_axis);
 
     /* Write the c:auto element. */
@@ -4850,21 +4881,9 @@ STATIC void
 _chart_write_area_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
-    uint8_t has_series = LXW_FALSE;
 
-    /* Check if there are any series for this axis type. */
-    STAILQ_FOREACH(series, self->series_list, list_pointers) {
-        if (self->is_secondary && series->use_secondary_axis) {
-            has_series = LXW_TRUE;
-            break;
-        }
-        if (!self->is_secondary && !series->use_secondary_axis) {
-            has_series = LXW_TRUE;
-            break;
-        }
-    }
-
-    if (!has_series)
+    /* Only write the chart type if it has series for the current axis. */
+    if (!_chart_has_series_on_current_axis(self))
         return;
 
     lxw_xml_start_tag(self->file, "c:areaChart", NULL);
@@ -4873,10 +4892,8 @@ _chart_write_area_chart(lxw_chart *self)
     _chart_write_grouping(self, self->grouping);
 
     STAILQ_FOREACH(series, self->series_list, list_pointers) {
-        /* Only write series that match the current axis type. */
-        if (self->is_secondary && !series->use_secondary_axis)
-            continue;
-        if (!self->is_secondary && series->use_secondary_axis)
+        /* Only write series that match the current axis. */
+        if (!_chart_series_on_current_axis(self, series))
             continue;
 
         /* Write the c:ser element. */
@@ -4899,21 +4916,9 @@ STATIC void
 _chart_write_bar_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
-    uint8_t has_series = LXW_FALSE;
 
-    /* Check if there are any series for this axis type. */
-    STAILQ_FOREACH(series, self->series_list, list_pointers) {
-        if (self->is_secondary && series->use_secondary_axis) {
-            has_series = LXW_TRUE;
-            break;
-        }
-        if (!self->is_secondary && !series->use_secondary_axis) {
-            has_series = LXW_TRUE;
-            break;
-        }
-    }
-
-    if (!has_series)
+    /* Only write the chart type if it has series for the current axis. */
+    if (!_chart_has_series_on_current_axis(self))
         return;
 
     lxw_xml_start_tag(self->file, "c:barChart", NULL);
@@ -4925,10 +4930,8 @@ _chart_write_bar_chart(lxw_chart *self)
     _chart_write_grouping(self, self->grouping);
 
     STAILQ_FOREACH(series, self->series_list, list_pointers) {
-        /* Only write series that match the current axis type. */
-        if (self->is_secondary && !series->use_secondary_axis)
-            continue;
-        if (!self->is_secondary && series->use_secondary_axis)
+        /* Only write series that match the current axis. */
+        if (!_chart_series_on_current_axis(self, series))
             continue;
 
         /* Write the c:ser element. */
@@ -4960,21 +4963,9 @@ STATIC void
 _chart_write_column_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
-    uint8_t has_series = LXW_FALSE;
 
-    /* Check if there are any series for this axis type. */
-    STAILQ_FOREACH(series, self->series_list, list_pointers) {
-        if (self->is_secondary && series->use_secondary_axis) {
-            has_series = LXW_TRUE;
-            break;
-        }
-        if (!self->is_secondary && !series->use_secondary_axis) {
-            has_series = LXW_TRUE;
-            break;
-        }
-    }
-
-    if (!has_series)
+    /* Only write the chart type if it has series for the current axis. */
+    if (!_chart_has_series_on_current_axis(self))
         return;
 
     lxw_xml_start_tag(self->file, "c:barChart", NULL);
@@ -4986,10 +4977,8 @@ _chart_write_column_chart(lxw_chart *self)
     _chart_write_grouping(self, self->grouping);
 
     STAILQ_FOREACH(series, self->series_list, list_pointers) {
-        /* Only write series that match the current axis type. */
-        if (self->is_secondary && !series->use_secondary_axis)
-            continue;
-        if (!self->is_secondary && series->use_secondary_axis)
+        /* Only write series that match the current axis. */
+        if (!_chart_series_on_current_axis(self, series))
             continue;
 
         /* Write the c:ser element. */
@@ -5048,21 +5037,9 @@ STATIC void
 _chart_write_line_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
-    uint8_t has_series = LXW_FALSE;
 
-    /* Check if there are any series for this axis type. */
-    STAILQ_FOREACH(series, self->series_list, list_pointers) {
-        if (self->is_secondary && series->use_secondary_axis) {
-            has_series = LXW_TRUE;
-            break;
-        }
-        if (!self->is_secondary && !series->use_secondary_axis) {
-            has_series = LXW_TRUE;
-            break;
-        }
-    }
-
-    if (!has_series)
+    /* Only write the chart type if it has series for the current axis. */
+    if (!_chart_has_series_on_current_axis(self))
         return;
 
     lxw_xml_start_tag(self->file, "c:lineChart", NULL);
@@ -5071,10 +5048,8 @@ _chart_write_line_chart(lxw_chart *self)
     _chart_write_grouping(self, self->grouping);
 
     STAILQ_FOREACH(series, self->series_list, list_pointers) {
-        /* Only write series that match the current axis type. */
-        if (self->is_secondary && !series->use_secondary_axis)
-            continue;
-        if (!self->is_secondary && series->use_secondary_axis)
+        /* Only write series that match the current axis. */
+        if (!_chart_series_on_current_axis(self, series))
             continue;
 
         /* Write the c:ser element. */
@@ -5130,21 +5105,9 @@ STATIC void
 _chart_write_scatter_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
-    uint8_t has_series = LXW_FALSE;
 
-    /* Check if there are any series for this axis type. */
-    STAILQ_FOREACH(series, self->series_list, list_pointers) {
-        if (self->is_secondary && series->use_secondary_axis) {
-            has_series = LXW_TRUE;
-            break;
-        }
-        if (!self->is_secondary && !series->use_secondary_axis) {
-            has_series = LXW_TRUE;
-            break;
-        }
-    }
-
-    if (!has_series)
+    /* Only write the chart type if it has series for the current axis. */
+    if (!_chart_has_series_on_current_axis(self))
         return;
 
     lxw_xml_start_tag(self->file, "c:scatterChart", NULL);
@@ -5153,10 +5116,8 @@ _chart_write_scatter_chart(lxw_chart *self)
     _chart_write_scatter_style(self);
 
     STAILQ_FOREACH(series, self->series_list, list_pointers) {
-        /* Only write series that match the current axis type. */
-        if (self->is_secondary && !series->use_secondary_axis)
-            continue;
-        if (!self->is_secondary && series->use_secondary_axis)
+        /* Only write series that match the current axis. */
+        if (!_chart_series_on_current_axis(self, series))
             continue;
 
         /* Add default scatter chart formatting to the series data unless
@@ -5190,19 +5151,8 @@ _chart_write_radar_chart(lxw_chart *self)
 {
     lxw_chart_series *series;
 
-    /* Check if there are any series for this axis type. */
-    uint8_t has_series = LXW_FALSE;
-    STAILQ_FOREACH(series, self->series_list, list_pointers) {
-        if (self->is_secondary && series->use_secondary_axis) {
-            has_series = LXW_TRUE;
-            break;
-        }
-        if (!self->is_secondary && !series->use_secondary_axis) {
-            has_series = LXW_TRUE;
-            break;
-        }
-    }
-    if (!has_series)
+    /* Only write the chart type if it has series for the current axis. */
+    if (!_chart_has_series_on_current_axis(self))
         return;
 
     lxw_xml_start_tag(self->file, "c:radarChart", NULL);
@@ -5211,10 +5161,8 @@ _chart_write_radar_chart(lxw_chart *self)
     _chart_write_radar_style(self);
 
     STAILQ_FOREACH(series, self->series_list, list_pointers) {
-        /* Skip series not for this axis. */
-        if (self->is_secondary && !series->use_secondary_axis)
-            continue;
-        if (!self->is_secondary && series->use_secondary_axis)
+        /* Only write series that match the current axis. */
+        if (!_chart_series_on_current_axis(self, series))
             continue;
 
         /* Write the c:ser element. */
@@ -5354,7 +5302,8 @@ _chart_write_plot_area(lxw_chart *self)
     /* Configure a combined chart if present. */
     if (second_chart) {
         /* Check if the combined chart has any secondary axis series. */
-        second_chart->has_secondary_axis = _chart_has_secondary_axis(second_chart);
+        second_chart->has_secondary_axis =
+            _chart_has_secondary_axis(second_chart);
 
         /* Secondary axis has unique id otherwise use same as primary. */
         if (second_chart->has_secondary_axis) {
@@ -5405,10 +5354,10 @@ _chart_write_plot_area(lxw_chart *self)
         if (second_chart->chart_group == LXW_CHART_SCATTER)
             _chart_write_cat_val_axis_secondary(second_chart);
         else
-            _chart_write_cat_axis_secondary(second_chart);
+            _chart_write_cat_axis_secondary(second_chart, self->chart_group);
     }
     else if (self->has_secondary_axis) {
-        _chart_write_cat_axis_secondary(self);
+        _chart_write_cat_axis_secondary(self, self->chart_group);
     }
 
     /* Write the c:dTable element. */
@@ -5734,6 +5683,21 @@ _chart_initialize(lxw_chart *self, uint8_t type)
         default:
             LXW_WARN_FORMAT1("workbook_add_chart(): "
                              "unhandled chart type '%d'", type);
+    }
+
+    /* Set the secondary axis types. The secondary Y axis is always a value
+     * axis, even for Bar charts, since only the primary axes are swapped. The
+     * secondary X axis is a category axis except for Scatter charts. Pie and
+     * Doughnut charts don't have axes. */
+    if (self->chart_group != LXW_CHART_PIE
+        && self->chart_group != LXW_CHART_DOUGHNUT) {
+
+        self->y2_axis->is_value = LXW_TRUE;
+
+        if (self->chart_group == LXW_CHART_SCATTER)
+            self->x2_axis->is_value = LXW_TRUE;
+        else
+            self->x2_axis->is_category = LXW_TRUE;
     }
 }
 
@@ -7585,10 +7549,60 @@ chart_set_hole_size(lxw_chart *self, uint8_t size)
 }
 
 /*
+ * Check if a chart is a Pie or Doughnut chart.
+ */
+STATIC uint8_t
+_chart_is_pie_type(lxw_chart *chart)
+{
+    return chart->chart_group == LXW_CHART_PIE
+        || chart->chart_group == LXW_CHART_DOUGHNUT;
+}
+
+/*
  * Create a combination chart by combining two chart types.
  */
-void
+lxw_error
 chart_combine(lxw_chart *self, lxw_chart *chart2)
 {
+    if (!self || !chart2) {
+        LXW_WARN("chart_combine(): charts must be non-NULL.");
+        return LXW_ERROR_NULL_PARAMETER_IGNORED;
+    }
+
+    if (self == chart2) {
+        LXW_WARN("chart_combine(): a chart cannot be combined with itself.");
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+
+    /* Only two charts can be combined. */
+    if (self->combined || chart2->combined) {
+        LXW_WARN("chart_combine(): only two charts can be combined.");
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+
+    /* The secondary chart is written as part of the primary chart so it
+     * cannot also be inserted separately or combined with another chart. */
+    if (chart2->in_use) {
+        LXW_WARN("chart_combine(): the secondary chart has already been "
+                 "inserted or combined with another chart.");
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+
+    if (self->chart_group == LXW_CHART_SCATTER) {
+        LXW_WARN("chart_combine(): Scatter charts are not supported as the "
+                 "primary chart in a combined chart.");
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+
+    /* Pie and Doughnut charts can only be combined with each other. */
+    if (_chart_is_pie_type(self) != _chart_is_pie_type(chart2)) {
+        LXW_WARN("chart_combine(): Pie and Doughnut charts can only be "
+                 "combined with other Pie or Doughnut charts.");
+        return LXW_ERROR_PARAMETER_VALIDATION;
+    }
+
     self->combined = chart2;
+    chart2->in_use = LXW_TRUE;
+
+    return LXW_NO_ERROR;
 }
