@@ -557,11 +557,18 @@ Chart 4: chart with formatted Up-down bars.
 Chart 5: chart with markers and data labels.
 @image html chart_data_tools8.png
 
-Chart 6: chart with error bars.
+Chart 6: chart with standard error bars.
 @image html chart_data_tools3.png
 
 Chart 7: chart with a trendline.
 @image html chart_data_tools9.png
+
+
+##############################################################
+@example chart_error_bars.c
+
+This example adds asymmetric custom error bars to a scatter chart. The
+positive and negative magnitudes are read from separate worksheet ranges.
 
 
 ##############################################################

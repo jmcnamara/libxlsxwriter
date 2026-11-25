@@ -161,11 +161,15 @@ _chart_series_free(lxw_chart_series *series)
 
     if (series->x_error_bars) {
         free(series->x_error_bars->line);
+        _chart_free_range(series->x_error_bars->plus_values);
+        _chart_free_range(series->x_error_bars->minus_values);
         free(series->x_error_bars);
     }
 
     if (series->y_error_bars) {
         free(series->y_error_bars->line);
+        _chart_free_range(series->y_error_bars->plus_values);
+        _chart_free_range(series->y_error_bars->minus_values);
         free(series->y_error_bars);
     }
 
@@ -2911,7 +2915,9 @@ _chart_write_err_val_type(lxw_chart *self, uint8_t type)
 
     LXW_INIT_ATTRIBUTES();
 
-    if (type == LXW_CHART_ERROR_BAR_TYPE_FIXED)
+    if (type == LXW_CHART_ERROR_BAR_TYPE_CUSTOM)
+        LXW_PUSH_ATTRIBUTES_STR("val", "cust");
+    else if (type == LXW_CHART_ERROR_BAR_TYPE_FIXED)
         LXW_PUSH_ATTRIBUTES_STR("val", "fixedVal");
     else if (type == LXW_CHART_ERROR_BAR_TYPE_PERCENTAGE)
         LXW_PUSH_ATTRIBUTES_STR("val", "percentage");
@@ -2923,6 +2929,18 @@ _chart_write_err_val_type(lxw_chart *self, uint8_t type)
     lxw_xml_empty_tag(self->file, "c:errValType", &attributes);
 
     LXW_FREE_ATTRIBUTES();
+}
+
+STATIC void
+_chart_write_custom_error_value(lxw_chart *self, const char *tag,
+                                lxw_series_range *range)
+{
+    if (!range || !range->formula)
+        return;
+
+    lxw_xml_start_tag(self->file, tag, NULL);
+    _chart_write_data_cache(self, range, LXW_FALSE);
+    lxw_xml_end_tag(self->file, tag);
 }
 
 /*
@@ -2996,6 +3014,13 @@ _chart_write_err_bars(lxw_chart *self, lxw_series_error_bars *error_bars)
     /* Write the c:noEndCap element. */
     if (error_bars->endcap == LXW_CHART_ERROR_BAR_NO_CAP)
         _chart_write_no_end_cap(self);
+
+    if (error_bars->type == LXW_CHART_ERROR_BAR_TYPE_CUSTOM) {
+        _chart_write_custom_error_value(self, "c:plus",
+                                        error_bars->plus_values);
+        _chart_write_custom_error_value(self, "c:minus",
+                                        error_bars->minus_values);
+    }
 
     /* Write the c:val element. */
     if (error_bars->has_value)
@@ -6115,6 +6140,82 @@ chart_series_set_error_bars(lxw_series_error_bars *error_bars,
 
     if (type == LXW_CHART_ERROR_BAR_TYPE_STD_ERROR)
         error_bars->has_value = LXW_FALSE;
+}
+
+/* Set custom error bar ranges from worksheet formulas. */
+void
+chart_series_set_error_bars_custom(lxw_series_error_bars *error_bars,
+                                   const char *plus_values,
+                                   const char *minus_values)
+{
+    lxw_series_range *plus_range = NULL;
+    lxw_series_range *minus_range = NULL;
+
+    /* This setter initializes the type, so it doesn't require a prior call to
+     * chart_series_set_error_bars(). Still validate the chart/axis pairing. */
+    if (_chart_check_error_bars(error_bars, ""))
+        return;
+
+    if (plus_values
+        && (!plus_values[0] || (plus_values[0] == '=' && !plus_values[1])))
+        plus_values = NULL;
+
+    if (minus_values
+        && (!minus_values[0] || (minus_values[0] == '=' && !minus_values[1])))
+        minus_values = NULL;
+
+    if (!plus_values && !minus_values) {
+        LXW_WARN
+            ("chart_series_set_error_bars_custom(): at least one non-empty "
+             "error value range must be specified");
+        return;
+    }
+
+    if (plus_values) {
+        plus_range = calloc(1, sizeof(lxw_series_range));
+        if (!plus_range)
+            goto mem_error;
+        plus_range->data_cache =
+            calloc(1, sizeof(struct lxw_series_data_points));
+        if (!plus_range->data_cache)
+            goto mem_error;
+        STAILQ_INIT(plus_range->data_cache);
+        plus_range->formula =
+            lxw_strdup(plus_values[0] == '=' ? plus_values + 1 : plus_values);
+        if (!plus_range->formula)
+            goto mem_error;
+    }
+
+    if (minus_values) {
+        minus_range = calloc(1, sizeof(lxw_series_range));
+        if (!minus_range)
+            goto mem_error;
+        minus_range->data_cache =
+            calloc(1, sizeof(struct lxw_series_data_points));
+        if (!minus_range->data_cache)
+            goto mem_error;
+        STAILQ_INIT(minus_range->data_cache);
+        minus_range->formula =
+            lxw_strdup(minus_values[0] ==
+                       '=' ? minus_values + 1 : minus_values);
+        if (!minus_range->formula)
+            goto mem_error;
+    }
+
+    _chart_free_range(error_bars->plus_values);
+    _chart_free_range(error_bars->minus_values);
+    error_bars->plus_values = plus_range;
+    error_bars->minus_values = minus_range;
+    error_bars->type = LXW_CHART_ERROR_BAR_TYPE_CUSTOM;
+    error_bars->has_value = LXW_FALSE;
+    error_bars->is_set = LXW_TRUE;
+    return;
+
+mem_error:
+    _chart_free_range(plus_range);
+    _chart_free_range(minus_range);
+    LXW_WARN
+        ("chart_series_set_error_bars_custom(): memory allocation failed");
 }
 
 /*

@@ -949,7 +949,10 @@ typedef enum lxw_chart_error_bar_type {
     LXW_CHART_ERROR_BAR_TYPE_PERCENTAGE,
 
     /** Error bar type: Standard deviation(s). */
-    LXW_CHART_ERROR_BAR_TYPE_STD_DEV
+    LXW_CHART_ERROR_BAR_TYPE_STD_DEV,
+
+    /** Error bar values specified by worksheet ranges. */
+    LXW_CHART_ERROR_BAR_TYPE_CUSTOM
 } lxw_chart_error_bar_type;
 
 /**
@@ -999,6 +1002,8 @@ typedef struct lxw_series_error_bars {
     uint8_t chart_group;
     double value;
     lxw_chart_line *line;
+    lxw_series_range *plus_values;
+    lxw_series_range *minus_values;
 
 } lxw_series_error_bars;
 
@@ -2382,10 +2387,12 @@ lxw_series_error_bars *chart_series_get_error_bars(lxw_chart_series *series, lxw
  * - #LXW_CHART_ERROR_BAR_TYPE_FIXED: Fixed value.
  * - #LXW_CHART_ERROR_BAR_TYPE_PERCENTAGE: Percentage.
  * - #LXW_CHART_ERROR_BAR_TYPE_STD_DEV: Standard deviation(s).
+ * - #LXW_CHART_ERROR_BAR_TYPE_CUSTOM: Values from worksheet ranges.
  *
- * @note Custom error bars are not currently supported.
+ * Custom error bars are configured with
+ * `chart_series_set_error_bars_custom()` using worksheet range formulas.
  *
- * All error bar types, apart from Standard error, should have a valid
+ * All error bar types, apart from Standard error and Custom, should have a valid
  * value to set the error range:
  *
  * @code
@@ -2405,6 +2412,20 @@ lxw_series_error_bars *chart_series_get_error_bars(lxw_chart_series *series, lxw
  */
 void chart_series_set_error_bars(lxw_series_error_bars *error_bars,
                                  uint8_t type, double value);
+
+/**
+ * @brief Set custom positive and negative error bar values from worksheet ranges.
+ *
+ * @param error_bars A pointer to the series X or Y error bars.
+ * @param plus_values  Formula for positive error values, or NULL to omit.
+ * @param minus_values Formula for negative error values, or NULL to omit.
+ *
+ * Formulas may be supplied with or without a leading `=`. At least one range
+ * should be specified. Each range should contain one numeric value per point.
+ */
+void chart_series_set_error_bars_custom(lxw_series_error_bars *error_bars,
+                                        const char *plus_values,
+                                        const char *minus_values);
 
 /**
  * @brief Set the direction (up, down or both) of the error bars for a chart
